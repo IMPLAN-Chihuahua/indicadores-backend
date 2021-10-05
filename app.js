@@ -1,17 +1,18 @@
 const express = require('express');
-const app = express();
-const port = 8081;
-const { sequelize } = require('./config/db');
+const helmet = require('helmet');
+const cors = require('cors');
 require('dotenv').config();
+const port = process.env.APP_PORT || 8081;
 
-console.log(sequelize.config);
-sequelize.authenticate()
-    .then(() => console.log('connection has been established successfully'))
-    .catch(err => console.error(err));
+const app = express();
 
-app.get('/', (req, res) => {
-    res.json({ msg: "test" });
-})
+// seguridad basica
+app.use(cors());
+app.use(helmet());
+
+// obtener objetos de la informacion en las peticiones
+app.use(express.json());
+app.use(express.urlencoded());
 
 app.listen(port, () => {
     console.log(`app starting on port ${port}`);
