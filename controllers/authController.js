@@ -26,7 +26,7 @@ const login = async (req, res) => {
         && (await bcrypt.compare(clave, existingUser.clave))) {
 
         const token = jwt.sign(
-            { user_id: existingUser.id, correo: existingUser.correo },
+            { usuario_id: existingUser.id, correo: existingUser.correo },
             TOKEN_SECRET,
             { expiresIn: '2h' }
         );
