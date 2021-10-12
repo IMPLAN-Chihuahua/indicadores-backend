@@ -2,10 +2,10 @@ const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
 
-const sequelize = new Sequelize('indicadores', 'indicador', '***REMOVED***', {
-    host: '***REMOVED***',
+const sequelize = new Sequelize('', '', '', {
+    host: 'host',
     dialect: 'postgres',
-    port: '5432'
+    port: 'port'
 });
 
 module.exports = { sequelize };
