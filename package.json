@@ -2,16 +2,29 @@
   "name": "backend-erp",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "devstart": "nodemon app.js"
+    "dev": "nodemon app.js "
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "exphbs": "^1.2.0",
     "express": "^4.17.1",
-    "nodemon": "^2.0.12"
+    "express-handlebars": "^5.3.4",
+    "handlebars": "^4.7.7",
+    "helmet": "^4.6.0",
+    "morgan": "^1.10.0",
+    "pg": "^8.7.1",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.6.5"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.13"
   }
 }
