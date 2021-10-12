@@ -1,0 +1,59 @@
+<section id="add" class="container">
+    <div class="form-wrap">
+      <h1>Agregar Usuario</h1>
+      <p>Formulario para la creacion de usuarios</p>
+      <form>
+        <div class="input-group">
+          <label for="id"></label>
+          <input type="hidden" name="id" id="id" class="input-box" placeholder=""
+            maxlength="255">
+        </div>  
+        <div class="input-group">
+          <label for="correo">Correo</label>
+          <input type="text" name="correo" id="correo" class="input-box" placeholder="Correo con el cual se registrara el usuario"
+            maxlength="255" required>
+        </div>
+        <div class="input-group">
+          <label for="clave">Clave</label>
+          <input type="password" name="clave" id="clave" class="input-box" placeholder="clave del usuario"
+          maxlength="255" required>
+        </div>
+        <div class="input-group">
+          <label for="nombres">Nombres</label>
+          <input type="text" name="nombres" id="nombres" class="input-box" placeholder="nombres del usuario"
+          maxlength="160" required>
+        </div>
+        <div class="input-group">
+          <label for="apellidopaterno">Apellidopaterno</label>
+          <input type="text" name="apellidopaterno" id="apellidopaterno" class="input-box" placeholder="apellido paterno del usuario"
+          maxlength="160" required>
+        </div>
+        <div class="input-group">
+          <label for="apellidomaterno">Apellidomaterno</label>
+          <input type="text" name="apellidomaterno" id="apellidomaterno" class="input-box" placeholder="apellido materno del usuario"
+          maxlength="160">
+        </div>
+        <div class="input-group">
+          <label for="avatar">Avatar</label>
+          <input type="text" name="avatar" id="avatar" class="input-box" placeholder="mapa de bits del avatar del usuario"
+          maxlength="255">
+        </div>
+        <div class="input-group">
+          <label for="activo">Activo</label>
+          <input type="text" name="activo" id="activo" class="input-box" placeholder="Se encuentra activo 'si o no' "
+          maxlength="2" required>
+        </div>
+        <div class="input-group">
+          <label for="fechacreacion"></label>
+          <input type="hidden" name="fechacreacion" id="fechacreacion" class="input-box" placeholder="Se encuentra activo 'si o no' "
+          maxlength="2">
+        </div>
+        <div class="input-group">
+          <label for="fechamodificacion"></label>
+          <input type="hidden" name="fechamodificacion" id="fechamodificacion" class="input-box" placeholder="Se encuentra activo 'si o no' "
+          maxlength="2">
+        </div>
+        <input type="submit" value="Añadir usuario" class="btn btn-reverse">
+      </form>
+    </div>
+  </section>

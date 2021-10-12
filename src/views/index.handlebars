@@ -1,1 +1,24 @@
-<h1>Index</h1>
+<section id="gigs" class="container">
+    <h1>Todos los Usuarios</h1>
+
+    {{#each usua}}
+
+        <div class="gig">
+      <h1>Id: {{id}}</h1>      
+      <h3>Correo: {{correo}}</h3>
+      <h3>Clave: {{clave}}</h3>
+      <h3>Nombres: {{nombres}}</h3>
+      <h3>Apellidos: {{apellidopaterno}} {{apellidomaterno}}</h3>
+      <h3>Avatar: {{avatar}}</h3>
+      <h3>Activo: {{activo}}</h3>
+
+      <div class="tech">
+        <small>fecha de creacion y modificacion : <span>{{fechacreacion}}, {{fechamodificacion}}</span></small>
+      </div>
+    </div>
+
+    {{else}}
+        <p>no Users available</p>
+    {{/each}}
+
+  </section>

@@ -24,11 +24,19 @@ db.sequelize.authenticate()
 
 
 //handlebars
-app.engine('handlebars', exphbs({ defaultLayout: 'main'}))
+app.engine('handlebars', exphbs({ defaultLayout: 'main',
+runtimeOptions: {
+  allowProtoPropertiesByDefault: true,
+  allowProtoMethodsByDefault: true,
+}  
+}))
+
+app.set('views', '../indicadores-backend/src/views')
 app.set('view engine', 'handlebars')
 
+
 //set static folder 
-app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.static(path.join(__dirname, '../indicadores-backend/src/public')))
 
 //seguiridad basica 
 app.use(cors())
@@ -42,7 +50,7 @@ app.use(express.urlencoded({extended: false}));
 
 
 // routes
-app.use(require('./src/routes/gig'))
+app.use(require('./src/routes/index'))
 
 
 

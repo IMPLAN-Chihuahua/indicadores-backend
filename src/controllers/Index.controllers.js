@@ -13,8 +13,21 @@ const  getUsers = async(req, res) => {
 }
 
 const getindex = async(req, res) => 
-  res.render('index')
+usuario.findAll()
+    .then(usua =>{
+    res.render('index', {
+        usua
+    })
+    })
+    .catch(err => console.log(err))
 
+const gethome = async(req,res) =>{
+    res.render('home')
+}
+  
+const createUsu = async(req, res)=>{
+    res.render('add')
+}
 
 const createUser = async(req, res)=>{
     const {
@@ -62,5 +75,7 @@ const findUser = async(req, res)=>{
 module.exports = {
     getUsers,
     createUser,
-    getindex
+    getindex,
+    createUsu,
+    gethome
 };
