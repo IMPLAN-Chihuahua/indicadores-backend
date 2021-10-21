@@ -1,6 +1,8 @@
 const db = require('../config/db')
 const usu = require('../models/usuario')
 const usuario = usu.Usuario
+const Sequelize = require('sequelize')
+const Op = Sequelize.Op
 
 const  getUsers = async(req, res) => { 
     
@@ -41,23 +43,60 @@ const createUser = async(req, res)=>{
         activo, 
         fechacreacion, 
         fechamodificacion 
-    } = req.body 
+    } = req.body
+    
+    let errors=[]
 
-    usu.Usuario.create({
-        id,
-        correo,
-        clave,
-        nombres,
-        apellidopaterno,
-        apellidomaterno,
-        avatar,
-        activo,
-        fechacreacion,
-        fechamodificacion
+    if(!correo){
+        errors.push({ text: 'por favor agrega un correo'})
+    }
+    if(!clave){
+        errors.push({ text: 'por favor agrega una clave'})
+    }
+    if(!nombres){
+        errors.push({ text: 'por favor agrega un nombre'})
+    }
+    if(!apellidopaterno){
+        errors.push({ text: 'por favor agrega apellido paterno'})
+    }
+    if(!activo){
+        errors.push({ text: 'por favor especifica si esta activo'})
+    }
 
-    })
-        .then(usua => res.send('User created'))
-        .catch(err => console.log(err))
+    if(errors.length>0){
+        res.render('add',{
+            errors,
+            id, 
+            correo, 
+            clave, 
+            nombres, 
+            apellidopaterno, 
+            apellidomaterno, 
+            avatar,  
+            activo, 
+            fechacreacion, 
+            fechamodificacion 
+        })
+
+    } else {
+
+        usu.Usuario.create({
+            id,
+            correo,
+            clave,
+            nombres,
+            apellidopaterno,
+            apellidomaterno,
+            avatar,
+            activo,
+            fechacreacion,
+            fechamodificacion
+    
+        })
+            .catch(err => console.log(err))
+
+    }
+
 
 }
 
@@ -70,7 +109,14 @@ const editUser = async(req, res)=>{
 }
 
 const findUser = async(req, res)=>{
+    let { term } = req.query
     
+    term = term.toLowerCase()
+
+    usu.Usuario.findAll({where:{id: {[Op.like]:'%' + term + '%' } } })
+    .then(usua => res.render('index', {usua}))
+    .catch(err => console.log(err) )
+
 }
 module.exports = {
     getUsers,
