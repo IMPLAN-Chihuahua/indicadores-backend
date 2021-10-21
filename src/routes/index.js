@@ -6,7 +6,7 @@ const usuario = usu.Usuario
 
 const { getUsers, createUser, getindex, createUsu, gethome} = require('../controllers/Index.controllers')
 
-router.get('/', getindex)
+router.get('/', gethome)
 
 router.get('/users', getindex)
 router.get('/home', gethome)
