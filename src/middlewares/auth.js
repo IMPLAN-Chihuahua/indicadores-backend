@@ -15,7 +15,8 @@ const verifyJWT = (req, res, next) => {
             next();
         });
     } else {
-        res.sendStatus(401); // peticion no tiene datos en el header de authorization
+        // peticion no tiene datos en el header de authorization
+        res.sendStatus(401); 
     }
 };
 

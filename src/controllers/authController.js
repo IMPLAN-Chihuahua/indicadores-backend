@@ -15,7 +15,7 @@ const login = async (req, res) => {
 
     const { correo, clave } = req.body;
 
-    const existingUser = await Usuario.findOne({ where: { correo: correo } });
+    const existingUser = await Usuario.findOne({ where: { correo } });
     
     // comparar hashes de clave en peticion con la que se encuentra en la bd
     if (existingUser && await bcrypt.compare(clave, existingUser.clave)) {
@@ -23,10 +23,10 @@ const login = async (req, res) => {
         // no dar acceso si la cuenta esta desactivada
         if (existingUser.activo === 'NO') {
             return res.status(403).json({
-                msg: "Esta se encuentra desactivada"
+                msg: "La cuenta se encuentra desactivada"
             });
         }
-
+        
         // si coinciden regresar token con expiracion de 5hrs
         const token = jwt.sign(
             { usuario_id: existingUser.id },
