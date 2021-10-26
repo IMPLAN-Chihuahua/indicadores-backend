@@ -42,7 +42,12 @@ const Usuario = sequelize.define('Usuario', {
     tableName: 'usuarios',
     timestamps: true,
     createdAt: 'fechacreacion',
-    updatedAt: 'fechamodificacion'
+    updatedAt: 'fechamodificacion',
+    scopes: {
+        withoutPassword: {
+            attributes: { exclude: ['clave'] }
+        }
+    }
 });
 
 module.exports = { Usuario };

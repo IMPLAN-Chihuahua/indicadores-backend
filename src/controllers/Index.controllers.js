@@ -1,8 +1,11 @@
 const { Usuario } = require('../models/usuario');
 const { Op } = require('sequelize');
+const bcrypt = require('bcrypt');
+require('dotenv').config();
+const SALT_ROUNDS = 10;
 
 const getUsers = async (req, res) => {
-    Usuario.findAll()
+    Usuario.scope('withoutPassword').findAll()
         .then(usua => {
             console.log(usua)
             res.sendStatus(200)
@@ -12,56 +15,33 @@ const getUsers = async (req, res) => {
 
 const createUser = async (req, res) => {
     const {
-        id,
         correo,
         clave,
         nombres,
         apellidopaterno,
         apellidomaterno,
-        avatar,
-        activo,
-        fechacreacion,
-        fechamodificacion
     } = req.body
 
-    let errors = []
-
-    if (!correo) {
-        errors.push({ text: 'por favor agrega un correo' })
-    }
-    if (!clave) {
-        errors.push({ text: 'por favor agrega una clave' })
-    }
-    if (!nombres) {
-        errors.push({ text: 'por favor agrega un nombre' })
-    }
-    if (!apellidopaterno) {
-        errors.push({ text: 'por favor agrega apellido paterno' })
-    }
-    if (!activo) {
-        errors.push({ text: 'por favor especifica si esta activo' })
-    }
-
-    if (errors.length > 0) {
-        res.status(400).json({ errors });
-
-    } else {
-
-        Usuario.create({
-            id,
-            correo,
-            clave,
-            nombres,
-            apellidopaterno,
-            apellidomaterno,
-            avatar,
-            activo,
-            fechacreacion,
-            fechamodificacion
-
+    bcrypt.hash(clave, SALT_ROUNDS)
+        .then(hashedClave => {
+            return Usuario.create({
+                correo,
+                clave: hashedClave,
+                nombres,
+                apellidopaterno,
+                apellidomaterno
+            });
         })
-            .catch(err => console.log(err))
-    }
+        .then(savedUser => {
+            res.status(201).json({
+                user: {
+                    correo: savedUser.correo,
+                    nombres: savedUser.nombres,
+                    fechacreacion: savedUser.fechacreacion
+                }
+            })
+        })
+        .catch(err => console.log(err));
 }
 
 const deleteUser = async (req, res) => {
@@ -84,5 +64,6 @@ const findUser = async (req, res) => {
 
 module.exports = {
     getUsers,
-    createUser
+    createUser,
+    findUser
 };
