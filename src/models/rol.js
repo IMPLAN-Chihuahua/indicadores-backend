@@ -1,16 +1,16 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/db');
 
-const Modulo = sequelize.define('Modulo',
+const Rol = sequelize.define('Rol',
     {
         id: {
             type: DataTypes.INTEGER,
+            allowNull: false,
             primaryKey: true,
-            autoIncrement: true,
-            allowNull: false
+            autoIncrement: true
         },
 
-        modulo: {
+        rol: {
             type: DataTypes.STRING,
             allowNull: false,
             unique: true
@@ -21,22 +21,25 @@ const Modulo = sequelize.define('Modulo',
             allowNull: true
         },
 
+        tiporol: {
+            type: DataTypes.STRING(30),
+            allowNull: false,
+        },
+
         activo: {
             type: DataTypes.STRING(2),
             allowNull: false,
-            default: 'SI',
+            defaultValue: 'SI',
             validate: {
                 isIn: [['SI', 'NO']]
             }
-        },
+        }
     },
     {
-        tableName: 'modulos',
+        tableName: 'roles',
         timestamps: true,
         createdAt: 'fechacreacion',
-        updatedAt: false
+        updatedAt: 'fechamodificacion'
     });
 
-module.exports = {
-    Modulo
-};
+module.exports = { Rol };
