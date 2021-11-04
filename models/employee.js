@@ -1,1 +1,0 @@
-// TODO: Definir el modelo del empleado (atributos de la tabla en la bd)
