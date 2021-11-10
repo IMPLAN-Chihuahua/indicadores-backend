@@ -1,3 +1,7 @@
+// TODO: Add pagination
+// TODO: Return error if email is already in use (when creating new user)
+// TODO: change like for eq
+
 const { Usuario } = require('../models/usuario');
 const { Op } = require('sequelize');
 const bcrypt = require('bcrypt');
