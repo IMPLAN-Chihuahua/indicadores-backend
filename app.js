@@ -11,9 +11,9 @@ const options = {
   definition: {
     openapi: "3.0.0",
     info: {
-      title: "Test",
+      title: " API",
       version: "1.0.0",
-      description: "Test Description"
+      description: "Set of endpoints to keep track of urban data."
     },
     servers: [
       {
@@ -42,26 +42,28 @@ db.sequelize.sync({ force: true, match: /_test$/ })
   .catch(err => console.log('There was an error'));
 */
 
-// enable when behind a reverse proxy (Heroku, Bluemix, AWS ELB or API Gateway, Nginx, etc)
-// see https://expressjs.com/en/guide/behind-proxies.html
+// Enable when behind a reverse proxy (Heroku, Bluemix, AWS ELB or API Gateway, Nginx, etc)
+// See https://expressjs.com/en/guide/behind-proxies.html
 // app.set('trust proxy', 1);
 
 // API rate limiter (prevent DoS attacks)
 app.use(require('./src/middlewares/limiter'));
 
-// enable CORS for all requests
+// Enable CORS for all requests
 app.use(cors());
 
 // Prevent common vulnerabilities
 app.use(helmet());
 
-// log HTTP request
+// Log HTTP requests 
 app.use(morgan('combined'));
+
+// Parse data from requests
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // API documentation
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api/v1/documentation', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Define routes
 app.use('/api/v1', require('./src/routes/auth'));
