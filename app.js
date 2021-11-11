@@ -11,7 +11,7 @@ const options = {
   definition: {
     openapi: "3.0.0",
     info: {
-      title: " API",
+      title: "Indicadores API",
       version: "1.0.0",
       description: "Set of endpoints to keep track of urban data."
     },

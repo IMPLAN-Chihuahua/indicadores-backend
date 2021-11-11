@@ -2,24 +2,47 @@
 
 const { Usuario } = require('../models/usuario');
 
-
-const insertUser = async (user) => {
-
-};
-
-// select user by id or email
-const selectUser = async (id, correo = "") => {
-    let usuario = null;
-    if (id) {
-        usuario = await Usuario.findOne({ where: { id } });
-    } else if (correo) {
-        usuario = await Usuario.findOne({ where: { correo } });
+const addUsuario = async (usuario) => {
+    try {
+        await Usuario.create(usuario);
+    } catch (err) {
+        console.log(err);
+        throw new Error('Error al crear usuario: ' + err.message);
     }
-    return usuario;
 };
 
+const getUsuarioById = async (id) => {
+    try {
+        const usuario = await Usuario.findOne({ where: { id: id } });
+        return usuario;
+    } catch (err) {
+        throw new Error('Error al buscar usuario por Id: ' + err.message);
+    }
+};
+
+const getUsuarioByCorreo = async (correo) => {
+    try {
+        return await Usuario.findOne({ where: { correo: correo } });
+    } catch (err) {
+        throw new Error('Error al buscar usuario por correo: ' + err.message);
+    }
+};
+
+const isCorreoAlreadyInUse = async (correo) => {
+    try {
+        const existingCorreo = await Usuario.findOne({
+            attributes: ['correo'],
+            where: { correo: correo }
+        });
+        return existingCorreo != null;
+    } catch (err) {
+        throw new Error('Error al buscar si correo ha sido utilizado: ' + err.message);
+    }
+}
 
 module.exports = {
-    insertUser,
-    selectUser
+    addUsuario,
+    getUsuarioById,
+    getUsuarioByCorreo,
+    isCorreoAlreadyInUse
 }
