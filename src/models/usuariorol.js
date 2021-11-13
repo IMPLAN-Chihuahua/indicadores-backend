@@ -11,6 +11,22 @@ const UsuarioRol = sequelize.define('UsuarioRol',
             autoIncrement: true
         },
 
+        usuarioid: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: Usuario,
+                key: 'id'
+            }
+        },
+
+        rolid: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: Rol,
+                key: 'id'
+            }
+        },
+
         observaciones: {
             type: DataTypes.STRING,
             allowNull: true
@@ -44,15 +60,15 @@ const UsuarioRol = sequelize.define('UsuarioRol',
         updatedAt: 'fechamodificacion',
 
         validate: {
-            validRange() {
+            validDateRange() {
                 if (this.fechadesde > this.fechahasta) {
-                    throw new Error("Fecha 'desde' es mayor que la fecha 'hasta'");
+                    throw new Error("Fecha 'desde' es mayor que fecha 'hasta'");
                 }
             }
         }
     });
 
-Usuario.belongsToMany(Rol, { through: UsuarioRol, foreignKey: 'usuarioid' });
-Rol.belongsToMany(Usuario, { through: UsuarioRol, foreignKey: 'rolid' });
+Usuario.belongsToMany(Rol, { through: UsuarioRol });
+Rol.belongsToMany(Usuario, { through: UsuarioRol });
 
 module.exports = { UsuarioRol };
