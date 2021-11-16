@@ -1,5 +1,6 @@
 const { Usuario } = require('../models/usuario');
 const bcrypt = require('bcrypt');
+const { getUsuarioByCorreo } = require('../services/usuariosService');
 require('dotenv').config();
 const { TOKEN_SECRET } = process.env;
 const jwt = require('jsonwebtoken');
@@ -8,12 +9,12 @@ const login = async (req, res) => {
     try {
         const { correo, clave } = req.body;
 
-        const existingUser = await Usuario.findOne({ where: { correo } });
+        const existingUser = await getUsuarioByCorreo(correo);
 
         // compare existing user hashed clave against the hash of the clave in the request
         if (existingUser && await bcrypt.compare(clave, existingUser.clave)) {
 
-            // if account is inactive return forbidden (status code)
+            // denied access if account is inactive (status code)
             if (existingUser.activo === 'NO') {
                 return res.status(403).json({
                     msg: "La cuenta se encuentra desactivada"
@@ -33,7 +34,7 @@ const login = async (req, res) => {
         }
     } catch (err) {
         console.log(err);
-        return res.sendStatus(500);
+        return res.status(500).json({ message: err.message });
     }
 };
 

@@ -3,6 +3,7 @@
 // TODO: change like for eq
 
 const { Usuario } = require('../models/usuario');
+const { getUsuarioByCorreo, addUsuario, isCorreoAlreadyInUse } = require('../services/usuariosService');
 const { Op } = require('sequelize');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
@@ -24,28 +25,25 @@ const createUser = async (req, res) => {
         nombres,
         apellidopaterno,
         apellidomaterno,
-    } = req.body
+    } = req.body;
+    try {
+        if (await isCorreoAlreadyInUse(correo)) {
+            return res.status(403).json({ message: 'correo already in use' })
+        }
 
-    bcrypt.hash(clave, SALT_ROUNDS)
-        .then(hashedClave => {
-            return Usuario.create({
-                correo,
-                clave: hashedClave,
-                nombres,
-                apellidopaterno,
-                apellidomaterno
-            });
-        })
-        .then(savedUser => {
-            res.status(201).json({
-                user: {
-                    correo: savedUser.correo,
-                    nombres: savedUser.nombres,
-                    fechacreacion: savedUser.fechacreacion
-                }
-            })
-        })
-        .catch(err => console.log(err));
+        const hashedClave = await bcrypt.hash(clave, SALT_ROUNDS);
+        const savedUser = await addUsuario({
+            correo,
+            clave: hashedClave,
+            nombres,
+            apellidopaterno,
+            apellidomaterno
+        });
+        return res.status(201).json(savedUser);
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+
 }
 
 const deleteUser = async (req, res) => {
