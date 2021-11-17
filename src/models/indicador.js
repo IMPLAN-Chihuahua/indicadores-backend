@@ -380,6 +380,7 @@ const Indicador = sequelize.define('Indicador',
         }
     },
     {
+        tableName: 'indicadores',
         timestamps: true,
         createdAt: 'fechacreacion',
         updatedAt: 'fechamodificacion'

@@ -1,5 +1,3 @@
-// TODO: Add operations that call table Usuario here
-
 const { Usuario } = require('../models/usuario');
 
 const addUsuario = async (usuario) => {
