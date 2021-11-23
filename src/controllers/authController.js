@@ -1,4 +1,3 @@
-const { Usuario } = require('../models/usuario');
 const bcrypt = require('bcrypt');
 const { getUsuarioByCorreo } = require('../services/usuariosService');
 require('dotenv').config();
@@ -30,7 +29,7 @@ const login = async (req, res) => {
             return res.status(200).json({ token });
 
         } else {
-            return res.status(400).json("Credenciales invalidas");
+            return res.status(401).json("Credenciales invalidas");
         }
     } catch (err) {
         console.log(err);

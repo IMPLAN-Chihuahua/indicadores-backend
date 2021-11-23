@@ -2,7 +2,8 @@ const { Usuario } = require('../models/usuario');
 
 const addUsuario = async (usuario) => {
     try {
-        await Usuario.create(usuario);
+        const savedUser = await Usuario.create(usuario);
+        return savedUser;
     } catch (err) {
         console.log(err);
         throw new Error('Error al crear usuario: ' + err.message);

@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "mocha src/tests/*.js",
+    "test": "mocha src/tests/**/*.js",
     "dev": "nodemon app.js "
   },
   "keywords": [],
