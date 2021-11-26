@@ -37,11 +37,21 @@ const isCorreoAlreadyInUse = async (correo) => {
     } catch (err) {
         throw new Error('Error al buscar si correo ha sido utilizado: ' + err.message);
     }
-}
+};
+
+const getUsuarios = async (limit = 25, offset = 0) => {
+    try {
+        const usuarios = Usuario.scope('withoutPassword').findAndCountAll({ limit: limit, offset: offset });
+        return usuarios;
+    } catch (err) {
+        throw new Error('Error al obtener lista de usuarios' + err.message);
+    }
+};
 
 module.exports = {
     addUsuario,
     getUsuarioById,
     getUsuarioByCorreo,
+    getUsuarios,
     isCorreoAlreadyInUse
 }

@@ -63,7 +63,7 @@ app.use('/api/v1/documentation', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Define routes
 app.use('/api/v1', require('./src/routes/auth'));
-app.use('/api/v1/usuarios', require('./src/routes/index'));
+app.use('/api/v1/usuarios', require('./src/routes/usuarios'));
 
 const PORT = process.env.APP_PORT || 8081;
 

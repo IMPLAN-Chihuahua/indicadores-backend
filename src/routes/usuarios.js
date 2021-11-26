@@ -1,10 +1,11 @@
 // TODO: Add validation rules to GET /usuarios (accept parameters limit, offset, etc)
 const express = require('express');
 const router = express.Router();
-const { getUsers, createUser } = require('../controllers/Index.controllers');
+const { getUsers, createUser } = require('../controllers/usuarioController');
 const { verifyJWT } = require('../middlewares/auth');
 const {
     registerValidationRules,
+    usuariosValidationRules,
     validate } = require('../middlewares/validator');
 
 /**
@@ -17,13 +18,13 @@ const {
  *       responses: 
  *         200:
  *           description: A list of users
- *         403:
+ *         401:
  *           description: Unauthorized request (not valid JWT in Authorization header)
  *         422:
  *           description: Unable to process request due to semantic errors in the body or param payload
  *       
  */
-router.get('/', verifyJWT, getUsers);
+router.get('/', getUsers);
 
 /**
  * @swagger

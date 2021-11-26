@@ -1,4 +1,4 @@
-const { check, validationResult, } = require('express-validator');
+const { check, validationResult, query } = require('express-validator');
 
 const loginValidationRules = () => {
     return [
@@ -41,6 +41,17 @@ const registerValidationRules = () => {
     ];
 };
 
+const usuariosValidationRules = () => {
+    return [
+        query('page')
+            .isInt()
+            .withMessage('page debe ser entero'),
+        query('per_page')
+            .isInt()
+            .withMessage('per_page debe ser entero'),
+    ];
+}
+
 // funcion que hace la validacion (hubo errores en la peticion?)
 const validate = (req, res, next) => {
     const errors = validationResult(req);
@@ -65,5 +76,6 @@ const validate = (req, res, next) => {
 module.exports = {
     loginValidationRules,
     registerValidationRules,
+    usuariosValidationRules,
     validate,
 }

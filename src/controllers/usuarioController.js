@@ -1,21 +1,24 @@
-// TODO: Add pagination
-// TODO: Return error if email is already in use (when creating new user)
-// TODO: change like for eq
-
 const { Usuario } = require('../models/usuario');
-const { getUsuarioByCorreo, addUsuario, isCorreoAlreadyInUse } = require('../services/usuariosService');
+const { addUsuario, getUsuarios, isCorreoAlreadyInUse } = require('../services/usuariosService');
 const { Op } = require('sequelize');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
 const SALT_ROUNDS = 10;
 
 const getUsers = async (req, res) => {
-    Usuario.scope('withoutPassword').findAll()
-        .then(usua => {
-            console.log(usua)
-            res.sendStatus(200)
-        })
-        .catch(err => console.log(err))
+    const page = req.query.page || 0;
+    const perPage = req.query.per_page || 25;
+
+    try {
+        const usuarios = await getUsuarios(perPage, page * perPage);
+        if (usuarios) {
+            res.status(200).json({
+                usuarios
+            });
+        }
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
 }
 
 const createUser = async (req, res) => {
