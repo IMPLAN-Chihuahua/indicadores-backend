@@ -1,19 +1,26 @@
 const { Usuario } = require('../models/usuario');
-const { addUsuario, getUsuarios, isCorreoAlreadyInUse } = require('../services/usuariosService');
+const { addUsuario, getUsuarios, isCorreoAlreadyInUse, getUsuarioById } = require('../services/usuariosService');
 const { Op } = require('sequelize');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
 const SALT_ROUNDS = 10;
 
 const getUsers = async (req, res) => {
-    const page = req.query.page || 0;
+    const page = req.query.page || 1;
     const perPage = req.query.per_page || 25;
 
     try {
-        const usuarios = await getUsuarios(perPage, page * perPage);
+        const usuarios = await getUsuarios(perPage, (page - 1) * perPage);
         if (usuarios) {
+            const total = usuarios.count;
+            const totalPages = Math.ceil(total / perPage);
+
             res.status(200).json({
-                usuarios
+                page: page,
+                per_page: perPage,
+                total: total,
+                total_pages: totalPages,
+                data: [...usuarios.rows]
             });
         }
     } catch (err) {
@@ -57,8 +64,23 @@ const editUser = async (req, res) => {
 
 }
 
-const findUser = async (req, res) => {
-    let { term } = req.query
+const getUser = async (req, res) => {
+    const { id } = req.params
+
+    try {
+        const usuario = await getUsuarioById(id);
+        if (usuario) {
+            res.status(200).json({ usuario: usuario });
+        }
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+}
+
+
+// TODO: create function inside service to handle searching and filtering
+const searchUser = async (req, res) => {
+    const { term } = req.query
 
     term = term.toLowerCase()
 
@@ -70,5 +92,5 @@ const findUser = async (req, res) => {
 module.exports = {
     getUsers,
     createUser,
-    findUser
+    getUser
 };
