@@ -16,20 +16,20 @@ const login = async (req, res) => {
             // denied access if account is inactive (status code)
             if (existingUser.activo === 'NO') {
                 return res.status(403).json({
-                    msg: "La cuenta se encuentra desactivada"
+                    message: "La cuenta se encuentra desactivada"
                 });
             }
 
             // create and sign token (valid up to 5hrs)
             const token = jwt.sign(
-                { usuario_id: existingUser.id },
+                { sub: existingUser.id },
                 TOKEN_SECRET,
                 { expiresIn: '5h' }
             );
             return res.status(200).json({ token });
 
         } else {
-            return res.status(401).json("Credenciales invalidas");
+            return res.status(401).json({message: "Credenciales invalidas"});
         }
     } catch (err) {
         console.log(err);

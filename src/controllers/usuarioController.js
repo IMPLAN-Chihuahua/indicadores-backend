@@ -15,16 +15,18 @@ const getUsers = async (req, res) => {
             const total = usuarios.count;
             const totalPages = Math.ceil(total / perPage);
 
-            res.status(200).json({
+            return res.status(200).json({
                 page: page,
                 per_page: perPage,
                 total: total,
                 total_pages: totalPages,
                 data: [...usuarios.rows]
             });
+        } else {
+            return res.status(204);
         }
     } catch (err) {
-        res.status(500).json({ message: err.message })
+        return res.status(500).json({ message: err.message })
     }
 }
 
@@ -38,7 +40,7 @@ const createUser = async (req, res) => {
     } = req.body;
     try {
         if (await isCorreoAlreadyInUse(correo)) {
-            return res.status(403).json({ message: 'correo already in use' })
+            return res.status(403).json({ message: 'Correo no disponible' })
         }
 
         const hashedClave = await bcrypt.hash(clave, SALT_ROUNDS);
@@ -65,15 +67,16 @@ const editUser = async (req, res) => {
 }
 
 const getUser = async (req, res) => {
-    const { id } = req.params
-
+    const { id } = req.params;
     try {
         const usuario = await getUsuarioById(id);
-        if (usuario) {
-            res.status(200).json({ usuario: usuario });
+        if (usuario === null) {
+            return res.sendStatus(204);
+        } else {
+            return res.status(200).json({ usuario: usuario });
         }
     } catch (err) {
-        res.status(500).json({ message: err.message });
+        return res.status(500).json({ message: err.message });
     }
 }
 
@@ -92,5 +95,7 @@ const searchUser = async (req, res) => {
 module.exports = {
     getUsers,
     createUser,
-    getUser
+    getUser,
+    editUser,
+    deleteUser
 };

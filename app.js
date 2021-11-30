@@ -32,7 +32,7 @@ db.sequelize.authenticate()
   .then(() => console.log('Database connected...'))
   .catch(err => console.log('Error: ' + err));
 
-db.sequelize.sync({ force: true, match: /_test$/ })
+db.sequelize.sync({ force: false, match: /_test$/ })
   .then(() => console.log('Tables created'))
   .catch(err => console.log('There was an error'));
 

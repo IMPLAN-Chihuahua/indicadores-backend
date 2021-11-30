@@ -1,4 +1,3 @@
-// TODO: Add validation rules to GET /usuarios (accept parameters limit, offset, etc)
 const express = require('express');
 const router = express.Router();
 const { getUsers, createUser, getUser, editUser, deleteUser } = require('../controllers/usuarioController');
@@ -41,7 +40,16 @@ router.post('/', registerValidationRules(), validate, createUser);
  *  /usuarios/{id}:
  *    get:
  *      summary: Get a user with a given id
- * 
+ *      tags: [Usuarios]
+ *      responses: 
+ *        200:
+ *          description: A user
+ *        204:
+ *          description: Not user was found with the given id
+ *        401:
+ *          description: Unauthorized request (not valid JWT in Authorization header)
+ *        422:
+ *          description: Unable to process request due to semantic errors in the body or param payload
  */
 router.get('/:id', getUser);
 
@@ -51,6 +59,7 @@ router.get('/:id', getUser);
  *  /usuarios/{id}:
  *    patch:
  *      summary: Update user's information
+ *      tags: [Usuarios]
  * 
  */
 router.patch('/:id', editUser);
@@ -58,9 +67,10 @@ router.patch('/:id', editUser);
 
 /**
  * @swagger
- *  /usuarios/{id}
+ *  /usuarios/{id}:
  *    delete:
- *      summary: Delete some user's account
+ *      summary: Delete a user's account
+ *      tags: [Usuarios]
  */
 router.delete('/:id', deleteUser);
 

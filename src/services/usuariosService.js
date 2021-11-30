@@ -2,27 +2,43 @@ const { Usuario } = require('../models/usuario');
 
 const addUsuario = async (usuario) => {
     try {
-        const savedUser = await Usuario.create(usuario);
-        return savedUser;
+        const { nombres,
+            correo,
+            apellidopaterno,
+            apellidomaterno,
+            fechacreacion } = await Usuario.create(usuario);
+        return {
+            nombres,
+            correo,
+            apellidopaterno,
+            apellidomaterno,
+            fechacreacion
+        };
     } catch (err) {
-        throw new Error('Error al crear usuario\n  ' + err.message);
+        console.log(err);
+        throw new Error(`Error al crear usuario ${err.message}`);
     }
 };
 
 const getUsuarioById = async (id) => {
     try {
-        const usuario = await Usuario.findOne({ where: { id: id } });
+        const usuario = await Usuario.scope('withoutPassword').findOne({ where: { id: id } });
         return usuario;
     } catch (err) {
-        throw new Error('Error al buscar usuario por Id\n  ' + err.message);
+        console.log(err);
+        throw new Error('Error al buscar usuario por ID: ' + err.message);
     }
 };
 
 const getUsuarioByCorreo = async (correo) => {
     try {
-        return await Usuario.findOne({ where: { correo: correo } });
+        return await Usuario.findOne(
+            {
+                where: { correo: correo }
+            });
     } catch (err) {
-        throw new Error('Error al buscar usuario por correo\n  ' + err.message);
+        console.log(err);
+        throw new Error('Error al buscar usuario por correo: ' + err.message);
     }
 };
 
@@ -34,7 +50,8 @@ const isCorreoAlreadyInUse = async (correo) => {
         });
         return existingCorreo != null;
     } catch (err) {
-        throw new Error('Error al buscar si correo ha sido utilizado\n  ' + err.message);
+        console.log(err);
+        throw new Error('Error al buscar si correo ha sido utilizado: ' + err.message);
     }
 };
 
@@ -43,8 +60,13 @@ const getUsuarios = async (limit = 25, offset = 0) => {
         const usuarios = Usuario.scope('withoutPassword').findAndCountAll({ limit: limit, offset: offset });
         return usuarios;
     } catch (err) {
-        throw new Error('Error al obtener lista de usuarios\n  ' + err.message);
+        console.log(err);
+        throw new Error('Error al obtener lista de usuarios: ' + err.message);
     }
+};
+
+const updateUsuario = async () => {
+
 };
 
 module.exports = {
@@ -52,5 +74,6 @@ module.exports = {
     getUsuarioById,
     getUsuarioByCorreo,
     getUsuarios,
-    isCorreoAlreadyInUse
+    isCorreoAlreadyInUse,
+    updateUsuario
 }
