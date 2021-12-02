@@ -32,10 +32,7 @@ const getUsuarioById = async (id) => {
 
 const getUsuarioByCorreo = async (correo) => {
     try {
-        return await Usuario.findOne(
-            {
-                where: { correo: correo }
-            });
+        return await Usuario.findOne({ where: { correo: correo } });
     } catch (err) {
         console.log(err);
         throw new Error('Error al buscar usuario por correo: ' + err.message);
@@ -57,25 +54,31 @@ const isCorreoAlreadyInUse = async (correo) => {
 
 const getUsuarios = async (limit = 25, offset = 0) => {
     try {
-        const usuarios = Usuario.scope('withoutPassword')
+        const result = await Usuario.scope('withoutPassword')
             .findAndCountAll({ limit: limit, offset: offset });
-        return usuarios;
+        const usuarios = result.rows;
+        const total = result.count;
+        return { usuarios, total };
     } catch (err) {
         console.log(err);
         throw new Error('Error al obtener lista de usuarios: ' + err.message);
     }
 };
 
-const updateUsuario = async (id, fields) => {
+
+// returns true if usuario was updated
+const updateUsuario = async (id, { nombres, apellidopaterno, apellidomaterno, activo, avatar }) => {
     try {
-        const updatedUser = await Usuario.update(
-            { ...fields },
+        const affectedRows = await Usuario.update(
+            { nombres, apellidopaterno, apellidomaterno, activo, avatar },
             { where: { id: id } });
-        return updatedUser[0];
+        return affectedRows > 0;
     } catch (err) {
+        console.log(err);
         throw new Error('Error al actualizar usuario: ' + err.message);
     }
 };
+
 
 module.exports = {
     addUsuario,

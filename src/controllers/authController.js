@@ -13,10 +13,10 @@ const login = async (req, res) => {
         // compare existing user hashed clave against the hash of the clave in the request
         if (existingUser && await bcrypt.compare(clave, existingUser.clave)) {
 
-            // denied access if account is inactive (status code)
+            // denied access if account is disabled (status code)
             if (existingUser.activo === 'NO') {
                 return res.status(403).json({
-                    message: "La cuenta se encuentra desactivada"
+                    message: "La cuenta se encuentra deshabilitada"
                 });
             }
 

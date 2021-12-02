@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getUsers, createUser, getUser, editUser, deleteUser } = require('../controllers/usuarioController');
+const { getUsers, createUser, getUser, editUser } = require('../controllers/usuarioController');
 const { verifyJWT } = require('../middlewares/auth');
 const {
     registerValidationRules,
@@ -60,18 +60,13 @@ router.get('/:id', verifyJWT, getUser);
  *    patch:
  *      summary: Update user's information
  *      tags: [Usuarios]
- * 
+ *        204:
+ *          description: User information was updated successfully
+ *        401:
+ *          description: Unauthorized request (not valid JWT in Authorization header)
+ *        422:
+ *          description: Unable to process request due to semantic errors in the body or param payload
  */
-router.patch('/:id', editUser);
-
-
-/**
- * @swagger
- *  /usuarios/{id}:
- *    delete:
- *      summary: Delete a user's account
- *      tags: [Usuarios]
- */
-router.delete('/:id', deleteUser);
+router.patch('/:id', verifyJWT, editUser);
 
 module.exports = router;

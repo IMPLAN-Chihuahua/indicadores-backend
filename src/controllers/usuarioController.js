@@ -1,30 +1,30 @@
 const { Usuario } = require('../models/usuario');
-const { addUsuario, getUsuarios, isCorreoAlreadyInUse, getUsuarioById } = require('../services/usuariosService');
+const { addUsuario,
+    getUsuarios,
+    isCorreoAlreadyInUse,
+    getUsuarioById,
+    updateUsuario } = require('../services/usuariosService');
 const { Op } = require('sequelize');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
 const SALT_ROUNDS = 10;
 
 const getUsers = async (req, res) => {
+
     const page = req.query.page || 1;
     const perPage = req.query.per_page || 25;
 
     try {
-        const usuarios = await getUsuarios(perPage, (page - 1) * perPage);
-        if (usuarios) {
-            const total = usuarios.count;
-            const totalPages = Math.ceil(total / perPage);
+        const { usuarios, total } = await getUsuarios(perPage, (page - 1) * perPage);
+        const totalPages = Math.ceil(total / perPage);
 
-            return res.status(200).json({
-                page: page,
-                per_page: perPage,
-                total: total,
-                total_pages: totalPages,
-                data: [...usuarios.rows]
-            });
-        } else {
-            return res.status(204);
-        }
+        return res.status(200).json({
+            page: page,
+            per_page: perPage,
+            total: total,
+            total_pages: totalPages,
+            data: [...usuarios]
+        });
     } catch (err) {
         return res.status(500).json({ message: err.message })
     }
@@ -57,23 +57,28 @@ const createUser = async (req, res) => {
     }
 
 }
-
-const deleteUser = async (req, res) => {
-
-}
-
 const editUser = async (req, res) => {
-    
+    const fields = req.body;
+    const { id } = req.params;
+    try {
+        if (await updateUsuario(id, fields)) {
+            return res.sendStatus(204);
+        } else {
+            return res.sendStatus(400);
+        }
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
 }
 
 const getUser = async (req, res) => {
     const { id } = req.params;
     const { sub } = req;
 
-    if ( id != sub) {
+    if (id != sub) {
         return res.sendStatus(204);
     }
-    
+
     try {
         const usuario = await getUsuarioById(id);
         if (usuario === null) {
@@ -103,5 +108,4 @@ module.exports = {
     createUser,
     getUser,
     editUser,
-    deleteUser
 };
