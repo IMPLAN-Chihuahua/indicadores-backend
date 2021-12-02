@@ -51,7 +51,7 @@ router.post('/', registerValidationRules(), validate, createUser);
  *        422:
  *          description: Unable to process request due to semantic errors in the body or param payload
  */
-router.get('/:id', getUser);
+router.get('/:id', verifyJWT, getUser);
 
 
 /**

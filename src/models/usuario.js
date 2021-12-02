@@ -58,9 +58,6 @@ const Usuario = sequelize.define('Usuario',
         timestamps: true,
         createdAt: 'fechacreacion',
         updatedAt: 'fechamodificacion',
-        defaultScope: {
-            attributes: { exclude: ['clave'] }
-        },
         scopes: {
             // use to select user (s) without showing their password
             withoutPassword: {

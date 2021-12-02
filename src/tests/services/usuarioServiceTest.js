@@ -1,13 +1,10 @@
 const chai = require('chai');
 chai.use(require('chai-as-promised'));
 const assert = chai.assert;
-const expect = chai.expect;
 
 const UsuarioService = require('../../services/usuariosService');
 const { Usuario } = require('../../models/usuario');
 const faker = require('faker');
-const { ValidationError } = require('sequelize');
-
 
 describe('Usuario CRUD operations', () => {
 
@@ -56,7 +53,7 @@ describe('Usuario CRUD operations', () => {
         const alreadyUse = await UsuarioService.isCorreoAlreadyInUse(usuario.correo)
         assert.equal(alreadyUse, true, 'correo ocupado');
     });
-    
+
 
     // Create
     it('Should insert user without errors', async () => {
@@ -78,8 +75,16 @@ describe('Usuario CRUD operations', () => {
 
     // Update
     it('Should update update user\'s name', async () => {
-        const updated = await UsuarioService.updateUsuario();
-        assert.notEqual(usuario.name, updated.name);
+        const rows = await UsuarioService.updateUsuario(usuario.id,
+            { nombres: faker.name.firstName() });
+        assert.equal(1, rows);
+    });
+
+
+    it('Should not affect any row with invalid fields', async () => {
+        const rows = await UsuarioService.updateUsuario(usuario.id,
+            { aField: 'a value', anotherField: "some value" });
+        assert.equal(0, rows);
     });
 
     // TODO: Delete

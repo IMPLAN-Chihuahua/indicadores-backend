@@ -63,11 +63,17 @@ const deleteUser = async (req, res) => {
 }
 
 const editUser = async (req, res) => {
-
+    
 }
 
 const getUser = async (req, res) => {
     const { id } = req.params;
+    const { sub } = req;
+
+    if ( id != sub) {
+        return res.sendStatus(204);
+    }
+    
     try {
         const usuario = await getUsuarioById(id);
         if (usuario === null) {

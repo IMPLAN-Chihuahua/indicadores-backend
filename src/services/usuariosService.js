@@ -57,7 +57,8 @@ const isCorreoAlreadyInUse = async (correo) => {
 
 const getUsuarios = async (limit = 25, offset = 0) => {
     try {
-        const usuarios = Usuario.scope('withoutPassword').findAndCountAll({ limit: limit, offset: offset });
+        const usuarios = Usuario.scope('withoutPassword')
+            .findAndCountAll({ limit: limit, offset: offset });
         return usuarios;
     } catch (err) {
         console.log(err);
@@ -65,8 +66,15 @@ const getUsuarios = async (limit = 25, offset = 0) => {
     }
 };
 
-const updateUsuario = async () => {
-
+const updateUsuario = async (id, fields) => {
+    try {
+        const updatedUser = await Usuario.update(
+            { ...fields },
+            { where: { id: id } });
+        return updatedUser[0];
+    } catch (err) {
+        throw new Error('Error al actualizar usuario: ' + err.message);
+    }
 };
 
 module.exports = {
