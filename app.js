@@ -34,7 +34,7 @@ db.sequelize.authenticate()
 
 db.sequelize.sync({ force: false, match: /_test$/ })
   .then(() => console.log('Tables created'))
-  .catch(err => console.log('There was an error'));
+  .catch(err => console.log('There was an error ' + err.message));
 
 const app = express();
 

@@ -41,16 +41,19 @@ const registerValidationRules = () => {
     ];
 };
 
-const usuariosValidationRules = () => {
+const paginationValidationRules = () => {
     return [
         query('page')
+            .optional()
             .isInt()
             .withMessage('page debe ser entero'),
         query('per_page')
+            .optional()
             .isInt()
             .withMessage('per_page debe ser entero'),
     ];
 }
+
 
 // funcion que hace la validacion (hubo errores en la peticion?)
 const validate = (req, res, next) => {
@@ -76,6 +79,6 @@ const validate = (req, res, next) => {
 module.exports = {
     loginValidationRules,
     registerValidationRules,
-    usuariosValidationRules,
+    paginationValidationRules,
     validate,
 }
