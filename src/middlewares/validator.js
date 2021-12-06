@@ -30,14 +30,27 @@ const registerValidationRules = () => {
         // nombres se encuentra en la peticion
         check('nombres')
             .exists()
-            .withMessage('por favor agrega un nombre'),
+            .withMessage('por favor agrega un nombre')
+            .isAlpha('es-ES', { ignore: '\s' })
+            .withMessage('nombre invalido'),
 
         // apellido paterno se encuentra en la peticion
         check('apellidopaterno')
             .exists()
-            .withMessage('por favor agrega apellido paterno'),
+            .withMessage('por favor agrega apellido paterno')
+            .isAlpha('es-ES', { ignore: '\s' })
+            .withMessage('apellido paterno invalido'),
 
-        // 
+        check('apellidomaterno')
+            .optional()
+            .isAlpha('es-ES', { ignore: '\s' })
+            .withMessage('apellido materno invalido'),
+        
+        check('activo')
+            .optional()
+            .toUpperCase()
+            .isIn(['SI', 'NO'])
+            .withMessage('estado invalido')
     ];
 };
 

@@ -66,8 +66,11 @@ const {
  *   /usuarios:
  *     get:
  *       summary: Retrieve a list of users
- *       parameters: 
  *       description: Retrieve a list of users with pagination
+ *       tags: [Usuarios]
+ *       security:
+ *         - bearer: []
+ *       parameters:
  *         - in: query
  *           name: page
  *           required: false
@@ -82,7 +85,6 @@ const {
  *             type: integer
  *           description: number of usuarios in the data array result
  *           example: 25
- *       tags: [Usuarios]
  *       responses: 
  *         200:
  *           description: A list of users
@@ -117,7 +119,7 @@ const {
  *           description: Unable to process request due to semantic errors in the body or param payload
  *       
  */
-router.get('/', paginationValidationRules(), validate, getUsers);
+router.get('/', verifyJWT, paginationValidationRules(), validate, getUsers);
 
 /**
  * @swagger
@@ -135,6 +137,8 @@ router.post('/', registerValidationRules(), validate, createUser);
  *    get:
  *      summary: Get a user with a given id
  *      tags: [Usuarios]
+ *      security:
+ *        - bearer: []
  *      responses: 
  *        200:
  *          description: Information of a user
@@ -154,6 +158,8 @@ router.get('/:id', verifyJWT, getUser);
  *    patch:
  *      summary: Update user's information
  *      tags: [Usuarios]
+ *      security:
+ *        - bearer: []
  *      responses:
  *        204:
  *          description: User information was updated successfully

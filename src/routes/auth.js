@@ -2,10 +2,16 @@ const express = require('express');
 const router = express.Router();
 const { login } = require('../controllers/authController');
 const { loginValidationRules, validate } = require('../middlewares/validator')
-
 /**
  * @swagger
+ *   components:
+ *     securitySchemes:
+ *       bearer:
+ *         type: http
+ *         scheme: bearer
+ *         bearerFormat: JWT
  */
+
 
 /**
  * @swagger
@@ -19,7 +25,15 @@ const { loginValidationRules, validate } = require('../middlewares/validator')
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Usuario'
+ *               type: object
+ *               properties:
+ *                 correo:
+ *                   type: string
+ *                 clave:
+ *                   type: string
+ *               required:
+ *                 - correo
+ *                 - clave
  *       tags: [ Auth ]
  *       responses:
  *         200: 
