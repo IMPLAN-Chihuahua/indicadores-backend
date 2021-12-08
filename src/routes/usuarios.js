@@ -30,6 +30,7 @@ const {
  *           clave:
  *             type: string
  *             description: password
+ *             writeOnly: true
  *           nombres:
  *             type: string
  *             example: John
@@ -54,10 +55,12 @@ const {
  *             type: string
  *             example: 2021-12-04T22:22:33.836Z
  *             description: creation date of a user
+ *             readOnly: true
  *           fechamodificacion:
  *             type: string
  *             example: 2021-12-04T22:22:33.836Z
  *             description: updation date of a user
+ *             readOnly: true 
  */
 
 
@@ -115,6 +118,8 @@ const {
  *                 
  *         401:
  *           description: Unauthorized request (not valid JWT in Authorization header)
+ *         403:
+ *           description: The request has an invalid or expired token
  *         422:
  *           description: Unable to process request due to semantic errors in the body or param payload
  *       
@@ -127,6 +132,18 @@ router.get('/', verifyJWT, paginationValidationRules(), validate, getUsers);
  *     post:
  *       summary: Register new user
  *       tags: [Usuarios]
+ *       requestBody: 
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Usuario'
+ *       responses: 
+ *         201:
+ *           description: Account created successfully 
+ *         403:
+ *           description: Unable to create account (email is already in use)
+ *         422:
+ *           description: Unable to process request due to semantic errors in the body or param payload
  */
 router.post('/', registerValidationRules(), validate, createUser);
 
@@ -139,6 +156,13 @@ router.post('/', registerValidationRules(), validate, createUser);
  *      tags: [Usuarios]
  *      security:
  *        - bearer: []
+ *      parameters:
+ *        - in: path
+ *          name: id
+ *          required: true
+ *          schema: 
+ *            type: integer
+ *          style: simple
  *      responses: 
  *        200:
  *          description: Information of a user
@@ -146,6 +170,8 @@ router.post('/', registerValidationRules(), validate, createUser);
  *          description: Not user was found with the given id
  *        401:
  *          description: Unauthorized request (not valid JWT in Authorization header)
+ *        403:
+ *          description: The request has an invalid or expired token
  *        422:
  *          description: Unable to process request due to semantic errors in the body or param payload
  */
@@ -160,11 +186,24 @@ router.get('/:id', verifyJWT, getUser);
  *      tags: [Usuarios]
  *      security:
  *        - bearer: []
+ *      parameters:
+ *        - in: path
+ *          name: id
+ *          required: true
+ *          schema:
+ *              type: integer
+ *      requestBody: 
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Usuario'
  *      responses:
  *        204:
  *          description: User information was updated successfully
  *        401:
  *          description: Unauthorized request (not valid JWT in Authorization header)
+ *        403:
+ *          description: The request has an invalid or expired token
  *        422:
  *          description: Unable to process request due to semantic errors in the body or param payload
  */
