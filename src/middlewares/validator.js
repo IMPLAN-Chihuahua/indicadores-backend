@@ -1,4 +1,4 @@
-const { check, validationResult, } = require('express-validator');
+const { check, validationResult, query } = require('express-validator');
 
 const loginValidationRules = () => {
     return [
@@ -30,16 +30,43 @@ const registerValidationRules = () => {
         // nombres se encuentra en la peticion
         check('nombres')
             .exists()
-            .withMessage('por favor agrega un nombre'),
+            .withMessage('por favor agrega un nombre')
+            .isAlpha('es-ES', { ignore: '\s' })
+            .withMessage('nombre invalido'),
 
         // apellido paterno se encuentra en la peticion
         check('apellidopaterno')
             .exists()
-            .withMessage('por favor agrega apellido paterno'),
+            .withMessage('por favor agrega apellido paterno')
+            .isAlpha('es-ES', { ignore: '\s' })
+            .withMessage('apellido paterno invalido'),
 
-        // 
+        check('apellidomaterno')
+            .optional()
+            .isAlpha('es-ES', { ignore: '\s' })
+            .withMessage('apellido materno invalido'),
+        
+        check('activo')
+            .optional()
+            .toUpperCase()
+            .isIn(['SI', 'NO'])
+            .withMessage('estado invalido')
     ];
 };
+
+const paginationValidationRules = () => {
+    return [
+        query('page')
+            .optional()
+            .isInt()
+            .withMessage('page debe ser entero'),
+        query('per_page')
+            .optional()
+            .isInt()
+            .withMessage('per_page debe ser entero'),
+    ];
+}
+
 
 // funcion que hace la validacion (hubo errores en la peticion?)
 const validate = (req, res, next) => {
@@ -65,5 +92,6 @@ const validate = (req, res, next) => {
 module.exports = {
     loginValidationRules,
     registerValidationRules,
+    paginationValidationRules,
     validate,
 }

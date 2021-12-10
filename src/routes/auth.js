@@ -2,6 +2,15 @@ const express = require('express');
 const router = express.Router();
 const { login } = require('../controllers/authController');
 const { loginValidationRules, validate } = require('../middlewares/validator')
+/**
+ * @swagger
+ *   components:
+ *     securitySchemes:
+ *       bearer:
+ *         type: http
+ *         scheme: bearer
+ *         bearerFormat: JWT
+ */
 
 
 /**
@@ -9,7 +18,22 @@ const { loginValidationRules, validate } = require('../middlewares/validator')
  *   /login:
  *     post:
  *       summary: Let a client log into the app
- *       description: If a requests has valid credentials, this endpoint returns a JWT to use in every subsequent request
+ *       description: If a request has valid credentials, this endpoint returns a JWT to use in every subsequent request
+ *       requestBody:
+ *         description: User's credentials
+ *         required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 correo:
+ *                   type: string
+ *                 clave:
+ *                   type: string
+ *               required:
+ *                 - correo
+ *                 - clave
  *       tags: [ Auth ]
  *       responses:
  *         200: 

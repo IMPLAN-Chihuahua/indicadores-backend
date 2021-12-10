@@ -1,4 +1,3 @@
-// TODO: Add relationship with modulo and rol
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/db');
 const { Rol } = require('./rol');

@@ -7,16 +7,16 @@ const verifyJWT = (req, res, next) => {
     const reqHeader = req.headers.authorization;
     if (reqHeader) {
         const bearerToken = reqHeader.split(' ')[1];
-        jwt.verify(bearerToken, TOKEN_SECRET, (err, usuario) => {
+        jwt.verify(bearerToken, TOKEN_SECRET, (err, decoded) => {
             if (err) {
                 return res.sendStatus(403);
             }
-            req.usuario = usuario;
+            req.sub = decoded.sub;
             next();
         });
     } else {
         // peticion no tiene datos en el header de authorization
-        res.sendStatus(401); 
+        return res.sendStatus(401); 
     }
 };
 

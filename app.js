@@ -32,9 +32,9 @@ db.sequelize.authenticate()
   .then(() => console.log('Database connected...'))
   .catch(err => console.log('Error: ' + err));
 
-db.sequelize.sync({ force: true, match: /_test$/ })
+db.sequelize.sync({ force: false, match: /_test$/ })
   .then(() => console.log('Tables created'))
-  .catch(err => console.log('There was an error'));
+  .catch(err => console.log('There was an error ' + err.message));
 
 const app = express();
 
@@ -63,7 +63,7 @@ app.use('/api/v1/documentation', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Define routes
 app.use('/api/v1', require('./src/routes/auth'));
-app.use('/api/v1/usuarios', require('./src/routes/index'));
+app.use('/api/v1/usuarios', require('./src/routes/usuarios'));
 
 const PORT = process.env.APP_PORT || 8081;
 
