@@ -1,42 +1,39 @@
-const { Usuario } = require('../models/usuario');
 const bcrypt = require('bcrypt');
+const { getUsuarioByCorreo } = require('../services/usuariosService');
 require('dotenv').config();
 const { TOKEN_SECRET } = process.env;
 const jwt = require('jsonwebtoken');
-const { validationResult } = require('express-validator');
 
 const login = async (req, res) => {
+    try {
+        const { correo, clave } = req.body;
 
-    // verificar si hay errores en la peticion
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() })
-    }
+        const existingUser = await getUsuarioByCorreo(correo);
 
-    const { correo, clave } = req.body;
+        // compare existing user hashed clave against the hash of the clave in the request
+        if (existingUser && await bcrypt.compare(clave, existingUser.clave)) {
 
-    const existingUser = await Usuario.findOne({ where: { correo } });
-    
-    // comparar hashes de clave en peticion con la que se encuentra en la bd
-    if (existingUser && await bcrypt.compare(clave, existingUser.clave)) {
+            // denied access if account is disabled (status code)
+            if (existingUser.activo === 'NO') {
+                return res.status(403).json({
+                    message: "La cuenta se encuentra deshabilitada"
+                });
+            }
 
-        // no dar acceso si la cuenta esta desactivada
-        if (existingUser.activo === 'NO') {
-            return res.status(403).json({
-                msg: "La cuenta se encuentra desactivada"
-            });
+            // create and sign token (valid up to 5hrs)
+            const token = jwt.sign(
+                { sub: existingUser.id },
+                TOKEN_SECRET,
+                { expiresIn: '5h' }
+            );
+            return res.status(200).json({ token });
+
+        } else {
+            return res.status(401).json({message: "Credenciales invalidas"});
         }
-        
-        // si coinciden regresar token con expiracion de 5hrs
-        const token = jwt.sign(
-            { usuario_id: existingUser.id },
-            TOKEN_SECRET,
-            { expiresIn: '5h' }
-        );
-        return res.status(200).json({ token });
-
-    } else {
-        return res.status(400).json("Credenciales invalidas");
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ message: err.message });
     }
 };
 

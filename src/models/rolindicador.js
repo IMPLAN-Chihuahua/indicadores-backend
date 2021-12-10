@@ -1,28 +1,29 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/db');
 const { Rol } = require('./rol');
-const { Usuario } = require('./usuario');
+const { Indicador } = require('./indicador');
 
-const UsuarioRol = sequelize.define('UsuarioRol',
+const RolIndicador = sequelize.define('RolIndicador',
     {
         id: {
             type: DataTypes.INTEGER,
+            allowNull: false,
             primaryKey: true,
             autoIncrement: true
-        },
-
-        usuarioid: {
-            type: DataTypes.INTEGER,
-            references: {
-                model: Usuario,
-                key: 'id'
-            }
         },
 
         rolid: {
             type: DataTypes.INTEGER,
             references: {
                 model: Rol,
+                key: 'id'
+            }
+        },
+
+        indicadorid: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: Indicador,
                 key: 'id'
             }
         },
@@ -34,14 +35,12 @@ const UsuarioRol = sequelize.define('UsuarioRol',
 
         fechadesde: {
             type: DataTypes.DATEONLY,
-            allowNull: true,
-
+            allowNull: true
         },
 
         fechahasta: {
             type: DataTypes.DATEONLY,
-            allowNull: true,
-
+            allowNull: true
         },
 
         activo: {
@@ -49,26 +48,23 @@ const UsuarioRol = sequelize.define('UsuarioRol',
             allowNull: false,
             defaultValue: 'SI',
             validate: {
-                isIn: [["SI", "NO"]]
+                isIn: [['SI', 'NO']]
             }
         }
     },
     {
-        tableName: 'usuariosroles',
+        tableName: 'rolesindicadores',
         timestamps: true,
         createdAt: 'fechacreacion',
         updatedAt: 'fechamodificacion',
-
         validate: {
             validDateRange() {
                 if (this.fechadesde > this.fechahasta) {
                     throw new Error("Fecha 'desde' es mayor que fecha 'hasta'");
                 }
             }
-        }
-    });
+        },
+    }
+);
 
-Usuario.belongsToMany(Rol, { through: UsuarioRol });
-Rol.belongsToMany(Usuario, { through: UsuarioRol });
-
-module.exports = { UsuarioRol };
+module.exports = { RolIndicador };
