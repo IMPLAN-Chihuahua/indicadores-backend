@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/db');
+const { Indicador } = require('./indicador');
 
 const Modulo = sequelize.define('Modulo',
     {
@@ -10,7 +11,7 @@ const Modulo = sequelize.define('Modulo',
             allowNull: false
         },
 
-        modulo: {
+        temaIndicador: {
             type: DataTypes.STRING,
             allowNull: false,
             unique: true
@@ -37,6 +38,9 @@ const Modulo = sequelize.define('Modulo',
         updatedAt: false
     });
 
+Modulo.hasMany(Indicador, { foreignKey: 'idModulo' });
+
 module.exports = {
     Modulo
 };
+

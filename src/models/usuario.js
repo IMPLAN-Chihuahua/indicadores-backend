@@ -54,7 +54,6 @@ const Usuario = sequelize.define('Usuario',
         }
     },
     {
-        tableName: 'usuarios',
         timestamps: true,
         createdAt: 'fechacreacion',
         updatedAt: 'fechamodificacion',
@@ -65,5 +64,7 @@ const Usuario = sequelize.define('Usuario',
             }
         },
     });
+
+Usuario.hasMany(Indicador, { through: UsuarioIndicador });
 
 module.exports = { Usuario };
