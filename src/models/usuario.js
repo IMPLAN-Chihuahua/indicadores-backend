@@ -66,5 +66,5 @@ const Usuario = sequelize.define('Usuario',
     });
 
 Usuario.hasMany(Indicador, { through: UsuarioIndicador });
-
+Usuario.belongsToOne(Rol, { foreignKey: 'idRol' });
 module.exports = { Usuario };

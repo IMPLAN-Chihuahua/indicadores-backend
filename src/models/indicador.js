@@ -113,7 +113,11 @@ const Indicador = sequelize.define('Indicador',
 );
 
 Indicador.belongsTo(Modulo, { foreignKey: 'idModulo' });
-Indicador.hasOne(Formula, { foreignKey: 'idIndicador' });
 Indicador.belongsToMany(Usuario, { through: UsuarioIndicador });
+
+Indicador.hasOne(Formula, { foreignKey: 'idIndicador' });
+Indicador.hasMany(Historico, { foreignKey: 'idHistorico', });
+Indicador.hasmany(Fuente, { foreignKey: 'idFuente', });
+Indicador.hasOne(Mapa, { foreignKey: 'idMapa', });
 
 module.exports = { Indicador };

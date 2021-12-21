@@ -9,10 +9,13 @@ const Mapa = sequelize.define('Mapa',
             primaryKey: true,
             autoIncrement: true
         },
-        //URL
+
         ubicacion: {
             type: DataTypes.STRING,
             allowNull: false
         },
     }
-)
+);
+
+Mapa.belongsTo(Indicador);
+module.exports = { Mapa };
