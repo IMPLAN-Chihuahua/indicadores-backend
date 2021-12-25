@@ -1,5 +1,11 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/db');
+const { Formula } = require('./formula');
+const { Historico } = require('./historico');
+const { Fuente } = require('./fuente');
+const { Mapa } = require('./mapa');
+const { Modulo } = require('./modulo');
+
 
 const Indicador = sequelize.define('Indicador',
     {
@@ -9,382 +15,118 @@ const Indicador = sequelize.define('Indicador',
             autoIncrement: true
         },
 
-        tema: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        indicador: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        codigotema: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        codigoindicador: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        codigoobjecto: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
         url: {
+            
             type: DataTypes.STRING,
-            allowNull: true,
-            validate: { isUrl: true }
+            validate: {
+                isUrl: true
+            }
         },
 
-        nombreindicador: {
+        nombre: {
             type: DataTypes.STRING,
-            allowNull: true
+            allowNull: false
         },
 
-        definicionindicador: {
-            type: DataTypes.STRING,
-            allowNull: true
+        definicion: {
+            type: DataTypes.TEXT,
+            allowNull: false,
+            defaultValue: 'No aplica'
         },
 
-        ultimovalordisponible: {
+        codigo: {
             type: DataTypes.STRING,
-            allowNull: true
+            allowNull: false
         },
 
-        anioultimovalordisponible: {
+        codigoObjeto: {
             type: DataTypes.STRING,
-            allowNull: true
+            allowNull: false,
+            validate: {
+                is: /[\d]{3,}.[\d]{3,}.[\d]{3}/g
+            }
         },
 
-        formulacalculo: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        
-        descripcionformula: {
-            type: DataTypes.STRING,
-            allowNull: true
+        anioUltimoValorDisponible: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0
         },
 
-        descripcionnarrativacalculo: {
+        unidadMedida: {
             type: DataTypes.STRING,
-            allowNull: true
+            allowNull: false,
+            defaultValue: 'No aplica'
         },
 
-        unidadmedida: {
+        coberturaGeografica: {
             type: DataTypes.STRING,
-            allowNull: true
+            allowNull: false,
+            defaultValue: 'No aplica'
         },
 
-        coberturageografica: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        fuentesinformacion: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        fuente: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        nombrevariable1: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        codigoatributovariable1: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        nombreatributo: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        datovariable1: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        unidadvariable1: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        aniovariable1: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        nombrevariable2: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        codigoatributovariable2: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        datovariable2: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        unidadvariable2: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        aniovariable2: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        nombrevariable3: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        codigoatributovariable3: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        datovariable3: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        unidadvariable3: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        aniovariable3: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        nombrevariable4: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        codigoatributovariable4: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        datovariable4: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        unidadvariable4: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        aniovariable4: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        nombrevariable5: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        codigoatributovariable5: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        datovariable5: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        unidadvariable5: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        aniovariable5: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        nombrevariable6: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        codigoatributovariable6: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        datovariable6: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        unidadvariable6: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        aniovariable6: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        nombrevariable7: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        codigoatributovariable7: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        datovariable7: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        unidadvariable7: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        aniovariable7: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        verificadorresultado: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        datohistorico1: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        aniodatohistorico1: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        fuentedatohistorico1: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        datohistorico2: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        aniodatohistorico2: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        fuentedatohistorico2: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        datohistorico3: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        aniodatohistorico3: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        fuentedatohistorico3: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        tendenciadeseable: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        parametroreferencia: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        fuenteparametroreferencia: {
-            type: DataTypes.STRING,
-            allowNull: true
+        tipoTendencia: {
+            type: DataTypes.SMALLINT,
+            allowNull: false
         },
 
         mapa: {
-            type: DataTypes.STRING,
-            allowNull: true
+            type: DataTypes.SMALLINT,
+            allowNull: false,
+            defaultValue: 0
         },
 
         grafica: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        ubicacioninformacion: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        ubicacionmapa: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        nombrearchivomapa: {
-            type: DataTypes.STRING,
-            allowNull: true
+            type: DataTypes.SMALLINT,
+            allowNull: false,
+            defaultValue: 0
         },
 
         observaciones: {
-            type: DataTypes.STRING,
+            type: DataTypes.TEXT,
+            allowNull: false,
+            defaultValue: 'No existen observaciones'
+        },
+
+        creador: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+
+        editor: {
+            type: DataTypes.INTEGER,
             allowNull: true
         },
 
-        activo: {
-            type: DataTypes.STRING(2),
-            allowNull: false,
-            defaultValue: 'SI',
-            validate: {
-                isIn: [['SI', 'NO']]
-            }
-        }
     },
     {
-        tableName: 'indicadores',
+
+        indexes: [
+            {
+                unique: false,
+                fields: ['creador', 'editor']
+            }
+        ],
+        tableName: 'Indicadores',
         timestamps: true,
-        createdAt: 'fechacreacion',
-        updatedAt: 'fechamodificacion'
+        createdAt: 'fechaCreacion',
+        updatedAt: 'fechaModificacion'
     }
 );
+
+Indicador.belongsTo(Modulo, { foreignKey: 'idModulo' });
+Modulo.hasMany(Indicador, { foreignKey: 'idModulo' });
+
+Indicador.hasOne(Formula, { foreignKey: 'idIndicador' });
+Formula.belongsTo(Indicador, { foreignKey: 'idIndicador' });
+
+Indicador.hasMany(Historico, { foreignKey: 'idIndicador', });
+Historico.belongsTo(Indicador, { foreignKey: 'idIndicador', });
+
+Indicador.hasMany(Fuente, { foreignKey: 'idIndicador', });
+Fuente.belongsTo(Indicador, { foreignKey: 'idIndicador', });
+
+Indicador.hasOne(Mapa, { foreignKey: 'idIndicador', });
+Mapa.belongsTo(Indicador, { foreignKey: 'idIndicador', });
 
 module.exports = { Indicador };
