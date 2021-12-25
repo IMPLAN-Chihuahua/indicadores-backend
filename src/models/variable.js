@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/db');
-const { Formula } = require('./formula');
 
 const Variable = sequelize.define("Variable", {
 
@@ -47,8 +46,9 @@ const Variable = sequelize.define("Variable", {
         allowNull: false,
         defaultValue: 0
     }
-});
-
-Variable.belongsTo(Formula);
+}, {
+    timestamps: false
+}
+);
 
 module.exports = { Variable }

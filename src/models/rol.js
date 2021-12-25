@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/db');
-const { Usuario } = require('./usuario');
 
 const Rol = sequelize.define('Rol',
     {
@@ -12,19 +11,14 @@ const Rol = sequelize.define('Rol',
         },
 
         rol: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(30),
             allowNull: false,
             unique: true
         },
 
-        observaciones: {
+        descripcion: {
             type: DataTypes.STRING,
             allowNull: true
-        },
-
-        tiporol: {
-            type: DataTypes.STRING(30),
-            allowNull: false,
         },
 
         activo: {
@@ -36,12 +30,11 @@ const Rol = sequelize.define('Rol',
             }
         }
     },
-    {
-        tableName: 'roles',
+    {   
+        tableName: 'Roles',        
         timestamps: true,
         createdAt: 'fechacreacion',
         updatedAt: 'fechamodificacion'
     });
 
-Rol.hasMany(Usuario, { foreignKey: 'idUsuario' });
 module.exports = { Rol };

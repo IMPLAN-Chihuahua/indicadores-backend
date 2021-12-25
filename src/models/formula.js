@@ -1,7 +1,6 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/db');
 const { Variable } = require('./variable');
-const { Indicador } = require('./indicador');
 
 const Formula = sequelize.define('Formula',
     {
@@ -25,10 +24,14 @@ const Formula = sequelize.define('Formula',
             type: DataTypes.STRING,
             defaultValue: 'No aplica'
         }
+    },
+    {
+        timestamps: false
     }
 );
 
-Formula.hasMany(Variable);
-Formula.belongsTo(Indicador)
+Formula.hasMany(Variable, { foreignKey: 'idFormula' });
+Variable.belongsTo(Formula, {foreignKey: 'idFormula'});
+
 
 module.exports = { Formula };

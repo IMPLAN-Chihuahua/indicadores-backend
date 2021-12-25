@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/db');
-const { Indicador } = require('./Indicador');
 
 const Historico = sequelize.define('Historico',
     {
@@ -27,8 +26,10 @@ const Historico = sequelize.define('Historico',
             allowNull: false,
             defaultValue: 'No aplica'
         }
+    },
+    {
+        timestamps: false
     }
 );
 
-Historico.belongsTo(Indicador);
 module.exports = { Historico };

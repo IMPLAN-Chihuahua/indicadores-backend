@@ -31,12 +31,12 @@ const UsuarioIndicador = sequelize.define('UsuarioIndicador',
         },
 
         fechaDesde: {
-            type: DataTypes.DATE,
+            type: DataTypes.DATEONLY,
             allowNull: false
         },
 
         fechaHasta: {
-            type: DataTypes.DATE,
+            type: DataTypes.DATEONLY,
             allowNull: false
         },
 
@@ -66,12 +66,14 @@ const UsuarioIndicador = sequelize.define('UsuarioIndicador',
                 fields: ['creador', 'editor']
             }
         ],
-
+        tableName: 'UsuariosIndicadores',
         timestamps: true,
         createdAt: 'fechaCreacion',
         updatedAt: 'fechaModificacion'
     }
 )
 
+Indicador.belongsToMany(Usuario, { through: UsuarioIndicador, foreignKey: 'idIndicador' });
+Usuario.belongsToMany(Indicador, { through: UsuarioIndicador, foreignKey: 'idUsuario' });
 
 module.exports = { UsuarioIndicador };

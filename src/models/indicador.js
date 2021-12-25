@@ -1,14 +1,10 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/db');
-const { Modulo } = require('./modulo');
 const { Formula } = require('./formula');
-const { Usuario } = require('./usuario');
-const { UsuarioIndicador } = require('./usuarioIndicador');
-/*
 const { Historico } = require('./historico');
 const { Fuente } = require('./fuente');
 const { Mapa } = require('./mapa');
-*/
+const { Modulo } = require('./modulo');
 
 
 const Indicador = sequelize.define('Indicador',
@@ -20,10 +16,16 @@ const Indicador = sequelize.define('Indicador',
         },
 
         url: {
+            
             type: DataTypes.STRING,
             validate: {
                 isUrl: true
             }
+        },
+
+        nombre: {
+            type: DataTypes.STRING,
+            allowNull: false
         },
 
         definicion: {
@@ -64,18 +66,18 @@ const Indicador = sequelize.define('Indicador',
         },
 
         tipoTendencia: {
-            type: DataTypes.TINYINT,
+            type: DataTypes.SMALLINT,
             allowNull: false
         },
 
         mapa: {
-            type: DataTypes.TINYINT,
+            type: DataTypes.SMALLINT,
             allowNull: false,
             defaultValue: 0
         },
 
         grafica: {
-            type: DataTypes.TINYINT,
+            type: DataTypes.SMALLINT,
             allowNull: false,
             defaultValue: 0
         },
@@ -93,7 +95,7 @@ const Indicador = sequelize.define('Indicador',
 
         editor: {
             type: DataTypes.INTEGER,
-            allowNull: false
+            allowNull: true
         },
 
     },
@@ -105,7 +107,7 @@ const Indicador = sequelize.define('Indicador',
                 fields: ['creador', 'editor']
             }
         ],
-
+        tableName: 'Indicadores',
         timestamps: true,
         createdAt: 'fechaCreacion',
         updatedAt: 'fechaModificacion'
@@ -113,11 +115,18 @@ const Indicador = sequelize.define('Indicador',
 );
 
 Indicador.belongsTo(Modulo, { foreignKey: 'idModulo' });
-Indicador.belongsToMany(Usuario, { through: UsuarioIndicador });
+Modulo.hasMany(Indicador, { foreignKey: 'idModulo' });
 
 Indicador.hasOne(Formula, { foreignKey: 'idIndicador' });
-Indicador.hasMany(Historico, { foreignKey: 'idHistorico', });
-Indicador.hasmany(Fuente, { foreignKey: 'idFuente', });
-Indicador.hasOne(Mapa, { foreignKey: 'idMapa', });
+Formula.belongsTo(Indicador, { foreignKey: 'idIndicador' });
+
+Indicador.hasMany(Historico, { foreignKey: 'idIndicador', });
+Historico.belongsTo(Indicador, { foreignKey: 'idIndicador', });
+
+Indicador.hasMany(Fuente, { foreignKey: 'idIndicador', });
+Fuente.belongsTo(Indicador, { foreignKey: 'idIndicador', });
+
+Indicador.hasOne(Mapa, { foreignKey: 'idIndicador', });
+Mapa.belongsTo(Indicador, { foreignKey: 'idIndicador', });
 
 module.exports = { Indicador };

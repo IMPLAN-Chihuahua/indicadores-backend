@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/db');
-const { Indicador } = require('./indicador');
 
 const Modulo = sequelize.define('Modulo',
     {
@@ -32,13 +31,11 @@ const Modulo = sequelize.define('Modulo',
         },
     },
     {
-        tableName: 'modulos',
         timestamps: true,
         createdAt: 'fechacreacion',
         updatedAt: false
-    });
-
-Modulo.hasMany(Indicador, { foreignKey: 'idModulo' });
+    }
+);
 
 module.exports = {
     Modulo

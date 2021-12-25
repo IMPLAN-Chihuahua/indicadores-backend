@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/db');
+const { Rol } = require('./rol');
 
 const Usuario = sequelize.define('Usuario',
     {
@@ -64,7 +65,8 @@ const Usuario = sequelize.define('Usuario',
             }
         },
     });
+    
+Rol.hasMany(Usuario, { foreignKey: 'idRol' });
+Usuario.belongsTo(Rol, {foreignKey: 'idRol'});
 
-Usuario.hasMany(Indicador, { through: UsuarioIndicador });
-Usuario.belongsToOne(Rol, { foreignKey: 'idRol' });
 module.exports = { Usuario };

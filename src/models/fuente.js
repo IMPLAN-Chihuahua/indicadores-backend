@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/db');
-const { Indicador } = require('./Indicador');
 
 const Fuente = sequelize.define('Fuente', {
     id: {
@@ -20,7 +19,9 @@ const Fuente = sequelize.define('Fuente', {
     //     allowNull: true,
     //     defaultValue: 'No aplica'
     // }
+},
+{
+    timestamps: false
 })
 
-Fuente.belongsTo(Indicador);
 module.exports = { Fuente };

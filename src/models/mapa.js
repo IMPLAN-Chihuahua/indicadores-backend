@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/db');
-const { Indicador } = require('./Indicador');
 
 const Mapa = sequelize.define('Mapa',
     {
@@ -14,8 +13,10 @@ const Mapa = sequelize.define('Mapa',
             type: DataTypes.STRING,
             allowNull: false
         },
+    },
+    {
+        timestamps: false
     }
 );
 
-Mapa.belongsTo(Indicador);
 module.exports = { Mapa };
