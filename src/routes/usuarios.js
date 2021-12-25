@@ -59,7 +59,7 @@ const {
  *           fechamodificacion:
  *             type: string
  *             example: 2021-12-04T22:22:33.836Z
- *             description: updation date of a user
+ *             description: update date of a user
  *             readOnly: true 
  */
 

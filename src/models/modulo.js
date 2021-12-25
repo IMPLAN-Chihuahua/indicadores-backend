@@ -10,7 +10,7 @@ const Modulo = sequelize.define('Modulo',
             allowNull: false
         },
 
-        modulo: {
+        temaIndicador: {
             type: DataTypes.STRING,
             allowNull: false,
             unique: true
@@ -31,12 +31,13 @@ const Modulo = sequelize.define('Modulo',
         },
     },
     {
-        tableName: 'modulos',
         timestamps: true,
         createdAt: 'fechacreacion',
         updatedAt: false
-    });
+    }
+);
 
 module.exports = {
     Modulo
 };
+

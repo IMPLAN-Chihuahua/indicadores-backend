@@ -23,9 +23,7 @@ describe('Usuario CRUD operations', () => {
 
     // hook to delete recors in usuarios table
     afterEach('clean usuarios table', async () => {
-        await Usuario.destroy({
-            truncate: true
-        });
+        await Usuario.truncate({ cascade: true });
     });
 
 
