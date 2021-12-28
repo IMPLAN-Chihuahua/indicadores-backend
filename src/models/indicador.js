@@ -5,7 +5,10 @@ const { Historico } = require('./historico');
 const { Fuente } = require('./fuente');
 const { Mapa } = require('./mapa');
 const { Modulo } = require('./modulo');
-
+const { Ods } = require('./ods');
+const { UnidadMedida } = require('./unidadMedida');
+const { UnidadVariable } = require('./unidadVariable');
+const { CoberturaGeografica } = require('./coberturaGeografica');
 
 const Indicador = sequelize.define('Indicador',
     {
@@ -16,7 +19,7 @@ const Indicador = sequelize.define('Indicador',
         },
 
         url: {
-            
+
             type: DataTypes.STRING,
             validate: {
                 isUrl: true
