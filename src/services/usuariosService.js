@@ -6,13 +6,15 @@ const addUsuario = async (usuario) => {
             correo,
             apellidopaterno,
             apellidomaterno,
-            fechacreacion } = await Usuario.create(usuario);
+            fechacreacion,
+            idRol } = await Usuario.create(usuario);
         return {
             nombres,
             correo,
             apellidopaterno,
             apellidomaterno,
-            fechacreacion
+            fechacreacion,
+            idRol
         };
     } catch (err) {
         console.log(err);

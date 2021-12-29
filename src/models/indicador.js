@@ -6,7 +6,6 @@ const { Fuente } = require('./fuente');
 const { Mapa } = require('./mapa');
 const { Modulo } = require('./modulo');
 
-
 const Indicador = sequelize.define('Indicador',
     {
         id: {
@@ -16,7 +15,7 @@ const Indicador = sequelize.define('Indicador',
         },
 
         url: {
-            
+
             type: DataTypes.STRING,
             validate: {
                 isUrl: true
@@ -32,19 +31,6 @@ const Indicador = sequelize.define('Indicador',
             type: DataTypes.TEXT,
             allowNull: false,
             defaultValue: 'No aplica'
-        },
-
-        codigo: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-
-        codigoObjeto: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-                is: /[\d]{3,}.[\d]{3,}.[\d]{3}/g
-            }
         },
 
         anioUltimoValorDisponible: {
@@ -65,9 +51,16 @@ const Indicador = sequelize.define('Indicador',
             defaultValue: 'No aplica'
         },
 
-        tipoTendencia: {
-            type: DataTypes.SMALLINT,
-            allowNull: false
+        tendenciaActual: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            defaultValue: 'No aplica'
+        },
+
+        tendenciaDeseada: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            defaultValue: 'No aplica'
         },
 
         mapa: {
