@@ -70,9 +70,10 @@ app.use('/api/v1/modulos', require('./src/routes/modulos'));
 
 const PORT = process.env.APP_PORT || 8081;
 
-const server = app.listen(PORT, () => {
-  console.log(`App starting on port ${PORT}`);
-  app.emit('appStarted');
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`App starting on port ${PORT}`);
+  });
+}
 
-module.exports = app;
+module.exports = { app, PORT };
