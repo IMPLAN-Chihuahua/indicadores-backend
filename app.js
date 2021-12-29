@@ -6,7 +6,6 @@ const cors = require('cors');
 const morgan = require('morgan');
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
-const UsuarioIndicador = require('./src/models/usuarioindicador');
 const options = {
   definition: {
     openapi: "3.0.0",
@@ -64,13 +63,16 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/v1/documentation', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Define routes
-
 app.use('/api/v1', require('./src/routes/auth'));
 app.use('/api/v1/usuarios', require('./src/routes/usuarios'));
 app.use('/api/v1/roles', require('./src/routes/roles'));
+app.use('/api/v1/modulos', require('./src/routes/modulos'));
 
 const PORT = process.env.APP_PORT || 8081;
 
-app.listen(PORT, () => console.log(`App starting on port ${PORT}`));
+const server = app.listen(PORT, () => {
+  console.log(`App starting on port ${PORT}`);
+  app.emit('appStarted');
+});
 
 module.exports = app;

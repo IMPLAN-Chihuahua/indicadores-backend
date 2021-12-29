@@ -16,6 +16,14 @@ const Modulo = sequelize.define('Modulo',
             unique: true
         },
 
+        codigo: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                is: /[\d]{3,}/g
+            }
+        },
+
         observaciones: {
             type: DataTypes.STRING,
             allowNull: true
@@ -23,8 +31,8 @@ const Modulo = sequelize.define('Modulo',
 
         activo: {
             type: DataTypes.STRING(2),
-            allowNull: false,
-            default: 'SI',
+            allowNull: true,
+            defaultValue: 'SI',
             validate: {
                 isIn: [['SI', 'NO']]
             }
