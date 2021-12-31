@@ -4,7 +4,8 @@ const expect = chai.expect;
 chai.use(chaiHttp);
 
 describe('api/v1/roles', function () {
-    const baseUrl = 'http://localhost:8080/api/v1';
+
+    const baseUrl = 'http://localhost:8080/api/v1'
 
     describe('GET', function () {
         it('should get a list of roles', function (done) {
@@ -17,5 +18,5 @@ describe('api/v1/roles', function () {
                 });
         });
     });
-    
+
 });

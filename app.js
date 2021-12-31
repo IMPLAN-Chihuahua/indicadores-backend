@@ -26,15 +26,16 @@ const options = {
 
 const swaggerSpec = swaggerJSDoc(options)
 
+
 // Verify connection to database
 db.sequelize.authenticate()
   .then(() => console.log('Database connected...'))
   .catch(err => console.log('Error: ' + err));
 
-db.sequelize.sync({ force: true, alter: false, match: /_test$/ })
+
+db.sequelize.sync({ force: false, alter: false, match: /_test$/ })
   .then(() => console.log('Tables created'))
   .catch(err => console.log('There was an error ' + err.message));
-
 
 
 const app = express();
