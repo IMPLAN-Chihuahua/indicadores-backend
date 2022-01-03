@@ -1,4 +1,4 @@
-const { check, validationResult, query } = require('express-validator');
+const { check, validationResult, query, param } = require('express-validator');
 
 const loginValidationRules = () => {
     return [
@@ -45,7 +45,7 @@ const registerValidationRules = () => {
             .optional()
             .isAlpha('es-ES', { ignore: '\s' })
             .withMessage('apellido materno invalido'),
-        
+
         check('activo')
             .optional()
             .toUpperCase()
@@ -64,6 +64,19 @@ const paginationValidationRules = () => {
             .optional()
             .isInt()
             .withMessage('per_page debe ser entero'),
+    ];
+};
+
+const paramValidationRules = () => {
+    return [
+        param('id')
+            .isInt().withMessage('id debe ser entero')
+            .custom((value) => {
+                if (value < 0) {
+                    throw new Error('id debe ser mayor a 0');
+                }
+                return true;
+            })
     ];
 }
 
@@ -94,4 +107,6 @@ module.exports = {
     registerValidationRules,
     paginationValidationRules,
     validate,
+    paramValidationRules
 }
+

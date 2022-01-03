@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "mocha src/test/**/*.js",
+    "test": "mocha --require src/config/fixtures.cjs src/test/**/*.js",
     "dev": "nodemon app.js "
   },
   "keywords": [],

@@ -26,15 +26,16 @@ const options = {
 
 const swaggerSpec = swaggerJSDoc(options)
 
+
 // Verify connection to database
 db.sequelize.authenticate()
   .then(() => console.log('Database connected...'))
   .catch(err => console.log('Error: ' + err));
 
-db.sequelize.sync({ force: true, alter: false, match: /_test$/ })
+
+db.sequelize.sync({ force: false, alter: false, match: /_test$/ })
   .then(() => console.log('Tables created'))
   .catch(err => console.log('There was an error ' + err.message));
-
 
 
 const app = express();
@@ -70,9 +71,10 @@ app.use('/api/v1/modulos', require('./src/routes/modulos'));
 
 const PORT = process.env.APP_PORT || 8081;
 
-const server = app.listen(PORT, () => {
-  console.log(`App starting on port ${PORT}`);
-  app.emit('appStarted');
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`App starting on port ${PORT}`);
+  });
+}
 
-module.exports = app;
+module.exports = { app, PORT };
