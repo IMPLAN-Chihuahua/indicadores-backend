@@ -15,7 +15,6 @@ const Indicador = sequelize.define('Indicador',
         },
 
         url: {
-
             type: DataTypes.STRING,
             validate: {
                 isUrl: true

@@ -5,6 +5,11 @@ chai.use(chaiHttp);
 
 describe('api/v1/modulos/:id/indicadores', function () {
 
+    const activeFilter = {
+        id: 1,
+        nombre: 'test'
+    };
+
     const baseUrl = 'http://localhost:8080/api/v1';
 
     describe('GET /indicadores', function () {
@@ -29,7 +34,7 @@ describe('api/v1/modulos/:id/indicadores', function () {
         //422
         it('should return status code 422', function () {
             chai.request(baseUrl)
-                .get('/modulos/notvalid/indicadores')
+                .get('/modulos/s/indicadores')
                 .end(function (err, res) {
                     expect(res).to.have.status(422);
                     expect(err).to.be.null
@@ -50,6 +55,19 @@ describe('api/v1/modulos/:id/indicadores', function () {
                 });
 
         });
-    });
 
+        it('should return a list of filtered items', function (done) {
+            chai.request(baseUrl)
+                .get('/modulos/1/indicadores')
+                .query({ ...activeFilter })
+                .end(function (err, res) {
+                    expect(err).to.be.null;
+                    expect(res).to.have.status(200);
+                    expect(res.body.total_pages).to.be.equal(1);
+                    expect(res.body.data).to.have.lengthOf(1);
+                    done();
+                });
+        });
+
+    });
 });

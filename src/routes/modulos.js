@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { getModulos } = require('../controllers/moduloController');
-const { getIndicadores } = require('../controllers/indicadorController');
+const { getIndicadores} = require('../controllers/indicadorController');
 const { paramValidationRules, validate } = require('../middlewares/validator');
 
 router.get('/', getModulos);
