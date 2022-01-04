@@ -10,60 +10,63 @@ module.exports = (sequelize, DataTypes) => {
          * The `models/index` file will call this method automatically.
          */
         static associate(models) {
-            // define association here
+            console.log(models);
+            this.belongsTo(models.Rol, { foreignKey: 'idRol' });
+            this.belongsToMany(models.Indicador, {through: models.UsuarioIndicador, foreignKey: 'idUsuario'});
         }
     };
-    Usuario.init({
-        id: {
-            type: DataTypes.INTEGER,
-            primaryKey: true,
-            autoIncrement: true,
-            allowNull: false
-        },
+    Usuario.init(
+        {
+            id: {
+                type: DataTypes.INTEGER,
+                primaryKey: true,
+                autoIncrement: true,
+                allowNull: false
+            },
 
-        correo: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            unique: true,
-            validate: {
-                isEmail: true
+            correo: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                unique: true,
+                validate: {
+                    isEmail: true
+                }
+            },
+
+            clave: {
+                type: DataTypes.STRING,
+                allowNull: false
+            },
+
+            nombres: {
+                type: DataTypes.STRING(160),
+                allowNull: false
+            },
+
+            apellidoPaterno: {
+                type: DataTypes.STRING(160),
+                allowNull: false,
+            },
+
+            apellidoMaterno: {
+                type: DataTypes.STRING(160),
+                allowNull: true
+            },
+
+            avatar: {
+                type: DataTypes.STRING,
+                allowNull: true
+            },
+
+            activo: {
+                type: DataTypes.STRING(2),
+                allowNull: true,
+                defaultValue: 'SI',
+                validate: {
+                    isIn: [['SI', 'NO']]
+                }
             }
         },
-
-        clave: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-
-        nombres: {
-            type: DataTypes.STRING(160),
-            allowNull: false
-        },
-
-        apellidoPaterno: {
-            type: DataTypes.STRING(160),
-            allowNull: false,
-        },
-
-        apellidoMaterno: {
-            type: DataTypes.STRING(160),
-            allowNull: true
-        },
-
-        avatar: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
-        activo: {
-            type: DataTypes.STRING(2),
-            allowNull: true,
-            defaultValue: 'SI',
-            validate: {
-                isIn: [['SI', 'NO']]
-            }
-        }
-    },
         {
             sequelize,
             modelName: 'Usuario',

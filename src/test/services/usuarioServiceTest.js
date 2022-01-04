@@ -9,10 +9,10 @@ describe('Usuario CRUD operations', function () {
 
     const usuario = {
         nombres: faker.name.firstName(),
-        apellidopaterno: faker.name.lastName(),
+        apellidoPaterno: faker.name.lastName(),
         correo: faker.internet.email(),
         clave: faker.internet.password(8, false),
-        idRol: null
+        idRol: 1
     };
     
     // hook to mock a user
@@ -62,7 +62,7 @@ describe('Usuario CRUD operations', function () {
         assert.isNotNull(savedUsuario);
     });
 
-    it('Should raise an error if apellidopaterno field is missing', async function () {
+    it('Should raise an error if apellidoPaterno field is missing', async function () {
         const badUsuario = {
             nombres: faker.name.firstName(),
             correo: faker.internet.email(),

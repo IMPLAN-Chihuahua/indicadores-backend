@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Usuarios', {
+    await queryInterface.createTable('Variables', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -9,64 +9,51 @@ module.exports = {
         type: Sequelize.INTEGER
       },
 
-      correo: {
-        allowNull: false,
-        unique: true,
-        type: Sequelize.STRING
-      },
-
-      clave: {
-        allowNull: false,
-        type: Sequelize.STRING,
-      },
-
-      nombres: {
+      nombre: {
         allowNull: false,
         type: Sequelize.STRING
       },
 
-      apellidoPaterno: {
+      codigoAtributo: {
         allowNull: false,
         type: Sequelize.STRING
       },
 
-      apellidoMaterno: {
+      nombreAtributo: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
+
+      formulaCalculo: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
+
+      datoVariable: {
         allowNull: true,
         type: Sequelize.STRING
       },
 
-      avatar: {
-        allowNull: true,
+      unidad: {
+        allowNull: false,
         type: Sequelize.STRING
       },
 
-      activo: {
+      anio: {
         allowNull: false,
-        defaultValue: 'SI',
-        type: Sequelize.STRING(2)
+        type: Sequelize.INTEGER
       },
-
-      idRol: {
-        allowNull: false,
+      
+      idFormula: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'Roles',
+          model: 'Formulas',
           key: 'id'
         }
-      },
-
-      createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE
-      },
-
-      updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE
       }
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Usuarios');
+    await queryInterface.dropTable('Variables');
   }
 };
