@@ -3,7 +3,7 @@ chai.use(require('chai-as-promised'));
 const assert = chai.assert;
 const faker = require('faker');
 const UsuarioService = require('../../services/usuariosService');
-const { Usuario } = require('../../models/usuario');
+const { Usuario } = require('../../models');
 
 describe('Usuario CRUD operations', function () {
 

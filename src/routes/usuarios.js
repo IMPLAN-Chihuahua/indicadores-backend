@@ -16,7 +16,7 @@ const {
  *           - correo
  *           - clave
  *           - nombres
- *           - apellidopaterno
+ *           - apellidoPaterno
  *         properties:
  *           id:
  *             type: integer
@@ -30,16 +30,17 @@ const {
  *           clave:
  *             type: string
  *             description: password
+ *             example: 2JE-WdnS
  *             writeOnly: true
  *           nombres:
  *             type: string
  *             example: John
  *             description: user's first name (s)
- *           apellidopaterno:
+ *           apellidoPaterno:
  *             type: string
  *             example: Doe
  *             description: user's last name
- *           apellidomaterno:
+ *           apellidoMaterno:
  *             type: string
  *             nullable: true
  *             example: Smith

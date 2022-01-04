@@ -1,4 +1,4 @@
-const { Modulo } = require('../models/modulo');
+const { Modulo } = require('../models');
 
 const getModulos = async (_, res) => {
     try {
