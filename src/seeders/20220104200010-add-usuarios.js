@@ -14,12 +14,14 @@ module.exports = {
     */
     const usuarios = [];
     for (let i = 0; i < 10; i++) {
+      const firstName = faker.name.firstName();
+      const lastName = faker.name.lastName();
       usuarios.push({
-        correo: faker.internet.email(),
+        correo: faker.internet.email(firstName, lastName),
         clave: faker.internet.password(),
-        nombres: faker.name.firstName(),
-        apellidoPaterno: faker.name.lastName(),
-        apellidoMaterno: faker.name.lastName(),
+        nombres: firstName + ' ' + lastName,
+        apellidoPaterno: firstName,
+        apellidoMaterno: lastName,
         avatar: faker.internet.avatar(),
         activo: i % 2 == 0 ? 'SI' : 'NO',
         createdAt: new Date(),
