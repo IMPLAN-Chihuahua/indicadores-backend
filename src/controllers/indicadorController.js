@@ -1,5 +1,5 @@
-const { Modulo } = require('../models/modulo');
-const { Indicador } = require('../models/indicador');
+const { Modulo } = require('../models');
+const { Indicador } = require('../models');
 
 const getIndicadores = async (req, res) => {
     const page = req.matchedData.page || 1;

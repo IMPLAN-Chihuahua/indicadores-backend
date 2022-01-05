@@ -1,18 +1,18 @@
-const { Usuario } = require('../models/usuario');
+const { Usuario } = require('../models');
 
 const addUsuario = async (usuario) => {
     try {
         const { nombres,
             correo,
-            apellidopaterno,
-            apellidomaterno,
+            apellidoPaterno,
+            apellidoMaterno,
             fechacreacion,
             idRol } = await Usuario.create(usuario);
         return {
             nombres,
             correo,
-            apellidopaterno,
-            apellidomaterno,
+            apellidoPaterno,
+            apellidoMaterno,
             fechacreacion,
             idRol
         };
@@ -57,7 +57,7 @@ const isCorreoAlreadyInUse = async (correo) => {
 const getUsuarios = async (limit = 25, offset = 0) => {
     try {
         const result = await Usuario.scope('withoutPassword')
-            .findAndCountAll({ limit: limit, offset: offset });
+            .findAndCountAll({ limit, offset });
         const usuarios = result.rows;
         const total = result.count;
         return { usuarios, total };
@@ -69,10 +69,10 @@ const getUsuarios = async (limit = 25, offset = 0) => {
 
 
 // returns true if usuario was updated
-const updateUsuario = async (id, { nombres, apellidopaterno, apellidomaterno, activo, avatar }) => {
+const updateUsuario = async (id, { nombres, apellidoPaterno, apellidoMaterno, activo, avatar }) => {
     try {
         const affectedRows = await Usuario.update(
-            { nombres, apellidopaterno, apellidomaterno, activo, avatar },
+            { nombres, apellidoPaterno, apellidoMaterno, activo, avatar },
             { where: { id: id } });
         return affectedRows > 0;
     } catch (err) {

@@ -35,13 +35,13 @@ const registerValidationRules = () => {
             .withMessage('nombre invalido'),
 
         // apellido paterno se encuentra en la peticion
-        check('apellidopaterno')
+        check('apellidoPaterno')
             .exists()
             .withMessage('por favor agrega apellido paterno')
             .isAlpha('es-ES', { ignore: '\s' })
             .withMessage('apellido paterno invalido'),
 
-        check('apellidomaterno')
+        check('apellidoMaterno')
             .optional()
             .isAlpha('es-ES', { ignore: '\s' })
             .withMessage('apellido materno invalido'),

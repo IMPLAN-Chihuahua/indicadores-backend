@@ -3,18 +3,17 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Formula extends Model {
+  class CoberturaGeografica extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.hasMany(models.Variable, { foreignKey: 'idFormula' });
-      this.belongsTo(models.Indicador, { foreignKey: 'idIndicador' });
+
     }
   };
-  Formula.init(
+  CoberturaGeografica.init(
     {
       id: {
         type: DataTypes.INTEGER,
@@ -22,26 +21,17 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement: true
       },
 
-      ecuacion: {
+      nombre: {
         type: DataTypes.STRING,
-        defaultValue: 'No aplica'
-      },
-
-      descripcion: {
-        type: DataTypes.STRING,
-        defaultValue: 'No aplica'
-      },
-
-      descripcionNarrativa: {
-        type: DataTypes.STRING,
+        allowNull: true,
         defaultValue: 'No aplica'
       }
     },
     {
       sequelize,
-      modelName: 'Formula',
+      modelName: 'CoberturaGeografica',
       timestamps: false
     }
   );
-  return Formula;
+  return CoberturaGeografica;
 };

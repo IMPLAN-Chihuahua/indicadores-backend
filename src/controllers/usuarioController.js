@@ -1,4 +1,4 @@
-const { Usuario } = require('../models/usuario');
+const { Usuario } = require('../models');
 const { addUsuario,
     getUsuarios,
     isCorreoAlreadyInUse,
@@ -34,8 +34,8 @@ const createUser = async (req, res) => {
         correo,
         clave,
         nombres,
-        apellidopaterno,
-        apellidomaterno,
+        apellidoPaterno,
+        apellidoMaterno,
     } = req.body;
     try {
         if (await isCorreoAlreadyInUse(correo)) {
@@ -47,8 +47,8 @@ const createUser = async (req, res) => {
             correo,
             clave: hashedClave,
             nombres,
-            apellidopaterno,
-            apellidomaterno
+            apellidoPaterno,
+            apellidoMaterno
         });
         return res.status(201).json(savedUser);
     } catch (err) {
