@@ -9,5 +9,4 @@ const getModulos = async (_, res) => {
         return res.status(500);
     }
 }
-
 module.exports = { getModulos }
