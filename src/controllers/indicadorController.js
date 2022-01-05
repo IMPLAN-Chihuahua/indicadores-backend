@@ -1,18 +1,21 @@
-const { Modulo } = require('../models');
-const { Indicador } = require('../models');
+const { Modulo, Indicador } = require('../models');
 
 const getIndicadores = async (req, res) => {
     const page = req.matchedData.page || 1;
     const per_page = req.matchedData.per_page || 15;
+    const idModulo = req.matchedData.idModulo;
     const filters = req.matchedData;
 
     delete filters.page;
     delete filters.per_page;
+    delete filters.idModulo;
 
     try {
-        const { idModulo } = req.matchedData;
-        const exists = await Modulo.findByPk(idModulo);
-        
+        const exists = await Modulo.findOne({
+            attributes: ['id'],
+            where: { id: idModulo }
+        });
+
         if (exists === null) {
             return res.status(404).send({
                 message: 'Modulo no encontrado'
@@ -24,7 +27,7 @@ const getIndicadores = async (req, res) => {
                 where: { idModulo, ...filters },
                 limit: per_page, offset: (per_page * (page - 1))
             });
-    
+
         const indicadores = result.rows;
         const total = result.count;
         const total_pages = Math.ceil(total / per_page);

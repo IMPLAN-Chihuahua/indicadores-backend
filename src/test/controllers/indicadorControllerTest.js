@@ -44,7 +44,6 @@ describe('api/v1/modulos/:idModulo/indicadores', function () {
         });
 
         it('should return 2 items per page', function (done) {
-            // TODO: Seed agregar 5 indicadores a un modulo
             chai.request(baseUrl)
                 .get('/modulos/1/indicadores')
                 .query({ page: 1, per_page: 2 })
@@ -77,7 +76,7 @@ describe('api/v1/modulos/:idModulo/indicadores', function () {
                 .end(function (err, res) {
                     expect(err).to.be.null;
                     expect(res).to.have.status(200);
-                    expect(res.body.data.nombre).to.be.equals('test');
+                    expect(res.body.data.nombre).to.be.not.empty;
                     done();
                 });
         });

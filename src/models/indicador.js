@@ -34,6 +34,11 @@ module.exports = (sequelize, DataTypes) => {
                 }
             },
 
+            codigo: {
+                allowNull: false,
+                type: DataTypes.STRING
+            },
+
             nombre: {
                 type: DataTypes.STRING,
                 allowNull: false
