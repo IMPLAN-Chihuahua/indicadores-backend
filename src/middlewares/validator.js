@@ -1,4 +1,4 @@
-const { check, validationResult, query, param } = require('express-validator');
+const { check, validationResult, query, param, matchedData } = require('express-validator');
 
 const loginValidationRules = () => {
     return [
@@ -56,21 +56,19 @@ const registerValidationRules = () => {
 
 const paginationValidationRules = () => {
     return [
-        query('page')
+        query(['page', 'per_page'])
             .optional()
-            .isInt()
-            .withMessage('page debe ser entero'),
-        query('per_page')
-            .optional()
-            .isInt()
-            .withMessage('per_page debe ser entero'),
+            .isInt().withMessage('campo debe ser entero')
+            .toInt()
     ];
 };
 
 const paramValidationRules = () => {
     return [
-        param('id')
-            .isInt().withMessage('id debe ser entero')
+        param(["idModulo", "idIndicador"])
+            .optional()
+            .isInt().withMessage('Campo debe ser entero')
+            .toInt()
             .custom((value) => {
                 if (value < 0) {
                     throw new Error('id debe ser mayor a 0');
@@ -78,8 +76,7 @@ const paramValidationRules = () => {
                 return true;
             })
     ];
-}
-
+};
 
 // funcion que hace la validacion (hubo errores en la peticion?)
 const validate = (req, res, next) => {
@@ -87,6 +84,7 @@ const validate = (req, res, next) => {
 
     // si no hubo errores pasar a la siguiente funcion
     if (errors.isEmpty()) {
+        req.matchedData = matchedData(req);
         return next();
     }
 
@@ -108,5 +106,5 @@ module.exports = {
     paginationValidationRules,
     validate,
     paramValidationRules
-}
+};
 

@@ -1,10 +1,24 @@
 const express = require('express');
-const router = express.Router();
+const moduloRouter = express.Router();
+const indicadorRouter = express.Router({ mergeParams: true });
 const { getModulos } = require('../controllers/moduloController');
-const { getIndicadores} = require('../controllers/indicadorController');
-const { paramValidationRules, validate } = require('../middlewares/validator');
+const { getIndicadores, getIndicador } = require('../controllers/indicadorController');
+const { paramValidationRules, paginationValidationRules, validate } = require('../middlewares/validator');
 
-router.get('/', getModulos);
-router.get('/:id/indicadores',  paramValidationRules(), validate, getIndicadores);
+moduloRouter.use('/:idModulo/indicadores', indicadorRouter);
 
-module.exports = router;
+moduloRouter.route('/')
+    .get(getModulos);
+
+indicadorRouter.route('/')
+    .get(paramValidationRules(),
+        paginationValidationRules(),
+        validate,
+        getIndicadores);
+
+indicadorRouter.route('/:idIndicador')
+    .get(paramValidationRules(),
+        validate,
+        getIndicador);
+
+module.exports = moduloRouter;
