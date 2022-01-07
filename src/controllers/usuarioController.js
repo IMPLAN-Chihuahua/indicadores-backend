@@ -12,7 +12,7 @@ const SALT_ROUNDS = 10;
 const getUsers = async (req, res) => {
     const page = parseInt(req.query.page || 1, 10);
     const perPage = parseInt(req.query.per_page || 25, 10);
-
+    
     try {
         const { usuarios, total } = await getUsuarios(perPage, (page - 1) * perPage);
         const totalPages = Math.ceil(total / perPage);

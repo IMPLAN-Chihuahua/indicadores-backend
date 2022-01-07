@@ -25,7 +25,7 @@ describe('api/v1/modulos/:idModulo/indicadores', function () {
 
         it('should return status code 404 if :idModulo does not exist', function (done) {
             chai.request(baseUrl)
-                .get('/modulos/0/indicadores')
+                .get('/modulos/13131313131/indicadores')
                 .end(function (err, res) {
                     expect(res).to.have.status(404);
                     expect(err).to.be.null;
@@ -73,18 +73,6 @@ describe('api/v1/modulos/:idModulo/indicadores', function () {
                 });
         });
 
-        it('should return a list with a positive tendency', function (done) {
-            chai.request(baseUrl)
-                .get('/modulos/1/indicadores')
-                .query({ tendenciaActual: 'ASCENDENTE' })
-                .end(function (err, res) {
-                    expect(err).to.be.null;
-                    expect(res).to.have.status(200);
-                    expect(res.body.data[0].tendenciaActual).to.be.equals('ASCENDENTE');
-                    done();
-                });
-        });
-
         it('should return a list with a negative tendency', function (done) {
             chai.request(baseUrl)
                 .get('/modulos/1/indicadores')
@@ -96,38 +84,95 @@ describe('api/v1/modulos/:idModulo/indicadores', function () {
                     done();
                 });
         });
+
+        it('should return an individual item', function (done) {
+            chai.request(baseUrl)
+                .get('/modulos/1/indicadores/1')
+                .end(function (err, res) {
+                    expect(err).to.be.null;
+                    expect(res).to.have.status(200);
+                    expect(res.body.data.nombre).to.be.not.empty;
+                    done();
+                });
+        });
+
+        it('should return status code 422 if unprocessable entity', function (done) {
+            chai.request(baseUrl)
+                .get('/modulos/1/indicadores/uno')
+                .end(function (err, res) {
+                    expect(res).to.have.status(422);
+                    expect(err).to.be.null;
+                    done();
+                });
+        });
+
+        it('should return not found if :idModulo does not exist', function (done) {
+            chai.request(baseUrl)
+                .get('/modulos/101010/indicadores/1')
+                .end(function (err, res) {
+                    expect(res).to.have.status(404);
+                    expect(err).to.be.null;
+                    done();
+                })
+        });
+
+        it('should return a list of indicadores filtered by idOds (1)', function (done) {
+            chai.request(baseUrl)
+                .get('/modulos/1/indicadores')
+                .query({ idOds: 1 })
+                .end(function (err, res) {
+                    expect(err).to.be.null;
+                    expect(res).to.have.status(200);
+                    expect(res.body.data[0].Od.id).to.be.equal(1);
+                    done();
+                });
+        });
+
+        it('Should return not found if indicadores is filtered by an unexisting idOds ', function (done) {
+            chai.request(baseUrl)
+                .get('/modulos/1/indicadores')
+                .query({ idOds: 13131313131 })
+                .end(function (err, res) {
+                    expect(res).to.have.status(200);
+                    expect(res.body.data).to.be.an('array').that.is.empty;
+                    expect(err).to.be.null;
+                    done();
+                });
+        });
+
+        it('Should return not found if indicadores is filtered by an unexisting idOds ', function (done) {
+            chai.request(baseUrl)
+                .get('/modulos/1/indicadores')
+                .query({ idOds: 'undefinedId' })
+                .end(function (err, res) {
+                    expect(res).to.have.status(422);
+                    expect(err).to.be.null;
+                    done();
+                });
+        });
+
+        it('Should return a list of ordered indicadores by name', function (done) {
+            chai.request(baseUrl)
+                .get('/modulos/1/indicadores')
+                .query({ sort_by: 'nombre', order: 'asc' })
+                .end(function (err, res) {
+                    expect(err).to.be.null;
+                    expect(res).to.have.status(200);
+                    const length = res.body.data[0].nombre.localeCompare(res.body.data[1].nombre);
+                    expect(length).to.be.equals(-1);
+                    done();
+                });
+        });
+        
+        it('Should return not found if sort by or order is undefined', function (done) {
+            chai.request(baseUrl)
+                .get('/modulos/1/indicadores')
+                .query({ sort_by: 'attribute', order: 'quantum' })
+                .end(function (err, res) {
+                    expect(res).to.have.status(422);
+                    expect(err).to.be.null;
+                    done();
+                });
+        })
     });
-
-
-    it('should return an individual item', function (done) {
-        chai.request(baseUrl)
-            .get('/modulos/1/indicadores/1')
-            .end(function (err, res) {
-                expect(err).to.be.null;
-                expect(res).to.have.status(200);
-                expect(res.body.data.nombre).to.be.not.empty;
-                done();
-            });
-    });
-
-    it('should return status code 422 if unprocessable entity', function (done) {
-        chai.request(baseUrl)
-            .get('/modulos/1/indicadores/uno')
-            .end(function (err, res) {
-                expect(res).to.have.status(422);
-                expect(err).to.be.null;
-                done();
-            });
-    });
-
-    it('should return not found if :idModulo does not exist', function (done) {
-        chai.request(baseUrl)
-            .get('/modulos/0/indicadores/1')
-            .end(function (err, res) {
-                expect(res).to.have.status(404);
-                expect(err).to.be.null;
-                done();
-            })
-    });
-
 });

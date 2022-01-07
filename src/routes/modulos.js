@@ -4,7 +4,7 @@ const indicadorRouter = express.Router({ mergeParams: true });
 const { getModulos } = require('../controllers/moduloController');
 const { getIndicadores, getIndicador } = require('../controllers/indicadorController');
 const { paramValidationRules, paginationValidationRules,
-    validate, filterIndicadoresValidationRules } = require('../middlewares/validator');
+    validate, filterIndicadoresValidationRules, sortValidationRules } = require('../middlewares/validator');
 const { moduloExists } = require('../middlewares/verifyIdModulo');
 
 /**
@@ -200,6 +200,7 @@ indicadorRouter.route('/')
         paramValidationRules(),
         paginationValidationRules(),
         filterIndicadoresValidationRules(),
+        sortValidationRules(),
         validate,
         moduloExists,
         getIndicadores
