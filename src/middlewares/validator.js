@@ -1,4 +1,4 @@
-const { check, validationResult, query } = require('express-validator');
+const { check, validationResult, query, param, matchedData } = require('express-validator');
 
 const loginValidationRules = () => {
     return [
@@ -35,17 +35,17 @@ const registerValidationRules = () => {
             .withMessage('nombre invalido'),
 
         // apellido paterno se encuentra en la peticion
-        check('apellidopaterno')
+        check('apellidoPaterno')
             .exists()
             .withMessage('por favor agrega apellido paterno')
             .isAlpha('es-ES', { ignore: '\s' })
             .withMessage('apellido paterno invalido'),
 
-        check('apellidomaterno')
+        check('apellidoMaterno')
             .optional()
             .isAlpha('es-ES', { ignore: '\s' })
             .withMessage('apellido materno invalido'),
-        
+
         check('activo')
             .optional()
             .toUpperCase()
@@ -56,17 +56,60 @@ const registerValidationRules = () => {
 
 const paginationValidationRules = () => {
     return [
-        query('page')
+        query(['page', 'per_page'])
             .optional()
-            .isInt()
-            .withMessage('page debe ser entero'),
-        query('per_page')
-            .optional()
-            .isInt()
-            .withMessage('per_page debe ser entero'),
+            .isInt().withMessage('campo debe ser entero')
+            .toInt()
     ];
-}
+};
 
+const filterIndicadoresValidationRules = () => {
+    return [
+        query(['anioUltimoValorDisponible', 'idOds', 'idCobertura', 'idFuente', 'idUnidad'])
+            .optional()
+            .isInt()
+            .toInt()
+            .custom((value) => {
+                if (value < 1) {
+                    throw new Error('valor debe ser mayor a 0');
+                }
+                return true;
+            }),
+        query('tendenciaActual')
+            .optional()
+            .toUpperCase()
+            .isIn(['ASCENDENTE', 'DESCENDENTE'])
+    ];
+};
+
+const paramValidationRules = () => {
+    return [
+        param(["idModulo", "idIndicador"])
+            .optional()
+            .isInt().withMessage('Campo debe ser entero')
+            .toInt()
+            .custom((value) => {
+                if (value < 1) {
+                    throw new Error('id debe ser mayor a 0');
+                }
+                return true;
+            })
+    ];
+};
+
+const sortValidationRules = () => {
+    return [
+        query('sort_by')
+            .optional()
+            .isIn(['nombre'])
+            .withMessage('orden debe ser ascendente o descendente'),
+        query('order')
+            .optional()
+            .toUpperCase()
+            .isIn(['ASC', 'DESC'])
+            
+    ];
+} 
 
 // funcion que hace la validacion (hubo errores en la peticion?)
 const validate = (req, res, next) => {
@@ -74,6 +117,7 @@ const validate = (req, res, next) => {
 
     // si no hubo errores pasar a la siguiente funcion
     if (errors.isEmpty()) {
+        req.matchedData = matchedData(req);
         return next();
     }
 
@@ -94,4 +138,8 @@ module.exports = {
     registerValidationRules,
     paginationValidationRules,
     validate,
-}
+    paramValidationRules,
+    filterIndicadoresValidationRules,
+    sortValidationRules,
+};
+

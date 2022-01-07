@@ -3,17 +3,17 @@ const {
     Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-    class Mapa extends Model {
+    class Ods extends Model {
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
          * The `models/index` file will call this method automatically.
          */
         static associate(models) {
-            this.belongsTo(models.Indicador, { foreignKey: 'idIndicador' });
+            this.belongsTo(models.Indicador, { foreignKey: 'idIndicador' })
         }
     };
-    Mapa.init(
+    Ods.init(
         {
             id: {
                 type: DataTypes.INTEGER,
@@ -21,16 +21,18 @@ module.exports = (sequelize, DataTypes) => {
                 autoIncrement: true
             },
 
-            ubicacion: {
+            nombre: {
                 type: DataTypes.STRING,
-                allowNull: false
-            },
+                allowNull: true,
+                defaultValue: 'No aplica'
+            }
+
         },
         {
             sequelize,
-            modelName: 'Mapa',
+            modelName: 'Ods',
             timestamps: false
         }
     );
-    return Mapa;
+    return Ods;
 };

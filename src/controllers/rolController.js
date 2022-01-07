@@ -1,4 +1,4 @@
-const { Rol } = require('../models/rol');
+const { Rol } = require('../models');
 
 const getRoles = async (_, res) => {
     try {
@@ -11,6 +11,6 @@ const getRoles = async (_, res) => {
         console.log(err)
         res.sendStatus(500);
     }
-}
+};
 
-module.exports = { getRoles }
+module.exports = { getRoles };

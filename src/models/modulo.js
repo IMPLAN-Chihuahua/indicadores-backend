@@ -1,43 +1,67 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/db');
-
-const Modulo = sequelize.define('Modulo',
+'use strict';
+const {
+  Model
+} = require('sequelize');
+module.exports = (sequelize, DataTypes) => {
+  class Modulo extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
+    static associate(models) {
+      this.hasMany(models.Indicador, { foreignKey: 'idModulo' });
+    }
+  };
+  Modulo.init(
     {
-        id: {
-            type: DataTypes.INTEGER,
-            primaryKey: true,
-            autoIncrement: true,
-            allowNull: false
-        },
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false
+      },
 
-        temaIndicador: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            unique: true
-        },
+      temaIndicador: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
+      },
 
-        observaciones: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
+      codigo: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          is: /[\d]{3,}/g
+        }
+      },
 
-        activo: {
-            type: DataTypes.STRING(2),
-            allowNull: false,
-            default: 'SI',
-            validate: {
-                isIn: [['SI', 'NO']]
-            }
-        },
+      observaciones: {
+        type: DataTypes.STRING,
+        allowNull: true
+      },
+
+      activo: {
+        type: DataTypes.STRING(2),
+        allowNull: true,
+        defaultValue: 'SI',
+        validate: {
+          isIn: [['SI', 'NO']]
+        }
+      },
     },
     {
-        timestamps: true,
-        createdAt: 'fechacreacion',
-        updatedAt: false
-    }
-);
-
-module.exports = {
-    Modulo
+      sequelize,
+      modelName: 'Modulo',
+      timestamps: true,
+      updatedAt: false,
+      scopes: {
+        withoutActivo: {
+          attributes: {
+            exclude: ['activo']
+          }
+        }
+      }
+    });
+  return Modulo;
 };
-
