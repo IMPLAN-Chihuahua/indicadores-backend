@@ -1,9 +1,10 @@
-const { Modulo, Indicador } = require('../models');
+const { Indicador, Ods } = require('../models');
 
 const getIndicadores = async (req, res) => {
     const page = req.matchedData.page || 1;
     const per_page = req.matchedData.per_page || 15;
-    const idModulo = req.matchedData.idModulo;
+    const { idModulo, idOds, idUnidad,
+        idCobertura, idFuente } = req.matchedData;
     const filters = req.matchedData;
 
     delete filters.page;
@@ -11,19 +12,14 @@ const getIndicadores = async (req, res) => {
     delete filters.idModulo;
 
     try {
-        const exists = await Modulo.findOne({
-            attributes: ['id'],
-            where: { id: idModulo }
-        });
-
-        if (exists === null) {
-            return res.status(404).send({
-                message: 'Modulo no encontrado'
-            });
-        };
-
         const result = await Indicador.findAndCountAll(
             {
+                include: [
+                    {
+                        model: Ods,
+                        where: { id: idOds }
+                    }
+                ],
                 where: { idModulo, ...filters },
                 limit: per_page, offset: (per_page * (page - 1))
             });

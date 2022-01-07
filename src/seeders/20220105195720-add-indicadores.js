@@ -10,16 +10,17 @@ module.exports = {
       indicadores.push({
         id: i,
         url: faker.internet.url(),
-        nombre: faker.random.words(3),
+        nombre: 'test ' + i,
         codigo: codigo,
         codigoObjeto: codigo,
-        anioUltimoValorDisponible: (2015 + i),
+        anioUltimoValorDisponible: i % 2 == 0 ? 2020 : 2019,
         coberturaGeografica: 'No aplica',
         createdBy: 1,
         updatedBy: 1,
         idModulo: 1,
         createdAt: date,
-        updatedAt: date
+        updatedAt: date,
+        tendenciaActual: i % 2 == 0 ? 'ASCENDENTE' : 'DESCENDENTE',
       });
     }
     await queryInterface.bulkInsert('Indicadores', indicadores, {});

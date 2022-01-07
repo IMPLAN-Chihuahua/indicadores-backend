@@ -6,7 +6,7 @@ chai.use(chaiHttp);
 describe('api/v1/modulos/:idModulo/indicadores', function () {
 
     const activeFilter = {
-        nombre: 'test'
+        anioUltimoValorDisponible: 2019
     };
 
     const baseUrl = 'http://localhost:8080/api/v1';
@@ -50,8 +50,8 @@ describe('api/v1/modulos/:idModulo/indicadores', function () {
                 .end(function (err, res) {
                     expect(err).to.be.null;
                     expect(res).to.have.status(200);
-                    expect(res.body.total_pages).to.be.equal(3);
-                    expect(res.body.data).to.have.lengthOf(2);
+                    expect(res.body.total_pages).to.be.at.least(1);
+                    expect(res.body.data).to.have.lengthOf.above(1);
                     done();
                 });
 
@@ -62,34 +62,72 @@ describe('api/v1/modulos/:idModulo/indicadores', function () {
                 .get('/modulos/1/indicadores')
                 .query({ ...activeFilter, page: 1, per_page: 2 })
                 .end(function (err, res) {
+                    expect(activeFilter).is.not.empty;
                     expect(err).to.be.null;
                     expect(res).to.have.status(200);
                     expect(res.body.total_pages).to.be.at.least(1);
                     expect(res.body.data).to.have.length.within(0, 2);
+                    expect(res.body.data[0].anioUltimoValorDisponible)
+                        .to.be.equals(activeFilter.anioUltimoValorDisponible);
                     done();
                 });
         });
 
-        it('should return an individual item', function (done) {
+        it('should return a list with a positive tendency', function (done) {
             chai.request(baseUrl)
-                .get('/modulos/1/indicadores/1')
+                .get('/modulos/1/indicadores')
+                .query({ tendenciaActual: 'ASCENDENTE' })
                 .end(function (err, res) {
                     expect(err).to.be.null;
                     expect(res).to.have.status(200);
-                    expect(res.body.data.nombre).to.be.not.empty;
+                    expect(res.body.data[0].tendenciaActual).to.be.equals('ASCENDENTE');
                     done();
                 });
         });
 
-        it('should return status code 422 if unprocessable entity', function (done) {
+        it('should return a list with a negative tendency', function (done) {
             chai.request(baseUrl)
-                .get('/modulos/1/indicadores/uno')
+                .get('/modulos/1/indicadores')
+                .query({ tendenciaActual: 'DESCENDENTE' })
                 .end(function (err, res) {
-                    expect(res).to.have.status(422);
                     expect(err).to.be.null;
+                    expect(res).to.have.status(200);
+                    expect(res.body.data[0].tendenciaActual).to.be.equals('DESCENDENTE');
                     done();
                 });
         });
-
     });
+
+
+    it('should return an individual item', function (done) {
+        chai.request(baseUrl)
+            .get('/modulos/1/indicadores/1')
+            .end(function (err, res) {
+                expect(err).to.be.null;
+                expect(res).to.have.status(200);
+                expect(res.body.data.nombre).to.be.not.empty;
+                done();
+            });
+    });
+
+    it('should return status code 422 if unprocessable entity', function (done) {
+        chai.request(baseUrl)
+            .get('/modulos/1/indicadores/uno')
+            .end(function (err, res) {
+                expect(res).to.have.status(422);
+                expect(err).to.be.null;
+                done();
+            });
+    });
+
+    it('should return not found if :idModulo does not exist', function (done) {
+        chai.request(baseUrl)
+            .get('/modulos/0/indicadores/1')
+            .end(function (err, res) {
+                expect(res).to.have.status(404);
+                expect(err).to.be.null;
+                done();
+            })
+    });
+
 });

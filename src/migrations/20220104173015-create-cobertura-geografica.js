@@ -8,10 +8,18 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      nomnre: {
+      nombre: {
         allowNull: true,
         defaultValue: 'No aplica',
         type: Sequelize.STRING
+      },
+      idIndicador: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Indicadores',
+          key: 'id'
+        }
       }
     });
   },

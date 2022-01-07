@@ -13,6 +13,9 @@ module.exports = (sequelize, DataTypes) => {
             this.belongsTo(models.Modulo, { foreignKey: 'idModulo' });
             this.belongsToMany(models.Usuario, { through: models.UsuarioIndicador, foreignKey: 'idIndicador' });
 
+            this.hasOne(models.UnidadMedida, { foreignKey: 'idIndicador' })
+            this.hasOne(models.CoberturaGeografica, { foreignKey: 'idIndicador' });
+            this.hasOne(models.Ods, { foreignKey: 'idIndicador' });
             this.hasOne(models.Formula, { foreignKey: 'idIndicador' });
             this.hasMany(models.Historico, { foreignKey: 'idIndicador' });
             this.hasMany(models.Fuente, { foreignKey: 'idIndicador' });
@@ -56,18 +59,6 @@ module.exports = (sequelize, DataTypes) => {
                 defaultValue: 0
             },
 
-            unidadMedida: {
-                type: DataTypes.STRING,
-                allowNull: false,
-                defaultValue: 'No aplica'
-            },
-
-            coberturaGeografica: {
-                type: DataTypes.STRING,
-                allowNull: false,
-                defaultValue: 'No aplica'
-            },
-
             tendenciaActual: {
                 type: DataTypes.STRING,
                 allowNull: false,
@@ -107,6 +98,7 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.INTEGER,
                 allowNull: true
             },
+
 
         },
         {

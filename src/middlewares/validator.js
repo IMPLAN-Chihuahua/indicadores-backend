@@ -63,6 +63,19 @@ const paginationValidationRules = () => {
     ];
 };
 
+const filterIndicadoresValidationRules = () => {
+    return [
+        query(['anioUltimoValorDisponible', 'idOds', 'idCobertura', 'idFuente', 'idUnidad'])
+            .optional()
+            .isInt()
+            .toInt(),
+        query('tendenciaActual')
+            .optional()
+            .toUpperCase()
+            .isIn(['ASCENDENTE', 'DESCENDENTE'])
+    ];
+};
+
 const paramValidationRules = () => {
     return [
         param(["idModulo", "idIndicador"])
@@ -105,6 +118,7 @@ module.exports = {
     registerValidationRules,
     paginationValidationRules,
     validate,
-    paramValidationRules
+    paramValidationRules,
+    filterIndicadoresValidationRules
 };
 
