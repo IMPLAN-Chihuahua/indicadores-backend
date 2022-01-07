@@ -15,6 +15,11 @@ module.exports = {
         type: Sequelize.STRING
       },
 
+      codigo: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
+
       observaciones: {
         allowNull: true,
         type: Sequelize.STRING

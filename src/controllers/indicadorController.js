@@ -1,30 +1,20 @@
-const { Modulo } = require('../models');
-const { Indicador } = require('../models');
+const { Indicador, Ods,
+    CoberturaGeografica, Fuente, UnidadMedida } = require('../models');
+const { Op } = require('sequelize');
+const { getPagination } = require('../utils/pagination');
 
 const getIndicadores = async (req, res) => {
-    const page = req.matchedData.page || 1;
-    const per_page = req.matchedData.per_page || 15;
-    const filters = req.matchedData;
-
-    delete filters.page;
-    delete filters.per_page;
-
+    const { page, per_page } = getPagination(req.matchedData);
+    console.log(req.matchedData.sort_by, req.matchedData.order);
     try {
-        const { idModulo } = req.matchedData;
-        const exists = await Modulo.findByPk(idModulo);
-        
-        if (exists === null) {
-            return res.status(404).send({
-                message: 'Modulo no encontrado'
-            });
-        };
-
         const result = await Indicador.findAndCountAll(
             {
-                where: { idModulo, ...filters },
-                limit: per_page, offset: (per_page * (page - 1))
+                where: { idModulo: req.matchedData.idModulo, ...getIndicadorFilters(req.matchedData) },
+                limit: per_page, offset: (per_page * (page - 1)),
+                order: [getIndicadoresSorting(req.matchedData)],
+                include: getIndicadorIncludes(req.matchedData)
             });
-    
+
         const indicadores = result.rows;
         const total = result.count;
         const total_pages = Math.ceil(total / per_page);
@@ -36,6 +26,85 @@ const getIndicadores = async (req, res) => {
     }
 };
 
+const getIndicadorIncludes = ({ idOds, idCobertura, idFuente, idUnidad }) => {
+    const indicadorFilter = [];
+
+    if (idOds) {
+        indicadorFilter.push(
+            {
+                model: Ods,
+                where: {
+                    id: {
+                        [Op.eq]: idOds
+                    }
+                },
+                requird: true
+            }
+        )
+    }
+
+    else if (idCobertura) {
+        indicadorFilter.push(
+            {
+                model: CoberturaGeografica,
+                where: {
+                    id: {
+                        [op.eq]: idCobertura
+                    }
+                }
+            }
+        )
+    }
+
+    else if (idFuente) {
+        indicadorFilter.push(
+            {
+                model: Fuente,
+                where: {
+                    id: {
+                        [Op.eq]: idFuente
+                    }
+                }
+            }
+        )
+    }
+
+    else if (idUnidad) {
+        indicadorFilter.push(
+            {
+                model: UnidadMedida,
+                where: {
+                    id: {
+                        [Op.eq]: idUnidad
+                    }
+                }
+            }
+        )
+    }
+
+
+
+    return indicadorFilter;
+};
+
+
+const getIndicadorFilters = (matchedData) => {
+    const { anioUltimoValorDisponible, tendenciaActual } = matchedData;
+    const filters = {};
+    if (anioUltimoValorDisponible) {
+        filters.anioUltimoValorDisponible = anioUltimoValorDisponible;
+    }
+    if (tendenciaActual) {
+        filters.tendenciaActual = tendenciaActual;
+    }
+    return filters
+};
+
+const getIndicadoresSorting = ({ sort_by, order }) => {
+    const arrangement = [];
+    arrangement.push([sort_by || 'id', order || 'ASC'])
+    return arrangement;
+};
 
 const getIndicador = async (req, res) => {
     try {
@@ -50,5 +119,5 @@ const getIndicador = async (req, res) => {
     }
 };
 
-
 module.exports = { getIndicadores, getIndicador };
+

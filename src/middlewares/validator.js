@@ -63,6 +63,25 @@ const paginationValidationRules = () => {
     ];
 };
 
+const filterIndicadoresValidationRules = () => {
+    return [
+        query(['anioUltimoValorDisponible', 'idOds', 'idCobertura', 'idFuente', 'idUnidad'])
+            .optional()
+            .isInt()
+            .toInt()
+            .custom((value) => {
+                if (value < 1) {
+                    throw new Error('valor debe ser mayor a 0');
+                }
+                return true;
+            }),
+        query('tendenciaActual')
+            .optional()
+            .toUpperCase()
+            .isIn(['ASCENDENTE', 'DESCENDENTE'])
+    ];
+};
+
 const paramValidationRules = () => {
     return [
         param(["idModulo", "idIndicador"])
@@ -70,13 +89,27 @@ const paramValidationRules = () => {
             .isInt().withMessage('Campo debe ser entero')
             .toInt()
             .custom((value) => {
-                if (value < 0) {
+                if (value < 1) {
                     throw new Error('id debe ser mayor a 0');
                 }
                 return true;
             })
     ];
 };
+
+const sortValidationRules = () => {
+    return [
+        query('sort_by')
+            .optional()
+            .isIn(['nombre'])
+            .withMessage('orden debe ser ascendente o descendente'),
+        query('order')
+            .optional()
+            .toUpperCase()
+            .isIn(['ASC', 'DESC'])
+            
+    ];
+} 
 
 // funcion que hace la validacion (hubo errores en la peticion?)
 const validate = (req, res, next) => {
@@ -105,6 +138,8 @@ module.exports = {
     registerValidationRules,
     paginationValidationRules,
     validate,
-    paramValidationRules
+    paramValidationRules,
+    filterIndicadoresValidationRules,
+    sortValidationRules,
 };
 

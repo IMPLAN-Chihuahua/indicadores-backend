@@ -54,7 +54,14 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: 'Modulo',
       timestamps: true,
-      updatedAt: false
+      updatedAt: false,
+      scopes: {
+        withoutActivo: {
+          attributes: {
+            exclude: ['activo']
+          }
+        }
+      }
     });
   return Modulo;
 };
