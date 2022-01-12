@@ -5,6 +5,7 @@ module.exports = {
     password: process.env.POSTGRE_DEV_PASS,
     database: process.env.POSTGRE_DEV_DB_NAME,
     host: process.env.POSTGRE_DEV_HOST,
+    port: process.env.POSTGRE_TEST_PORT,
     dialect: 'postgres',
     logging: console.log
   },
@@ -13,6 +14,7 @@ module.exports = {
     password: process.env.POSTGRE_TEST_PASS,
     database: process.env.POSTGRE_TEST_DB_NAME,
     host: process.env.POSTGRE_TEST_HOST,
+    port: process.env.POSTGRE_TEST_PORT,
     dialect: 'postgres',
     logging: console.log
   },
