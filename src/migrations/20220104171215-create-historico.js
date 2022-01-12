@@ -34,6 +34,11 @@ module.exports = {
           model: 'Indicadores',
           key: 'id'
         }
+      },
+
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE
       }
     });
   },
