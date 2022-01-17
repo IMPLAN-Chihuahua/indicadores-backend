@@ -38,6 +38,11 @@ module.exports = {
             type: Sequelize.STRING
           },
 
+          ultimoValorDisponible: {
+            allowNull: false,
+            type: Sequelize.STRING
+          },
+          
           anioUltimoValorDisponible: {
             allowNull: false,
             type: Sequelize.INTEGER
@@ -98,6 +103,14 @@ module.exports = {
             type: Sequelize.INTEGER,
             references: {
               model: 'Modulos',
+              key: 'id'
+            }
+          },
+          
+          idOds: {
+            type: Sequelize.INTEGER,
+            references: {
+              model: 'Ods',
               key: 'id'
             }
           },

@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
 
             this.hasOne(models.UnidadMedida, { foreignKey: 'idIndicador' })
             this.hasOne(models.CoberturaGeografica, { foreignKey: 'idIndicador' });
-            this.hasOne(models.Ods, { foreignKey: 'idIndicador' });
+            this.hasOne(models.Ods, { foreignKey: 'idOds' });
             this.hasOne(models.Formula, { foreignKey: 'idIndicador' });
             this.hasMany(models.Historico, { foreignKey: 'idIndicador' });
             this.hasMany(models.Fuente, { foreignKey: 'idIndicador' });
@@ -51,6 +51,12 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.TEXT,
                 allowNull: false,
                 defaultValue: 'No aplica'
+            },
+
+            ultimoValorDisponible: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                defaultValue: 'NA'
             },
 
             anioUltimoValorDisponible: {
