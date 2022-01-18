@@ -27,7 +27,6 @@ jobs:
             echo POSTGRE_TEST_DB_NAME=${{secrets.POSTGRE_TEST_DB_NAME}} >> .env
             echo POSTGRE_TEST_HOST=${{secrets.POSTGRE_TEST_HOST}} >> .env
             echo POSTGRE_TEST_PORT=${{secrets.POSTGRE_TEST_PORT}} >> .env
-            cat .env
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
