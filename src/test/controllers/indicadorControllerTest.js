@@ -87,7 +87,7 @@ describe('api/v1/modulos/:idModulo/indicadores', function () {
 
         it('should return an individual item', function (done) {
             chai.request(baseUrl)
-                .get('/modulos/1/indicadores/13')
+                .get('/modulos/1/indicadores/2')
                 .end(function (err, res) {
                     expect(err).to.be.null;
                     expect(res).to.have.status(200);
