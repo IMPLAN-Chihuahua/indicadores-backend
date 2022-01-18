@@ -123,7 +123,7 @@ describe('api/v1/modulos/:idModulo/indicadores', function () {
                 .end(function (err, res) {
                     expect(err).to.be.null;
                     expect(res).to.have.status(200);
-                    expect(res.body.data[0].Od.id).to.be.equal(1);
+                    expect(res.body.data[0].Ods.id).to.be.equal(1);
                     done();
                 });
         });

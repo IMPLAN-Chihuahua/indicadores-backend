@@ -7,15 +7,12 @@ module.exports = {
       ods.push(
         {
           id: (i + 1),
-          nombre: faker.random.word(),
-          idIndicador: 1
-        }
-      );
+          nombre: faker.random.word()        
+        });
   }
   await queryInterface.bulkInsert('Ods', ods, {});
-
+  },
   down: async (queryInterface, Sequelize) => {
     await queryInterface.bulkDelete('Ods', null, {});
   }
 }
-};
