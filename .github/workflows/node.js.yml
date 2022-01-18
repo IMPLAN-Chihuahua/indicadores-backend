@@ -17,8 +17,17 @@ jobs:
       matrix:
         node-version: [12.x, 14.x, 16.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
+  
     steps:
+    - name: Create dot env file
+      run: |
+            touch .env
+            echo POSTGRE_TEST_USER={{secrets.POSTGRE_TEST_USER}} >> .env
+            echo POSTGRE_TEST_PASS={{secrets.POSTGRE_TEST_PASS}} >> .env
+            echo POSTGRE_TEST_DB_NAME={{secrets.POSTGRE_TEST_DB_NAME}} >> .env
+            echo POSTGRE_TEST_HOST={{secrets.POSTGRE_TEST_HOST}} >> .env
+            echo POSTGRE_TEST_PORT={{secrets.POSTGRE_TEST_PORT}} >> .env
+            EOF
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
