@@ -55,6 +55,7 @@ app.use('/api/v1', require('./src/routes/auth'));
 app.use('/api/v1/usuarios', require('./src/routes/usuarios'));
 app.use('/api/v1/roles', require('./src/routes/roles'));
 app.use('/api/v1/modulos', require('./src/routes/modulos'));
+app.use('/api/v1/catalogos', require('./src/routes/catalogos'));
 
 const PORT = process.env.APP_PORT || 8080;
 

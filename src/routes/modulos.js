@@ -108,7 +108,7 @@ moduloRouter.use('/:idModulo/indicadores', indicadorRouter);
  *           description: A very friendly list of modules
  *           content:
  *             application/json:
- *               chema:
+ *               schema:
  *                 type: object
  *                 properties:
  *                   data:

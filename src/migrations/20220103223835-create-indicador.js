@@ -38,6 +38,11 @@ module.exports = {
             type: Sequelize.STRING
           },
 
+          ultimoValorDisponible: {
+            allowNull: false,
+            type: Sequelize.STRING
+          },
+          
           anioUltimoValorDisponible: {
             allowNull: false,
             type: Sequelize.INTEGER
@@ -101,6 +106,19 @@ module.exports = {
               key: 'id'
             }
           },
+          
+          idOds: {
+            type: Sequelize.INTEGER,
+            references: {
+              model: 'Ods',
+              key: 'id'
+            }
+          },
+
+          idOds: {
+            type: Sequelize.INTEGER,
+            allowNull: false,
+          },
 
           createdAt: {
             allowNull: false,
@@ -114,7 +132,7 @@ module.exports = {
         }
       );
 
-      await queryInterface.addIndex('Indicadores', ['createdBy', 'updatedBy'], { unique: false });
+      await queryInterface.addIndex('Indicadores', ['createdBy', 'updatedBy', 'idOds'], { unique: false });
       await transaction.commit();
     } catch (err) {
       console.log(err);
