@@ -12,10 +12,10 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             this.belongsTo(models.Modulo, { foreignKey: 'idModulo' });
             this.belongsToMany(models.Usuario, { through: models.UsuarioIndicador, foreignKey: 'idIndicador' });
+            this.belongsTo(models.Ods, { foreignKey: 'idOds' });
 
             this.hasOne(models.UnidadMedida, { foreignKey: 'idIndicador' })
             this.hasOne(models.CoberturaGeografica, { foreignKey: 'idIndicador' });
-            this.hasOne(models.Ods, { foreignKey: 'idOds' });
             this.hasOne(models.Formula, { foreignKey: 'idIndicador' });
             this.hasMany(models.Historico, { foreignKey: 'idIndicador' });
             this.hasMany(models.Fuente, { foreignKey: 'idIndicador' });
