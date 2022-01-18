@@ -67,7 +67,7 @@ const getIndicadorIncludes = ({
     indicadorFilter.push({
         model: Ods,
         required: true,
-        attributes: ['nombre'],
+        //attributes: ['nombre'],
     })
 
     if (idCobertura) {
