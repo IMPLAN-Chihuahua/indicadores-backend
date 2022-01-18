@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             this.belongsTo(models.Modulo, { foreignKey: 'idModulo' });
             this.belongsToMany(models.Usuario, { through: models.UsuarioIndicador, foreignKey: 'idIndicador' });
-            this.belongsTo(models.Ods, { foreignKey: 'idOds' });
+           // this.belongsTo(models.Ods, { foreignKey: 'idOds' });
 
             this.hasOne(models.UnidadMedida, { foreignKey: 'idIndicador' })
             this.hasOne(models.CoberturaGeografica, { foreignKey: 'idIndicador' });
@@ -105,14 +105,19 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: true
             },
 
+            // Id catálogos
 
+            idOds: {
+                type: DataTypes.INTEGER,
+                allowNull: false
+            }
         },
         {
             sequelize,
             indexes: [
                 {
                     unique: false,
-                    fields: ['createdBy', 'updatedBy']
+                    fields: ['createdBy', 'updatedBy', 'idOds']
                 }
             ],
             tableName: 'Indicadores',

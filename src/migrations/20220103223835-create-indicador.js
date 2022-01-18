@@ -115,6 +115,11 @@ module.exports = {
             }
           },
 
+          idOds: {
+            type: Sequelize.INTEGER,
+            allowNull: false,
+          },
+
           createdAt: {
             allowNull: false,
             type: Sequelize.DATE
@@ -127,7 +132,7 @@ module.exports = {
         }
       );
 
-      await queryInterface.addIndex('Indicadores', ['createdBy', 'updatedBy'], { unique: false });
+      await queryInterface.addIndex('Indicadores', ['createdBy', 'updatedBy', 'idOds'], { unique: false });
       await transaction.commit();
     } catch (err) {
       console.log(err);

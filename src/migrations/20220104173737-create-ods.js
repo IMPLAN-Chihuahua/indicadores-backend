@@ -12,7 +12,11 @@ module.exports = {
         allowNull: true,
         defaultValue: 'No aplica',
         type: Sequelize.STRING
+<<<<<<< HEAD
       }
+=======
+      },
+>>>>>>> feat-website-indicadores
     });
   },
   down: async (queryInterface, Sequelize) => {
