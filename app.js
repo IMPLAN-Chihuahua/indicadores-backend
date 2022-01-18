@@ -56,7 +56,7 @@ app.use('/api/v1/usuarios', require('./src/routes/usuarios'));
 app.use('/api/v1/roles', require('./src/routes/roles'));
 app.use('/api/v1/modulos', require('./src/routes/modulos'));
 
-const PORT = process.env.APP_PORT || 8081;
+const PORT = process.env.APP_PORT || 8080;
 
 if (require.main === module) {
   app.listen(PORT, () => {
