@@ -18,6 +18,7 @@ module.exports = {
         createdBy: 1,
         updatedBy: 1,
         idModulo: 1,
+        idOds: 1,
         createdAt: date,
         updatedAt: date,
         tendenciaActual: i % 2 == 0 ? 'ASCENDENTE' : 'DESCENDENTE',

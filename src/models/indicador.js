@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
 
             this.hasOne(models.UnidadMedida, { foreignKey: 'idIndicador' })
             this.hasOne(models.CoberturaGeografica, { foreignKey: 'idIndicador' });
-            this.hasOne(models.Ods, { foreignKey: 'idIndicador' });
+           // this.hasOne(models.Ods, { foreignKey: 'idIndicador' });
             this.hasOne(models.Formula, { foreignKey: 'idIndicador' });
             this.hasMany(models.Historico, { foreignKey: 'idIndicador' });
             this.hasMany(models.Fuente, { foreignKey: 'idIndicador' });
@@ -99,6 +99,12 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: true
             },
 
+            // Id de los catálogos
+            idOds: {
+                type: DataTypes.INTEGER,
+                allowNull: false,   
+                defaultValue: 0
+            }
 
         },
         {
@@ -106,7 +112,7 @@ module.exports = (sequelize, DataTypes) => {
             indexes: [
                 {
                     unique: false,
-                    fields: ['createdBy', 'updatedBy']
+                    fields: ['createdBy', 'updatedBy', 'idOds']
                 }
             ],
             tableName: 'Indicadores',
