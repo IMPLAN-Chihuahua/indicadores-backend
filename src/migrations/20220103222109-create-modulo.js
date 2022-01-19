@@ -39,6 +39,17 @@ module.exports = {
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
+      },
+
+      urlImagen: {
+        allowNull: true,
+        type: Sequelize.STRING
+      },
+
+      color: {
+        allowNull: true,
+        type: Sequelize.STRING,
+        defaultValue: '#B376B8',
       }
     });
   },

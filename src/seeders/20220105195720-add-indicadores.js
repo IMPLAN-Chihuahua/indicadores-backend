@@ -8,7 +8,8 @@ module.exports = {
       const codigo = '00' + (i + 1);
       const date = new Date();
       indicadores.push({
-        url: faker.internet.url(),
+        urlMapa: faker.internet.url(),
+        urlImagen: faker.image.imageUrl(),
         nombre: 'test ' + i,
         codigo: codigo,
         codigoObjeto: codigo,

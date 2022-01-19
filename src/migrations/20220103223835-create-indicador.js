@@ -12,11 +12,16 @@ module.exports = {
             type: Sequelize.INTEGER
           },
 
-          url: {
+          urlMapa: {
             allowNull: true,
             type: Sequelize.STRING
           },
 
+          urlImagen: {
+            allowNull: true,
+            type: Sequelize.STRING
+          },
+          
           nombre: {
             allowNull: false,
             type: Sequelize.STRING

@@ -13,7 +13,9 @@ module.exports = {
           activo: i % 2 == 0 ? 'SI' : 'NO',
           codigo: ('00' + (i + 1)),
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
+          urlImagen: faker.image.imageUrl(),
+          color: faker.commerce.color()
         }
       );
     }
