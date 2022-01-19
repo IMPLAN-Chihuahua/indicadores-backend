@@ -40,6 +40,7 @@ const getOds = async (_, res) => {
 
     const results = await Promise.all(Promises.map(p => p.catch(e => e)));
     const validResults = results.filter(result => result !== null);
+    
     const setted = await Promise.allSettled(Promises);
     const validSetted = setted.filter(result => result !== null);
     //console.log(validSetted);
