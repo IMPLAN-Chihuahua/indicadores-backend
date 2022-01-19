@@ -49,6 +49,17 @@ module.exports = (sequelize, DataTypes) => {
           isIn: [['SI', 'NO']]
         }
       },
+
+      urlImagen: {
+        type: DataTypes.STRING,
+        allowNull: true
+      },
+
+      color: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: '#ffffff'
+      }
     },
     {
       sequelize,
