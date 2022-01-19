@@ -41,7 +41,7 @@ module.exports = {
         type: Sequelize.DATE
       },
 
-      imageUrl: {
+      urlImagen: {
         allowNull: true,
         type: Sequelize.STRING
       },

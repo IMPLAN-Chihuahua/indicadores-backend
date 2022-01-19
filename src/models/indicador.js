@@ -30,11 +30,15 @@ module.exports = (sequelize, DataTypes) => {
                 autoIncrement: true
             },
 
-            url: {
+            urlMapa: {
                 type: DataTypes.STRING,
                 validate: {
                     isUrl: true
                 }
+            },
+
+            urlImagen: {
+                type: DataTypes.STRING,
             },
 
             codigo: {
