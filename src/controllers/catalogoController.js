@@ -1,11 +1,7 @@
-const { Ods, CoberturaGeografica, Fuente } = require('../models');
-
-
+const { Ods, CoberturaGeografica, UnidadMedida } = require('../models');
 
     
 const getOds = async (_, res) => {
-    //const getOds = Ods.findAll();
-
     const Promises = [
         new Promise ( (resolve, reject) => {
             const getCobertura = CoberturaGeografica.findAll();
@@ -23,6 +19,15 @@ const getOds = async (_, res) => {
             }
             resolve(getOds);
         }),
+        new Promise ( (resolve, reject) => {
+            const getUnidades = UnidadMedida.findAll();
+            console.log(getUnidades);
+            if(getUnidades === null){
+                reject('Error al obtener las coberturas');
+                return;
+            }
+            resolve(getUnidades);
+        }),
     ]
 
 
@@ -38,22 +43,23 @@ const getOds = async (_, res) => {
     //         : reject(new Error('Error al obtener los Ods')));
     // });
 
-    const results = await Promise.all(Promises.map(p => p.catch(e => e)));
-    const validResults = results.filter(result => result !== null);
+    // const results = await Promise.all(Promises.map(p => p.catch(e => e)));
+    // const validResults = results.filter(result => result !== null);
     
-    const setted = await Promise.allSettled(Promises);
-    const validSetted = setted.filter(result => result !== null);
+    // const setted = await Promise.allSettled(Promises);
+    // const validSetted = setted.filter(result => result !== null);
     //console.log(validSetted);
     //console.dir(validResults[0]);
 
     return (
         Promise 
-        .all([Promises[0], Promises[1]])
+        .all([Promises[0], Promises[1], Promises[2]])
         .then(result => {
-            return res.status(200).json({ods:result[0], coberturas:result[1]});
+            return res.status(200).json({ods: result[0], coberturas: result[1], unidadMedida: result[2]});
         })
         .catch(err => {
             console.log(err + 'ERROR');
+            return res.status(500);
         })
     );
 
