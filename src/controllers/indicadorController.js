@@ -19,23 +19,17 @@ const getIndicadores = async (req, res) => {
         per_page
     } = getPagination(req.matchedData);
     console.log(req.matchedData.sort_by, req.matchedData.order);
-    const filterOds = {};
-    const idOds = req.matchedData.idOds;
-    if (idOds) {
-        filterOds['idOds'] = idOds;
-    }
-
     try {
         const result = await Indicador.findAndCountAll({
             where: {
                 idModulo: req.matchedData.idModulo,
-                ...filterOds,
+                ...validateCatalog(req.matchedData),
                 ...getIndicadorFilters(req.matchedData)
             },
             limit: per_page,
             offset: (per_page * (page - 1)),
             order: [getIndicadoresSorting(req.matchedData)],
-            include: getIndicadorIncludes(req.matchedData)
+            include: getIndicadorIncludes(req.matchedData),
         });
 
         const indicadores = result.rows;
@@ -68,18 +62,19 @@ const getIndicadorIncludes = ({
         model: Ods,
         required: true,
         //attributes: ['nombre'],
-    })
+    });
 
-    if (idCobertura) {
-        indicadorFilter.push({
-            model: CoberturaGeografica,
-            where: {
-                id: {
-                    [op.eq]: idCobertura
-                }
-            }
-        })
-    } else if (idFuente) {
+    indicadorFilter.push({
+        model: CoberturaGeografica,
+        required: true
+    });
+
+    indicadorFilter.push({
+        model: UnidadMedida,
+        required: true
+    });
+
+    if (idFuente) {
         indicadorFilter.push({
             model: Fuente,
             where: {
@@ -88,22 +83,28 @@ const getIndicadorIncludes = ({
                 }
             }
         })
-    } else if (idUnidad) {
-        indicadorFilter.push({
-            model: UnidadMedida,
-            where: {
-                id: {
-                    [Op.eq]: idUnidad
-                }
-            }
-        })
-    }
-
-
+    } 
 
     return indicadorFilter;
 };
 
+const validateCatalog = ({
+    idOds,
+    idCobertura,
+    idUnidadMedida
+}) => {
+    const catalogFilters = {};
+    if (idOds) {
+        catalogFilters.idOds = idOds;
+    }
+    else if (idCobertura){
+        catalogFilters.idCobertura = idCobertura;
+    }
+    else if(idUnidadMedida){
+        catalogFilters.idUnidadMedida = idUnidadMedida;
+    }
+    return catalogFilters;
+};
 
 const getIndicadorFilters = (matchedData) => {
     const {

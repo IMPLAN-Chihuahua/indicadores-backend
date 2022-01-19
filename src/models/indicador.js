@@ -13,9 +13,9 @@ module.exports = (sequelize, DataTypes) => {
             this.belongsTo(models.Modulo, { foreignKey: 'idModulo' });
             this.belongsToMany(models.Usuario, { through: models.UsuarioIndicador, foreignKey: 'idIndicador' });
             this.belongsTo(models.Ods, { foreignKey: 'idOds' });
+            this.belongsTo(models.CoberturaGeografica, { foreignKey: 'idCobertura' });
+            this.belongsTo(models.UnidadMedida, { foreignKey: 'idUnidadMedida' })
             
-            this.hasOne(models.UnidadMedida, { foreignKey: 'idIndicador' })
-            this.hasOne(models.CoberturaGeografica, { foreignKey: 'idIndicador' });
             this.hasOne(models.Formula, { foreignKey: 'idIndicador' });
             this.hasMany(models.Historico, { foreignKey: 'idIndicador' });
             this.hasMany(models.Fuente, { foreignKey: 'idIndicador' });
@@ -110,6 +110,16 @@ module.exports = (sequelize, DataTypes) => {
             idOds: {
                 type: DataTypes.INTEGER,
                 allowNull: false
+            },
+            
+            idCobertura: { 
+                type: DataTypes.INTEGER,
+                allowNull: false
+            },
+
+            idUnidadMedida: {
+                type: DataTypes.INTEGER,
+                allowNull: false
             }
         },
         {
@@ -117,7 +127,7 @@ module.exports = (sequelize, DataTypes) => {
             indexes: [
                 {
                     unique: false,
-                    fields: ['createdBy', 'updatedBy', 'idOds']
+                    fields: ['createdBy', 'updatedBy', 'idOds', 'idCobertura', 'idUnidadMedida']
                 }
             ],
             tableName: 'Indicadores',
