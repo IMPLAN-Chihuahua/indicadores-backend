@@ -3,7 +3,8 @@ const {
     Ods,
     CoberturaGeografica,
     Fuente,
-    UnidadMedida
+    UnidadMedida,
+    Modulo
 } = require('../models');
 const { Op } = require('sequelize');
 const { getPagination } = require('../utils/pagination');
@@ -24,6 +25,7 @@ const getIndicadores = async (req, res) => {
             offset: (per_page * (page - 1)),
             order: [getIndicadoresSorting(req.matchedData)],
             include: getIndicadorIncludes(req.matchedData),
+            attributes: ['id', 'nombre', 'ultimoValorDisponible', 'anioUltimoValorDisponible', 'tendenciaActual', 'tendenciaDeseada', 'idOds', 'idCobertura', 'idUnidadMedida', 'createdAt', 'updatedAt', 'idModulo']
         });
 
         const indicadores = result.rows;
@@ -126,13 +128,31 @@ const getIndicadoresSorting = ({
 
 const getIndicador = async (req, res) => {
     try {
-        const indicador = await Indicador.findByPk(req.matchedData.idIndicador);
+        const idIndicador = req.matchedData.idIndicador;
+        const indicador = await Indicador.findOne({
+            where: {
+                id: idIndicador
+            },
+            include: [
+                {
+                    model: Modulo,
+                    required: true,
+                    attributes: ['id','temaIndicador', 'color']
+                },
+                {
+                    model: CoberturaGeografica,
+                    required: true,
+                    attributes: ['nombre']
+                }
+            ],
+            attributes: ['id', 'urlMapa', 'urlImagen', 'nombre', 'ultimoValorDisponible', 'anioUltimoValorDisponible', 'tendenciaActual', 'tendenciaDeseada', 'mapa', 'grafica']
+        });
         if (indicador === null) {
             return res.sendStatus(404);
         }
         return res.status(200).json({
             data: indicador
-        });
+        })
     } catch (err) {
         console.log(err);
         return res.sendStatus(500);
