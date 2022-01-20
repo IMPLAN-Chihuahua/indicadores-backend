@@ -5,20 +5,14 @@ const {
     Fuente,
     UnidadMedida
 } = require('../models');
-const {
-    Op
-} = require('sequelize');
-const {
-    getPagination
-} = require('../utils/pagination');
-const indicador = require('../models/indicador');
+const { Op } = require('sequelize');
+const { getPagination } = require('../utils/pagination');
 
 const getIndicadores = async (req, res) => {
     const {
         page,
         per_page
     } = getPagination(req.matchedData);
-    console.log(req.matchedData.sort_by, req.matchedData.order);
     try {
         const result = await Indicador.findAndCountAll({
             where: {
@@ -83,7 +77,7 @@ const getIndicadorIncludes = ({
                 }
             }
         })
-    } 
+    }
 
     return indicadorFilter;
 };
@@ -97,10 +91,10 @@ const validateCatalog = ({
     if (idOds) {
         catalogFilters.idOds = idOds;
     }
-    else if (idCobertura){
+    else if (idCobertura) {
         catalogFilters.idCobertura = idCobertura;
     }
-    else if(idUnidadMedida){
+    else if (idUnidadMedida) {
         catalogFilters.idUnidadMedida = idUnidadMedida;
     }
     return catalogFilters;
