@@ -31,6 +31,7 @@ const getIndicadores = async (req, res) => {
             offset: (per_page * (page - 1)),
             order: [getIndicadoresSorting(req.matchedData)],
             include: getIndicadorIncludes(req.matchedData),
+            attributes: ['id', 'nombre', 'ultimoValorDisponible', 'anioUltimoValorDisponible', 'tendenciaActual', 'tendenciaDeseada', 'idOds', 'idCobertura', 'idUnidadMedida', 'createdAt', 'updatedAt', 'idModulo']
         });
 
         const indicadores = result.rows;
