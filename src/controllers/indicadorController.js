@@ -146,7 +146,6 @@ const getIndicador = async (req, res) => {
       ],
       attributes: [
         "id",
-        "urlMapa",
         "urlImagen",
         "nombre",
         "ultimoValorDisponible",
@@ -154,7 +153,6 @@ const getIndicador = async (req, res) => {
         "tendenciaActual",
         "tendenciaDeseada",
         "mapa",
-        "grafica",
       ],
     });
     if (indicador === null) {
