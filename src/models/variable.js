@@ -42,14 +42,14 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
 
-    datoVariable: {
+    dato: {
       type: DataTypes.STRING,
       allowNull: true,
       defaultValue: 'No aplica'
     },
 
-    unidad: {
-      type: DataTypes.STRING,
+    idUnidad: {
+      type: DataTypes.INTEGER,
       allowNull: false
     },
 
@@ -62,7 +62,13 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Variable',
-    timestamps: false
+    timestamps: false,
+    indexes : [
+      {
+        unique: false,
+        fields: ['idUnidad']
+      }
+    ]
   });
   return Variable;
 };
