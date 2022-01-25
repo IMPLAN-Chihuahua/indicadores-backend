@@ -87,12 +87,6 @@ module.exports = (sequelize, DataTypes) => {
                 defaultValue: 0
             },
 
-            grafica: {
-                type: DataTypes.SMALLINT,
-                allowNull: false,
-                defaultValue: 0
-            },
-
             observaciones: {
                 type: DataTypes.TEXT,
                 allowNull: false,
