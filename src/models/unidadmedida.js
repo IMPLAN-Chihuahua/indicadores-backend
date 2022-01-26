@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       this.hasOne(models.Indicador, { foreignKey: 'idUnidadMedida' })
+      this.hasMany(models.Variable, { foreignKey: 'idVariable' })
     }
   };
   UnidadMedida.init(

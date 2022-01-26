@@ -6,9 +6,14 @@ const {
   UnidadMedida,
   Modulo,
   Historico,
+  Mapa,
+  Formula,
+  Variable,
 } = require("../models");
 const { Op } = require("sequelize");
 const { getPagination } = require("../utils/pagination");
+
+const sequelize = require("sequelize");
 
 const getIndicadores = async (req, res) => {
   const { page, per_page } = getPagination(req.matchedData);
@@ -56,6 +61,82 @@ const getIndicadores = async (req, res) => {
   }
 };
 
+const getIndicador = async (req, res) => {
+  try {
+    const idIndicador = req.matchedData.idIndicador;
+    const indicador = await Indicador.findOne({
+      where: {
+        id: idIndicador,
+      },
+      include: [
+        {
+          model: UnidadMedida,
+          required: true,
+          attributes: [],
+        },
+        {
+          model: Modulo,
+          required: true,
+          attributes: ["id", "temaIndicador", "color"],
+        },
+        {
+          model: CoberturaGeografica,
+          required: true,
+          attributes: ["nombre"],
+        },
+        {
+          model: Historico,
+          required: true,
+          attributes: ["anio", "valor", "fuente"],
+          limit: 5,
+          order: [["anio", "DESC"]],
+        },
+        {
+          model: Mapa,
+          required: false
+        },
+        {
+          model: Formula,
+          required: false,
+          include: [
+            {
+              model: Variable,
+              required: true,
+              include: [{
+                model: UnidadMedida,
+                required: true,
+              }],
+              attributes: ['nombre', 'nombreAtributo', 'dato', 'idUnidad', [sequelize.literal('"Formula->Variables->UnidadMedida"'), "Unidad"],],
+            }
+          ]
+        }
+      ],
+      attributes: [
+        "id",
+        "urlImagen",
+        "nombre",
+        "ultimoValorDisponible",
+        "anioUltimoValorDisponible",
+        "tendenciaActual",
+        "tendenciaDeseada",
+        "mapa",
+        [sequelize.literal('"UnidadMedida"."nombre"'), "Unidad"],
+      ],
+    });
+    
+    if (indicador === null) {
+      return res.sendStatus(404);
+    }
+    return res.status(200).json({
+      data: indicador,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.sendStatus(500);
+  }
+};
+
+// Includes for inner join to filter list 
 const getIndicadorIncludes = ({ idFuente }) => {
   const indicadorFilter = [];
 
@@ -88,6 +169,7 @@ const getIndicadorIncludes = ({ idFuente }) => {
   return indicadorFilter;
 };
 
+// Validation for catalogs
 const validateCatalog = ({ idOds, idCobertura, idUnidadMedida }) => {
   const catalogFilters = {};
   if (idOds) {
@@ -100,6 +182,7 @@ const validateCatalog = ({ idOds, idCobertura, idUnidadMedida }) => {
   return catalogFilters;
 };
 
+// Validation for filters
 const getIndicadorFilters = (matchedData) => {
   const { anioUltimoValorDisponible, tendenciaActual } = matchedData;
   const filters = {};
@@ -112,60 +195,14 @@ const getIndicadorFilters = (matchedData) => {
   return filters;
 };
 
+// Sorting logic for list5
 const getIndicadoresSorting = ({ sort_by, order }) => {
   const arrangement = [];
   arrangement.push([sort_by || "id", order || "ASC"]);
   return arrangement;
 };
 
-const getIndicador = async (req, res) => {
-  try {
-    const idIndicador = req.matchedData.idIndicador;
-    const indicador = await Indicador.findOne({
-      where: {
-        id: idIndicador,
-      },
-      include: [
-        {
-          model: Modulo,
-          required: true,
-          attributes: ["id", "temaIndicador", "color"],
-        },
-        {
-          model: CoberturaGeografica,
-          required: true,
-          attributes: ["nombre"],
-        },
-        {
-          model: Historico,
-          required: true,
-          attributes: ["anio", "valor", "fuente"],
-          limit: 5,
-          order: [["anio", "DESC"]],
-        },
-      ],
-      attributes: [
-        "id",
-        "urlImagen",
-        "nombre",
-        "ultimoValorDisponible",
-        "anioUltimoValorDisponible",
-        "tendenciaActual",
-        "tendenciaDeseada",
-        "mapa",
-      ],
-    });
-    if (indicador === null) {
-      return res.sendStatus(404);
-    }
-    return res.status(200).json({
-      data: indicador,
-    });
-  } catch (err) {
-    console.log(err);
-    return res.sendStatus(500);
-  }
-};
+
 
 module.exports = {
   getIndicadores,
