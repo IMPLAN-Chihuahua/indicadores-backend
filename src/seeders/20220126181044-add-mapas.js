@@ -1,24 +1,20 @@
 'use strict';
-
+const faker = require('faker');
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    /**
-     * Add seed commands here.
-     *
-     * Example:
-     * await queryInterface.bulkInsert('People', [{
-     *   name: 'John Doe',
-     *   isBetaMember: false
-     * }], {});
-    */
+    const mapas = [];
+    for (let i = 0; i < 1; i++) {
+      mapas.push({
+        id: (i + 1),
+        ubicacion: faker.address.city(),
+        url: faker.internet.url(),
+        idIndicador: 1,
+      });
+    }
+    await queryInterface.bulkInsert('Mapas', mapas, {});
   },
 
   down: async (queryInterface, Sequelize) => {
-    /**
-     * Add commands to revert seed here.
-     *
-     * Example:
-     * await queryInterface.bulkDelete('People', null, {});
-     */
+    await queryInterface.bulkDelete('Mapas', null, {});
   }
 };
