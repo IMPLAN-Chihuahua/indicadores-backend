@@ -36,8 +36,11 @@ const getIndicadores = async (req, res) => {
         "tendenciaActual",
         "tendenciaDeseada",
         "idOds",
+        [sequelize.literal('"Od"."nombre"'), "Ods"],
         "idCobertura",
+        [sequelize.literal('"CoberturaGeografica"."nombre"'), "Cobertura"],
         "idUnidadMedida",
+        [sequelize.literal('"UnidadMedida"."nombre"'), "Unidad"],
         "createdAt",
         "updatedAt",
         "idModulo",
@@ -143,16 +146,19 @@ const getIndicadorIncludes = ({ idFuente }) => {
   indicadorFilter.push({
     model: Ods,
     required: true,
+    attributes: []
   });
 
   indicadorFilter.push({
     model: CoberturaGeografica,
     required: true,
+    attributes: []
   });
 
   indicadorFilter.push({
     model: UnidadMedida,
     required: true,
+    attributes: []
   });
 
   if (idFuente) {
