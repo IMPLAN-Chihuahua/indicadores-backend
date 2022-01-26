@@ -18,13 +18,8 @@ const { getOds, getCoberturaGeografica } = require('../controllers/catalogoContr
  *           nombre:
  *             type: string
  *             description: Name of the Ods
- *             example: Ods 1
+ *             example: Hambre cero
  *             readOnly: true
- *           idIndicador:
- *             type: integer
- *             description: foreign key to indicador
- *             example: 1
- *             readOnly: true  
  *       CoberturaGeografica:
  *         type: object
  *         properties:
@@ -36,12 +31,20 @@ const { getOds, getCoberturaGeografica } = require('../controllers/catalogoContr
  *           nombre:
  *             type: string
  *             description: Name of the Cobertura
- *             example: Cobertura 1
+ *             example: Urbana
  *             readOnly: true
- *           idIndicador:
+ *       UnidadMedida:
+ *         type: object
+ *         properties:
+ *           id:
  *             type: integer
- *             description: foreign key to indicador
+ *             description: Identifier of an UnidadMedida
  *             example: 1
+ *             readOnly: true
+ *           nombre:
+ *             type: string
+ *             description: Name of the UnidadMedida
+ *             example: "Kilometros"
  *             readOnly: true
  * */
 
@@ -49,12 +52,12 @@ const { getOds, getCoberturaGeografica } = require('../controllers/catalogoContr
  * @swagger
  *   /catalogos:
  *     get:
- *       summary: Get a list of Ods
- *       description: Returns a list of Ods from the database
- *       tags: [Ods]
+ *       summary: Get a list of catalogos
+ *       description: Returns a list of catalogs containing information about Ods, CoberturaGeografica and UnidadMedida
+ *       tags: [Catalogos]
  *       responses:
  *         200:
- *           description: A very friendly list of Ods
+ *           description: A very friendly list of catalogos returned by the API
  *           content:
  *             application/json:
  *               schema:
@@ -70,6 +73,11 @@ const { getOds, getCoberturaGeografica } = require('../controllers/catalogoContr
  *                     items:
  *                       $ref: '#/components/schemas/CoberturaGeografica'
  *                     description: List of CoberturaGeografica
+ *                   unidadMedida:
+ *                     type: array
+ *                     items:
+ *                       $ref: '#/components/schemas/UnidadMedida'
+ *                     description: List of UnidadMedida
  *         500:
  *           description: Internal server error           
  */
