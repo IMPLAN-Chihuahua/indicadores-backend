@@ -30,13 +30,6 @@ module.exports = (sequelize, DataTypes) => {
                 autoIncrement: true
             },
 
-            urlMapa: {
-                type: DataTypes.STRING,
-                validate: {
-                    isUrl: true
-                }
-            },
-
             urlImagen: {
                 type: DataTypes.STRING,
             },
@@ -82,12 +75,6 @@ module.exports = (sequelize, DataTypes) => {
             },
 
             mapa: {
-                type: DataTypes.SMALLINT,
-                allowNull: false,
-                defaultValue: 0
-            },
-
-            grafica: {
                 type: DataTypes.SMALLINT,
                 allowNull: false,
                 defaultValue: 0

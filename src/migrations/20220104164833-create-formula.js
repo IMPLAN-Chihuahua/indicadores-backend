@@ -19,11 +19,6 @@ module.exports = {
         type: Sequelize.STRING
       },
 
-      descripcionNarrativa: {
-        defaultValue: 'No aplica',
-        type: Sequelize.STRING
-      },
-
       idIndicador: {
         type: Sequelize.INTEGER,
         references: {

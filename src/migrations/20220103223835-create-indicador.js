@@ -12,11 +12,6 @@ module.exports = {
             type: Sequelize.INTEGER
           },
 
-          urlMapa: {
-            allowNull: true,
-            type: Sequelize.STRING
-          },
-
           urlImagen: {
             allowNull: true,
             type: Sequelize.STRING
@@ -53,17 +48,6 @@ module.exports = {
             type: Sequelize.INTEGER
           },
 
-          unidadMedida: {
-            allowNull: false,
-            type: Sequelize.STRING,
-            defaultValue: 'No aplica'
-          },
-
-          coberturaGeografica: {
-            allowNull: false,
-            type: Sequelize.STRING
-          },
-
           tendenciaActual: {
             allowNull: false,
             defaultValue: 'No aplica',
@@ -77,12 +61,6 @@ module.exports = {
           },
 
           mapa: {
-            allowNull: false,
-            defaultValue: 0,
-            type: Sequelize.SMALLINT
-          },
-
-          grafica: {
             allowNull: false,
             defaultValue: 0,
             type: Sequelize.SMALLINT

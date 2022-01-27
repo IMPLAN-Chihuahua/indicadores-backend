@@ -10,7 +10,8 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.belongsTo(models.Formula, { foreignKey: 'idFormula' })
+      this.belongsTo(models.Formula, { foreignKey: 'idFormula' });
+      this.belongsTo(models.UnidadMedida, { foreignKey: 'idUnidad' })
     }
   };
   Variable.init({
@@ -42,14 +43,14 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
 
-    datoVariable: {
+    dato: {
       type: DataTypes.STRING,
       allowNull: true,
       defaultValue: 'No aplica'
     },
 
-    unidad: {
-      type: DataTypes.STRING,
+    idUnidad: {
+      type: DataTypes.INTEGER,
       allowNull: false
     },
 
@@ -62,7 +63,13 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Variable',
-    timestamps: false
+    timestamps: false,
+    indexes : [
+      {
+        unique: false,
+        fields: ['idUnidad']
+      }
+    ]
   });
   return Variable;
 };
