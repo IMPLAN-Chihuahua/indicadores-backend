@@ -24,22 +24,17 @@ module.exports = {
         type: Sequelize.STRING
       },
 
-      formulaCalculo: {
-        allowNull: false,
-        type: Sequelize.STRING
-      },
-
-      datoVariable: {
+      dato: {
         allowNull: true,
         type: Sequelize.STRING
       },
 
-      unidad: {
+      anio: {
         allowNull: false,
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
 
-      anio: {
+      idUnidad: {
         allowNull: false,
         type: Sequelize.INTEGER
       },

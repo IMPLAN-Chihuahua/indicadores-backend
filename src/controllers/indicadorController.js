@@ -6,9 +6,14 @@ const {
   UnidadMedida,
   Modulo,
   Historico,
+  Mapa,
+  Formula,
+  Variable,
 } = require("../models");
 const { Op } = require("sequelize");
 const { getPagination } = require("../utils/pagination");
+
+const sequelize = require("sequelize");
 
 const getIndicadores = async (req, res) => {
   const { page, per_page } = getPagination(req.matchedData);
@@ -31,8 +36,11 @@ const getIndicadores = async (req, res) => {
         "tendenciaActual",
         "tendenciaDeseada",
         "idOds",
+        [sequelize.literal('"Od"."nombre"'), "Ods"],
         "idCobertura",
+        [sequelize.literal('"CoberturaGeografica"."nombre"'), "Cobertura"],
         "idUnidadMedida",
+        [sequelize.literal('"UnidadMedida"."nombre"'), "Unidad"],
         "createdAt",
         "updatedAt",
         "idModulo",
@@ -56,68 +64,6 @@ const getIndicadores = async (req, res) => {
   }
 };
 
-const getIndicadorIncludes = ({ idFuente }) => {
-  const indicadorFilter = [];
-
-  indicadorFilter.push({
-    model: Ods,
-    required: true,
-  });
-
-  indicadorFilter.push({
-    model: CoberturaGeografica,
-    required: true,
-  });
-
-  indicadorFilter.push({
-    model: UnidadMedida,
-    required: true,
-  });
-
-  if (idFuente) {
-    indicadorFilter.push({
-      model: Fuente,
-      where: {
-        id: {
-          [Op.eq]: idFuente,
-        },
-      },
-    });
-  }
-
-  return indicadorFilter;
-};
-
-const validateCatalog = ({ idOds, idCobertura, idUnidadMedida }) => {
-  const catalogFilters = {};
-  if (idOds) {
-    catalogFilters.idOds = idOds;
-  } else if (idCobertura) {
-    catalogFilters.idCobertura = idCobertura;
-  } else if (idUnidadMedida) {
-    catalogFilters.idUnidadMedida = idUnidadMedida;
-  }
-  return catalogFilters;
-};
-
-const getIndicadorFilters = (matchedData) => {
-  const { anioUltimoValorDisponible, tendenciaActual } = matchedData;
-  const filters = {};
-  if (anioUltimoValorDisponible) {
-    filters.anioUltimoValorDisponible = anioUltimoValorDisponible;
-  }
-  if (tendenciaActual) {
-    filters.tendenciaActual = tendenciaActual;
-  }
-  return filters;
-};
-
-const getIndicadoresSorting = ({ sort_by, order }) => {
-  const arrangement = [];
-  arrangement.push([sort_by || "id", order || "ASC"]);
-  return arrangement;
-};
-
 const getIndicador = async (req, res) => {
   try {
     const idIndicador = req.matchedData.idIndicador;
@@ -126,6 +72,11 @@ const getIndicador = async (req, res) => {
         id: idIndicador,
       },
       include: [
+        {
+          model: UnidadMedida,
+          required: true,
+          attributes: [],
+        },
         {
           model: Modulo,
           required: true,
@@ -143,10 +94,28 @@ const getIndicador = async (req, res) => {
           limit: 5,
           order: [["anio", "DESC"]],
         },
+        {
+          model: Mapa,
+          required: false
+        },
+        {
+          model: Formula,
+          required: false,
+          include: [
+            {
+              model: Variable,
+              required: true,
+              include: [{
+                model: UnidadMedida,
+                required: true,
+              }],
+              attributes: ['nombre', 'nombreAtributo', 'dato', 'idUnidad', [sequelize.literal('"Formula->Variables->UnidadMedida"'), "Unidad"],],
+            }
+          ]
+        }
       ],
       attributes: [
         "id",
-        "urlMapa",
         "urlImagen",
         "nombre",
         "ultimoValorDisponible",
@@ -154,9 +123,10 @@ const getIndicador = async (req, res) => {
         "tendenciaActual",
         "tendenciaDeseada",
         "mapa",
-        "grafica",
+        [sequelize.literal('"UnidadMedida"."nombre"'), "Unidad"],
       ],
     });
+    
     if (indicador === null) {
       return res.sendStatus(404);
     }
@@ -168,6 +138,77 @@ const getIndicador = async (req, res) => {
     return res.sendStatus(500);
   }
 };
+
+// Includes for inner join to filter list 
+const getIndicadorIncludes = ({ idFuente }) => {
+  const indicadorFilter = [];
+
+  indicadorFilter.push({
+    model: Ods,
+    required: true,
+    attributes: []
+  });
+
+  indicadorFilter.push({
+    model: CoberturaGeografica,
+    required: true,
+    attributes: []
+  });
+
+  indicadorFilter.push({
+    model: UnidadMedida,
+    required: true,
+    attributes: []
+  });
+
+  if (idFuente) {
+    indicadorFilter.push({
+      model: Fuente,
+      where: {
+        id: {
+          [Op.eq]: idFuente,
+        },
+      },
+    });
+  }
+
+  return indicadorFilter;
+};
+
+// Validation for catalogs
+const validateCatalog = ({ idOds, idCobertura, idUnidadMedida }) => {
+  const catalogFilters = {};
+  if (idOds) {
+    catalogFilters.idOds = idOds;
+  } else if (idCobertura) {
+    catalogFilters.idCobertura = idCobertura;
+  } else if (idUnidadMedida) {
+    catalogFilters.idUnidadMedida = idUnidadMedida;
+  }
+  return catalogFilters;
+};
+
+// Validation for filters
+const getIndicadorFilters = (matchedData) => {
+  const { anioUltimoValorDisponible, tendenciaActual } = matchedData;
+  const filters = {};
+  if (anioUltimoValorDisponible) {
+    filters.anioUltimoValorDisponible = anioUltimoValorDisponible;
+  }
+  if (tendenciaActual) {
+    filters.tendenciaActual = tendenciaActual;
+  }
+  return filters;
+};
+
+// Sorting logic for list5
+const getIndicadoresSorting = ({ sort_by, order }) => {
+  const arrangement = [];
+  arrangement.push([sort_by || "id", order || "ASC"]);
+  return arrangement;
+};
+
+
 
 module.exports = {
   getIndicadores,
