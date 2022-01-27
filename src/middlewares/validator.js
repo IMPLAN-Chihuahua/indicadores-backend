@@ -65,7 +65,7 @@ const paginationValidationRules = () => {
 
 const filterIndicadoresValidationRules = () => {
     return [
-        query(['anioUltimoValorDisponible', 'idOds', 'idCobertura', 'idFuente', 'idUnidad'])
+        query(['anioUltimoValorDisponible', 'idOds', 'idCobertura', 'idFuente', 'idUnidadMedida'])
             .optional()
             .isInt()
             .toInt()
@@ -78,7 +78,7 @@ const filterIndicadoresValidationRules = () => {
         query('tendenciaActual')
             .optional()
             .toUpperCase()
-            .isIn(['ASCENDENTE', 'DESCENDENTE'])
+            .isIn(['ASCENDENTE', 'DESCENDENTE', 'NO APLICA'])
     ];
 };
 
