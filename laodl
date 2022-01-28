@@ -1,0 +1,232 @@
+[33mcommit 0b4f3ebbed7ad768343fd2c790b9e7f816f4484e[m[33m ([m[1;36mHEAD -> [m[1;32mdev[m[33m, [m[1;31morigin/dev[m[33m)[m
+Merge: 2525d92 fb94167
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Thu Jan 27 22:30:49 2022 -0700
+
+    Merge pull request #31 from luisccc99/wip-refactor-userservice-test
+    
+    Refactor user service tests to not depend on connecting to a database
+
+[33mcommit fb941673cbf930e63916037c004bb1ab48f3ec57[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Thu Jan 27 22:27:53 2022 -0700
+
+    Refactor user service tests to not depend on connecting to a database
+
+[33mcommit 2525d9201c1721f3af652c32c47ab3be5fa44c58[m
+Merge: bfe459f e02026d
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Thu Jan 27 09:57:49 2022 -0700
+
+    Merge branch 'dev' of github.com:luisccc99/indicadores-backend into dev
+
+[33mcommit bfe459f36f25b12439e0f30c1f58141abbe71dc9[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Thu Jan 27 09:56:22 2022 -0700
+
+    Fix catalogo response
+
+[33mcommit e02026da58309113d9ba6daab1d3e08e8a6adf49[m
+Merge: a1cd889 6d8fa28
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Thu Jan 27 09:48:13 2022 -0700
+
+    Merge pull request #30 from luisccc99/hotfix-indicadores-data-retrieval
+    
+    Hotfix indicadores data retrieval
+
+[33mcommit 6d8fa28876b70048660ca908b3c6527e02799150[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Wed Jan 26 14:23:11 2022 -0700
+
+    Simplified list of modules response, grouping objects
+
+[33mcommit ae61e110428c780319cefa1d8e2e59dcaf6455aa[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Wed Jan 26 14:16:17 2022 -0700
+
+    Added unidad, formula and variables to singular indicador retrieval
+
+[33mcommit d781a17cfb82e252130c524ac73b32a697c144d9[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Wed Jan 26 11:49:05 2022 -0700
+
+    Fixed seed validations on variables
+
+[33mcommit 1dfaa160cd13a1760ff0f656459dde824b1b9def[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Wed Jan 26 11:30:16 2022 -0700
+
+    Added variable seeder
+
+[33mcommit c380ed8e3a6356522d0bb491012ab266dd61330a[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Wed Jan 26 11:21:11 2022 -0700
+
+    Added formulas seeder
+
+[33mcommit 8a2e135afee2c4d3a21afe353e6032a65df1700d[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Wed Jan 26 11:16:41 2022 -0700
+
+    Added seed information for mapas
+
+[33mcommit 9418df2697448c71b132f3c8735af3b06eea41cf[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Wed Jan 26 11:11:20 2022 -0700
+
+    Added seed for mapas
+
+[33mcommit 27559df955ed7e550902c52d1ab2cd59ee530820[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Wed Jan 26 10:59:49 2022 -0700
+
+    Minor changes on swagger documentation
+
+[33mcommit 428024fb0c7e70e7d7666924fb53dacf81f02e9a[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Tue Jan 25 14:52:26 2022 -0700
+
+    Fixed seeds for database
+
+[33mcommit 6b24704fdd888acb71ff5479d443e66b58eb9818[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Tue Jan 25 14:03:09 2022 -0700
+
+    Changed formula model and migration
+
+[33mcommit ec1658fd83d6a6a9081a0f91c5c66cc741ab3958[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Tue Jan 25 14:02:03 2022 -0700
+
+    Changed mapa migration and model to include url
+
+[33mcommit 9e35c4ef2a4b8dded9efe1578f58ec11119b2871[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Tue Jan 25 13:59:22 2022 -0700
+
+    Changed indicadores migration and model
+
+[33mcommit 26d2181526e334e55f34a1737283c5d409cb4de6[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Tue Jan 25 13:55:13 2022 -0700
+
+    Changed model and migration for variable
+
+[33mcommit c7ecd8ed9e43dacbce25b108357706f216376a08[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Tue Jan 25 13:47:11 2022 -0700
+
+    Deleted unidad variable model and migration
+
+[33mcommit a1cd889de87eceb12a04c883a0cf327237e4d045[m
+Merge: 055674a 83cf854
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Mon Jan 24 12:15:27 2022 -0700
+
+    Merge pull request #29 from luisccc99/feat-indicador-route
+    
+    Added route to get individual indicador by id
+
+[33mcommit 83cf85446695c3378a34bf143ff0f07991aa5084[m[33m ([m[1;31morigin/feat-indicador-route[m[33m)[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Mon Jan 24 12:04:37 2022 -0700
+
+    Added route to get individual indicador by id
+
+[33mcommit 055674a92cd4beaa6d8b058e3deac7f9045cdb3c[m
+Merge: 014d855 92702ca
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Mon Jan 24 10:58:10 2022 -0700
+
+    Merge pull request #28 from luisccc99/feat-indicador-formula
+    
+    Feat indicador formula
+
+[33mcommit 92702cae164be6d105930a8ce7487c0733ec6968[m[33m ([m[1;31morigin/feat-indicador-formula[m[33m)[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Sun Jan 23 18:19:58 2022 -0700
+
+    Minor changes on historicos' seeder
+
+[33mcommit 9e15d1966c567aa26f2112aa5f95fb9bdd3de721[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Sun Jan 23 12:13:17 2022 -0700
+
+    Added historicos to seeders
+
+[33mcommit 014d855768ee79d4d7c64138de615be435640b61[m
+Merge: 589783c 466db50
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Thu Jan 20 12:07:38 2022 -0700
+
+    Merge pull request #27 from luisccc99/feat-indicador-exclusions
+    
+    Feat indicador exclusions
+
+[33mcommit 589783cfa3d1b949eb2f1797769bd2989f7cebc5[m
+Merge: fcb45cc 2e6e82e
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Thu Jan 20 12:06:51 2022 -0700
+
+    Merge pull request #26 from luisccc99/feat-dockerize-app
+    
+    Add Dockerfile to project
+
+[33mcommit 2e6e82e2f033fe2fe8c316175506a058e1966a83[m[33m ([m[1;31morigin/feat-dockerize-app[m[33m)[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Thu Jan 20 00:27:36 2022 -0700
+
+    Add Dockerfile to project
+
+[33mcommit 466db508d06e3562e1fa57f01124e7889c068e6a[m[33m ([m[1;31morigin/feat-indicador-exclusions[m[33m)[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Thu Jan 20 00:01:50 2022 -0700
+
+    Exluded fields on group of  indicadores
+
+[33mcommit afd3cf73bbb5206607c0cdef635f33fcfdae8c43[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Wed Jan 19 23:58:16 2022 -0700
+
+    Exluded fields on individual indicador
+
+[33mcommit fcb45cc28fda288fcfa3486c68baef1864238adb[m
+Merge: 7d39c06 b3321ba
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Wed Jan 19 14:14:23 2022 -0700
+
+    Merge pull request #25 from luisccc99/feat-catalog-update
+    
+    Feat catalog update
+
+[33mcommit b3321ba55c3ba24df46757f571df9cbf605819f8[m[33m ([m[1;31morigin/feat-catalog-update[m[33m)[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Wed Jan 19 14:08:55 2022 -0700
+
+    Minor changes on modulo seeder
+
+[33mcommit 6a7f6d2c33b01f5bb7706d805782f2d95a9665e0[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Wed Jan 19 13:59:47 2022 -0700
+
+    Added urlimagen and color to indicadores and modulos
+
+[33mcommit 7d39c0665b52f4364e3622f4fcfa33dc83012853[m
+Merge: 2ef879a 560293b
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Wed Jan 19 13:18:06 2022 -0700
+
+    Merge pull request #23 from luisccc99/feat-catalog-update
+    
+    Feat catalog update
+
+[33mcommit 560293bf59c8321a10bf79e0738b82127c59d469[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Wed Jan 19 09:41:58 2022 -0700
+
+    Added unidades medidas to get endpoint
+
+[33mcommit f98668b2e9fb8e0b8653d2e8df2a845a60dd80d8[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Wed Jan 19 09:26:

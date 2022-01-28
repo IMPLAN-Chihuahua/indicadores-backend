@@ -1,0 +1,754 @@
+[33mcommit 0b4f3ebbed7ad768343fd2c790b9e7f816f4484e[m[33m ([m[1;36mHEAD -> [m[1;32mdev[m[33m, [m[1;31morigin/dev[m[33m)[m
+Merge: 2525d92 fb94167
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Thu Jan 27 22:30:49 2022 -0700
+
+    Merge pull request #31 from luisccc99/wip-refactor-userservice-test
+    
+    Refactor user service tests to not depend on connecting to a database
+
+[33mcommit fb941673cbf930e63916037c004bb1ab48f3ec57[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Thu Jan 27 22:27:53 2022 -0700
+
+    Refactor user service tests to not depend on connecting to a database
+
+[33mcommit 2525d9201c1721f3af652c32c47ab3be5fa44c58[m
+Merge: bfe459f e02026d
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Thu Jan 27 09:57:49 2022 -0700
+
+    Merge branch 'dev' of github.com:luisccc99/indicadores-backend into dev
+
+[33mcommit bfe459f36f25b12439e0f30c1f58141abbe71dc9[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Thu Jan 27 09:56:22 2022 -0700
+
+    Fix catalogo response
+
+[33mcommit e02026da58309113d9ba6daab1d3e08e8a6adf49[m
+Merge: a1cd889 6d8fa28
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Thu Jan 27 09:48:13 2022 -0700
+
+    Merge pull request #30 from luisccc99/hotfix-indicadores-data-retrieval
+    
+    Hotfix indicadores data retrieval
+
+[33mcommit 6d8fa28876b70048660ca908b3c6527e02799150[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Wed Jan 26 14:23:11 2022 -0700
+
+    Simplified list of modules response, grouping objects
+
+[33mcommit ae61e110428c780319cefa1d8e2e59dcaf6455aa[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Wed Jan 26 14:16:17 2022 -0700
+
+    Added unidad, formula and variables to singular indicador retrieval
+
+[33mcommit d781a17cfb82e252130c524ac73b32a697c144d9[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Wed Jan 26 11:49:05 2022 -0700
+
+    Fixed seed validations on variables
+
+[33mcommit 1dfaa160cd13a1760ff0f656459dde824b1b9def[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Wed Jan 26 11:30:16 2022 -0700
+
+    Added variable seeder
+
+[33mcommit c380ed8e3a6356522d0bb491012ab266dd61330a[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Wed Jan 26 11:21:11 2022 -0700
+
+    Added formulas seeder
+
+[33mcommit 8a2e135afee2c4d3a21afe353e6032a65df1700d[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Wed Jan 26 11:16:41 2022 -0700
+
+    Added seed information for mapas
+
+[33mcommit 9418df2697448c71b132f3c8735af3b06eea41cf[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Wed Jan 26 11:11:20 2022 -0700
+
+    Added seed for mapas
+
+[33mcommit 27559df955ed7e550902c52d1ab2cd59ee530820[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Wed Jan 26 10:59:49 2022 -0700
+
+    Minor changes on swagger documentation
+
+[33mcommit 428024fb0c7e70e7d7666924fb53dacf81f02e9a[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Tue Jan 25 14:52:26 2022 -0700
+
+    Fixed seeds for database
+
+[33mcommit 6b24704fdd888acb71ff5479d443e66b58eb9818[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Tue Jan 25 14:03:09 2022 -0700
+
+    Changed formula model and migration
+
+[33mcommit ec1658fd83d6a6a9081a0f91c5c66cc741ab3958[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Tue Jan 25 14:02:03 2022 -0700
+
+    Changed mapa migration and model to include url
+
+[33mcommit 9e35c4ef2a4b8dded9efe1578f58ec11119b2871[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Tue Jan 25 13:59:22 2022 -0700
+
+    Changed indicadores migration and model
+
+[33mcommit 26d2181526e334e55f34a1737283c5d409cb4de6[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Tue Jan 25 13:55:13 2022 -0700
+
+    Changed model and migration for variable
+
+[33mcommit c7ecd8ed9e43dacbce25b108357706f216376a08[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Tue Jan 25 13:47:11 2022 -0700
+
+    Deleted unidad variable model and migration
+
+[33mcommit a1cd889de87eceb12a04c883a0cf327237e4d045[m
+Merge: 055674a 83cf854
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Mon Jan 24 12:15:27 2022 -0700
+
+    Merge pull request #29 from luisccc99/feat-indicador-route
+    
+    Added route to get individual indicador by id
+
+[33mcommit 83cf85446695c3378a34bf143ff0f07991aa5084[m[33m ([m[1;31morigin/feat-indicador-route[m[33m)[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Mon Jan 24 12:04:37 2022 -0700
+
+    Added route to get individual indicador by id
+
+[33mcommit 055674a92cd4beaa6d8b058e3deac7f9045cdb3c[m
+Merge: 014d855 92702ca
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Mon Jan 24 10:58:10 2022 -0700
+
+    Merge pull request #28 from luisccc99/feat-indicador-formula
+    
+    Feat indicador formula
+
+[33mcommit 92702cae164be6d105930a8ce7487c0733ec6968[m[33m ([m[1;31morigin/feat-indicador-formula[m[33m)[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Sun Jan 23 18:19:58 2022 -0700
+
+    Minor changes on historicos' seeder
+
+[33mcommit 9e15d1966c567aa26f2112aa5f95fb9bdd3de721[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Sun Jan 23 12:13:17 2022 -0700
+
+    Added historicos to seeders
+
+[33mcommit 014d855768ee79d4d7c64138de615be435640b61[m
+Merge: 589783c 466db50
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Thu Jan 20 12:07:38 2022 -0700
+
+    Merge pull request #27 from luisccc99/feat-indicador-exclusions
+    
+    Feat indicador exclusions
+
+[33mcommit 589783cfa3d1b949eb2f1797769bd2989f7cebc5[m
+Merge: fcb45cc 2e6e82e
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Thu Jan 20 12:06:51 2022 -0700
+
+    Merge pull request #26 from luisccc99/feat-dockerize-app
+    
+    Add Dockerfile to project
+
+[33mcommit 2e6e82e2f033fe2fe8c316175506a058e1966a83[m[33m ([m[1;31morigin/feat-dockerize-app[m[33m)[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Thu Jan 20 00:27:36 2022 -0700
+
+    Add Dockerfile to project
+
+[33mcommit 466db508d06e3562e1fa57f01124e7889c068e6a[m[33m ([m[1;31morigin/feat-indicador-exclusions[m[33m)[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Thu Jan 20 00:01:50 2022 -0700
+
+    Exluded fields on group of  indicadores
+
+[33mcommit afd3cf73bbb5206607c0cdef635f33fcfdae8c43[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Wed Jan 19 23:58:16 2022 -0700
+
+    Exluded fields on individual indicador
+
+[33mcommit fcb45cc28fda288fcfa3486c68baef1864238adb[m
+Merge: 7d39c06 b3321ba
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Wed Jan 19 14:14:23 2022 -0700
+
+    Merge pull request #25 from luisccc99/feat-catalog-update
+    
+    Feat catalog update
+
+[33mcommit b3321ba55c3ba24df46757f571df9cbf605819f8[m[33m ([m[1;31morigin/feat-catalog-update[m[33m)[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Wed Jan 19 14:08:55 2022 -0700
+
+    Minor changes on modulo seeder
+
+[33mcommit 6a7f6d2c33b01f5bb7706d805782f2d95a9665e0[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Wed Jan 19 13:59:47 2022 -0700
+
+    Added urlimagen and color to indicadores and modulos
+
+[33mcommit 7d39c0665b52f4364e3622f4fcfa33dc83012853[m
+Merge: 2ef879a 560293b
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Wed Jan 19 13:18:06 2022 -0700
+
+    Merge pull request #23 from luisccc99/feat-catalog-update
+    
+    Feat catalog update
+
+[33mcommit 560293bf59c8321a10bf79e0738b82127c59d469[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Wed Jan 19 09:41:58 2022 -0700
+
+    Added unidades medidas to get endpoint
+
+[33mcommit f98668b2e9fb8e0b8653d2e8df2a845a60dd80d8[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Wed Jan 19 09:26:54 2022 -0700
+
+    Excluded dev branch on github actions
+
+[33mcommit 94b0b1c5b9c93bf957020d6c76cde1ac98bbe7de[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Tue Jan 18 23:58:17 2022 -0700
+
+    Using catalog queries as promises instead of async functions
+
+[33mcommit b77563c88f925eb2dc6947996a6ee619128b8d34[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Tue Jan 18 20:57:37 2022 -0700
+
+    Updated CoberturaGeografica and UnidadMedida catalogs
+
+[33mcommit 4a82b578ddf1a4559bb8db659c60094e81fe4bcd[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Tue Jan 18 15:35:54 2022 -0700
+
+    Docker github action container
+
+[33mcommit 2ef879a655b6949f3792e54b20574f7876779030[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Tue Jan 18 15:05:54 2022 -0700
+
+    fix indicador test
+
+[33mcommit 2a52bd311dffcf9e44c2b898f925999e94add9e7[m
+Merge: a7912e8 b8ae6fe
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Tue Jan 18 14:55:58 2022 -0700
+
+    Merge pull request #22 from luisccc99/feat-get-catalogos
+    
+    Added Ods and CoberturaGeograficas' route. Reviewing migrations from …
+
+[33mcommit a7912e8c48cc25d801ae6ccf65c74df32143ff74[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Tue Jan 18 14:54:02 2022 -0700
+
+    Change node ci/cd workflow
+
+[33mcommit 975963de96159b5f7b8d5c62a448e32fdaa22b6d[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Tue Jan 18 14:06:22 2022 -0700
+
+    (test) changed default optional port to 8080
+
+[33mcommit d427aa624777af22087b853e178b891ecb27e331[m
+Merge: e00eabf 55916da
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Tue Jan 18 14:04:15 2022 -0700
+
+    Merge branch 'main' of https://github.com/luisccc99/indicadores-backend
+
+[33mcommit b8ae6fed20c72581da06302001aca885732c4419[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Tue Jan 18 13:56:41 2022 -0700
+
+    Fixed Ods identifier on indicadorControllerTest
+
+[33mcommit 1ed02e4f0141aee7105d6576e951b470892fcea4[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Tue Jan 18 13:49:20 2022 -0700
+
+    Added inner join of tables OdsxIndicadores, featuring idOds as index in Indicadores
+
+[33mcommit 708a268b6421a74ad910bcda6cb9dd0a1a13a59e[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Tue Jan 18 12:08:09 2022 -0700
+
+    Fixed conflict errores
+
+[33mcommit 296189533c3816547df597e835b3dd5e99dbbeeb[m
+Merge: 7757d91 f3cefb5
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Tue Jan 18 12:07:45 2022 -0700
+
+    Fixed conflict errores
+
+[33mcommit f3cefb52c616e724bd4487f05552f8c3feb38c3e[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Tue Jan 18 12:05:01 2022 -0700
+
+    Added index to tables indicadores-ods
+
+[33mcommit 55916da725bd26fbdfd8db8d1fa68dca2ef8692e[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Tue Jan 18 10:23:24 2022 -0700
+
+    Update node.js.yml
+
+[33mcommit f61ea0fc3b3d92c888fb620b71157d2fe2fea62a[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Tue Jan 18 10:19:12 2022 -0700
+
+    Update node.js.yml
+
+[33mcommit d017b7910a316e9079ade5d8f62657349a9b9fc3[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Tue Jan 18 10:16:05 2022 -0700
+
+    Update node.js.yml
+
+[33mcommit 15417c74de2568146169d773a6e73df7b6b886fb[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Tue Jan 18 10:14:45 2022 -0700
+
+    Update node.js.yml
+
+[33mcommit debf742988347667dcd868d087ed508f46f16ac3[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Tue Jan 18 10:08:54 2022 -0700
+
+    Update node.js.yml
+
+[33mcommit 15aebb79b1acce12d2b4abedb145eb634abce139[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Tue Jan 18 10:07:29 2022 -0700
+
+    Update node.js.yml
+
+[33mcommit 4e2d81fc03507af311264edbe020c101c57ebc7a[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Tue Jan 18 09:51:33 2022 -0700
+
+    Create node.js.yml
+
+[33mcommit 7757d91d0a406444558782cf99cefe57a15053cf[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Tue Jan 18 09:43:49 2022 -0700
+
+    Updating ods
+
+[33mcommit 847402226be7d45b8dbd9763a0f454aee3314178[m
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Mon Jan 17 15:41:09 2022 -0700
+
+    Added Ods and CoberturaGeograficas' route. Reviewing migrations from Indicadores
+
+[33mcommit e00eabf6a766f8a07022bf859efbced88452486a[m
+Merge: 3a48b92 2b1d458
+Author: Miguel Valdez <56283510+MiquelVald@users.noreply.github.com>
+Date:   Wed Jan 12 13:30:25 2022 -0700
+
+    Merge branch 'dev' of https://github.com/luisccc99/indicadores-backend
+
+[33mcommit 2b1d458c859013e1f252ee4908d46b2e9803db67[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Wed Jan 12 11:47:44 2022 -0700
+
+    Add new column to historico table
+
+[33mcommit 3a48b929d850f23cc2893c7969c7e4095fe34321[m[33m ([m[1;32mmain[m[33m)[m
+Merge: e8dd480 885aa04
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Fri Jan 7 13:43:49 2022 -0700
+
+    Merge pull request #21 from luisccc99/dev
+    
+    Dev
+
+[33mcommit 885aa041164df6f982d63b3e64c17874a0ee297b[m
+Merge: cc2f488 9c7be50
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Fri Jan 7 13:43:31 2022 -0700
+
+    Merge pull request #20 from luisccc99/feat-website-indicadores
+    
+    Feat website indicadores
+
+[33mcommit 9c7be508955b8db1255c3d3f6ec74372b9140732[m[33m ([m[1;31morigin/feat-website-indicadores[m[33m)[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Fri Jan 7 13:42:37 2022 -0700
+
+    Add sorting and tests for indicadores
+
+[33mcommit 2f7487c66feecc6d4a2fb80993a127bd58f88a99[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Thu Jan 6 22:11:43 2022 -0700
+
+    Add filtering and test for indicadores
+
+[33mcommit 13bd4fab129dd78c6b2e36b96160773b9573cb21[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Wed Jan 5 13:36:35 2022 -0700
+
+    Delete comments in migrations and add code to delete entries of modulos
+
+[33mcommit 063a5cf665ea00153aa4ddf26c08fd5f6aa0c549[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Wed Jan 5 13:34:24 2022 -0700
+
+    Add seeds to create indicadores and fix some problems with the migration of a modulo
+
+[33mcommit cc2f488e5f402515ffedffa4e24a64f7d8a4a3ac[m
+Merge: 48f0f3f cbce892
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Wed Jan 5 12:31:57 2022 -0700
+
+    Merge pull request #19 from luisccc99/wip-sequelize-cli-integration
+    
+    Wip sequelize cli integration
+
+[33mcommit cbce89202c9f6c2414c28150accf35747682962a[m
+Merge: 5cff8a9 48f0f3f
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Wed Jan 5 12:31:26 2022 -0700
+
+    Merge branch 'dev' into wip-sequelize-cli-integration
+
+[33mcommit 48f0f3f2d42081bc87e36864982f46a782a933b9[m
+Merge: f8915c1 ec64155
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Wed Jan 5 12:29:28 2022 -0700
+
+    Merge pull request #18 from luisccc99/feat-website-indicadores
+    
+    Feat website indicadores
+
+[33mcommit ec6415520efd673df7026b960c17f951a840100b[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Wed Jan 5 12:22:06 2022 -0700
+
+    Add tests for indicadores pagination and filtering, merge modulos and indicadores routes to nest them
+
+[33mcommit 5cff8a9ab2ec383aa0ce7aeb10c14cd14dd68b15[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Tue Jan 4 13:21:08 2022 -0700
+
+    Add seeds for modulos and usuarios
+
+[33mcommit 5259a8c21d1282046971526b88fd806e2faf416d[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Tue Jan 4 13:12:34 2022 -0700
+
+    Integrate sequelize-cli to project and add seeds for usuarios and roles
+
+[33mcommit 6356f114eada88245437e246d3b0ac1c13e0a26c[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Tue Jan 4 08:46:19 2022 -0700
+
+    Add tests to filter indicadores
+
+[33mcommit ed16a920566c199853e7b75573dc1bf3665a9215[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Mon Jan 3 19:52:37 2022 -0700
+
+    Integrate sequelize-cli to project
+
+[33mcommit f8915c187b2569e64437f7c765a693d8782de836[m
+Merge: 66897c4 b8e7223
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Mon Jan 3 12:12:28 2022 -0700
+
+    Merge pull request #17 from luisccc99/wip-fix-test-suite
+    
+    Wip fix test suite
+
+[33mcommit b8e7223655344861490ec2d22e5e736f8a35ca24[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Fri Dec 31 14:03:44 2021 -0700
+
+    Add tests and create validation rules for GET /indicadores endpoint
+
+[33mcommit 0e410bf150307455685020018f4c2f4040317c33[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Wed Dec 29 14:09:06 2021 -0700
+
+    Add global fixtures to ensure app runs before testing starts
+
+[33mcommit 66897c4a9a3df4f797f6244aed77ebe5a3b650d2[m
+Merge: e8dd480 9837584
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Wed Dec 29 09:56:48 2021 -0700
+
+    Merge pull request #16 from luisccc99/feat-read-modulos
+    
+    Feat read modulos
+
+[33mcommit 983758481ce2becd5b3a59b4d07f5479d407eef6[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Tue Dec 28 20:34:17 2021 -0700
+
+    Add tests to GET /modulos
+
+[33mcommit 25f87dbd45d213c0e0a864740782474a988e42c7[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Mon Dec 27 20:33:29 2021 -0700
+
+    Add models for catalogs
+
+[33mcommit e8dd480974feb63243b0efa6ae798e07acab1b73[m
+Merge: 0c97ffb 48f9bf6
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Sat Dec 25 12:34:35 2021 -0700
+
+    Merge pull request #15 from luisccc99/dev
+    
+    Dev
+
+[33mcommit 48f9bf6a2fb9512f031c67657aa05f4efc960dda[m
+Merge: 96892c5 21b7428
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Sat Dec 25 12:33:58 2021 -0700
+
+    Merge pull request #14 from luisccc99/wip-variable-model
+    
+    Wip variable model
+
+[33mcommit 21b7428beb9ee59e298fe47033a37593e62c1fda[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Sat Dec 25 12:33:07 2021 -0700
+
+    Add test to GET /roles endpoint
+
+[33mcommit a6063ae07b56cbd01925e8d3fc41fa9813bfa3dd[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Tue Dec 21 11:58:54 2021 -0700
+
+    Finish database modeling
+
+[33mcommit 466552e39217a59b8e3ec998726ef5f188aa77da[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Fri Dec 17 22:37:10 2021 -0700
+
+    Update and add models of usuarios, indicadores and modulos
+
+[33mcommit 0c97ffb50b41c8ef08d8a298e39aebcf0f124f03[m
+Merge: 6182d6e 96892c5
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Thu Dec 9 23:12:05 2021 -0700
+
+    Merge pull request #13 from luisccc99/dev
+    
+    Dev
+
+[33mcommit 96892c5da3bc447aa5d47f388b13a8a8a38a50c2[m
+Merge: b870aeb 85cf82f
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Thu Dec 9 23:11:31 2021 -0700
+
+    Merge pull request #12 from luisccc99/feat-user-crud
+    
+    Feat user crud
+
+[33mcommit 85cf82f04e6017f31eb05bd7cc858ba18661253e[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Wed Dec 8 00:21:48 2021 -0700
+
+    Add documentation to patch and post of /usuarios
+
+[33mcommit 92ca5519f772b9393f00950f382baafc4d6a6afa[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Sun Dec 5 23:56:32 2021 -0700
+
+    Add security scheme to swagger documentation and validate optional fields in register validation rules
+
+[33mcommit 2b96bb6c2f46cb458809555240ed5d79f6b8ca94[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Sat Dec 4 15:54:05 2021 -0700
+
+    Complete documentation for getting list of users GET /usuarios
+
+[33mcommit c39108a8613b520298673a6b1afa915121197fcf[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Thu Dec 2 00:27:32 2021 -0700
+
+    Add controller to handle user's info updation
+
+[33mcommit cd41c91876a7e4e14be939b144d93a682102a94c[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Wed Dec 1 22:15:37 2021 -0700
+
+    Add service to update user's info and change jwt payload from usuario to sub (subject claim)
+
+[33mcommit 231091788f4ed715b6019ff5594aea9b8b330c02[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Tue Nov 30 00:09:20 2021 -0700
+
+    Test user CRUD
+
+[33mcommit 612116e1e24076e5e430d24ce406564d7827f456[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Mon Nov 29 13:11:55 2021 -0700
+
+    Add tests when getting a user and creating a new one
+
+[33mcommit 66ece24c422b782dcefae7aba55425cbf55e4607[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Fri Nov 26 00:02:11 2021 -0700
+
+    Add function in usuario service to get usuarios
+
+[33mcommit b870aeb545b3c45ce1bbbc4b5f1569c1fbef6704[m
+Merge: 391a49f 55b246d
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Thu Nov 25 23:04:09 2021 -0700
+
+    Merge pull request #11 from luisccc99/wip-testing-user-service
+    
+    Set up dependencies for testing
+
+[33mcommit 55b246dcd1bd42d68ed00034b94b77110d327208[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Mon Nov 22 23:42:49 2021 -0700
+
+    Add test for user registration (usuario service)
+
+[33mcommit eb73b097b77000a5caf3a3a8a97d7aef47c8d2cd[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Tue Nov 16 19:22:11 2021 -0700
+
+    Set up dependencies for testing
+
+[33mcommit 391a49f7f4b520828417f6dd569a7ab2fa14841e[m
+Merge: 5f70ada 08a01e9
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Mon Nov 15 19:32:32 2021 -0700
+
+    Merge pull request #9 from luisccc99/wip-separating-controllers-and-services
+    
+    Wip separating controllers and services
+
+[33mcommit 5f70adacaef5fd143efa75810fc1d9c0573e2248[m
+Merge: 9af82e1 1827a60
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Mon Nov 15 19:32:19 2021 -0700
+
+    Merge pull request #10 from luisccc99/wip-models
+    
+    Add indicador model and add basic structure to rol-modulo model
+
+[33mcommit 1827a607b24a93ad5979733d8cd8ee9081b4706a[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Fri Nov 12 23:24:06 2021 -0700
+
+    finish modeling of tables (rolesindicadores, rolesmodulos, and usuariosmodulos)
+
+[33mcommit 08a01e975c0c51435d9cf5c028e453e13e39682a[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Wed Nov 10 22:19:48 2021 -0700
+
+    Add methods to usuarios service to create, get and verify if a correo is already used
+
+[33mcommit 42690e5636650951cc5dee6be7a6a773ffe1ce76[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Wed Nov 10 01:55:50 2021 -0700
+
+    Add usuarios service to separate business logic from controllers (and avoid fat controllers)
+
+[33mcommit d0e30ba0e05e3357100f7bc23813c7f51247089a[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Wed Nov 10 01:46:51 2021 -0700
+
+    Add indicador model and add basic structure to rol-modulo model
+
+[33mcommit 9af82e10912e11282e43906cc2013534d90d0d9f[m
+Merge: 6182d6e 780b485
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Wed Nov 10 00:45:47 2021 -0700
+
+    Merge pull request #8 from luisccc99/wip-documentation
+
+[33mcommit 780b485fbd213e7e817d590147ad9a6b8df46c22[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Wed Nov 10 00:39:14 2021 -0700
+
+    Add basic structure to API documentation, and add TODOs in some controller files
+
+[33mcommit d26c2a97944e210af3b510d4311140d80b066c99[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Mon Nov 8 00:05:55 2021 -0700
+
+    Add rate limiter and js-doc to document api with comments
+
+[33mcommit 6182d6e65c30f17799d33e95f2acf7bd9cf4d0b0[m
+Merge: ce1b907 f063f55
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Fri Nov 5 07:09:54 2021 -0700
+
+    Merge pull request #7 from luisccc99/dev
+    
+    Dev
+
+[33mcommit f063f55c4584a76aa49306d05f8a055b333a5564[m
+Merge: 70b416c 5a9de31
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Fri Nov 5 07:09:35 2021 -0700
+
+    Merge pull request #6 from luisccc99/wip-roles
+    
+    Wip roles
+
+[33mcommit ce1b907203e646cd6ffe56c0b8864a5423ee6894[m
+Merge: 56aedbe 70b416c
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Wed Nov 3 21:03:44 2021 -0700
+
+    Merge pull request #4 from luisccc99/dev
+    
+    Dev
+
+[33mcommit dd357af583394ff1c732f49b5f8ee3fdc67f6c2b[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Mon Nov 1 22:55:15 2021 -0700
+
+    Add dependencies to generate app's documentation with Swagger
+
+[33mcommit 5a9de31b0c6512468ca596d6d46225fe47ff0387[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Sun Oct 31 12:43:41 2021 -0700
+
+    Add models and validations to roles, modulos, and their relation with users
+
+[33mcommit 0f329eab951a0aa6847a25b141d207901fdc4d71[m
+Author: Luis Cruz <luisccc99@gmail.com>
+Date:   Tue Oct 26 13:49:12 2021 -0600
+
+    add Modulo's model
+
+[33mcommit 70b416c8ca4b8cf70ddacdff6b550aa4895

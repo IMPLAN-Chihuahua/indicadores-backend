@@ -31,6 +31,21 @@ const { moduloExists } = require('../middlewares/verifyIdModulo');
  *             type: string
  *             description: Commentaries of a module
  *             example: Modulo de accesibilidad ciclista, definido por la norma ISO/IEC 9126-1:2015
+ *           activo:
+ *             type: string
+ *             description: Active state of a module
+ *             example: SI
+ *             readOnly: true
+ *           urlImagen:
+ *             type: string
+ *             description: URL to the image of a module
+ *             example: http://example.com/image.png
+ *             readOnly: true
+ *           color:
+ *             type: string
+ *             description: Color of a module
+ *             example: #FF0000
+ *             readOnly: true     
  *           createdAt:
  *             type: string 
  *             description: Date of creation of a module
@@ -44,7 +59,7 @@ const { moduloExists } = require('../middlewares/verifyIdModulo');
  *             description: Identifier of an indicador
  *             example: 1
  *             readOnly: true
- *           url:   
+ *           urlImagen:   
  *             type: string 
  *             description: Base url to display a map
  *             example: http://example.com/map
@@ -60,6 +75,9 @@ const { moduloExists } = require('../middlewares/verifyIdModulo');
  *             type: string
  *             description: Detailed information of an Indicador
  *             example: Lorem ipsum at dolor
+ *           ultimoValorDisponible:
+ *             type: string
+ *             description: Last value available for the Indicator
  *           anioUltimoValorDisponible:
  *             type: string
  *             description: Year of the late information of an Indicador
@@ -77,10 +95,6 @@ const { moduloExists } = require('../middlewares/verifyIdModulo');
  *             type: integer
  *             description: Reference to a map
  *             example: 1
- *           grafica:
- *             type: integer
- *             description: Does the Indicador have a chart?
- *             example: 1
  *           observaciones:
  *             type: string
  *             description: Notes about an Indicador
@@ -91,6 +105,18 @@ const { moduloExists } = require('../middlewares/verifyIdModulo');
  *           updatedBy:
  *             type: integer
  *             description: Identifier of the user who updated an Indicador
+ *             example: 1
+ *           idOds:
+ *             type: integer
+ *             description: Identifier of the ODS
+ *             example: 1
+ *           idCobertura:
+ *             type: integer
+ *             description: Identifier of the coverage
+ *             example: 1
+ *           idUnidadMedida:
+ *             type: integer
+ *             description: Identifier of the unit of measure
  *             example: 1
  */
 moduloRouter.use('/:idModulo/indicadores', indicadorRouter);
@@ -138,22 +164,24 @@ moduloRouter.route('/')
  *             type: integer
  *             format: int64
  *             minimum: 1
- *
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
+ *             description: Identifier of a module
+ *         - name: page
+ *           in: query
+ *           required: false
+ *           schema:
+ *             type: integer
+ *             format: int64
+ *             minimum: 1
+ *             description: Page number
+ *         - name: per_page
+ *           in: query
+ *           required: false
+ *           schema:
+ *             type: integer
+ *             format: int64
+ *             minimum: 1
+ *             description: Number of elements per page
+ *             tags: [Indicadores]
  *       responses:
  *         200:
  *           description: A very friendly list of indicadores
@@ -167,31 +195,6 @@ moduloRouter.route('/')
  *           description: Unable to process request due to semantic errors
  *         500:
  *           description: Internal server error
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
  * 
  */
 
@@ -238,7 +241,10 @@ indicadorRouter.route('/')
  *         404:
  *           description: Indicador or Modulo was not found
  *         422:
+ *           description: Unable to process request due to semantic errors
  *         500:
+ *           description: Internal server error
+ * 
  */
 indicadorRouter.route('/:idIndicador')
     .get(paramValidationRules(),
