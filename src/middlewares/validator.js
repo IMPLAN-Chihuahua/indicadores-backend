@@ -84,13 +84,13 @@ const filterIndicadoresValidationRules = () => {
 
 const paramValidationRules = () => {
     return [
-        param(["idModulo", "idIndicador"])
+        param(['idModulo', 'idIndicador', 'idUser'])
             .optional()
             .isInt().withMessage('Campo debe ser entero')
             .toInt()
             .custom((value) => {
                 if (value < 1) {
-                    throw new Error('id debe ser mayor a 0');
+                    throw new Error('El valor del campo debe ser mayor a 0');
                 }
                 return true;
             })
