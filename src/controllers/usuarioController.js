@@ -1,10 +1,8 @@
-const { Usuario } = require('../models');
 const { addUsuario,
     getUsuarios,
     isCorreoAlreadyInUse,
     getUsuarioById,
     updateUsuario } = require('../services/usuariosService');
-const { Op } = require('sequelize');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
 const SALT_ROUNDS = 10;
@@ -71,13 +69,14 @@ const editUser = async (req, res) => {
 }
 
 const getUser = async (req, res) => {
-    const { id } = req.params;
-    const { sub } = req;
+    const id = req.matchedData.idUser;
+    console.log('idUser', id)
+    // const sub = req.sub;
 
-    if (id != sub) {
-        return res.sendStatus(204);
-    }
-
+    // if (id != sub) {
+    //     return res.sendStatus(204);
+    // }
+    
     try {
         const usuario = await getUsuarioById(id);
         if (usuario === null) {
@@ -88,18 +87,6 @@ const getUser = async (req, res) => {
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
-}
-
-
-// TODO: create function inside service to handle searching and filtering
-const searchUser = async (req, res) => {
-    const { term } = req.query
-
-    term = term.toLowerCase()
-
-    Usuario.findAll({ where: { id: { [Op.like]: '%' + term + '%' } } })
-        .then(usua => res.render('index', { usua }))
-        .catch(err => console.log(err))
 }
 
 module.exports = {

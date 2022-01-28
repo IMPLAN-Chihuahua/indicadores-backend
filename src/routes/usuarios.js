@@ -5,7 +5,8 @@ const { verifyJWT } = require('../middlewares/auth');
 const {
     registerValidationRules,
     paginationValidationRules,
-    validate } = require('../middlewares/validator');
+    validate,
+    paramValidationRules } = require('../middlewares/validator');
 /**
  * @swagger
  *   components:
@@ -129,7 +130,7 @@ const {
  *           description: Unable to process request due to semantic errors in the body or param payload
  *       
  */
-router.get('/', verifyJWT, paginationValidationRules(), validate, getUsers);
+router.get('/', paginationValidationRules(), validate, verifyJWT, getUsers);
 
 /**
  * @swagger
@@ -155,7 +156,7 @@ router.post('/', registerValidationRules(), validate, createUser);
 
 /**
  * @swagger
- *  /usuarios/{id}:
+ *  /usuarios/{idUser}:
  *    get:
  *      summary: Get a user with a given id
  *      tags: [Usuarios]
@@ -163,7 +164,7 @@ router.post('/', registerValidationRules(), validate, createUser);
  *        - bearer: []
  *      parameters:
  *        - in: path
- *          name: id
+ *          name: idUser
  *          required: true
  *          schema: 
  *            type: integer
@@ -180,7 +181,7 @@ router.post('/', registerValidationRules(), validate, createUser);
  *        422:
  *          description: Unable to process request due to semantic errors in the body or param payload
  */
-router.get('/:id', verifyJWT, getUser);
+router.get('/:idUser', paramValidationRules(), validate, verifyJWT, getUser);
 
 
 /**
@@ -193,7 +194,7 @@ router.get('/:id', verifyJWT, getUser);
  *        - bearer: []
  *      parameters:
  *        - in: path
- *          name: id
+ *          name: idUser
  *          required: true
  *          schema:
  *              type: integer
@@ -212,6 +213,6 @@ router.get('/:id', verifyJWT, getUser);
  *        422:
  *          description: Unable to process request due to semantic errors in the body or param payload
  */
-router.patch('/:id', verifyJWT, editUser);
+router.patch('/:idUser', paramValidationRules(), validate, verifyJWT, editUser);
 
 module.exports = router;
