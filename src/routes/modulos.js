@@ -155,7 +155,7 @@ moduloRouter.route('/')
  *     get:
  *       summary: Retrieves a list of indicadores after validation
  *       description: Retrieves a list of indicadores from the database after pagination validation
- *       tags: [Indicadores]
+ *       tags: [Modulos]
  *       parameters:
  *         - name: idModulo
  *           in: path
@@ -181,7 +181,41 @@ moduloRouter.route('/')
  *             format: int64
  *             minimum: 1
  *             description: Number of elements per page
- *             tags: [Indicadores]
+ *         - name: idOds
+ *           in: query
+ *           required: false
+ *           schema:
+ *             type: integer
+ *             format: int64
+ *             description: Identifier of an ODS
+ *         - name: idCobertura
+ *           in: query
+ *           required: false
+ *           schema:
+ *             type: integer
+ *             format: int64
+ *             description: Identifier of an coverage
+*         - name: idUnidadMedida
+ *           in: query
+ *           required: false
+ *           schema:
+ *             type: integer
+ *             format: int64
+ *             description: Identifier of an unit of measure
+ *         - name: anioUltimoValorDisponible
+ *           in: query
+ *           required: false
+ *           schema:
+ *             type: integer
+ *             format: int64
+ *             description: Identifier of an year
+ *         - name: tendenciaActual
+ *           in: query
+ *           required: false
+ *           schema:
+ *             type: string
+ *             format: string
+ *             description: Identifier of an trend
  *       responses:
  *         200:
  *           description: A very friendly list of indicadores
@@ -209,47 +243,6 @@ indicadorRouter.route('/')
         getIndicadores
     );
 
-/**
- * @swagger
- *   /modulos/{idModulo}/indicadores/{idIndicador}:
- *     get:
- *       summary: Indicador object
- *       description: Retrieve data of an Indicador
- *       tags: [Indicadores]
- *       parameters:
- *         - name: idIndicador
- *           in: path
- *           required: true
- *           schema:
- *             type: integer
- *             format: int64
- *             minimum: 1
- *         - name: idModulo
- *           in: path   
- *           required: true 
- *           schema:
- *             type: integer    
- *             format: int64
- *             minimum: 1
- *       responses:
- *         200:
- *           description: Indicador object
- *           content: 
- *             application/json:
- *               schema:
- *                 $ref: '#/components/schemas/Indicador'
- *         404:
- *           description: Indicador or Modulo was not found
- *         422:
- *           description: Unable to process request due to semantic errors
- *         500:
- *           description: Internal server error
- * 
- */
-indicadorRouter.route('/:idIndicador')
-    .get(paramValidationRules(),
-        validate,
-        moduloExists,
-        getIndicador);
+
 
 module.exports = moduloRouter;
