@@ -14,6 +14,7 @@ const { Op } = require("sequelize");
 const { getPagination } = require("../utils/pagination");
 
 const sequelize = require("sequelize");
+const { generateCSV, generateJSON } = require("../services/generadorArchivosService");
 
 const getIndicadores = async (req, res) => {
   const { page, per_page } = getPagination(req.matchedData);
@@ -67,6 +68,8 @@ const getIndicadores = async (req, res) => {
 const getIndicador = async (req, res) => {
   try {
     const idIndicador = req.matchedData.idIndicador;
+    const format = req.matchedData.format;
+
     const indicador = await Indicador.findOne({
       where: {
         id: idIndicador,
@@ -130,9 +133,13 @@ const getIndicador = async (req, res) => {
     if (indicador === null) {
       return res.sendStatus(404);
     }
-    return res.status(200).json({
-      data: indicador,
-    });
+
+    if (typeof format != 'undefined'){
+      return generateFile(format, res, indicador)
+    }
+
+    return (res.status(200).json({data: indicador,}))
+
   } catch (err) {
     console.log(err);
     return res.sendStatus(500);
@@ -208,6 +215,18 @@ const getIndicadoresSorting = ({ sort_by, order }) => {
   return arrangement;
 };
 
+const generateFile = (format, res, data) => {
+  switch(format) {
+    case 'json':
+      return generateJSON(res, data);
+    case 'csv':
+      return generateCSV(res, data);
+    case 'xslx':
+      return 'xlsx';
+    case 'pdf':
+      return 'pdf';
+  }
+}
 
 
 module.exports = {

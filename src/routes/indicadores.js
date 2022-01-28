@@ -85,7 +85,7 @@ const { getIndicador } = require('../controllers/indicadorController');
 //  *                 $ref: '#/components/schemas/Indicadors'
 //  */
 
-indicadorRouter.route('/:idIndicador')
+indicadorRouter.route('/:idIndicador/:format?')
     .get(paramValidationRules(),
         validate,
         getIndicador);
