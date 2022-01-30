@@ -5,25 +5,19 @@ const faker = require('faker');
 const { Usuario } = require('../../models');
 const UsuarioService = require('../../services/usuariosService');
 const sinon = require('sinon');
+const { server } = require('../../../app')
+const { aUser } = require('../../utils/factories');
 
-function aUser(id) {
-    return {
-        id,
-        nombres: faker.name.firstName(),
-        apellidoPaterno: faker.name.lastName(),
-        apellidoMaterno: faker.name.lastName(),
-        correo: faker.internet.email(),
-        clave: faker.internet.password(8, false),
-        idRol: 1
-    }
-}
-
-describe('Usuario CRUD operations', function () {
+describe('User service', function () {
 
     const usuario = aUser(faker.datatype.number());
 
-    afterEach('clean usuarios table', async function () {
+    this.afterEach(function () {
         sinon.restore();
+    });
+
+    this.afterAll(function () {
+        server.close();
     });
 
     // Read
@@ -115,7 +109,7 @@ describe('Usuario CRUD operations', function () {
     // Update
     it('Should update user\'s name', function () {
         const updatedName = faker.name.firstName();
-        const updateFake = sinon.fake.resolves(true);
+        const updateFake = sinon.fake.resolves(1);
         sinon.replace(Usuario, 'update', updateFake);
         return UsuarioService.updateUsuario(usuario.id, { nombres: updatedName })
             .then(res => {
@@ -125,7 +119,7 @@ describe('Usuario CRUD operations', function () {
     });
 
     it('Should not affect any row with invalid fields', function () {
-        const updateFake = sinon.fake.resolves(false);
+        const updateFake = sinon.fake.resolves(0);
         sinon.replace(Usuario, 'update', updateFake);
         return UsuarioService.updateUsuario(usuario.id, { invalid: true })
             .then(res => {
@@ -133,13 +127,5 @@ describe('Usuario CRUD operations', function () {
                 expect(res).to.be.false;
             });
     });
-
-    /**
-    it('Should not update the id of a user', async function () {
-        const affectedRows = await UsuarioService.updateUsuario(usuario.id,
-            { id: 0 });
-        assert.equal(0, affectedRows);
-    });
-     */
 
 });

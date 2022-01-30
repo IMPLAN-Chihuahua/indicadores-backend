@@ -60,6 +60,12 @@ const paginationValidationRules = () => {
             .optional()
             .isInt().withMessage('campo debe ser entero')
             .toInt()
+            .custom((value) => {
+                if (value < 1) {
+                    throw new Error('valor debe ser mayor a 0');
+                }
+                return true;
+            }),
     ];
 };
 
@@ -67,7 +73,7 @@ const filterIndicadoresValidationRules = () => {
     return [
         query(['anioUltimoValorDisponible', 'idOds', 'idCobertura', 'idFuente', 'idUnidadMedida'])
             .optional()
-            .isInt()
+            .isInt().withMessage('campo debe ser entero')
             .toInt()
             .custom((value) => {
                 if (value < 1) {

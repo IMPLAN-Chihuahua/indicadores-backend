@@ -35,8 +35,7 @@ const getOds = async (_, res) => {
                 return res.status(200).json({ coberturas: result[0], ods: result[1], unidadMedida: result[2] });
             })
             .catch(err => {
-                console.log(err + 'ERROR');
-                return res.status(500);
+                return res.sendStatus(500);
             })
     );
 
