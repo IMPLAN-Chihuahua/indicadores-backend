@@ -60,10 +60,8 @@ app.use('/api/v1/catalogos', require('./src/routes/catalogos'));
 
 const PORT = 8080;
 
-if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`App starting on port ${PORT}`);
-  });
-}
+const server = app.listen(PORT, () => {
+  console.log(`App starting on port ${PORT}`);
+});
 
-module.exports = { app, PORT };
+module.exports = { server, app};
