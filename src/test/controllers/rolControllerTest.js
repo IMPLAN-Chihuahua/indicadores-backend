@@ -1,22 +1,38 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const expect = chai.expect;
 chai.use(chaiHttp);
+const sinon = require('sinon');
+const { app, server } = require('../../../app');
+const { Rol } = require('../../models');
+const { aRol } = require('../../utils/factories');
+const expect = chai.expect;
 
-describe('api/v1/roles', function () {
+describe('v1/roles', function () {
+    let roles = [];
 
-    const baseUrl = 'http://localhost:8080/api/v1'
+    this.beforeAll(function () {
+        roles = [aRol(1), aRol(2), aRol(3)]
+    });
 
-    describe('GET', function () {
-        it('should get a list of roles', function (done) {
-            chai.request(baseUrl)
-                .get('/roles')
-                .end((err, res) => {
-                    expect(err).to.be.null;
-                    expect(res).to.have.status(200);
-                    done()
-                });
-        });
+    this.afterEach(function () {
+        sinon.restore();
+    });
+
+    this.afterAll(function () {
+        server.close();
+    });
+
+
+    it('should get a list of roles', function (done) {
+        sinon.replace(Rol, 'findAll', sinon.fake.resolves(roles));
+        chai.request(app)
+            .get('/api/v1/roles')
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(200);
+                expect(res.body.data).to.be.an('array').that.is.not.empty;
+                done()
+            });
     });
 
 });
