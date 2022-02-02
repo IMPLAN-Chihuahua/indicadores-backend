@@ -116,10 +116,9 @@ const { getIndicador } = require('../controllers/indicadorController');
  * 
  */
 
-indicadorRouter.route('/:idIndicador')
+indicadorRouter.route('/:idIndicador/:format?')
     .get(paramValidationRules(),
         validate,
         getIndicador);
-
 
 module.exports = indicadorRouter;
