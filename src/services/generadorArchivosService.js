@@ -6,15 +6,16 @@ const generateCSV = (res, data) => {
     data = data.dataValues;
     const json2csv = new Parser ();
     const csv = json2csv.parse(data);
+    res.header('Content-disposition', 'attachment');
     res.header('Content-Type', 'text/csv');
-    res.attachment('Boop.csv');
-    console.log(csv);
+    res.attachment(`${data.nombre}.csv`);
     return res.send(csv);
 };
 
 const generateJSON = (res, data) => {
+    res.header('Content-disposition', 'attachment');
     res.header('Content-Type', 'application/json');
-    res.attachment('Boop.json');
+    res.attachment(`${data.nombre}.json`);
     return res.send(data);
 }
 
