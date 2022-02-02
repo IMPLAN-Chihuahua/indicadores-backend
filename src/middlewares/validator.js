@@ -99,7 +99,11 @@ const paramValidationRules = () => {
                     throw new Error('El valor del campo debe ser mayor a 0');
                 }
                 return true;
-            })
+            }),
+        param(["format"])
+            .optional()
+            .isIn(['csv','xlsx','pdf','json'])
+            .withMessage('formato debe ser csv, xlsx, pdf o json')
     ];
 };
 
