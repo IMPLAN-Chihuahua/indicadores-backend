@@ -4,14 +4,11 @@ const pdf = require('html-pdf');
 const fs = require('fs');
 const puppeteer = require('puppeteer');
 
-const generateCSV = (res, data) => {
+const generateCSV = (data) => {
     data = data.dataValues;
     const json2csv = new Parser ();
     const csv = json2csv.parse(data);
-    res.header('Content-disposition', 'attachment');
-    res.header('Content-Type', 'text/csv');
-    res.attachment(`${data.nombre}.csv`);
-    return res.send(csv);
+    return csv;
 };
 
 const generateJSON = (data) => {
