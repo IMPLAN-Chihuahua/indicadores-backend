@@ -118,6 +118,7 @@ const getIndicador = async (req, res) => {
         "id",
         "urlImagen",
         "nombre",
+        "definicion",
         "ultimoValorDisponible",
         "anioUltimoValorDisponible",
         "tendenciaActual",
