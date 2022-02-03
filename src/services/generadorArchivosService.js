@@ -1,6 +1,8 @@
-const { Indicador } = require("../models");
 const { Parser } = require("json2csv");
 const Excel = require('exceljs');
+const pdf = require('html-pdf');	
+const fs = require('fs');
+const puppeteer = require('puppeteer');
 
 const generateCSV = (res, data) => {
     data = data.dataValues;
@@ -12,11 +14,8 @@ const generateCSV = (res, data) => {
     return res.send(csv);
 };
 
-const generateJSON = (res, data) => {
-    res.header('Content-disposition', 'attachment');
-    res.header('Content-Type', 'application/json');
-    res.attachment(`${data.nombre}.json`);
-    return res.send(data);
+const generateJSON = (data) => {
+    return data;
 }
 
 const generateXLSX =  (res, data) => {
@@ -51,22 +50,34 @@ const generateXLSX =  (res, data) => {
     });
 }
 
-const excelito = (qtyOfVariables, qtyOfHistoricos) => {
-    const definitionRows = [3, 4, 5, 6, 8, 9, 11]
-    let variableRowIndexStarter = definitionRows.slice(-1).pop+2
-    let variablesRow = []
-    let historicosRow = []
-    for (let i = 0; i < qtyOfVariables; i++) {
-        variablesRow.push(variableRowIndexStarter + i)
-    }
-    let historicoRowIndexStarter = variablesRow.slice(-1).pop+2
-    for (let i = 0; i < qtyOfHistoricos; i++) {
-        historicosRow.push(historicoRowIndexStarter + 1)
-    }
-    
+const generatePDF = async (res, data) => {
+
+  const browser = await puppeteer.launch({
+    headless: true
+  })
+
+  const page = await browser.newPage()
+
+  const html = fs.readFileSync('./src/templates/test.html', 'utf8')
+  await page.setContent(html, {
+    waitUntil: 'networkidle2'
+  })
+
+  page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36WAIT_UNTIL=load")
+
+  const seggs = await page.pdf({
+    format: 'A3',
+  })
+  // close the browser
+  await browser.close();
+    res.header('Content-disposition', 'attachment');
+    res.header('Content-Type', 'application/pdf');
+    res.send(seggs);
 }
+
 module.exports = {
     generateCSV,
     generateJSON,
-    generateXLSX
+    generateXLSX,
+    generatePDF
 }

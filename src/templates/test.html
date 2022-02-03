@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDFMafaka</title>
+    <!-- <link rel="stylesheet" href="test.css"> -->
+    <script type="text/javascript" id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@latest/dist/Chart.min.js"></script>
+
+    <style>
+            html {
+  -webkit-print-color-adjust: exact;
+}
+      h1 {
+    text-align: center;
+}
+
+img {
+    width: 20%;
+    height: 5%;
+    max-width: 300px;
+    max-height: 200px;
+    padding-left: 10%;
+    padding-right: 10%;
+}
+
+.title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.table-father {
+}
+
+.table-cluster {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    max-width: 60%;
+    margin: auto;
+}
+
+table {
+    width: 100%;
+    max-width: 100%;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-size: 20px;
+    margin-bottom: 5%;
+}
+
+table td, table th {
+    text-align: left;
+    padding: 7px;
+}
+
+table td {
+    font-size: 15px;
+}
+
+table th {
+    color: rgb(233, 147, 35);
+    background: hsla(0, 0%, 90%, 0.671);
+    border-radius: 10%;
+}
+
+#myChart {
+    height: 300px;
+    width: 300px;
+    max-width: 300px;
+    max-height: 300px;
+}
+    </style>
+</head>
+<body>
+    <div id="pageHeader" class="title">
+        <img class="logo" src="https://c8.alamy.com/compes/r4t6e0/cat-logo-design-ilustracion-vector-plantilla-de-diseno-r4t6e0.jpg">
+        <h1>Nombre bonito del indicador</h1>
+        <img class="logo" src="https://s3.amazonaws.com/com.cartodb.users-assets.production/production/implancuu/assets/20200812204047LOGO%20IMPLAN%202020.png">
+    </div>
+
+    <br>
+    <div class="">
+      <div class="table-cluster">
+        <table>
+          <tr>
+            <th>Tematica</th>
+            <th>Ods</th>
+            <th>Cobertura geográfica</th>
+          </tr>
+          <tr>
+            <td>Emil</td>
+            <td>Tobias</td>
+            <td>Linus</td>
+          </tr>
+        </table>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Descripción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium nostrum mollitia, magni porro ex deleniti quis minima atque! Voluptas voluptatibus molestias nostrum ipsam itaque blanditiis earum eveniet eum odio reprehenderit?</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Fórmula de cálculo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <p>
+                $$z=x^2 + y^2$$
+                </p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Datos históricos registrados</th>
+              <th>Gráficos registrados</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                sex
+              </td>
+              <td><canvas id="myChart"></canvas></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <script>
+    const ctx = document.getElementById('myChart');
+    const myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            datasets: [{
+                label: '# of Votes',
+                data: [12, 19, 3, 5, 2, 3],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+    </script>
+</body>
+</html>

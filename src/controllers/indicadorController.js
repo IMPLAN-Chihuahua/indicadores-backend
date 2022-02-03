@@ -14,7 +14,7 @@ const { Op } = require("sequelize");
 const { getPagination } = require("../utils/pagination");
 
 const sequelize = require("sequelize");
-const { generateCSV, generateJSON, generateXLSX } = require("../services/generadorArchivosService");
+const { generateCSV, generateJSON, generateXLSX, generatePDF } = require("../services/generadorArchivosService");
 
 const getIndicadores = async (req, res) => {
   const { page, per_page } = getPagination(req.matchedData);
@@ -223,7 +223,7 @@ const generateFile = (format, res, data) => {
     case 'xlsx':
       return generateXLSX(res, data);
     case 'pdf':
-      return 'pdf';
+      return generatePDF(res, data);
   }
 }
 
