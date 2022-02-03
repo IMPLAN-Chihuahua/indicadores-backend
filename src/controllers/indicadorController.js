@@ -217,7 +217,11 @@ const getIndicadoresSorting = ({ sort_by, order }) => {
 const generateFile = (format, res, data) => {
   switch(format) {
     case 'json':
-      return generateJSON(res, data);
+      return (
+            res.header('Content-disposition', 'attachment'),
+            res.header('Content-Type', 'application/json'),
+            res.attachment(`${data.nombre}.json`),
+            res.send(generateJSON(data)));
     case 'csv':
       return generateCSV(res, data);
     case 'xlsx':
