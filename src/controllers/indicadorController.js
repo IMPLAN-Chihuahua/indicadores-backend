@@ -231,7 +231,12 @@ const generateFile = (format, res, data) => {
             res.attachment(`${data.nombre}.json`),
             res.send(csvData));
     case 'xlsx':
-      return generateXLSX(res, data);
+      const x = generateXLSX(res, data);
+      return (
+            res.header('Content-disposition', 'attachment'),
+            res.header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
+            res.attachment(x)
+            );
     case 'pdf':
       return generatePDF(res, data);
   }

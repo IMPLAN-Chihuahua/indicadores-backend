@@ -64,12 +64,8 @@ const generateXLSX =  (res, data) => {
             }
         }
 
-        res.header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-
         await wb.xlsx.write(res);
 
-        res.status(200);
-        res.end();
         })
 
     .catch(err => {
