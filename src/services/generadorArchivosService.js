@@ -11,32 +11,63 @@ const generateCSV = (data) => {
     return csv;
 };
 
-const generateJSON = (data) => {
-    return data;
-}
+const generateJSON = (data) => (data)
 
 const generateXLSX =  (res, data) => {
     const indicador = data.dataValues;
 
-    const definitionRows = [3, 4, 5, 6, 8, 9, 11]
-    const indicadorInfo = [indicador.nombre, indicador.Unidad, indicador.CoberturaGeografica.nombre, indicador.Modulo.temaIndicador, indicador.tendenciaActual, indicador.urlImagen, 'test'];
+    const indicadorInfo = [indicador.nombre, indicador.Modulo.temaIndicador, indicador.tendenciaActual, indicador.tendenciaDeseada, indicador.ultimoValorDisponible, indicador.Unidad, indicador.anioUltimoValorDisponible, indicador.CoberturaGeografica.nombre, indicador.Formula.ecuacion, indicador.Formula.descripcion, indicador.Formula.Variables, indicador.Historicos];
+
+   // console.log(indicadorInfo);
 
     let baseFile = './src/templates/boop.xlsx';
     let wb = new Excel.Workbook();
     wb.xlsx.readFile(baseFile)
-
     .then (async () => {
+        let initialRow = 2;
         let ws = wb.getWorksheet(1);
+        let row = ws.getRow(initialRow);
         
-        for (let i = 0; i < definitionRows.length; i++) {
-            let row = ws.getRow(definitionRows[i]);
+        for (let i = 0; i < indicadorInfo.length; i++) {
+          initialRow = 2;
+          let actualCell = (i + 1);
+          if (typeof indicadorInfo[i] === 'object') {
+            indicadorInfo[i].map((item, index) => {
+              if(item.dataValues.hasOwnProperty('UnidadMedida')) {
+                [item.dataValues].map((singularItem, index) => {
+                  console.log(initialRow);
+                  let row = ws.getRow(initialRow);
+                  row.getCell(actualCell).value = singularItem.nombre;
+                  row.getCell(actualCell + 1).value = singularItem.nombreAtributo;
+                  row.getCell(actualCell + 2).value = singularItem.dato;
+                  row.commit(); 
+                })
+                initialRow = initialRow + 1;
+              }else if(item.dataValues.hasOwnProperty('anio')) {
+                [item.dataValues].map((singularItem, index) => {
+                  console.log(initialRow);
+                  let row = ws.getRow(initialRow);
+                  row.getCell(actualCell + 2).value = singularItem.valor;
+                  row.getCell(actualCell + 3).value = singularItem.anio;
+                  row.getCell(actualCell + 4).value = singularItem.fuente;
+                  row.commit(); 
+                })
+                initialRow = initialRow + 1;
+              }
+              })
+              
+              let row = ws.getRow(initialRow);
 
-            row.getCell(3).value = indicadorInfo[i];    
-            row.commit();
+            }else {
+              row.getCell(actualCell).value = indicadorInfo[i];    
+              row.commit();
+            }
         }
 
         res.header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+
         await wb.xlsx.write(res);
+
         res.status(200);
         res.end();
         })
