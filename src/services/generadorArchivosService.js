@@ -14,11 +14,15 @@ const generateCSV = (data) => {
 const generateJSON = (data) => (data)
 
 const generateXLSX =  (res, data) => {
-    const indicador = data.dataValues;
+  const indicador = data.dataValues;
+    Object.keys(indicador).forEach(function(key) {
+      if(indicador[key] === null || indicador[key] === undefined || indicador[key] === '') {
+        indicador[key] = "NA";
+      }
+    });
 
-    const indicadorInfo = [indicador.nombre, indicador.Modulo.temaIndicador, indicador.tendenciaActual, indicador.tendenciaDeseada, indicador.ultimoValorDisponible, indicador.Unidad, indicador.anioUltimoValorDisponible, indicador.CoberturaGeografica.nombre, indicador.Formula.ecuacion, indicador.Formula.descripcion, indicador.Formula.Variables, indicador.Historicos];
 
-   // console.log(indicadorInfo);
+    const indicadorInfo = [indicador.nombre, indicador.Modulo.temaIndicador, indicador.tendenciaActual, indicador.tendenciaDeseada, indicador.ultimoValorDisponible, indicador.Unidad, indicador.anioUltimoValorDisponible, indicador.CoberturaGeografica.nombre, indicador.Formula.ecuacion ?? 'NA', indicador.Formula.descripcion ?? 'NA', indicador.Formula.Variables ?? 'NA', indicador.Historicos ?? 'NA'];
 
     let baseFile = './src/templates/boop.xlsx';
     let wb = new Excel.Workbook();
@@ -35,21 +39,19 @@ const generateXLSX =  (res, data) => {
             indicadorInfo[i].map((item, index) => {
               if(item.dataValues.hasOwnProperty('UnidadMedida')) {
                 [item.dataValues].map((singularItem, index) => {
-                  console.log(initialRow);
                   let row = ws.getRow(initialRow);
-                  row.getCell(actualCell).value = singularItem.nombre;
-                  row.getCell(actualCell + 1).value = singularItem.nombreAtributo;
-                  row.getCell(actualCell + 2).value = singularItem.dato;
+                  row.getCell(actualCell).value = singularItem.nombre ?? 'NA';
+                  row.getCell(actualCell + 1).value = singularItem.nombreAtributo ?? 'NA';
+                  row.getCell(actualCell + 2).value = singularItem.dato ?? 'NA';
                   row.commit(); 
                 })
                 initialRow = initialRow + 1;
               }else if(item.dataValues.hasOwnProperty('anio')) {
                 [item.dataValues].map((singularItem, index) => {
-                  console.log(initialRow);
                   let row = ws.getRow(initialRow);
-                  row.getCell(actualCell + 2).value = singularItem.valor;
-                  row.getCell(actualCell + 3).value = singularItem.anio;
-                  row.getCell(actualCell + 4).value = singularItem.fuente;
+                  row.getCell(actualCell + 2).value = singularItem.valor ?? 'NA';
+                  row.getCell(actualCell + 3).value = singularItem.anio ?? 'NA';
+                  row.getCell(actualCell + 4).value = singularItem.fuente ?? 'NA';
                   row.commit(); 
                 })
                 initialRow = initialRow + 1;
@@ -63,9 +65,8 @@ const generateXLSX =  (res, data) => {
               row.commit();
             }
         }
-
         await wb.xlsx.write(res);
-
+          res.end()
         })
 
     .catch(err => {
