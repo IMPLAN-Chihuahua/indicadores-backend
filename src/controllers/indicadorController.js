@@ -14,7 +14,7 @@ const { Op } = require("sequelize");
 const { getPagination } = require("../utils/pagination");
 
 const sequelize = require("sequelize");
-const { generateCSV, generateJSON, generateXLSX } = require("../services/generadorArchivosService");
+const { generateCSV, generateJSON, generateXLSX, generatePDF } = require("../services/generadorArchivosService");
 
 const getIndicadores = async (req, res) => {
   const { page, per_page } = getPagination(req.matchedData);
@@ -218,13 +218,28 @@ const getIndicadoresSorting = ({ sort_by, order }) => {
 const generateFile = (format, res, data) => {
   switch(format) {
     case 'json':
-      return generateJSON(res, data);
+      const jsonFile = generateJSON(data);
+      return (
+            res.header('Content-disposition', 'attachment'),
+            res.header('Content-Type', 'application/json'),
+            res.attachment(`${data.nombre}.csv`),
+            res.send(jsonFile));
     case 'csv':
-      return generateCSV(res, data);
+      const csvData = generateCSV(data);
+      return (
+            res.header('Content-disposition', 'attachment'),
+            res.header('Content-Type', 'application/json'),
+            res.attachment(`${data.nombre}.json`),
+            res.send(csvData));
     case 'xlsx':
-      return generateXLSX(res, data);
+      const x = generateXLSX(res, data);
+      return (
+            res.header('Content-disposition', 'attachment'),
+            res.header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
+            res.attachment(x)
+            );
     case 'pdf':
-      return 'pdf';
+      return generatePDF(res, data);
   }
 }
 
