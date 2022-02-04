@@ -1,6 +1,6 @@
 const { Ods, CoberturaGeografica, UnidadMedida } = require('../models');
 
-const getOds = async (_, res) => {
+const getCatalogos = async (_, res) => {
     const Promises = [
         new Promise((resolve, reject) => {
             const coberturasList = CoberturaGeografica.findAll();
@@ -44,4 +44,4 @@ const getOds = async (_, res) => {
 
 
 
-module.exports = { getOds };
+module.exports = { getCatalogos };

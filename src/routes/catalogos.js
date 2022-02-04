@@ -1,7 +1,7 @@
 const express = require('express');
 const catalogoRouter = express.Router();
 
-const { getOds, getCoberturaGeografica } = require('../controllers/catalogoController');
+const { getCatalogos } = require('../controllers/catalogoController');
 
 /**
  * @swagger
@@ -83,7 +83,7 @@ const { getOds, getCoberturaGeografica } = require('../controllers/catalogoContr
  */
 
 catalogoRouter.route('/')
-    .get(getOds);
+    .get(getCatalogos);
 
 
 

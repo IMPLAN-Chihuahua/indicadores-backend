@@ -1,5 +1,4 @@
 const chai = require('chai');
-chai.use(require('chai-as-promised'));
 const expect = chai.expect;
 const faker = require('faker');
 const { Usuario } = require('../../models');
