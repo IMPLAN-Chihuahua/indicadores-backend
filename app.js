@@ -55,13 +55,13 @@ app.use('/api/v1', require('./src/routes/auth'));
 app.use('/api/v1/usuarios', require('./src/routes/usuarios'));
 app.use('/api/v1/roles', require('./src/routes/roles'));
 app.use('/api/v1/modulos', require('./src/routes/modulos'));
+app.use('/api/v1/indicadores', require('./src/routes/indicadores'));
+app.use('/api/v1/catalogos', require('./src/routes/catalogos'));
 
-const PORT = process.env.APP_PORT || 8081;
+const PORT = 8080;
 
-if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`App starting on port ${PORT}`);
-  });
-}
+const server = app.listen(PORT, () => {
+  console.log(`App starting on port ${PORT}`);
+});
 
-module.exports = { app, PORT };
+module.exports = { server, app};

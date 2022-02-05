@@ -12,10 +12,10 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             this.belongsTo(models.Modulo, { foreignKey: 'idModulo' });
             this.belongsToMany(models.Usuario, { through: models.UsuarioIndicador, foreignKey: 'idIndicador' });
-
-            this.hasOne(models.UnidadMedida, { foreignKey: 'idIndicador' })
-            this.hasOne(models.CoberturaGeografica, { foreignKey: 'idIndicador' });
-            this.hasOne(models.Ods, { foreignKey: 'idIndicador' });
+            this.belongsTo(models.Ods, { foreignKey: 'idOds' });
+            this.belongsTo(models.CoberturaGeografica, { foreignKey: 'idCobertura' });
+            this.belongsTo(models.UnidadMedida, { foreignKey: 'idUnidadMedida' })
+            
             this.hasOne(models.Formula, { foreignKey: 'idIndicador' });
             this.hasMany(models.Historico, { foreignKey: 'idIndicador' });
             this.hasMany(models.Fuente, { foreignKey: 'idIndicador' });
@@ -30,11 +30,8 @@ module.exports = (sequelize, DataTypes) => {
                 autoIncrement: true
             },
 
-            url: {
+            urlImagen: {
                 type: DataTypes.STRING,
-                validate: {
-                    isUrl: true
-                }
             },
 
             codigo: {
@@ -51,6 +48,12 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.TEXT,
                 allowNull: false,
                 defaultValue: 'No aplica'
+            },
+
+            ultimoValorDisponible: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                defaultValue: 'NA'
             },
 
             anioUltimoValorDisponible: {
@@ -77,12 +80,6 @@ module.exports = (sequelize, DataTypes) => {
                 defaultValue: 0
             },
 
-            grafica: {
-                type: DataTypes.SMALLINT,
-                allowNull: false,
-                defaultValue: 0
-            },
-
             observaciones: {
                 type: DataTypes.TEXT,
                 allowNull: false,
@@ -99,14 +96,29 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: true
             },
 
+            // Id catálogos
 
+            idOds: {
+                type: DataTypes.INTEGER,
+                allowNull: false
+            },
+            
+            idCobertura: { 
+                type: DataTypes.INTEGER,
+                allowNull: false
+            },
+
+            idUnidadMedida: {
+                type: DataTypes.INTEGER,
+                allowNull: false
+            }
         },
         {
             sequelize,
             indexes: [
                 {
                     unique: false,
-                    fields: ['createdBy', 'updatedBy']
+                    fields: ['createdBy', 'updatedBy', 'idOds', 'idCobertura', 'idUnidadMedida']
                 }
             ],
             tableName: 'Indicadores',

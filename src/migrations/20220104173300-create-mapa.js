@@ -14,6 +14,12 @@ module.exports = {
         type: Sequelize.STRING
       },
 
+      url: {
+        allowNull: true,
+        type: Sequelize.STRING,
+        defaultValue: 'No aplica'
+      },
+      
       idIndicador: {
         type: Sequelize.INTEGER,
         references: {

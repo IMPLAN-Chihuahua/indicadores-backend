@@ -10,7 +10,8 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.belongsTo(models.Indicador, { foreignKey: 'idIndicador' })
+      this.hasOne(models.Indicador, { foreignKey: 'idUnidadMedida' })
+      this.hasMany(models.Variable, { foreignKey: 'idVariable' })
     }
   };
   UnidadMedida.init(

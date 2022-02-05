@@ -12,11 +12,11 @@ module.exports = {
             type: Sequelize.INTEGER
           },
 
-          url: {
+          urlImagen: {
             allowNull: true,
             type: Sequelize.STRING
           },
-
+          
           nombre: {
             allowNull: false,
             type: Sequelize.STRING
@@ -38,20 +38,14 @@ module.exports = {
             type: Sequelize.STRING
           },
 
+          ultimoValorDisponible: {
+            allowNull: false,
+            type: Sequelize.STRING
+          },
+          
           anioUltimoValorDisponible: {
             allowNull: false,
             type: Sequelize.INTEGER
-          },
-
-          unidadMedida: {
-            allowNull: false,
-            type: Sequelize.STRING,
-            defaultValue: 'No aplica'
-          },
-
-          coberturaGeografica: {
-            allowNull: false,
-            type: Sequelize.STRING
           },
 
           tendenciaActual: {
@@ -67,12 +61,6 @@ module.exports = {
           },
 
           mapa: {
-            allowNull: false,
-            defaultValue: 0,
-            type: Sequelize.SMALLINT
-          },
-
-          grafica: {
             allowNull: false,
             defaultValue: 0,
             type: Sequelize.SMALLINT
@@ -102,6 +90,21 @@ module.exports = {
             }
           },
 
+          idOds: {
+            type: Sequelize.INTEGER,
+            allowNull: false,
+          },
+
+          idCobertura: {
+            type: Sequelize.INTEGER,
+            allowNull: false,
+          },
+
+          idUnidadMedida: {
+            type: Sequelize.INTEGER,
+            allowNull: false,
+          },
+
           createdAt: {
             allowNull: false,
             type: Sequelize.DATE
@@ -114,7 +117,7 @@ module.exports = {
         }
       );
 
-      await queryInterface.addIndex('Indicadores', ['createdBy', 'updatedBy'], { unique: false });
+      await queryInterface.addIndex('Indicadores', ['createdBy', 'updatedBy', 'idOds', 'idCobertura', 'idUnidadMedida'], { unique: false });
       await transaction.commit();
     } catch (err) {
       console.log(err);

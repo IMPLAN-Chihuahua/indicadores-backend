@@ -31,11 +31,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         defaultValue: 'No aplica'
       },
-
-      descripcionNarrativa: {
-        type: DataTypes.STRING,
-        defaultValue: 'No aplica'
-      }
     },
     {
       sequelize,

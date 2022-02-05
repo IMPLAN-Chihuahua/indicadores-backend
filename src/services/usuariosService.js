@@ -6,28 +6,34 @@ const addUsuario = async (usuario) => {
             correo,
             apellidoPaterno,
             apellidoMaterno,
-            fechacreacion,
             idRol } = await Usuario.create(usuario);
         return {
             nombres,
             correo,
             apellidoPaterno,
             apellidoMaterno,
-            fechacreacion,
             idRol
         };
     } catch (err) {
-        console.log(err);
         throw new Error(`Error al crear usuario ${err.message}`);
     }
 };
 
 const getUsuarioById = async (id) => {
     try {
-        const usuario = await Usuario.scope('withoutPassword').findOne({ where: { id: id } });
+        const usuario = await Usuario.findOne({
+            where: { id: id },
+            attributes: [
+                'correo',
+                'nombres',
+                'apellidoPaterno',
+                'apellidoMaterno',
+                'activo',
+                'avatar'
+            ]
+        });
         return usuario;
     } catch (err) {
-        console.log(err);
         throw new Error('Error al buscar usuario por ID: ' + err.message);
     }
 };
@@ -36,7 +42,6 @@ const getUsuarioByCorreo = async (correo) => {
     try {
         return await Usuario.findOne({ where: { correo: correo } });
     } catch (err) {
-        console.log(err);
         throw new Error('Error al buscar usuario por correo: ' + err.message);
     }
 };
@@ -49,7 +54,6 @@ const isCorreoAlreadyInUse = async (correo) => {
         });
         return existingCorreo != null;
     } catch (err) {
-        console.log(err);
         throw new Error('Error al buscar si correo ha sido utilizado: ' + err.message);
     }
 };
@@ -62,7 +66,6 @@ const getUsuarios = async (limit = 25, offset = 0) => {
         const total = result.count;
         return { usuarios, total };
     } catch (err) {
-        console.log(err);
         throw new Error('Error al obtener lista de usuarios: ' + err.message);
     }
 };
@@ -76,7 +79,6 @@ const updateUsuario = async (id, { nombres, apellidoPaterno, apellidoMaterno, ac
             { where: { id: id } });
         return affectedRows > 0;
     } catch (err) {
-        console.log(err);
         throw new Error('Error al actualizar usuario: ' + err.message);
     }
 };

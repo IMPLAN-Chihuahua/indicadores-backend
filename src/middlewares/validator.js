@@ -60,14 +60,20 @@ const paginationValidationRules = () => {
             .optional()
             .isInt().withMessage('campo debe ser entero')
             .toInt()
+            .custom((value) => {
+                if (value < 1) {
+                    throw new Error('valor debe ser mayor a 0');
+                }
+                return true;
+            }),
     ];
 };
 
 const filterIndicadoresValidationRules = () => {
     return [
-        query(['anioUltimoValorDisponible', 'idOds', 'idCobertura', 'idFuente', 'idUnidad'])
+        query(['anioUltimoValorDisponible', 'idOds', 'idCobertura', 'idFuente', 'idUnidadMedida'])
             .optional()
-            .isInt()
+            .isInt().withMessage('campo debe ser entero')
             .toInt()
             .custom((value) => {
                 if (value < 1) {
@@ -78,22 +84,26 @@ const filterIndicadoresValidationRules = () => {
         query('tendenciaActual')
             .optional()
             .toUpperCase()
-            .isIn(['ASCENDENTE', 'DESCENDENTE'])
+            .isIn(['ASCENDENTE', 'DESCENDENTE', 'NO APLICA'])
     ];
 };
 
 const paramValidationRules = () => {
     return [
-        param(["idModulo", "idIndicador"])
+        param(['idModulo', 'idIndicador', 'idUser'])
             .optional()
             .isInt().withMessage('Campo debe ser entero')
             .toInt()
             .custom((value) => {
                 if (value < 1) {
-                    throw new Error('id debe ser mayor a 0');
+                    throw new Error('El valor del campo debe ser mayor a 0');
                 }
                 return true;
-            })
+            }),
+        param(["format"])
+            .optional()
+            .isIn(['csv','xlsx','pdf','json'])
+            .withMessage('formato debe ser csv, xlsx, pdf o json')
     ];
 };
 
