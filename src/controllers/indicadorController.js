@@ -222,14 +222,14 @@ const generateFile = (format, res, data) => {
       return (
             res.header('Content-disposition', 'attachment'),
             res.header('Content-Type', 'application/json'),
-            res.attachment(`${data.nombre}.csv`),
+            res.attachment(`${data.nombre}.json`),
             res.send(jsonFile));
     case 'csv':
       const csvData = generateCSV(data);
       return (
             res.header('Content-disposition', 'attachment'),
             res.header('Content-Type', 'application/json'),
-            res.attachment(`${data.nombre}.json`),
+            res.attachment(`${data.nombre}.csv`),
             res.send(csvData));
     case 'xlsx':
       const x = generateXLSX(res, data);

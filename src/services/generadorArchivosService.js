@@ -76,6 +76,18 @@ const generateXLSX =  (res, data) => {
 }
 
 const generatePDF = async (res, data) => {
+  const indicador = data.dataValues;
+  let td = "";
+  const datos = [];
+  const anios = [];
+  indicador.Historicos.map((item, index) => {
+    datos.push(parseInt(item.valor));
+    anios.push(parseInt(item.anio));
+    console.log(item.anio);
+    td += '<tr><td>' + item.anio + '</td><td>' + item.valor + '</td><td><a href="'+ item.fuente +'">' + item.fuente + '</a></td></tr>\n';
+  })  
+
+  console.log(anios);
 
   const browser = await puppeteer.launch({
     headless: true
@@ -83,7 +95,12 @@ const generatePDF = async (res, data) => {
 
   const page = await browser.newPage()
 
-  const html = fs.readFileSync('./src/templates/test.html', 'utf8')
+  let html = fs.readFileSync('./src/templates/test.html', 'utf8');
+
+  html = html.replace('{datos.historicos}', td); 
+
+  html = html.replace("'{valores.historicos}'", (datos));
+  html = html.replace("'{anio.historicos}'", (anios));
   await page.setContent(html, {
     waitUntil: 'networkidle2'
   })
