@@ -81,7 +81,7 @@ const getUser = async (req, res) => {
         if (usuario === null) {
             return res.sendStatus(204);
         } else {
-            return res.status(200).json({ usuario });
+            return res.status(200).json({ data: usuario });
         }
     } catch (err) {
         return res.status(500).json({ message: err.message });

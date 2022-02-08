@@ -6,23 +6,23 @@ const addUsuario = async (usuario) => {
             correo,
             apellidoPaterno,
             apellidoMaterno,
-            idRol } = await Usuario.create(usuario);
+        } = await Usuario.create(usuario);
         return {
             nombres,
             correo,
             apellidoPaterno,
             apellidoMaterno,
-            idRol
+
         };
     } catch (err) {
-        throw new Error(`Error al crear usuario ${err.message}`);
+        return Promise.reject(new Error(`Error al crear usuario ${err.message}`));
     }
 };
 
 const getUsuarioById = async (id) => {
     try {
         const usuario = await Usuario.findOne({
-            where: { id: id },
+            where: { id },
             attributes: [
                 'correo',
                 'nombres',

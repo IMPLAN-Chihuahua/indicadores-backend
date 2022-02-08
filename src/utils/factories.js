@@ -12,6 +12,7 @@ const anIndicador = (id) => {
         id,
         urlImagen: faker.image.imageUrl(),
         nombre: "Test " + faker.random.word(),
+        definicion: faker.lorem.sentence(),
         codigo: '00' + faker.datatype.number(9),
         codigoObjeto: '00' + faker.datatype.number(9),
         ultimoValorDisponible: faker.datatype.number(),
@@ -23,7 +24,6 @@ const anIndicador = (id) => {
         createdAt: new Date(),
         updatedAt: new Date(),
         tendenciaActual: faker.datatype.boolean() ? "ASCENDENTE" : "DESCENDENTE",
-        definicion: faker.lorem.sentence(),
         tendenciaDeseada: faker.datatype.boolean() ? "ASCENDENTE" : "DESCENDENTE",
     };
 };
