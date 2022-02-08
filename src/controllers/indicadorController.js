@@ -1,7 +1,9 @@
+const IndicadorService = require("../services/indicadorService")
+
 const {
   Indicador,
   Ods,
-  CoberturaGeografica,
+  CoberturaGeografica,  
   Fuente,
   UnidadMedida,
   Modulo,
@@ -16,38 +18,11 @@ const { getPagination } = require("../utils/pagination");
 const sequelize = require("sequelize");
 const { generateCSV, generateJSON, generateXLSX, generatePDF } = require("../services/generadorArchivosService");
 
+
 const getIndicadores = async (req, res) => {
   const { page, per_page } = getPagination(req.matchedData);
   try {
-    const result = await Indicador.findAndCountAll({
-      where: {
-        idModulo: req.matchedData.idModulo,
-        ...validateCatalog(req.matchedData),
-        ...getIndicadorFilters(req.matchedData),
-      },
-      limit: per_page,
-      offset: per_page * (page - 1),
-      order: [getIndicadoresSorting(req.matchedData)],
-      include: getIndicadorIncludes(req.matchedData),
-      attributes: [
-        "id",
-        "nombre",
-        "ultimoValorDisponible",
-        "anioUltimoValorDisponible",
-        "tendenciaActual",
-        "tendenciaDeseada",
-        "idOds",
-        [sequelize.literal('"Od"."nombre"'), "Ods"],
-        "idCobertura",
-        [sequelize.literal('"CoberturaGeografica"."nombre"'), "Cobertura"],
-        "idUnidadMedida",
-        [sequelize.literal('"UnidadMedida"."nombre"'), "Unidad"],
-        "createdAt",
-        "updatedAt",
-        "idModulo",
-      ],
-    });
-
+    const result = await IndicadorService.getIndicadores(page, per_page, req.matchedData);
     const indicadores = result.rows;
     const total = result.count;
     const total_pages = Math.ceil(total / per_page);
@@ -182,38 +157,7 @@ const getIndicadorIncludes = ({ idFuente }) => {
   return indicadorFilter;
 };
 
-// Validation for catalogs
-const validateCatalog = ({ idOds, idCobertura, idUnidadMedida }) => {
-  const catalogFilters = {};
-  if (idOds) {
-    catalogFilters.idOds = idOds;
-  } else if (idCobertura) {
-    catalogFilters.idCobertura = idCobertura;
-  } else if (idUnidadMedida) {
-    catalogFilters.idUnidadMedida = idUnidadMedida;
-  }
-  return catalogFilters;
-};
 
-// Validation for filters
-const getIndicadorFilters = (matchedData) => {
-  const { anioUltimoValorDisponible, tendenciaActual } = matchedData;
-  const filters = {};
-  if (anioUltimoValorDisponible) {
-    filters.anioUltimoValorDisponible = anioUltimoValorDisponible;
-  }
-  if (tendenciaActual) {
-    filters.tendenciaActual = tendenciaActual;
-  }
-  return filters;
-};
-
-// Sorting logic for list5
-const getIndicadoresSorting = ({ sort_by, order }) => {
-  const arrangement = [];
-  arrangement.push([sort_by || "id", order || "ASC"]);
-  return arrangement;
-};
 
 const generateFile = (format, res, data) => {
   switch(format) {

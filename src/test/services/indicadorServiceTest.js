@@ -55,16 +55,15 @@ describe('Indicador service', function () {
     });
 
     it('Returns null if no indicador is found', function () {
-        const findOneFake = sinon.fake.rejects();
+        const findOneFake = sinon.fake.resolves(null);
         sinon.replace(Indicador, 'findOne', findOneFake);
         return IndicadorService.getIndicador(1)
             .then(res => {
                 expect(res).to.be.null;
-            })
-            .catch(err => {
-                expect(err).to.not.be.null;
                 expect(findOneFake.calledOnce).to.be.true;
                 expect(findOneFake.args[0][0]).to.not.be.null;
+            })
+            .catch(err => {
             });
     });
 
