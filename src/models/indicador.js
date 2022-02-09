@@ -96,8 +96,6 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: true
             },
 
-            // Id catálogos
-
             idOds: {
                 type: DataTypes.INTEGER,
                 allowNull: false
