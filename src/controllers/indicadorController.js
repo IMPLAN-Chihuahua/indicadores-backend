@@ -1,9 +1,8 @@
 const IndicadorService = require("../services/indicadorService")
-
 const {
   Indicador,
   Ods,
-  CoberturaGeografica,  
+  CoberturaGeografica,
   Fuente,
   UnidadMedida,
   Modulo,
@@ -14,7 +13,6 @@ const {
 } = require("../models");
 const { Op } = require("sequelize");
 const { getPagination } = require("../utils/pagination");
-
 const sequelize = require("sequelize");
 const { generateCSV, generateJSON, generateXLSX, generatePDF } = require("../services/generadorArchivosService");
 
@@ -22,9 +20,7 @@ const { generateCSV, generateJSON, generateXLSX, generatePDF } = require("../ser
 const getIndicadores = async (req, res) => {
   const { page, per_page } = getPagination(req.matchedData);
   try {
-    const result = await IndicadorService.getIndicadores(page, per_page, req.matchedData);
-    const indicadores = result.rows;
-    const total = result.count;
+    const { indicadores, total } = await IndicadorService.getIndicadores(page, per_page, req.matchedData);
     const total_pages = Math.ceil(total / per_page);
 
     return res.status(200).json({
@@ -104,16 +100,16 @@ const getIndicador = async (req, res) => {
         [sequelize.literal('"UnidadMedida"."nombre"'), "Unidad"],
       ],
     });
-    
+
     if (indicador === null) {
       return res.sendStatus(404);
     }
 
-    if (typeof format != 'undefined'){
+    if (typeof format != 'undefined') {
       return generateFile(format, res, indicador)
     }
 
-    return (res.status(200).json({data: indicador,}))
+    return (res.status(200).json({ data: indicador, }))
 
   } catch (err) {
     console.log(err);
@@ -160,28 +156,28 @@ const getIndicadorIncludes = ({ idFuente }) => {
 
 
 const generateFile = (format, res, data) => {
-  switch(format) {
+  switch (format) {
     case 'json':
       const jsonFile = generateJSON(data);
       return (
-            res.header('Content-disposition', 'attachment'),
-            res.header('Content-Type', 'application/json'),
-            res.attachment(`${data.nombre}.json`),
-            res.send(jsonFile));
+        res.header('Content-disposition', 'attachment'),
+        res.header('Content-Type', 'application/json'),
+        res.attachment(`${data.nombre}.json`),
+        res.send(jsonFile));
     case 'csv':
       const csvData = generateCSV(data);
       return (
-            res.header('Content-disposition', 'attachment'),
-            res.header('Content-Type', 'application/json'),
-            res.attachment(`${data.nombre}.csv`),
-            res.send(csvData));
+        res.header('Content-disposition', 'attachment'),
+        res.header('Content-Type', 'application/json'),
+        res.attachment(`${data.nombre}.csv`),
+        res.send(csvData));
     case 'xlsx':
       const x = generateXLSX(res, data);
       return (
-            res.header('Content-disposition', 'attachment'),
-            res.header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
-            res.attachment(x)
-            );
+        res.header('Content-disposition', 'attachment'),
+        res.header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
+        res.attachment(x)
+      );
     case 'pdf':
       return generatePDF(res, data);
   }

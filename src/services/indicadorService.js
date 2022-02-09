@@ -1,7 +1,7 @@
 const {
   Indicador,
   Ods,
-  CoberturaGeografica,  
+  CoberturaGeografica,
   Fuente,
   UnidadMedida,
   Modulo,
@@ -10,107 +10,108 @@ const {
   Formula,
   Variable,
   sequelize,
+  Sequelize
 } = require("../models");
-const { Op } = require("sequelize");
-const getIndicadores = async (page, per_page, matchedData) => {
-      const result = await Indicador.findAndCountAll({
-      where: {
-        idModulo: matchedData.idModulo,
-        ...validateCatalog(matchedData),
-        ...getIndicadorFilters(matchedData),
-      },
-      limit: per_page,
-      offset: per_page * (page - 1),
-      order: [getIndicadoresSorting(matchedData)],
-      include: getIndicadorIncludes(matchedData),
-      attributes: [
-        "id",
-        "nombre",
-        "ultimoValorDisponible",
-        "anioUltimoValorDisponible",
-        "tendenciaActual",
-        "tendenciaDeseada",
-        "idOds",
-        [sequelize.literal('"Od"."nombre"'), "Ods"],
-        "idCobertura",
-        [sequelize.literal('"CoberturaGeografica"."nombre"'), "Cobertura"],
-        "idUnidadMedida",
-        [sequelize.literal('"UnidadMedida"."nombre"'), "Unidad"],
-        "createdAt",
-        "updatedAt",
-        "idModulo",
-      ],
-    });
-    return {
-      indicadores: result.rows,
-      total: result.count,
-    };
+const { Op } = Sequelize;
+const getIndicadores = async (page = 1, per_page = 15, matchedData) => {
+  const result = await Indicador.findAndCountAll({
+    where: {
+      idModulo: matchedData.idModulo,
+      ...validateCatalog(matchedData),
+      ...getIndicadorFilters(matchedData),
+    },
+    limit: per_page,
+    offset: per_page * (page - 1),
+    order: [getIndicadoresSorting(matchedData)],
+    include: getIndicadorIncludes(matchedData),
+    attributes: [
+      "id",
+      "nombre",
+      "ultimoValorDisponible",
+      "anioUltimoValorDisponible",
+      "tendenciaActual",
+      "tendenciaDeseada",
+      "idOds",
+      [sequelize.literal('"Od"."nombre"'), "Ods"],
+      "idCobertura",
+      [sequelize.literal('"CoberturaGeografica"."nombre"'), "Cobertura"],
+      "idUnidadMedida",
+      [sequelize.literal('"UnidadMedida"."nombre"'), "Unidad"],
+      "createdAt",
+      "updatedAt",
+      "idModulo",
+    ],
+  });
+  return {
+    indicadores: result.rows,
+    total: result.count,
+  };
 };
 
 const getIndicador = async (idIndicador, Format) => {
-    if (typeof format != 'undefined'){
-      return generateFile(format, res, indicador)
-    }
-    return await Indicador.findOne({
-      where: {
-        id: idIndicador,
+  if (typeof format != 'undefined') {
+    return generateFile(format, res, indicador)
+  }
+  return await Indicador.findOne({
+    where: {
+      id: idIndicador,
+    },
+    include: [
+      {
+        model: UnidadMedida,
+        required: true,
+        attributes: [],
       },
-      include: [
-        {
-          model: UnidadMedida,
-          required: true,
-          attributes: [],
-        },
-        {
-          model: Modulo,
-          required: true,
-          attributes: ["id", "temaIndicador", "color"],
-        },
-        {
-          model: CoberturaGeografica,
-          required: true,
-          attributes: ["nombre"],
-        },
-        {
-          model: Historico,
-          required: true,
-          attributes: ["anio", "valor", "fuente"],
-          limit: 10,
-          order: [["anio", "DESC"]],
-        },
-        {
-          model: Mapa,
-          required: false
-        },
-        {
-          model: Formula,
-          required: false,
-          include: [
-            {
-              model: Variable,
+      {
+        model: Modulo,
+        required: true,
+        attributes: ["id", "temaIndicador", "color"],
+      },
+      {
+        model: CoberturaGeografica,
+        required: true,
+        attributes: ["nombre"],
+      },
+      {
+        model: Historico,
+        required: true,
+        attributes: ["anio", "valor", "fuente"],
+        limit: 10,
+        order: [["anio", "DESC"]],
+      },
+      {
+        model: Mapa,
+        required: false
+      },
+      {
+        model: Formula,
+        required: false,
+        include: [
+          {
+            model: Variable,
+            required: true,
+            include: [{
+              model: UnidadMedida,
               required: true,
-              include: [{
-                model: UnidadMedida,
-                required: true,
-              }],
-              attributes: ['nombre', 'nombreAtributo', 'dato', 'idUnidad', [sequelize.literal('"Formula->Variables->UnidadMedida"'), "Unidad"],],
-            }
-          ]
-        }
-      ],
-      attributes: [
-        "id",
-        "urlImagen",
-        "nombre",
-        "definicion",
-        "ultimoValorDisponible",
-        "anioUltimoValorDisponible",
-        "tendenciaActual",
-        "tendenciaDeseada",
-        "mapa",
-        [sequelize.literal('"UnidadMedida"."nombre"'), "Unidad"],
-      ],
-    });
+            }],
+            attributes: ['nombre', 'nombreAtributo', 'dato', 'idUnidad', [sequelize.literal('"Formula->Variables->UnidadMedida"'), "Unidad"],],
+          }
+        ]
+      }
+    ],
+    attributes: [
+      "id",
+      "urlImagen",
+      "nombre",
+      "definicion",
+      "ultimoValorDisponible",
+      "anioUltimoValorDisponible",
+      "tendenciaActual",
+      "tendenciaDeseada",
+      "mapa",
+      [sequelize.literal('"UnidadMedida"."nombre"'), "Unidad"],
+    ],
+  });
 }
 
 // Validation for catalogs

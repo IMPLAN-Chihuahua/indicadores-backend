@@ -23,9 +23,8 @@ describe('v1/usuarios', function () {
     it('Should return a list of users', function () {
         return chai.request(app)
             .get('/api/v1/usuarios')
-            .end((err, res) => {
-                expect(err).to.be.null;
-                expect(res).to.be.an('array');
+            .then((res) => {
+                expect(res.body.data).to.be.an('array');
             })
     });
 
