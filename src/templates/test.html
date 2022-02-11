@@ -19,7 +19,7 @@
     text-align: center;
 }
 
-img {
+.logo {
     width: 20%;
     height: 5%;
     max-width: 150px;
@@ -151,6 +151,7 @@ font-size: 20px;
   font-family: Arial, Helvetica, sans-serif;
   text-decoration: underline;
 }
+
     </style>
 </head>
 <body>
@@ -178,7 +179,7 @@ font-size: 20px;
       </thead>
       <tbody>
         <tr>
-          <td>{indicador.descripcion}</td>
+          <td>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Aspernatur sunt aliquid assumenda consectetur vero ex! Quas et, error aut aliquid earum dolore corrupti reprehenderit fuga accusantium obcaecati omnis, itaque sed!/td>
         </tr>
       </tbody>
     </table>
@@ -345,6 +346,22 @@ font-size: 20px;
           <canvas id="myChart" style="width:100%;max-width:800px"></canvas>
           <p style="text-align: center;">Gráfica de barras representativa del valor en los últimos años disponibles<p/>
         </div>
+
+        <h1 class="text" style="margin-top: 40px;">Mapa</h1>
+        <!-- <iframe
+        title="Sigmun"
+        name="sigmun"
+        width="100%"
+        height="500"
+        src="https://geoportal.implanchihuahua.org/sigmun/apps/webappviewer/index.html?id=92971c77b4b047f89d35b08791a83db9">
+        </iframe> -->
+
+        <div class="mapa">
+
+          <img style="margin-bottom: 30px;" alt="..." src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644535117/mapa_mwlhkq.png" />
+          
+        </div>
+
           <!-- <table>
           <thead>
             <tr>
@@ -378,7 +395,18 @@ new Chart("myChart", {
   },
   options: {
     legend: {display: false},
-    
+    scales: {
+            xAxes: [{
+                ticks: {
+                  fontSize: 18
+                }
+            }],
+            yAxes: [{
+                ticks: {
+                    fontSize: 18
+                }
+            }]
+        }
     
   }
 });

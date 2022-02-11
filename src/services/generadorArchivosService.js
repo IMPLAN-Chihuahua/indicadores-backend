@@ -94,10 +94,13 @@ const generatePDF = async (res, data) => {
 
   html = html.replace("'{valores.historicos}'", (datos));
   html = html.replace("'{anio.historicos}'", (anios));
-  await page.setContent(html, {
-    waitUntil: 'networkidle2'
-  })
 
+
+
+  await page.setContent(html, {
+    waitUntil: 'networkidle0'
+  })
+ 
   page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36WAIT_UNTIL=load")
 
   const seggs = await page.pdf({
