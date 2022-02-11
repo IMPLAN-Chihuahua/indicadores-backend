@@ -1,191 +1,220 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PDF</title>
     <!-- <link rel="stylesheet" href="test.css"> -->
-    <script type="text/javascript" id="MathJax-script" async
-    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
-    </script>
+    <script
+      type="text/javascript"
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@latest/dist/Chart.min.js"></script>
-    
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+      integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+      crossorigin=""
+    />
+    <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script
+      src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+      integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+      crossorigin=""
+    ></script>
     <style>
-            html {
-  -webkit-print-color-adjust: exact;
-}
+      html {
+        -webkit-print-color-adjust: exact;
+      }
       h1 {
-    text-align: center;
-}
+        text-align: center;
+      }
 
-img {
-    width: 20%;
-    height: 5%;
-    max-width: 150px;
-    max-height: 150px;
-    padding-left: 10%;
-    padding-right: 10%;
-}
+      img {
+        max-width: 150px;
+        max-height: 150px;
+        padding-left: 10%;
+        padding-right: 10%;
+      }
 
-.title {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    background-color: #263044;
-    color: white;
-    font-size: small;
-    font-family:Arial, Helvetica, sans-serif;
-    margin-top: -10px;
-    margin-left: -10px;
-    margin-right: -10px;
-}
+      .title {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        background-color: #263044;
+        color: white;
+        font-size: small;
+        font-family: Arial, Helvetica, sans-serif;
+        margin-top: -10px;
+        margin-left: -10px;
+        margin-right: -10px;
+      }
 
-.desc {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center ;
-}
+      .desc {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+      }
 
+      .table-cluster {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        max-width: 70%;
+        margin: auto;
+      }
 
-.table-cluster {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    max-width: 70%;
-    margin: auto;
-}
+      table {
+        width: 100%;
+        max-width: 100%;
+        font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+          "Lucida Sans", Arial, sans-serif;
+        font-size: 20px;
+        margin-bottom: 5%;
+        border-collapse: collapse;
+      }
 
-table {
-    width: 100%;
-    max-width: 100%;
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-    font-size: 20px;
-    margin-bottom: 5%;
-    border-collapse: collapse;
-}
+      table td,
+      table th {
+        text-align: left;
+        padding: 7px;
+        border: 1px solid rgb(0, 0, 0, 0.1);
+        border-collapse: collapse;
+      }
 
+      table td {
+        font-size: 15px;
+        text-align: center;
+      }
 
-table td, table th {
-    text-align: left;
-    padding: 7px;
-    border: 1px solid rgb(0,0,0,0.1);
-    border-collapse: collapse;
-}
+      table th {
+        color: rgb(255, 255, 255);
+        background: #263044;
+        text-align: center;
+        /* border-radius: 10%; */
+      }
 
-table td {
-    font-size: 15px;
-    text-align: center;
-}
+      .subInfo th {
+        background: #404756;
+      }
 
-table th {
-    color: rgb(255, 255, 255);
-    background: #263044;
-    text-align: center;
-    /* border-radius: 10%; */
-}
+      #myChart {
+        height: 400px;
+        width: 400px;
+        max-width: 400px;
+        max-height: 400px;
+      }
+      .dateFormat {
+        font-size: 18px;
+        font-weight: normal;
+        color: #ffe171;
+      }
+      .card {
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        width: 300px;
+        height: 320px;
+        background-color: #204c5a;
+        color: white;
+        font-family: Arial, Helvetica, sans-serif;
+        margin-right: 20px;
+        margin-left: 20px;
+      }
+      .card-header {
+        height: 55%;
+        display: flex;
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+      }
+      .card-circle {
+        background-color: white;
+        border-radius: 50%;
+        height: 150px;
+        width: 150px;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: black;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 20px;
+      }
 
-.subInfo th{
-  background: #404756;
-}
+      #map {
+        height: 180px;
+      }
 
-#myChart {
-    height: 400px;
-    width: 400px;
-    max-width: 400px;
-    max-height: 400px;
-}
-.dateFormat{
-  font-size: 18px;
-  font-weight: normal;
-  color: #ffe171 ;
-}
-.card {
-  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-  width: 300px;
-  height: 320px;
-  background-color: #204C5A;
-  color: white;
-  font-family: Arial, Helvetica, sans-serif;
-  margin-right: 20px;
-  margin-left: 20px;
-  
-}
-.card-header{
-  height: 55%;
-  display: flex;
-  text-align: center;
-  justify-content: center;
-  align-items: center;
-}
-.card-circle{
-background-color: white;
-border-radius: 50%;
-height: 150px;
-width: 150px;
-text-align: center;
-display: flex;
-justify-content: center;
-align-items: center;
-color: black;
-font-family: Arial, Helvetica, sans-serif;
-font-size: 20px;
-}
-
-
-.container {
-  padding: 2px 16px;
-  text-align: center;
-}
-.card-container{
-  display: flex;
-}
-.arrow{
-  height: 70%;
-  width: 100px;
-}
-.text{
-  font-family: Arial, Helvetica, sans-serif;
-  text-decoration: underline;
-}
+      .container {
+        padding: 2px 16px;
+        text-align: center;
+      }
+      .card-container {
+        display: flex;
+      }
+      .arrow {
+        height: 70%;
+        width: 100px;
+      }
+      .text {
+        font-family: Arial, Helvetica, sans-serif;
+        text-decoration: underline;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div id="pageHeader" class="title">
-        <img class="logo" alt="OUT" src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644525630/small-logo_ebzjya.png">
-        <h1>Monitoreo de indicadores de la ciudad de chihuahua <br/><b class="dateFormat">10-02-2022</b></h1>
-        <img class="logo" alt="IMPLAN" src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644525630/implan-logo_lraizz.webp">
+      <img
+        class="logo"
+        alt="OUT"
+        src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644525630/small-logo_ebzjya.png"
+      />
+      <h1>
+        Monitoreo de indicadores de la ciudad de chihuahua <br /><b
+          class="dateFormat"
+          >{date}</b
+        >
+      </h1>
+      <img
+        class="logo"
+        alt="IMPLAN"
+        src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644525630/implan-logo_lraizz.webp"
+      />
     </div>
 
-    <br>
+    <br />
     <div class="">
       <div class="table-cluster">
-
         <div>
-<div class="desc">
-<div style="margin-bottom: 10px; margin-right: 5%;" class="desc">
-  <img style="width: 200px; height: 200px; margin-bottom: 30px;" alt="..." src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644526329/productivity-icon-png-29_rfrtji.png" />
-</div>
-  <div>
-    <table>
-      <thead>
-        <tr>
-          <th>Descripción</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>{indicador.descripcion}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-      
-    </div>
-      </div>
+          <div class="desc">
+            <div style="margin-bottom: 10px; margin-right: 5%" class="desc">
+              <img
+                style="width: 200px; height: 200px; margin-bottom: 30px"
+                alt="..."
+                src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644526329/productivity-icon-png-29_rfrtji.png"
+              />
+            </div>
+            <div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Descripción</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{indicador.descripcion}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
         <table>
           <tr>
             <th>Tematica</th>
@@ -193,12 +222,11 @@ font-size: 20px;
             <th>Cobertura geográfica</th>
           </tr>
           <tr>
-            <td>Emil</td>
-            <td>Tossbias</td>
-            <td>Linus</td>
+            <td>{indicador.modulo}</td>
+            <td>{indicador.ods}</td>
+            <td>{indicador.cobertura}</td>
           </tr>
         </table>
-
 
         <table>
           <thead>
@@ -209,20 +237,21 @@ font-size: 20px;
           <tbody>
             <tr>
               <td>
-                <p>
-                $$z=x^2 + y^2$$
-                </p>
+                <p>$${{indicador.formula}}$$</p>
               </td>
             </tr>
             <tr>
               <td>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Id debitis hic ea qui reprehenderit molestiae voluptas sint tenetur voluptatibus laboriosam adipisci deleniti totam minima magnam, eum iste ipsam, repudiandae in.
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Id
+                debitis hic ea qui reprehenderit molestiae voluptas sint tenetur
+                voluptatibus laboriosam adipisci deleniti totam minima magnam,
+                eum iste ipsam, repudiandae in.
               </td>
             </tr>
           </tbody>
         </table>
 
-        <table >
+        <table>
           <thead>
             <tr>
               <th>Variable</th>
@@ -245,7 +274,6 @@ font-size: 20px;
           </tbody>
         </table>
 
-        
         <div class="card-container">
           <div class="card">
             <div class="card-header">
@@ -254,27 +282,31 @@ font-size: 20px;
               </div>
             </div>
             <div class="container">
-              <h4><b>Último valor disponible</b></h4> 
-              <p>Oregon</p> 
+              <h4><b>Último valor disponible</b></h4>
+              <p>Oregon</p>
             </div>
           </div>
 
           <div class="card">
             <div class="card-header">
               <div class="card-circle">
-                <img alt="..." src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644525630/up-arrow_jnbaun.png" class="arrow"/>
+                <img
+                  alt="..."
+                  src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644525630/up-arrow_jnbaun.png"
+                  class="arrow"
+                />
               </div>
             </div>
             <div class="container">
-              <h4><b>Tendencia actual</b></h4> 
-              <p>ASCENDENTE</p> 
-              
+              <h4><b>Tendencia actual</b></h4>
+              <p>ASCENDENTE</p>
             </div>
           </div>
         </div>
-
-
-        <div class="card-container" style="margin-top: 30px; margin-bottom: 30px;">
+        <div
+          class="card-container"
+          style="margin-top: 30px; margin-bottom: 30px"
+        >
           <div class="card">
             <div class="card-header">
               <div class="card-circle">
@@ -282,8 +314,8 @@ font-size: 20px;
               </div>
             </div>
             <div class="container">
-              <h4><b>Año de referencia</b></h4> 
-              <p>Año al que se refiere el último valor disponible</p> 
+              <h4><b>Año de referencia</b></h4>
+              <p>Año al que se refiere el último valor disponible</p>
             </div>
           </div>
 
@@ -294,16 +326,20 @@ font-size: 20px;
               </div>
             </div>
             <div class="container">
-              <h4><b>Cobertura geográfica</b></h4> 
-              <p>Territorio al que se refiere la captación de datos</p> 
+              <h4><b>Cobertura geográfica</b></h4>
+              <p>Territorio al que se refiere la captación de datos</p>
             </div>
           </div>
         </div>
-        
-        
-        <h1 class="text" style="margin-top: 80px;">Valores historicos</h1>
-        
+
+        <h1 class="text" style="margin-top: 80px">Valores historicos</h1>
+
         <table>
+          <caption
+            style="caption-side: bottom; font-size: small; padding: 10px"
+          >
+            Tabla con la evolución de los datos registrados.
+          </caption>
           <thead>
             <tr>
               <th>Año</th>
@@ -312,40 +348,19 @@ font-size: 20px;
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>2020</td>
-              <td>100,100</td>
-              <td>www.loremIpsu.com</td>
-            </tr>
-            <tr>
-              <td>2019</td>
-              <td>100,100</td>
-              <td>www.loremIpsu.com</td>
-            </tr>
-            <tr>
-              <td>2018</td>
-              <td>100,100</td>
-              <td>www.loremIpsu.com</td>
-            </tr>
-            <tr>
-              <td>2017</td>
-              <td>100,100</td>
-              <td>www.loremIpsu.com</td>
-            </tr>
-            <tr>
-              <td>2016</td>
-              <td>100,100</td>
-              <td>www.loremIpsu.com</td>
-            </tr>
-            
+            {indicador.historicos}
           </tbody>
         </table>
-        <p style="margin-top: -15px; text-align: center;">Tabla con la evolución de los datos registrados en los últimos 5 años.<p/>
-          <div>
-          <canvas id="myChart" style="width:100%;max-width:800px"></canvas>
-          <p style="text-align: center;">Gráfica de barras representativa del valor en los últimos años disponibles<p/>
+        <div>
+          <canvas id="myChart" style="width: 100%; max-width: 800px"></canvas>
+          <p style="text-align: center">
+            Gráfica de barras representativa del valor en los últimos años
+            disponibles
+          </p>
+          <p />
         </div>
-          <!-- <table>
+        <div id="map"></div>
+        <!-- <table>
           <thead>
             <tr>
               <th>Año de valor histórico registrado</th>
@@ -365,23 +380,23 @@ font-size: 20px;
     <script>
       var xValues = ["2021", "2019", "2018", "2017", "2016"];
       var yValues = [100100, 50123, 120321, 23122, 32332];
-      var barColors = ["#242E40", "#242E40","#242E40","#242E40","#242E40"];
+      var barColors = ["#242E40", "#242E40", "#242E40", "#242E40", "#242E40"];
 
-new Chart("myChart", {
-  type: "bar",
-  data: {
-    labels: xValues,
-    datasets: [{
-      backgroundColor: barColors,
-      data: yValues
-    }]
-  },
-  options: {
-    legend: {display: false},
-    
-    
-  }
-});
+      new Chart("myChart", {
+        type: "bar",
+        data: {
+          labels: xValues,
+          datasets: [
+            {
+              backgroundColor: barColors,
+              data: yValues,
+            },
+          ],
+        },
+        options: {
+          legend: { display: false },
+        },
+      });
       // const varito = '{valores.historicos}';
       // const vorotus = '{anio.historicos}';
       // const ctx = document.getElementById('myChart');
@@ -404,6 +419,6 @@ new Chart("myChart", {
       //           }]
       //         }
       //       });
-            </script>
-</body>
+    </script>
+  </body>
 </html>

@@ -76,23 +76,31 @@ const generatePDF = async (res, data) => {
   let td = "";
   const datos = [];
   const anios = [];
-  indicador.Historicos.map((item, index) => {
+  indicador.Historicos.map(item => {
     datos.push(parseInt(item.valor));
     anios.push(parseInt(item.anio));
-    td += '<tr><td>' + item.anio + '</td><td>' + item.valor + '</td><td><a href="' + item.fuente + '">' + item.fuente + '</a></td></tr>\n';
-  })
+    td += '<tr>'
+      + '<td>' + item.anio + '</td>'
+      + '<td>' + item.valor + '</td>'
+      + '<td><a href="' + item.fuente + '">' + item.fuente + '</a></td>'
+      + '</tr>';
+  });
 
   const browser = await puppeteer.launch({
     headless: true
-  })
+  });
 
-  const page = await browser.newPage()
-
+  const page = await browser.newPage();
   let html = fs.readFileSync('./src/templates/test.html', 'utf8');
 
-  html = html.replace('{datos.historicos}', td);
-
-  html = html.replace("'{valores.historicos}'", (datos));
+  html = html.replace('{date}', new Date().toLocaleDateString());
+  html = html.replace('{indicador.modulo}', indicador.modulo);
+  html = html.replace('{indicador.ods}', indicador.ods);
+  html = html.replace('{indicador.cobertura}', indicador.coberturaGeografica);
+  html = html.replace('{indicador.formula}', indicador.Formula.ecuacion);
+  html = html.replace('{indicador.descripcion}', indicador.definicion);
+  html = html.replace('{indicador.historicos}', td);
+  html = html.replace('{valores.historicos}', (datos));
   html = html.replace("'{anio.historicos}'", (anios));
   await page.setContent(html, {
     waitUntil: 'networkidle2'
