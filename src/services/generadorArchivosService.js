@@ -2,6 +2,8 @@ const { Parser } = require("json2csv");
 const Excel = require('exceljs');
 const fs = require('fs');
 const puppeteer = require('puppeteer');
+const { numberWithCommas } = require("../utils/stringFormat");
+const handlebars = require('handlebars');
 
 const generateCSV = (data) => {
   data = data.dataValues;
@@ -64,7 +66,6 @@ const generateXLSX = (res, data) => {
       await wb.xlsx.write(res);
       res.end()
     })
-
     .catch(err => {
       console.log(err);
       res.status(500);
@@ -72,46 +73,54 @@ const generateXLSX = (res, data) => {
 }
 
 const generatePDF = async (res, data) => {
-  const indicador = data.dataValues;
-  let td = "";
-  const datos = [];
-  const anios = [];
-  indicador.Historicos.map(item => {
-    datos.push(parseInt(item.valor));
-    anios.push(parseInt(item.anio));
-    td += '<tr>'
-      + '<td>' + item.anio + '</td>'
-      + '<td>' + item.valor + '</td>'
-      + '<td><a href="' + item.fuente + '">' + item.fuente + '</a></td>'
-      + '</tr>';
-  });
-
+  let indicador = data.dataValues;
   const browser = await puppeteer.launch({
     headless: true
   });
 
   const page = await browser.newPage();
-  let html = fs.readFileSync('./src/templates/test.html', 'utf8');
+  const templateHtml = fs.readFileSync('./src/templates/test.html', 'utf8');
+  const template = handlebars.compile(templateHtml)
+  const html = template(indicador, { allowProtoPropertiesByDefault: true });
 
-  html = html.replace('{date}', new Date().toLocaleDateString());
-  html = html.replace('{indicador.modulo}', indicador.modulo);
-  html = html.replace('{indicador.ods}', indicador.ods);
-  html = html.replace('{indicador.cobertura}', indicador.coberturaGeografica);
-  html = html.replace('{indicador.formula}', indicador.Formula.ecuacion);
-  html = html.replace('{indicador.descripcion}', indicador.definicion);
-  html = html.replace('{indicador.historicos}', td);
-  html = html.replace('{valores.historicos}', (datos));
-  html = html.replace("'{anio.historicos}'", (anios));
   await page.setContent(html, {
     waitUntil: 'networkidle2'
-  })
+  });
+
+  const years = indicador.Historicos.map(elem => elem.anio);
+  const values = indicador.Historicos.map(elem => elem.valor);
+
+  await page.evaluate((years, values) => {
+    const ctx = document.getElementById('myChart');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: years,
+        datasets: [{
+          label: '# of Votes',
+          data: values,
+          backgroundColor: 'salmon',
+          barPercentage: 0.8,
+        }]
+      }
+    });
+  }, years, values)
 
   page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36WAIT_UNTIL=load")
 
   const seggs = await page.pdf({
     format: 'A3',
-  })
-  // close the browser
+    displayHeaderFooter: true,
+    printBackground: true,
+    headerTemplate: `<p>o.o</p>`,
+    footerTemplate: `
+    <div style="width: 100%; font-size: 10px;
+        padding: 5px 5px 0; position: relative;">
+        <div style="text-align: center">página <span class="pageNumber"></span>/<span class="totalPages"></span></div>
+    </div>`,
+    margin: { bottom: '70px' },
+  });
+
   await browser.close();
   res.header('Content-disposition', 'attachment');
   res.header('Content-Type', 'application/pdf');

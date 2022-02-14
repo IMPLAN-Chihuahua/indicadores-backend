@@ -6,24 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PDF</title>
     <!-- <link rel="stylesheet" href="test.css"> -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@latest/dist/Chart.min.js"></script>
     <script
       type="text/javascript"
       id="MathJax-script"
       async
       src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
-    ></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@latest/dist/Chart.min.js"></script>
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-      integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-      crossorigin=""
-    />
-    <!-- Make sure you put this AFTER Leaflet's CSS -->
-    <script
-      src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
-      integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
-      crossorigin=""
     ></script>
     <style>
       html {
@@ -111,8 +99,7 @@
         max-height: 400px;
       }
       .dateFormat {
-        font-size: 18px;
-        font-weight: normal;
+        font-size: 14px;
         color: #ffe171;
       }
       .card {
@@ -145,11 +132,6 @@
         font-family: Arial, Helvetica, sans-serif;
         font-size: 20px;
       }
-
-      #map {
-        height: 180px;
-      }
-
       .container {
         padding: 2px 16px;
         text-align: center;
@@ -174,251 +156,183 @@
         alt="OUT"
         src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644525630/small-logo_ebzjya.png"
       />
-      <h1>
-        Monitoreo de indicadores de la ciudad de chihuahua <br /><b
-          class="dateFormat"
-          >{date}</b
-        >
-      </h1>
+      <h1>Monitoreo de indicadores de la ciudad de chihuahua</h1>
       <img
         class="logo"
         alt="IMPLAN"
         src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644525630/implan-logo_lraizz.webp"
       />
     </div>
+    <div class="table-cluster">
+      <div>
+        <div class="desc">
+          <div style="margin-bottom: 10px; margin-right: 5%" class="desc">
+            <img
+              width="200px"
+              height="200px"
+              style="margin-bottom: 30px"
+              alt="..."
+              src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644526329/productivity-icon-png-29_rfrtji.png"
+            />
+          </div>
+          <div>
+            <table>
+              <thead>
+                <tr>
+                  <th>{{nombre}}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{{definicion}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <table>
+        <tr>
+          <th>Tematica</th>
+          <th>ODS</th>
+          <th>Cobertura geográfica</th>
+        </tr>
+        <tr>
+          <td>{{modulo}}</td>
+          <td>{{ods}}</td>
+          <td>{{coberturaGeografica}}</td>
+        </tr>
+      </table>
 
-    <br />
-    <div class="">
-      <div class="table-cluster">
-        <div>
-          <div class="desc">
-            <div style="margin-bottom: 10px; margin-right: 5%" class="desc">
+      <table>
+        <thead>
+          <tr>
+            <th>Fórmula de cálculo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <p>$${{Formula.ecuacion}}$$</p>
+            </td>
+          </tr>
+          <tr>
+            <td>{{Formula.descripcion}}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Variable</th>
+            <th>Definición</th>
+            <th>Valor</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each Formula.Variables}}
+          <tr>
+            <td>{{this.nombre}}</td>
+            <td>{{this.nombreAtributo}}</td>
+            <td>{{this.dato}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+
+      <div class="card-container">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-circle">
+              <b>{{ultimoValorDisponible}}</b>
+            </div>
+          </div>
+          <div class="container">
+            <h4><b>Último valor disponible</b></h4>
+            <p>{{unidadMedida}}</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-circle">
               <img
-                style="width: 200px; height: 200px; margin-bottom: 30px"
                 alt="..."
-                src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644526329/productivity-icon-png-29_rfrtji.png"
+                src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644525630/up-arrow_jnbaun.png"
+                class="arrow"
               />
             </div>
-            <div>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Descripción</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>{indicador.descripcion}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+          </div>
+          <div class="container">
+            <h4><b>Tendencia actual</b></h4>
+            <p>{{tendenciaActual}}</p>
           </div>
         </div>
-        <table>
-          <tr>
-            <th>Tematica</th>
-            <th>Ods</th>
-            <th>Cobertura geográfica</th>
-          </tr>
-          <tr>
-            <td>{indicador.modulo}</td>
-            <td>{indicador.ods}</td>
-            <td>{indicador.cobertura}</td>
-          </tr>
-        </table>
-
-        <table>
-          <thead>
-            <tr>
-              <th>Fórmula de cálculo</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <p>$${{indicador.formula}}$$</p>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Id
-                debitis hic ea qui reprehenderit molestiae voluptas sint tenetur
-                voluptatibus laboriosam adipisci deleniti totam minima magnam,
-                eum iste ipsam, repudiandae in.
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
-        <table>
-          <thead>
-            <tr>
-              <th>Variable</th>
-              <th>Definición</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>z</td>
-              <td>lorem ipsu del valor z</td>
-            </tr>
-            <tr>
-              <td>x</td>
-              <td>lorem ipsu del valor x</td>
-            </tr>
-            <tr>
-              <td>y</td>
-              <td>lorem ipsu del valor y</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div class="card-container">
-          <div class="card">
-            <div class="card-header">
-              <div class="card-circle">
-                <b>100,233</b>
-              </div>
-            </div>
-            <div class="container">
-              <h4><b>Último valor disponible</b></h4>
-              <p>Oregon</p>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-header">
-              <div class="card-circle">
-                <img
-                  alt="..."
-                  src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644525630/up-arrow_jnbaun.png"
-                  class="arrow"
-                />
-              </div>
-            </div>
-            <div class="container">
-              <h4><b>Tendencia actual</b></h4>
-              <p>ASCENDENTE</p>
-            </div>
-          </div>
-        </div>
-        <div
-          class="card-container"
-          style="margin-top: 30px; margin-bottom: 30px"
-        >
-          <div class="card">
-            <div class="card-header">
-              <div class="card-circle">
-                <b>2020</b>
-              </div>
-            </div>
-            <div class="container">
-              <h4><b>Año de referencia</b></h4>
-              <p>Año al que se refiere el último valor disponible</p>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-header">
-              <div class="card-circle">
-                <b>Rue</b>
-              </div>
-            </div>
-            <div class="container">
-              <h4><b>Cobertura geográfica</b></h4>
-              <p>Territorio al que se refiere la captación de datos</p>
-            </div>
-          </div>
-        </div>
-
-        <h1 class="text" style="margin-top: 80px">Valores historicos</h1>
-
-        <table>
-          <caption
-            style="caption-side: bottom; font-size: small; padding: 10px"
-          >
-            Tabla con la evolución de los datos registrados.
-          </caption>
-          <thead>
-            <tr>
-              <th>Año</th>
-              <th>Valor</th>
-              <th>Fuente de información</th>
-            </tr>
-          </thead>
-          <tbody>
-            {indicador.historicos}
-          </tbody>
-        </table>
-        <div>
-          <canvas id="myChart" style="width: 100%; max-width: 800px"></canvas>
-          <p style="text-align: center">
-            Gráfica de barras representativa del valor en los últimos años
-            disponibles
-          </p>
-          <p />
-        </div>
-        <div id="map"></div>
-        <!-- <table>
-          <thead>
-            <tr>
-              <th>Año de valor histórico registrado</th>
-              <th>Valor</th>
-              <th>Fuente de información</th>
-            </tr>
-          </thead>
-          <tbody>
-            {datos.historicos}
-            <tr>
-              <td><canvas id="myChart"></canvas></td>
-            </tr>
-          </tbody>
-        </table> -->
       </div>
-    </div>
-    <script>
-      var xValues = ["2021", "2019", "2018", "2017", "2016"];
-      var yValues = [100100, 50123, 120321, 23122, 32332];
-      var barColors = ["#242E40", "#242E40", "#242E40", "#242E40", "#242E40"];
+      <div class="card-container" style="margin-top: 30px; margin-bottom: 30px">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-circle">
+              <b>{{anioUltimoValorDisponible}}</b>
+            </div>
+          </div>
+          <div class="container">
+            <h4><b>Año de Referencia</b></h4>
+            <p>Año al que se refiere el último valor disponible</p>
+          </div>
+        </div>
 
-      new Chart("myChart", {
-        type: "bar",
-        data: {
-          labels: xValues,
-          datasets: [
-            {
-              backgroundColor: barColors,
-              data: yValues,
-            },
-          ],
-        },
-        options: {
-          legend: { display: false },
-        },
-      });
-      // const varito = '{valores.historicos}';
-      // const vorotus = '{anio.historicos}';
-      // const ctx = document.getElementById('myChart');
-      // const myChart = new Chart(ctx, {
-      //   type: 'bar',
-      //   data: {
-      //     labels: vorotus,
-      //     datasets: [{
-      //       label: '# of Votes',
-      //       data: varito,
-      //       backgroundColor: [
-      //         'rgba(255, 99, 132, 1)',
-      //               'rgba(54, 162, 235, 1)',
-      //               'rgba(255, 206, 86, 1)',
-      //               'rgba(75, 192, 192, 1)',
-      //               'rgba(153, 102, 255, 1)',
-      //               'rgba(255, 159, 64, 1)'
-      //             ],
-      //             barPercentage: 0.8,
-      //           }]
-      //         }
-      //       });
-    </script>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-circle">
+              <b>{{coberturaGeografica}}</b>
+            </div>
+          </div>
+          <div class="container">
+            <h4><b>Cobertura geográfica</b></h4>
+            <p>Territorio al que se refiere la captación de datos</p>
+          </div>
+        </div>
+      </div>
+
+      <h1 class="text" style="margin-top: 80px">Valores historicos</h1>
+
+      <table>
+        <caption style="caption-side: bottom; font-size: small; padding: 10px">
+          Tabla con la evolución de los datos registrados.
+        </caption>
+        <thead>
+          <tr>
+            <th>Año</th>
+            <th>Valor</th>
+            <th>Fuente de información</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each Historicos}}
+          <tr>
+            <td>{{this.anio}}</td>
+            <td>{{this.valor}}</td>
+            <td><a href="{{this.fuente}}">{{this.fuente}}</a></td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+      <table>
+        <tr>
+          <th style="border: 1px solid white; background-color: white">
+            <canvas id="myChart" style="width: 100%; max-width: 800px"></canvas>
+          </th>
+        </tr>
+        <caption style="caption-side: bottom; font-size: small; padding: 10px">
+          Gráfica de barras representativa del valor en los últimos años
+          disponibles
+        </caption>
+      </table>
+    </div>
+
+    <h1 class="text" style="margin-top: 80px">Mapa</h1>
+    <div>{{#if Mapa}}{{Mapa.url}}{{/if}}</div>
   </body>
 </html>
