@@ -238,7 +238,7 @@
           <tr>
             <td>{{this.nombre}}</td>
             <td>{{this.nombreAtributo}}</td>
-            <td align="right">{{this.dato}}</td>
+            <td style="text-align: right !important;">{{this.dato}}</td>
           </tr>
           {{/each}}
         </tbody>
@@ -318,8 +318,8 @@
         <tbody>
           {{#each Historicos}}
           <tr>
-            <td>{{this.anio}}</td>
-            <td>{{numberWithCommas this.valor}}</td>
+            <td style="text-align: right !important;">{{this.anio}}</td>
+            <td style="text-align: right !important;">{{numberWithCommas this.valor}}</td>
             <td><a href="{{this.fuente}}">{{this.fuente}}</a></td>
           </tr>
           {{/each}}

@@ -84,21 +84,28 @@ const getIndicador = async (idIndicador, Format) => {
       {
         model: Modulo,
         required: true,
-        attributes: ["id", "temaIndicador", "color"],
+        attributes: [],
+      },
+      {
+        model: Ods,
+        required: true,
+        attributes: [],
       },
       {
         model: CoberturaGeografica,
         required: true,
-        attributes: ["nombre"],
+        attributes: [],
       },
       limit,
       {
         model: Mapa,
-        required: false
+        required: false,
+        attributes: ['id', 'ubicacion', 'url']
       },
       {
         model: Formula,
         required: false,
+        attributes: ['id', 'ecuacion', 'descripcion'],
         include: [
           {
             model: Variable,
@@ -106,23 +113,27 @@ const getIndicador = async (idIndicador, Format) => {
             include: [{
               model: UnidadMedida,
               required: true,
+              attributes: []
             }],
-            attributes: ['nombre', 'nombreAtributo', 'dato', 'idUnidad', [sequelize.literal('"Formula->Variables->UnidadMedida"'), "Unidad"],],
+            attributes: ['nombre', 'nombreAtributo', 'dato', [sequelize.literal('"Formula->Variables->UnidadMedida"."nombre"'), "Unidad"],],
           }
         ]
       }
     ],
     attributes: [
       "id",
-      "urlImagen",
-      "nombre",
-      "definicion",
-      "ultimoValorDisponible",
-      "anioUltimoValorDisponible",
-      "tendenciaActual",
-      "tendenciaDeseada",
-      "mapa",
-      [sequelize.literal('"UnidadMedida"."nombre"'), "Unidad"],
+        "nombre",
+        "definicion",
+        "urlImagen",
+        [sequelize.literal('"Od"."nombre"'), "ods"],
+        [sequelize.literal('"Modulo"."temaIndicador"'), "modulo"],
+        "ultimoValorDisponible",
+        [sequelize.literal('"UnidadMedida"."nombre"'), "unidadMedida"],
+        "anioUltimoValorDisponible",
+        [sequelize.literal('"CoberturaGeografica"."nombre"'), "coberturaGeografica"],
+        "tendenciaActual",
+        "tendenciaDeseada",
+        "mapa",
     ],
   });
 
