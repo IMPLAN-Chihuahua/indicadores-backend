@@ -4,8 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PDF</title>
-    <!-- <link rel="stylesheet" href="test.css"> -->
+    <title>Indicador {{nombre}}</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@latest/dist/Chart.min.js"></script>
     <script
       type="text/javascript"
@@ -13,40 +12,46 @@
       async
       src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
     ></script>
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
     <style>
       html {
         -webkit-print-color-adjust: exact;
+      }
+
+      body {
+        margin: 0;
       }
       h1 {
         text-align: center;
       }
 
-      img {
+      .header__img {
         max-width: 150px;
         max-height: 150px;
-        padding-left: 10%;
-        padding-right: 10%;
       }
 
       .title {
         display: flex;
         flex-direction: row;
+        column-gap: 60px;
+        padding: 10px;
+        margin-bottom: 10px;
         align-items: center;
         justify-content: center;
         background-color: #263044;
         color: white;
         font-size: small;
         font-family: Arial, Helvetica, sans-serif;
-        margin-top: -10px;
-        margin-left: -10px;
-        margin-right: -10px;
       }
 
       .desc {
         display: flex;
         flex-direction: row;
         align-items: center;
-        justify-content: center;
+        justify-content: space-between;
       }
 
       .table-cluster {
@@ -98,12 +103,8 @@
         max-width: 400px;
         max-height: 400px;
       }
-      .dateFormat {
-        font-size: 14px;
-        color: #ffe171;
-      }
+
       .card {
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
         width: 300px;
         height: 320px;
         background-color: #204c5a;
@@ -112,6 +113,7 @@
         margin-right: 20px;
         margin-left: 20px;
       }
+
       .card-header {
         height: 55%;
         display: flex;
@@ -119,6 +121,7 @@
         justify-content: center;
         align-items: center;
       }
+
       .card-circle {
         background-color: white;
         border-radius: 50%;
@@ -132,17 +135,21 @@
         font-family: Arial, Helvetica, sans-serif;
         font-size: 20px;
       }
+
       .container {
         padding: 2px 16px;
         text-align: center;
       }
+
       .card-container {
         display: flex;
       }
+
       .arrow {
         height: 70%;
         width: 100px;
       }
+
       .text {
         font-family: Arial, Helvetica, sans-serif;
         text-decoration: underline;
@@ -152,50 +159,45 @@
   <body>
     <div id="pageHeader" class="title">
       <img
-        class="logo"
+        class="header__img"
         alt="OUT"
         src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644525630/small-logo_ebzjya.png"
       />
-      <h1>Monitoreo de indicadores de la ciudad de chihuahua</h1>
+      <h1>Monitoreo de indicadores de la ciudad de Chihuahua</h1>
       <img
-        class="logo"
+        class="header__img"
         alt="IMPLAN"
         src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644525630/implan-logo_lraizz.webp"
       />
     </div>
     <div class="table-cluster">
-      <div>
-        <div class="desc">
-          <div style="margin-bottom: 10px; margin-right: 5%" class="desc">
-            <img
-              width="200px"
-              height="200px"
-              style="margin-bottom: 30px"
-              alt="..."
-              src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644526329/productivity-icon-png-29_rfrtji.png"
-            />
-          </div>
-          <div>
-            <table>
-              <thead>
-                <tr>
-                  <th>{{nombre}}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>{{definicion}}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+      <div class="desc" style="width: 100%">
+        <img
+          width="200px"
+          height="200px"
+          alt="..."
+          src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644526329/productivity-icon-png-29_rfrtji.png"
+        />
+        <div>
+          <table>
+            <thead>
+              <tr>
+                <th>{{nombre}}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{{definicion}}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
       <table>
         <tr>
           <th>Tematica</th>
           <th>ODS</th>
-          <th>Cobertura geográfica</th>
+          <th>Cobertura Geográfica</th>
         </tr>
         <tr>
           <td>{{modulo}}</td>
@@ -207,7 +209,7 @@
       <table>
         <thead>
           <tr>
-            <th>Fórmula de cálculo</th>
+            <th>Fórmula de Cálculo</th>
           </tr>
         </thead>
         <tbody>
@@ -235,7 +237,7 @@
           <tr>
             <td>{{this.nombre}}</td>
             <td>{{this.nombreAtributo}}</td>
-            <td>{{this.dato}}</td>
+            <td align="right">{{this.dato}}</td>
           </tr>
           {{/each}}
         </tbody>
@@ -245,11 +247,11 @@
         <div class="card">
           <div class="card-header">
             <div class="card-circle">
-              <b>{{ultimoValorDisponible}}</b>
+              <b>{{numberWithCommas ultimoValorDisponible}}</b>
             </div>
           </div>
           <div class="container">
-            <h4><b>Último valor disponible</b></h4>
+            <h4><b>Último Valor Disponible</b></h4>
             <p>{{unidadMedida}}</p>
           </div>
         </div>
@@ -257,15 +259,19 @@
         <div class="card">
           <div class="card-header">
             <div class="card-circle">
-              <img
-                alt="..."
-                src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644525630/up-arrow_jnbaun.png"
-                class="arrow"
-              />
+              {{#if (isAscending tendenciaActual) }}
+              <span class="material-icons" style="font-size: 30px"
+                >arrow_upward</span
+              >
+              {{else}}
+              <span class="material-icons" style="font-size: 30px"
+                >arrow_downward</span
+              >
+              {{/if }}
             </div>
           </div>
           <div class="container">
-            <h4><b>Tendencia actual</b></h4>
+            <h4><b>Tendencia Actual</b></h4>
             <p>{{tendenciaActual}}</p>
           </div>
         </div>
@@ -290,13 +296,12 @@
             </div>
           </div>
           <div class="container">
-            <h4><b>Cobertura geográfica</b></h4>
+            <h4><b>Cobertura Geográfica</b></h4>
             <p>Territorio al que se refiere la captación de datos</p>
           </div>
         </div>
       </div>
-
-      <h1 class="text" style="margin-top: 80px">Valores historicos</h1>
+      <h1 class="text">Valores historicos</h1>
 
       <table>
         <caption style="caption-side: bottom; font-size: small; padding: 10px">
@@ -313,7 +318,7 @@
           {{#each Historicos}}
           <tr>
             <td>{{this.anio}}</td>
-            <td>{{this.valor}}</td>
+            <td>{{numberWithCommas this.valor}}</td>
             <td><a href="{{this.fuente}}">{{this.fuente}}</a></td>
           </tr>
           {{/each}}
@@ -321,7 +326,7 @@
       </table>
       <table>
         <tr>
-          <th style="border: 1px solid white; background-color: white">
+          <th style="background-color: white">
             <canvas id="myChart" style="width: 100%; max-width: 800px"></canvas>
           </th>
         </tr>
@@ -332,7 +337,14 @@
       </table>
     </div>
 
-    <h1 class="text" style="margin-top: 80px">Mapa</h1>
-    <div>{{#if Mapa}}{{Mapa.url}}{{/if}}</div>
+    <h1 class="text">Mapa</h1>
+    <div style="display: flex; justify-content: center">
+      {{#if Mapa}}
+      <img
+        id="mapImg"
+        src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644535117/mapa_mwlhkq.png"
+      />
+      {{/if}}
+    </div>
   </body>
 </html>
