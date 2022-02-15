@@ -1,437 +1,350 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF</title>
-    <!-- <link rel="stylesheet" href="test.css"> -->
-    <script type="text/javascript" id="MathJax-script" async
-    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
-    </script>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Indicador {{nombre}}</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@latest/dist/Chart.min.js"></script>
-    
+    <script
+      type="text/javascript"
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
     <style>
-            html {
-  -webkit-print-color-adjust: exact;
-}
+      html {
+        -webkit-print-color-adjust: exact;
+      }
+
+      body {
+        margin: 0;
+      }
       h1 {
-    text-align: center;
-}
+        text-align: center;
+      }
 
-.logo {
-    width: 20%;
-    height: 5%;
-    max-width: 150px;
-    max-height: 150px;
-    padding-left: 10%;
-    padding-right: 10%;
-}
+      .header__img {
+        max-width: 150px;
+        max-height: 150px;
+      }
 
-.title {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    background-color: #263044;
-    color: white;
-    font-size: small;
-    font-family:Arial, Helvetica, sans-serif;
-    margin-top: -10px;
-    margin-left: -10px;
-    margin-right: -10px;
-}
+      .title {
+        display: flex;
+        flex-direction: row;
+        column-gap: 60px;
+        padding: 10px;
+        margin-bottom: 10px;
+        align-items: center;
+        justify-content: center;
+        background-color: #263044;
+        color: white;
+        font-size: small;
+        font-family: Arial, Helvetica, sans-serif;
+      }
 
-.desc {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center ;
-}
+      .desc {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
 
+      .table-cluster {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        max-width: 70%;
+        margin: auto;
+      }
 
-.table-cluster {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    max-width: 70%;
-    margin: auto;
-}
+      table {
+        width: 100%;
+        max-width: 100%;
+        font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+          "Lucida Sans", Arial, sans-serif;
+        font-size: 20px;
+        margin-bottom: 5%;
+        border-collapse: collapse;
+      }
 
-table {
-    width: 100%;
-    max-width: 100%;
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-    font-size: 20px;
-    margin-bottom: 5%;
-    border-collapse: collapse;
-}
+      table td,
+      table th {
+        text-align: left;
+        padding: 7px;
+        border: 1px solid rgb(0, 0, 0, 0.1);
+        border-collapse: collapse;
+      }
 
+      table td {
+        font-size: 15px;
+        text-align: center;
+      }
 
-table td, table th {
-    text-align: left;
-    padding: 7px;
-    border: 1px solid rgb(0,0,0,0.1);
-    border-collapse: collapse;
-}
+      table th {
+        color: rgb(255, 255, 255);
+        background: #263044;
+        text-align: center;
+        /* border-radius: 10%; */
+      }
 
-table td {
-    font-size: 15px;
-    text-align: center;
-}
+      .subInfo th {
+        background: #404756;
+      }
 
-table th {
-    color: rgb(255, 255, 255);
-    background: #263044;
-    text-align: center;
-    /* border-radius: 10%; */
-}
+      #myChart {
+        height: 400px;
+        width: 400px;
+        max-width: 400px;
+        max-height: 400px;
+      }
 
-.subInfo th{
-  background: #404756;
-}
+      .card {
+        width: 300px;
+        height: 320px;
+        background-color: #204c5a;
+        color: white;
+        font-family: Arial, Helvetica, sans-serif;
+        margin-right: 20px;
+        margin-left: 20px;
+      }
 
-#myChart {
-    height: 400px;
-    width: 400px;
-    max-width: 400px;
-    max-height: 400px;
-}
-.dateFormat{
-  font-size: 18px;
-  font-weight: normal;
-  color: #ffe171 ;
-}
-.card {
-  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-  width: 300px;
-  height: 320px;
-  background-color: #204C5A;
-  color: white;
-  font-family: Arial, Helvetica, sans-serif;
-  margin-right: 20px;
-  margin-left: 20px;
-  
-}
-.card-header{
-  height: 55%;
-  display: flex;
-  text-align: center;
-  justify-content: center;
-  align-items: center;
-}
-.card-circle{
-background-color: white;
-border-radius: 50%;
-height: 150px;
-width: 150px;
-text-align: center;
-display: flex;
-justify-content: center;
-align-items: center;
-color: black;
-font-family: Arial, Helvetica, sans-serif;
-font-size: 20px;
-}
+      .card-header {
+        height: 55%;
+        display: flex;
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+      }
 
+      .card-circle {
+        background-color: white;
+        border-radius: 50%;
+        height: 150px;
+        width: 150px;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: black;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 20px;
+      }
 
-.container {
-  padding: 2px 16px;
-  text-align: center;
-}
-.card-container{
-  display: flex;
-}
-.arrow{
-  height: 70%;
-  width: 100px;
-}
-.text{
-  font-family: Arial, Helvetica, sans-serif;
-  text-decoration: underline;
-}
+      .container {
+        padding: 2px 16px;
+        text-align: center;
+      }
 
-    </style>
-</head>
-<body>
-    <div id="pageHeader" class="title">
-        <img class="logo" alt="OUT" src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644525630/small-logo_ebzjya.png">
-        <h1>Monitoreo de indicadores de la ciudad de chihuahua <br/><b class="dateFormat">10-02-2022</b></h1>
-        <img class="logo" alt="IMPLAN" src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644525630/implan-logo_lraizz.webp">
-    </div>
+      .card-container {
+        display: flex;
+      }
 
-    <br>
-    <div class="">
-      <div class="table-cluster">
+      .arrow {
+        height: 70%;
+        width: 100px;
+      }
 
-        <div>
-<div class="desc">
-<div style="margin-bottom: 10px; margin-right: 5%;" class="desc">
-  <img style="width: 200px; height: 200px; margin-bottom: 30px;" alt="..." src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644526329/productivity-icon-png-29_rfrtji.png" />
-</div>
-  <div>
-    <table>
-      <thead>
-        <tr>
-          <th>Descripción</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Aspernatur sunt aliquid assumenda consectetur vero ex! Quas et, error aut aliquid earum dolore corrupti reprehenderit fuga accusantium obcaecati omnis, itaque sed!/td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+      .text {
+        font-family: Arial, Helvetica, sans-serif;
+        text-decoration: underline;
+      }
       
+    </style>
+  </head>
+  <body>
+    <div id="pageHeader" class="title">
+      <img
+        class="header__img"
+        alt="OUT"
+        src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644525630/small-logo_ebzjya.png"
+      />
+      <h1>Monitoreo de indicadores de la ciudad de Chihuahua</h1>
+      <img
+        class="header__img"
+        alt="IMPLAN"
+        src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644525630/implan-logo_lraizz.webp"
+      />
     </div>
+    <div class="table-cluster">
+      <div class="desc" style="width: 100%">
+        <img
+          width="200px"
+          height="200px"
+          alt="..."
+          src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644526329/productivity-icon-png-29_rfrtji.png"
+        />
+        <div>
+          <table>
+            <thead>
+              <tr>
+                <th>{{nombre}}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{{definicion}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-        <table>
+      <table>
+        <tr>
+          <th>Tematica</th>
+          <th>ODS</th>
+          <th>Cobertura Geográfica</th>
+        </tr>
+        <tr>
+          <td>{{modulo}}</td>
+          <td>{{ods}}</td>
+          <td>{{coberturaGeografica}}</td>
+        </tr>
+      </table>
+
+      <table>
+        <thead>
           <tr>
-            <th>Tematica</th>
-            <th>Ods</th>
-            <th>Cobertura geográfica</th>
+            <th>Fórmula de Cálculo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <p>$${{Formula.ecuacion}}$$</p>
+            </td>
           </tr>
           <tr>
-            <td>Emil</td>
-            <td>Tossbias</td>
-            <td>Linus</td>
+            <td>{{Formula.descripcion}}</td>
           </tr>
-        </table>
+        </tbody>
+      </table>
 
+      <table>
+        <thead>
+          <tr>
+            <th>Variable</th>
+            <th>Definición</th>
+            <th>Valor</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each Formula.Variables}}
+          <tr>
+            <td>{{this.nombre}}</td>
+            <td>{{this.nombreAtributo}}</td>
+            <td align="right">{{this.dato}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
 
-        <table>
-          <thead>
-            <tr>
-              <th>Fórmula de cálculo</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <p>
-                $$z=x^2 + y^2$$
-                </p>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Id debitis hic ea qui reprehenderit molestiae voluptas sint tenetur voluptatibus laboriosam adipisci deleniti totam minima magnam, eum iste ipsam, repudiandae in.
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
-        <table >
-          <thead>
-            <tr>
-              <th>Variable</th>
-              <th>Definición</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>z</td>
-              <td>lorem ipsu del valor z</td>
-            </tr>
-            <tr>
-              <td>x</td>
-              <td>lorem ipsu del valor x</td>
-            </tr>
-            <tr>
-              <td>y</td>
-              <td>lorem ipsu del valor y</td>
-            </tr>
-          </tbody>
-        </table>
-
-        
-        <div class="card-container">
-          <div class="card">
-            <div class="card-header">
-              <div class="card-circle">
-                <b>100,233</b>
-              </div>
-            </div>
-            <div class="container">
-              <h4><b>Último valor disponible</b></h4> 
-              <p>Oregon</p> 
+      <div class="card-container">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-circle">
+              <b>{{numberWithCommas ultimoValorDisponible}}</b>
             </div>
           </div>
-
-          <div class="card">
-            <div class="card-header">
-              <div class="card-circle">
-                <img alt="..." src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644525630/up-arrow_jnbaun.png" class="arrow"/>
-              </div>
-            </div>
-            <div class="container">
-              <h4><b>Tendencia actual</b></h4> 
-              <p>ASCENDENTE</p> 
-              
-            </div>
+          <div class="container">
+            <h4><b>Último Valor Disponible</b></h4>
+            <p>{{unidadMedida}}</p>
           </div>
         </div>
 
-
-        <div class="card-container" style="margin-top: 30px; margin-bottom: 30px;">
-          <div class="card">
-            <div class="card-header">
-              <div class="card-circle">
-                <b>2020</b>
-              </div>
-            </div>
-            <div class="container">
-              <h4><b>Año de referencia</b></h4> 
-              <p>Año al que se refiere el último valor disponible</p> 
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-header">
-              <div class="card-circle">
-                <b>Rue</b>
-              </div>
-            </div>
-            <div class="container">
-              <h4><b>Cobertura geográfica</b></h4> 
-              <p>Territorio al que se refiere la captación de datos</p> 
+        <div class="card">
+          <div class="card-header">
+            <div class="card-circle">
+              {{#if (isAscending tendenciaActual) }}
+              <span class="material-icons" style="font-size: 30px"
+                >arrow_upward</span
+              >
+              {{else}}
+              <span class="material-icons" style="font-size: 30px"
+                >arrow_downward</span
+              >
+              {{/if }}
             </div>
           </div>
+          <div class="container">
+            <h4><b>Tendencia Actual</b></h4>
+            <p>{{tendenciaActual}}</p>
+          </div>
         </div>
-        
-        
-        <h1 class="text" style="margin-top: 80px;">Valores historicos</h1>
-        
-        <table>
-          <thead>
-            <tr>
-              <th>Año</th>
-              <th>Valor</th>
-              <th>Fuente de información</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>2020</td>
-              <td>100,100</td>
-              <td>www.loremIpsu.com</td>
-            </tr>
-            <tr>
-              <td>2019</td>
-              <td>100,100</td>
-              <td>www.loremIpsu.com</td>
-            </tr>
-            <tr>
-              <td>2018</td>
-              <td>100,100</td>
-              <td>www.loremIpsu.com</td>
-            </tr>
-            <tr>
-              <td>2017</td>
-              <td>100,100</td>
-              <td>www.loremIpsu.com</td>
-            </tr>
-            <tr>
-              <td>2016</td>
-              <td>100,100</td>
-              <td>www.loremIpsu.com</td>
-            </tr>
-            
-          </tbody>
-        </table>
-        <p style="margin-top: -15px; text-align: center;">Tabla con la evolución de los datos registrados en los últimos 5 años.<p/>
-          <div>
-          <canvas id="myChart" style="width:100%;max-width:800px"></canvas>
-          <p style="text-align: center;">Gráfica de barras representativa del valor en los últimos años disponibles<p/>
-        </div>
-
-        <h1 class="text" style="margin-top: 40px;">Mapa</h1>
-        <!-- <iframe
-        title="Sigmun"
-        name="sigmun"
-        width="100%"
-        height="500"
-        src="https://geoportal.implanchihuahua.org/sigmun/apps/webappviewer/index.html?id=92971c77b4b047f89d35b08791a83db9">
-        </iframe> -->
-
-        <div class="mapa">
-
-          <img style="margin-bottom: 30px;" alt="..." src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644535117/mapa_mwlhkq.png" />
-          
-        </div>
-
-          <!-- <table>
-          <thead>
-            <tr>
-              <th>Año de valor histórico registrado</th>
-              <th>Valor</th>
-              <th>Fuente de información</th>
-            </tr>
-          </thead>
-          <tbody>
-            {datos.historicos}
-            <tr>
-              <td><canvas id="myChart"></canvas></td>
-            </tr>
-          </tbody>
-        </table> -->
       </div>
-    </div>
-    <script>
-      var xValues = ["2021", "2019", "2018", "2017", "2016"];
-      var yValues = [100100, 50123, 120321, 23122, 32332];
-      var barColors = ["#242E40", "#242E40","#242E40","#242E40","#242E40"];
+      <div class="card-container" style="margin-top: 30px; margin-bottom: 30px">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-circle">
+              <b>{{anioUltimoValorDisponible}}</b>
+            </div>
+          </div>
+          <div class="container">
+            <h4><b>Año de Referencia</b></h4>
+            <p>Año al que se refiere el último valor disponible</p>
+          </div>
+        </div>
 
-new Chart("myChart", {
-  type: "bar",
-  data: {
-    labels: xValues,
-    datasets: [{
-      backgroundColor: barColors,
-      data: yValues
-    }]
-  },
-  options: {
-    legend: {display: false},
-    scales: {
-            xAxes: [{
-                ticks: {
-                  fontSize: 18
-                }
-            }],
-            yAxes: [{
-                ticks: {
-                    fontSize: 18
-                }
-            }]
-        }
-    
-  }
-});
-      // const varito = '{valores.historicos}';
-      // const vorotus = '{anio.historicos}';
-      // const ctx = document.getElementById('myChart');
-      // const myChart = new Chart(ctx, {
-      //   type: 'bar',
-      //   data: {
-      //     labels: vorotus,
-      //     datasets: [{
-      //       label: '# of Votes',
-      //       data: varito,
-      //       backgroundColor: [
-      //         'rgba(255, 99, 132, 1)',
-      //               'rgba(54, 162, 235, 1)',
-      //               'rgba(255, 206, 86, 1)',
-      //               'rgba(75, 192, 192, 1)',
-      //               'rgba(153, 102, 255, 1)',
-      //               'rgba(255, 159, 64, 1)'
-      //             ],
-      //             barPercentage: 0.8,
-      //           }]
-      //         }
-      //       });
-            </script>
-</body>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-circle">
+              <b>{{coberturaGeografica}}</b>
+            </div>
+          </div>
+          <div class="container">
+            <h4><b>Cobertura Geográfica</b></h4>
+            <p>Territorio al que se refiere la captación de datos</p>
+          </div>
+        </div>
+      </div>
+      <h1 class="text">Valores historicos</h1>
+
+      <table>
+        <caption style="caption-side: bottom; font-size: small; padding: 10px">
+          Tabla con la evolución de los datos registrados.
+        </caption>
+        <thead>
+          <tr>
+            <th>Año</th>
+            <th>Valor</th>
+            <th>Fuente de información</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each Historicos}}
+          <tr>
+            <td>{{this.anio}}</td>
+            <td>{{numberWithCommas this.valor}}</td>
+            <td><a href="{{this.fuente}}">{{this.fuente}}</a></td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+      <table>
+        <tr>
+          <th style="background-color: white">
+            <canvas id="myChart" style="width: 100%; max-width: 800px"></canvas>
+          </th>
+        </tr>
+        <caption style="caption-side: bottom; font-size: small; padding: 10px">
+          Gráfica de barras representativa del valor en los últimos años
+          disponibles
+        </caption>
+      </table>
+    </div>
+    <h1 class="text">Mapa</h1>
+    <div style="display: flex; justify-content: center">
+      {{#if Mapa}}
+      <img
+        id="mapImg"
+        src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644535117/mapa_mwlhkq.png"
+      />
+      {{/if}}
+    </div>
+  </body>
 </html>
