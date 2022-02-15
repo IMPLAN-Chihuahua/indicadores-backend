@@ -68,6 +68,7 @@ const getIndicador = async (idIndicador, Format) => {
     },
   ]
   let limit = [];
+  
   typeof Format != 'undefined' ? limit = historicos[1] : limit = historicos[0];
 
   const indicador = await Indicador.findOne({
