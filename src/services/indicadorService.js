@@ -1,4 +1,4 @@
-const {
+  const {
   Indicador,
   Ods,
   CoberturaGeografica,
@@ -13,6 +13,7 @@ const {
   Sequelize
 } = require("../models");
 const { Op } = Sequelize;
+
 const getIndicadores = async (page = 1, per_page = 15, matchedData) => {
   const result = await Indicador.findAndCountAll({
     where: {
@@ -48,11 +49,29 @@ const getIndicadores = async (page = 1, per_page = 15, matchedData) => {
   };
 };
 
+
+
 const getIndicador = async (idIndicador, Format) => {
-  if (typeof format != 'undefined') {
-    return generateFile(format, res, indicador)
-  }
-  return await Indicador.findOne({
+  const historicos = [
+    {
+      model: Historico,
+      required: true,
+      attributes: ["anio", "valor", "fuente"],
+      limit: 5,
+      order: [["anio", "DESC"]],
+    },
+    {
+      model: Historico,
+      required: true,
+      attributes: ["anio", "valor", "fuente"],
+      order: [["anio", "DESC"]],
+    },
+  ]
+  let limit = [];
+  
+  typeof Format != 'undefined' ? limit = historicos[1] : limit = historicos[0];
+
+  const indicador = await Indicador.findOne({
     where: {
       id: idIndicador,
     },
@@ -72,13 +91,7 @@ const getIndicador = async (idIndicador, Format) => {
         required: true,
         attributes: ["nombre"],
       },
-      {
-        model: Historico,
-        required: true,
-        attributes: ["anio", "valor", "fuente"],
-        limit: 10,
-        order: [["anio", "DESC"]],
-      },
+      limit,
       {
         model: Mapa,
         required: false
@@ -112,7 +125,11 @@ const getIndicador = async (idIndicador, Format) => {
       [sequelize.literal('"UnidadMedida"."nombre"'), "Unidad"],
     ],
   });
+
+  return indicador;
+
 }
+
 
 // Validation for catalogs
 const validateCatalog = ({ idOds, idCobertura, idUnidadMedida }) => {

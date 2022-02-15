@@ -34,7 +34,7 @@ const { getIndicador } = require('../controllers/indicadorController');
  *           description: Internal server error
  * 
  */
-router.route('/:idIndicador/:format?')
+router.route('/:idIndicador/')
     .get(paramValidationRules(),
         validate,
         getIndicador);
