@@ -144,7 +144,7 @@ const generatePDF = async (res, data) => {
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36WAIT_UNTIL=load"
   );
 
-  const seggs = await page.pdf({
+  const doc = await page.pdf({
     format: 'A3',
     displayHeaderFooter: true,
     printBackground: true,
@@ -160,7 +160,7 @@ const generatePDF = async (res, data) => {
   await browser.close();
   res.header('Content-disposition', 'attachment');
   res.header('Content-Type', 'application/pdf');
-  res.send(seggs);
+  res.send(doc);
 };
 
 module.exports = {
