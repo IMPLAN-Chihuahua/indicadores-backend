@@ -10,10 +10,10 @@ const {
   Mapa,
   Formula,
   Variable,
+  sequelize
 } = require("../models");
-const { Op } = require("sequelize");
+const { Op } = sequelize;
 const { getPagination } = require("../utils/pagination");
-const sequelize = require("sequelize");
 const { generateCSV, generateJSON, generateXLSX, generatePDF } = require("../services/generadorArchivosService");
 
 
@@ -53,12 +53,17 @@ const getIndicador = async (req, res) => {
         {
           model: Modulo,
           required: true,
-          attributes: ["id", "temaIndicador", "color"],
+          attributes: [],
         },
         {
           model: CoberturaGeografica,
           required: true,
-          attributes: ["nombre"],
+          attributes: [],
+        },
+        {
+          model: Ods,
+          required: true,
+          attributes: [],
         },
         {
           model: Historico,
@@ -69,11 +74,13 @@ const getIndicador = async (req, res) => {
         },
         {
           model: Mapa,
-          required: false
+          required: false,
+          attributes: ['id', 'ubicacion', 'url']
         },
         {
           model: Formula,
           required: false,
+          attributes: ['id', 'ecuacion', 'descripcion'],
           include: [
             {
               model: Variable,
@@ -81,23 +88,27 @@ const getIndicador = async (req, res) => {
               include: [{
                 model: UnidadMedida,
                 required: true,
+                attributes: []
               }],
-              attributes: ['nombre', 'nombreAtributo', 'dato', 'idUnidad', [sequelize.literal('"Formula->Variables->UnidadMedida"'), "Unidad"],],
+              attributes: ['nombre', 'nombreAtributo', 'dato', [sequelize.literal('"Formula->Variables->UnidadMedida"."nombre"'), "UnidadMedida"]],
             }
           ]
         }
       ],
       attributes: [
         "id",
-        "urlImagen",
         "nombre",
         "definicion",
+        "urlImagen",
+        [sequelize.literal('"Od"."nombre"'), "ods"],
+        [sequelize.literal('"Modulo"."temaIndicador"'), "modulo"],
         "ultimoValorDisponible",
+        [sequelize.literal('"UnidadMedida"."nombre"'), "unidadMedida"],
         "anioUltimoValorDisponible",
+        [sequelize.literal('"CoberturaGeografica"."nombre"'), "coberturaGeografica"],
         "tendenciaActual",
         "tendenciaDeseada",
         "mapa",
-        [sequelize.literal('"UnidadMedida"."nombre"'), "Unidad"],
       ],
     });
 
