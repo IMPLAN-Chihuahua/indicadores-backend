@@ -12,9 +12,7 @@ const generateCSV = (data) => {
   return csv;
 };
 
-const generateJSON = (data) => data;
-
-const generateXLSX = (res, data) => {
+const generateXLSX = (data) => {
   const indicador = data.dataValues;
   Object.keys(indicador).forEach(function (key) {
     if (
@@ -43,13 +41,12 @@ const generateXLSX = (res, data) => {
 
   let baseFile = "./src/templates/boop.xlsx";
   let wb = new Excel.Workbook();
-  wb.xlsx
+  return wb.xlsx
     .readFile(baseFile)
     .then(async () => {
       let initialRow = 2;
       let ws = wb.getWorksheet(1);
       let row = ws.getRow(initialRow);
-
       for (let i = 0; i < indicadorInfo.length; i++) {
         initialRow = 2;
         let actualCell = i + 1;
@@ -81,16 +78,14 @@ const generateXLSX = (res, data) => {
           row.commit();
         }
       }
-      await wb.xlsx.write(res);
-      res.end();
+      return await wb.xlsx.writeBuffer();;
     })
-    .catch((err) => {
-      console.log(err);
-      res.status(500);
+    .catch(err => {
+      throw err;
     });
 };
 
-const generatePDF = async (res, data) => {
+const generatePDF = async (data) => {
   let indicador = data.dataValues;
   const browser = await puppeteer.launch({
     headless: true,
@@ -99,12 +94,12 @@ const generatePDF = async (res, data) => {
   const page = await browser.newPage();
   await page.setViewport({ width: 800, height: 800, deviceScaleFactor: 3 });
   const templateHtml = fs.readFileSync("./src/templates/test.html", "utf8");
-  handlebars.registerHelper('isAscending', function(str) {
+  handlebars.registerHelper('isAscending', function (str) {
     return str === 'ASCENDENTE';
   });
   handlebars.registerHelper('numberWithCommas', numberWithCommas);
   const template = handlebars.compile(templateHtml);
-  
+
   const html = template(indicador, { allowProtoPropertiesByDefault: true });
   await page.setContent(html, {
     waitUntil: "networkidle0",
@@ -144,7 +139,7 @@ const generatePDF = async (res, data) => {
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36WAIT_UNTIL=load"
   );
 
-  const doc = await page.pdf({
+  const pdf = await page.pdf({
     format: 'A3',
     displayHeaderFooter: true,
     printBackground: true,
@@ -158,14 +153,11 @@ const generatePDF = async (res, data) => {
   });
 
   await browser.close();
-  res.header('Content-disposition', 'attachment');
-  res.header('Content-Type', 'application/pdf');
-  res.send(doc);
+  return pdf;
 };
 
 module.exports = {
   generateCSV,
-  generateJSON,
   generateXLSX,
   generatePDF,
 };
