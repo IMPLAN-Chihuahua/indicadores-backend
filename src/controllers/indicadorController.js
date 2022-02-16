@@ -1,6 +1,6 @@
 const IndicadorService = require("../services/indicadorService")
 const { getPagination } = require("../utils/pagination");
-const { generateCSV, generateJSON, generateXLSX, generatePDF } = require("../services/generadorArchivosService");
+const { generateCSV, generateXLSX, generatePDF } = require("../services/generadorArchivosService");
 const stream = require('stream');
 
 const getIndicadores = async (req, res) => {
@@ -27,7 +27,6 @@ const getIndicador = async (req, res) => {
     const idIndicador = req.matchedData.idIndicador;
     const format = req.matchedData.format;
     const indicador = await IndicadorService.getIndicador(idIndicador, format);
-
     if (indicador === null) {
       return res.sendStatus(404);
     }

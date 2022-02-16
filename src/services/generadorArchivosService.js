@@ -6,14 +6,13 @@ const { numberWithCommas } = require("../utils/stringFormat");
 const handlebars = require("handlebars");
 
 const generateCSV = (data) => {
-  data = data.dataValues;
   const json2csv = new Parser();
   const csv = json2csv.parse(data);
   return csv;
 };
 
 const generateXLSX = (data) => {
-  const indicador = data.dataValues;
+  const indicador = data;
   Object.keys(indicador).forEach(function (key) {
     if (
       indicador[key] === null ||
@@ -33,9 +32,9 @@ const generateXLSX = (data) => {
     indicador.Unidad,
     indicador.anioUltimoValorDisponible,
     indicador.coberturaGeografica,
-    indicador.Formula.ecuacion ?? "NA",
-    indicador.Formula.descripcion ?? "NA",
-    indicador.Formula.Variables ?? "NA",
+    indicador.Formula?.ecuacion ?? "NA",
+    indicador.Formula?.descripcion ?? "NA",
+    indicador.Formula?.Variables ?? "NA",
     indicador.Historicos ?? "NA",
   ];
 
