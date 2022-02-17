@@ -324,7 +324,6 @@ describe('v1/documentos', function () {
             .get('/api/v1/documentos/1/pdf')
             .end(function (err, res) {
                 expect(res).to.have.status(200);
-                console.log(res.header);
                 done();
             });
     });

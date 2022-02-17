@@ -13,8 +13,6 @@ const generateCSV = (data) => {
 
 const generateXLSX = (data) => {
   const indicador = data;
-  console.log(indicador);
-
   Object.keys(indicador).forEach(function (key) {
     if (
       indicador[key] === null ||
@@ -39,7 +37,7 @@ const generateXLSX = (data) => {
     indicador.Formula?.Variables ?? "NA",
     indicador.Historicos ?? "NA",
   ];
-
+  console.log(indicador);
   let baseFile = "./src/templates/boop.xlsx";
   let wb = new Excel.Workbook();
   return wb.xlsx
@@ -107,9 +105,8 @@ const generatePDF = async (data) => {
     waitUntil: "networkidle0",
   });
   console.log('#############################################asexxxxx');
-  console.log(indicador);
+  console
   const years = indicador.Historicos.map((elem) => elem.anio);
-  console.log(years);
   console.log('#############################################ahaaaeeeeezseaam');
   const values = indicador.Historicos.map((elem) => elem.valor);
   await page.evaluate(
@@ -158,8 +155,6 @@ const generatePDF = async (data) => {
     margin: { bottom: '70px' },
   });
 
-  console.log(pdf);
-  console.log('shit');
   await browser.close();
   return pdf;
 };

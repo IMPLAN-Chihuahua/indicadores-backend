@@ -18,6 +18,7 @@ const anIndicador = (id) => {
         ultimoValorDisponible: faker.datatype.number(),
         anioUltimoValorDisponible: faker.datatype.number({ 'min': 2000, 'max': new Date().getFullYear() }),
         idModulo: faker.datatype.number(10),
+        modulo: faker.random.word(),
         idOds: faker.datatype.number(15),
         idCobertura: faker.datatype.number(10),
         idUnidadMedida: faker.datatype.number(10),

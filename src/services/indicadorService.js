@@ -137,7 +137,11 @@ const getIndicador = async (idIndicador, Format) => {
     ],
   });
 
-    return {... indicador.dataValues};
+  if (typeof Format === 'undefined') {
+    return indicador;
+  }else {
+    return indicador;
+  }
 }
 
 
