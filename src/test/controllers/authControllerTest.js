@@ -1,7 +1,7 @@
 const { expect } = require("chai");
 const { describe } = require("mocha");
 const chai = require("chai");
-const { app } = require("../../../app");
+const { app, server } = require("../../../app");
 const chaiHttp = require("chai-http");
 const { Usuario } = require("../../models");
 const bcrypt = require("bcrypt");
@@ -10,7 +10,6 @@ chai.use(chaiHttp);
 const sinon = require("sinon");
 
 describe("auth controller", function () {
-let token;
 
   this.afterEach(function () {
     sinon.restore();
@@ -98,7 +97,7 @@ it("Should fail if user is disable", function (done) {
 });
 
 it("Should fail", function (done) {
-  const findOneFakeDisable = sinon.fake.rejects({none:'none'});
+  const findOneFakeDisable = sinon.fake.rejects(new Error('NA'));
   const compareFake = sinon.fake.resolves(true);
   sinon.replace(Usuario, "findOne", findOneFakeDisable);
   sinon.replace(bcrypt, "compare", compareFake);
@@ -115,5 +114,9 @@ it("Should fail", function (done) {
 
 });
 
+
+ 
+
+  
 
 });

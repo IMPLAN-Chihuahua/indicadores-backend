@@ -31,7 +31,6 @@ const getIndicadores = async (req, res) => {
       data: indicadores,
     });
   } catch (err) {
-    console.log(err);
     return res.status(500);
   }
 };
@@ -112,7 +111,6 @@ const getIndicador = async (req, res) => {
     return (res.status(200).json({ data: indicador, }))
 
   } catch (err) {
-    console.log(err);
     return res.sendStatus(500);
   }
 };

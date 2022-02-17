@@ -4,26 +4,14 @@ const getCatalogos = async (_, res) => {
     const Promises = [
         new Promise((resolve, reject) => {
             const coberturasList = CoberturaGeografica.findAll();
-            if (coberturasList === null) {
-                reject('Error al obtener las coberturas');
-                return;
-            }
             resolve(coberturasList);
         }),
         new Promise((resolve, reject) => {
             const odsList = Ods.findAll();
-            if (odsList === null) {
-                reject('Error al obtener las coberturas');
-                return;
-            }
-            resolve(odsList);
+            resolve(odsList);s
         }),
         new Promise((resolve, reject) => {
             const unidades = UnidadMedida.findAll();
-            if (unidades === null) {
-                reject('Error al obtener las coberturas');
-                return;
-            }
             resolve(unidades);
         }),
     ]
@@ -35,7 +23,7 @@ const getCatalogos = async (_, res) => {
                 return res.status(200).json({ coberturas: result[0], ods: result[1], unidadMedida: result[2] });
             })
             .catch(err => {
-                return res.sendStatus(500);
+                return res.sendStatus(500).json({error : err});
             })
     );
 
