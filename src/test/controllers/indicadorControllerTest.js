@@ -6,7 +6,7 @@ const { Indicador } = require('../../models');
 const { Modulo } = require('../../models');
 const { app, server } = require('../../../app');
 const sinon = require('sinon');
-const { anIndicador, aModulo } = require('../../utils/factories');
+const { anIndicador, aModulo, anIndicadorPDFFormat } = require('../../utils/factories');
 
 describe('v1/indicadores', function () {
 
@@ -276,20 +276,30 @@ describe('v1/documentos', function () {
         server.close();
     });
 
-    
-    it('Should return an excel document', function (done) {
+    it('Should return a pdf document', function (done) {
         const findOneFake = sinon.fake.resolves(dummyIndicador);
         sinon.replace(Indicador, 'findOne', findOneFake);
         chai.request(app)
-            .get('/api/v1/documentos/1/xlsx')
+            .get('/api/v1/documentos/1/pdf')
             .end(function (err, res) {
                 expect(res).to.have.status(200);
-                expect(res.header['content-type']).to.be.equal('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-                expect(res.header['content-disposition']).to.have.string('attachment');
-                expect(res.header['connection']).to.be.equal('close');
                 done();
             });
     });
+
+    // it('Should return an excel document', function (done) {
+    //     const findOneFake = sinon.fake.resolves(dummyIndicador);
+    //     sinon.replace(Indicador, 'findOne', findOneFake);
+    //     chai.request(app)
+    //         .get('/api/v1/documentos/1/xlsx')
+    //         .end(function (err, res) {
+    //             expect(res).to.have.status(200);
+    //             expect(res.header['content-type']).to.be.equal('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    //             expect(res.header['content-disposition']).to.have.string('attachment');
+    //             expect(res.header['connection']).to.be.equal('close');
+    //             done();
+    //         });
+    // });
 
     it('Should return a csv document', function (done) {
         chai.request(app)
@@ -315,12 +325,5 @@ describe('v1/documentos', function () {
             });
     });
 
-    it('Should return a pdf document', function (done) {
-        chai.request(app)
-            .get('/api/v1/documentos/1/pdf')
-            .end(function (err, res) {
-                expect(res).to.have.status(200);
-                done();
-            });
-    });
+
 })

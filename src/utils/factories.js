@@ -51,16 +51,6 @@ const anIndicador = (id) => {
                 valor: faker.datatype.number(),
                 fuente: faker.random.word()
             },
-            dataValues: {
-                anio: faker.datatype.number({ 'min': 2000, 'max': new Date().getFullYear() }),
-                valor: faker.datatype.number(),
-                fuente: faker.random.word()
-            },
-            dataValues: {
-                anio: faker.datatype.number({ 'min': 2000, 'max': new Date().getFullYear() }),
-                valor: faker.datatype.number(),
-                fuente: faker.random.word()
-            },
         }],
         codigo: '00' + faker.datatype.number(9),
         codigoObjeto: '00' + faker.datatype.number(9),

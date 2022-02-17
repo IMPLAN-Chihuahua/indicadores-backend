@@ -13,17 +13,6 @@ const generateCSV = (data) => {
 
 const generateXLSX = (data) => {
   const indicador = data;
-  console.log(indicador);
-  Object.keys(indicador).forEach(function (key) {
-    if (
-      indicador[key] === null ||
-      indicador[key] === undefined ||
-      indicador[key] === ""
-    ) {
-      indicador[key] = "NA";
-    }
-  });
-
   const indicadorInfo = [
     indicador.nombre,
     indicador.modulo,
@@ -88,7 +77,6 @@ const generateXLSX = (data) => {
 
 const generatePDF = async (data) => {
   let indicador = data;
-  console.log(indicador.Historicos[1].dataValues);
   const browser = await puppeteer.launch({
     headless: true,
   });
@@ -106,8 +94,10 @@ const generatePDF = async (data) => {
   await page.setContent(html, {
     waitUntil: "networkidle0",
   });
+  console.log(indicador);
   const years = indicador.Historicos.map((elem) => elem.anio);
   const values = indicador.Historicos.map((elem) => elem.valor);
+
   await page.evaluate(
     (years, values, unidadMedida) => {
       const ctx = document.getElementById("myChart").getContext("2d");
@@ -134,11 +124,14 @@ const generatePDF = async (data) => {
     years,
     values,
     indicador.unidadMedida
-  );
-
+  ).catch((err) => {
+    console.log(err);
+    throw err;
+  });
+  
   page.setUserAgent(
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36WAIT_UNTIL=load"
-    );
+  );
 
   const pdf = await page.pdf({
     format: 'A3',
