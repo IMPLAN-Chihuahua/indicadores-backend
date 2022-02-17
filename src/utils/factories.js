@@ -21,10 +21,32 @@ const anIndicador = (id) => {
         idOds: faker.datatype.number(15),
         idCobertura: faker.datatype.number(10),
         idUnidadMedida: faker.datatype.number(10),
+        unidadMedida: faker.random.word(),
         createdAt: new Date(),
         updatedAt: new Date(),
         tendenciaActual: faker.datatype.boolean() ? "ASCENDENTE" : "DESCENDENTE",
         tendenciaDeseada: faker.datatype.boolean() ? "ASCENDENTE" : "DESCENDENTE",
+        Mapa: {
+            id: faker.datatype.number(10),
+            ubicacion: faker.random.word(),
+            url: faker.image.imageUrl()
+        },
+        Formula: {
+            id: faker.datatype.number(10),
+            ecuacion: faker.lorem.sentence(),
+            descripcion: faker.lorem.sentence(),
+            Variables: {
+                nombre: faker.random.word(),
+                nombreAtributo: faker.random.word(),
+                dato: faker.datatype.number(),
+                Unidad: faker.random.word()
+            }
+        },
+        Historicos: {
+            anio: faker.datatype.number({ 'min': 2000, 'max': new Date().getFullYear() }),
+            valor: faker.datatype.number(),
+            fuente: faker.random.word()
+        }
     };
 };
 

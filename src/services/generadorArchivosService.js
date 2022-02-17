@@ -13,6 +13,8 @@ const generateCSV = (data) => {
 
 const generateXLSX = (data) => {
   const indicador = data;
+  console.log(indicador);
+
   Object.keys(indicador).forEach(function (key) {
     if (
       indicador[key] === null ||
@@ -85,11 +87,11 @@ const generateXLSX = (data) => {
 };
 
 const generatePDF = async (data) => {
-  let indicador = data.dataValues;
+  let indicador = data;
   const browser = await puppeteer.launch({
     headless: true,
   });
-
+  
   const page = await browser.newPage();
   await page.setViewport({ width: 800, height: 800, deviceScaleFactor: 3 });
   const templateHtml = fs.readFileSync("./src/templates/test.html", "utf8");
@@ -98,13 +100,17 @@ const generatePDF = async (data) => {
   });
   handlebars.registerHelper('numberWithCommas', numberWithCommas);
   const template = handlebars.compile(templateHtml);
-
+  
+  
   const html = template(indicador, { allowProtoPropertiesByDefault: true });
   await page.setContent(html, {
     waitUntil: "networkidle0",
   });
-
+  console.log('#############################################asexxxxx');
+  console.log(indicador);
   const years = indicador.Historicos.map((elem) => elem.anio);
+  console.log(years);
+  console.log('#############################################ahaaaeeeeezseaam');
   const values = indicador.Historicos.map((elem) => elem.valor);
   await page.evaluate(
     (years, values, unidadMedida) => {
@@ -136,7 +142,8 @@ const generatePDF = async (data) => {
 
   page.setUserAgent(
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36WAIT_UNTIL=load"
-  );
+    );
+    console.log('#############################################shsssit');
 
   const pdf = await page.pdf({
     format: 'A3',
@@ -151,6 +158,8 @@ const generatePDF = async (data) => {
     margin: { bottom: '70px' },
   });
 
+  console.log(pdf);
+  console.log('shit');
   await browser.close();
   return pdf;
 };

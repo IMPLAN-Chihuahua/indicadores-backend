@@ -137,7 +137,7 @@ const getIndicador = async (idIndicador, Format) => {
     ],
   });
 
-  return { ...indicador.dataValues };
+    return {... indicador.dataValues};
 }
 
 
