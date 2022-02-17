@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getUsers, createUser, getUser, editUser } = require('../controllers/usuarioController');
+const { getUsers, createUser, getUserFromId, editUser } = require('../controllers/usuarioController');
 const { verifyJWT } = require('../middlewares/auth');
 const {
     registerValidationRules,
@@ -181,7 +181,7 @@ router.post('/', registerValidationRules(), validate, createUser);
  *        422:
  *          description: Unable to process request due to semantic errors in the body or param payload
  */
-router.get('/:idUser', paramValidationRules(), validate, verifyJWT, getUser);
+router.get('/:idUser', paramValidationRules(), validate, verifyJWT, getUserFromId);
 
 
 /**

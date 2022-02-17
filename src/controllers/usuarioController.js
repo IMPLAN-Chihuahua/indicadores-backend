@@ -68,14 +68,17 @@ const editUser = async (req, res) => {
     }
 }
 
-const getUser = async (req, res) => {
+const getUserFromId = async (req, res) => {
     const id = req.matchedData.idUser;
-    const sub = req.sub;
+    return await getUser(req, res, id)
+};
 
-    if (id != sub) {
-        return res.sendStatus(204);
-    }
-    
+const getUserFromToken = async (req, res) => {
+    const id = req.sub;
+    return await getUser(req, res, id);
+};
+
+const getUser = async(req, res, id) => {
     try {
         const usuario = await getUsuarioById(id);
         if (usuario === null) {
@@ -93,4 +96,6 @@ module.exports = {
     createUser,
     getUser,
     editUser,
+    getUserFromId,
+    getUserFromToken
 };
