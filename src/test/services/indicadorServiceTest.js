@@ -1,8 +1,8 @@
 const chai = require('chai');
 const expect = chai.expect;
 const { Indicador } = require('../../models');
-const IndicadorService = require('../../services/indicadorService');
 const sinon = require('sinon');
+const IndicadorService = require('../../services/indicadorService');
 const { server } = require('../../../app');
 const { anIndicador } = require('../../utils/factories');
 

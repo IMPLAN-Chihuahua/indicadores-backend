@@ -41,6 +41,6 @@ const { loginValidationRules, validate } = require('../middlewares/validator')
  *         422:
  *           description: Unable to process request due to semantic errors in the body or param payload
  */
-router.post('/login', loginValidationRules(), validate, login);
+router.post('/', loginValidationRules(), validate, login);
 
 module.exports = router;
