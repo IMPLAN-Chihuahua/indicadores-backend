@@ -272,7 +272,6 @@ describe('v1/indicadores', function () {
 
 describe('v1/documentos', function () {
     const dummyIndicador = anIndicador(1);
-
     this.afterAll(function () {
         server.close();
     });
@@ -293,7 +292,6 @@ describe('v1/documentos', function () {
     });
 
     it('Should return a csv document', function (done) {
-        const findOneFake = sinon.fake.resolves(anIndicador(2));
         chai.request(app)
             .get('/api/v1/documentos/1/csv')
             .end(function (err, res) {
@@ -306,7 +304,6 @@ describe('v1/documentos', function () {
     });
 
     it('Should return a json document', function (done) {
-        const findOneFake = sinon.fake.resolves(anIndicador(2));
         chai.request(app)
             .get('/api/v1/documentos/1/json')
             .end(function (err, res) {
@@ -319,7 +316,6 @@ describe('v1/documentos', function () {
     });
 
     it('Should return a pdf document', function (done) {
-        const findOneFake = sinon.fake.resolves(anIndicador(2));
         chai.request(app)
             .get('/api/v1/documentos/1/pdf')
             .end(function (err, res) {

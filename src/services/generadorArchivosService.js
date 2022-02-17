@@ -13,6 +13,7 @@ const generateCSV = (data) => {
 
 const generateXLSX = (data) => {
   const indicador = data;
+  console.log(indicador);
   Object.keys(indicador).forEach(function (key) {
     if (
       indicador[key] === null ||
@@ -29,7 +30,7 @@ const generateXLSX = (data) => {
     indicador.tendenciaActual,
     indicador.tendenciaDeseada,
     indicador.ultimoValorDisponible,
-    indicador.Unidad,
+    indicador.unidadMedida,
     indicador.anioUltimoValorDisponible,
     indicador.coberturaGeografica,
     indicador.Formula?.ecuacion ?? "NA",
@@ -37,7 +38,7 @@ const generateXLSX = (data) => {
     indicador.Formula?.Variables ?? "NA",
     indicador.Historicos ?? "NA",
   ];
-  console.log(indicador);
+  
   let baseFile = "./src/templates/boop.xlsx";
   let wb = new Excel.Workbook();
   return wb.xlsx
@@ -80,12 +81,14 @@ const generateXLSX = (data) => {
       return await wb.xlsx.writeBuffer();;
     })
     .catch(err => {
+      console.log(err);
       throw err;
     });
 };
 
 const generatePDF = async (data) => {
   let indicador = data;
+  console.log(indicador.Historicos[1].dataValues);
   const browser = await puppeteer.launch({
     headless: true,
   });
@@ -99,15 +102,11 @@ const generatePDF = async (data) => {
   handlebars.registerHelper('numberWithCommas', numberWithCommas);
   const template = handlebars.compile(templateHtml);
   
-  
   const html = template(indicador, { allowProtoPropertiesByDefault: true });
   await page.setContent(html, {
     waitUntil: "networkidle0",
   });
-  console.log('#############################################asexxxxx');
-  console
   const years = indicador.Historicos.map((elem) => elem.anio);
-  console.log('#############################################ahaaaeeeeezseaam');
   const values = indicador.Historicos.map((elem) => elem.valor);
   await page.evaluate(
     (years, values, unidadMedida) => {
@@ -140,7 +139,6 @@ const generatePDF = async (data) => {
   page.setUserAgent(
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36WAIT_UNTIL=load"
     );
-    console.log('#############################################shsssit');
 
   const pdf = await page.pdf({
     format: 'A3',

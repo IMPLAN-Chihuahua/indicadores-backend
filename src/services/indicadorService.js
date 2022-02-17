@@ -62,15 +62,13 @@ const getIndicador = async (idIndicador, Format) => {
     },
     {
       model: Historico,
-      required: true,
+      required: false,
       attributes: ["anio", "valor", "fuente"],
       order: [["anio", "DESC"]],
     },
   ]
   let limit = [];
-
   typeof Format != 'undefined' ? limit = historicos[1] : limit = historicos[0];
-
   const indicador = await Indicador.findOne({
     where: {
       id: idIndicador,
@@ -140,7 +138,7 @@ const getIndicador = async (idIndicador, Format) => {
   if (typeof Format === 'undefined') {
     return indicador;
   }else {
-    return indicador;
+    return {... indicador.dataValues};
   }
 }
 
