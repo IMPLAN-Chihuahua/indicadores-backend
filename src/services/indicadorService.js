@@ -213,15 +213,18 @@ const getIndicadorIncludes = ({ idFuente }) => {
 
 // Retrieves a list of indicadores based on user 
 const getIndicadoresFromUser = async (id) => {
+  console.log('teeeest');
+  console.log(id);
   try {
     const result = await Indicador.findAndCountAll({
       where: {
         createdBy: id,
       }
     });
+    console.log(result.rows);
     return {
-      indicadores: result.indicadores,
-      total: result.total,
+      indicadores: result.rows,
+      total: result.count,
     }
   } catch (err) {
     console.log(err);

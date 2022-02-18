@@ -80,6 +80,7 @@ const getIndicadoresFromUser = async (req, res) => {
   try {
     const idUsuario = req.sub;
     const {indicadores, total} = await IndicadorService.getIndicadoresFromUser(idUsuario);
+    console.log(indicadores);
     return res.status(200).json({
       cantidadIndicadores: total,
       data: indicadores,
