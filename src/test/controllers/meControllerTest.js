@@ -73,7 +73,7 @@ describe('v1/me', function () {
   describe('me/indicadores', function () {
 
     it('Should return a list of indicadores based on a user', function (done) {
-      const findAndCountAllFakeIndicadores = sinon.fake.resolves({indicadores: indicadoresFromUser, total: indicadoresFromUser.length});
+      const findAndCountAllFakeIndicadores = sinon.fake.resolves({rows: indicadoresFromUser, count: indicadoresFromUser.length});
       sinon.replace(Indicador, 'findAndCountAll', findAndCountAllFakeIndicadores);
       chai.request(app)
         .get('/api/v1/me/indicadores')
@@ -108,6 +108,7 @@ describe('v1/me', function () {
           done();
         });
     });   
+
     
   });
 

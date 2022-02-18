@@ -220,8 +220,8 @@ const getIndicadoresFromUser = async (id) => {
       }
     });
     return {
-      indicadores: result.indicadores,
-      total: result.total,
+      indicadores: result.rows,
+      total: result.count,
     }
   } catch (err) {
     console.log(err);
