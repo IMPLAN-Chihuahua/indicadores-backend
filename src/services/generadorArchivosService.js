@@ -12,6 +12,8 @@ const generateCSV = (data) => {
 };
 
 const generateXLSX = (data) => {
+  console.log('teest');
+  console.log(data);
   const indicador = data;
   const indicadorInfo = [
     indicador.nombre,

@@ -276,32 +276,38 @@ describe('v1/documentos', function () {
         server.close();
     });
 
-    it('Should return a pdf document', function (done) {
+    this.afterEach(function () {
+        sinon.restore();
+    });
+
+    it('Should return an excel document', function (done) {
         const findOneFake = sinon.fake.resolves(dummyIndicador);
         sinon.replace(Indicador, 'findOne', findOneFake);
         chai.request(app)
-            .get('/api/v1/documentos/1/pdf')
+            .get('/api/v1/documentos/1/xlsx')
             .end(function (err, res) {
                 expect(res).to.have.status(200);
+                expect(res.header['content-type']).to.be.equal('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                expect(res.header['content-disposition']).to.have.string('attachment');
+                expect(res.header['connection']).to.be.equal('close');
                 done();
             });
     });
 
-    // it('Should return an excel document', function (done) {
-    //     const findOneFake = sinon.fake.resolves(dummyIndicador);
-    //     sinon.replace(Indicador, 'findOne', findOneFake);
-    //     chai.request(app)
-    //         .get('/api/v1/documentos/1/xlsx')
-    //         .end(function (err, res) {
-    //             expect(res).to.have.status(200);
-    //             expect(res.header['content-type']).to.be.equal('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    //             expect(res.header['content-disposition']).to.have.string('attachment');
-    //             expect(res.header['connection']).to.be.equal('close');
-    //             done();
-    //         });
-    // });
+    it('Should not return an excel document', function (done) {
+        const findOneFake = sinon.fake.throws(new Error("not apple pie"));
+        sinon.replace(Indicador, 'findOne', findOneFake);
+        chai.request(app)
+            .get('/api/v1/documentos/1/xlsx')
+            .end(function (err, res) {
+                expect(res).to.have.status(500);
+                done();
+            });
+    });
 
     it('Should return a csv document', function (done) {
+        const findOneFake = sinon.fake.resolves(dummyIndicador);
+        sinon.replace(Indicador, 'findOne', findOneFake);
         chai.request(app)
             .get('/api/v1/documentos/1/csv')
             .end(function (err, res) {
@@ -314,6 +320,8 @@ describe('v1/documentos', function () {
     });
 
     it('Should return a json document', function (done) {
+        const findOneFake = sinon.fake.resolves(dummyIndicador);
+        sinon.replace(Indicador, 'findOne', findOneFake);
         chai.request(app)
             .get('/api/v1/documentos/1/json')
             .end(function (err, res) {

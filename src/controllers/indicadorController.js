@@ -62,6 +62,7 @@ const generateFile = async (format, res, data) => {
       const content = await generateXLSX(data);
       const readStream = new stream.PassThrough();
       readStream.end(content);
+      console.log(content);
       return (
         res.header('Content-disposition', 'attachment'),
         res.header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
