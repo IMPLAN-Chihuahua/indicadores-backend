@@ -134,8 +134,7 @@ const getIndicador = async (idIndicador, Format) => {
       "mapa",
     ],
   });
-
-  if (typeof Format === 'undefined') {
+  if (typeof Format === 'undefined' || indicador === null) {
     return indicador;
   }else {
     return {... indicador.dataValues};

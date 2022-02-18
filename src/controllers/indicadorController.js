@@ -38,7 +38,6 @@ const getIndicador = async (req, res) => {
     return (res.status(200).json({ data: indicador, }))
 
   } catch (err) {
-    console.log(err);
     return res.sendStatus(500);
   }
 };
@@ -62,7 +61,6 @@ const generateFile = async (format, res, data) => {
       const content = await generateXLSX(data);
       const readStream = new stream.PassThrough();
       readStream.end(content);
-      console.log(content);
       return (
         res.header('Content-disposition', 'attachment'),
         res.header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),

@@ -295,7 +295,7 @@ describe('v1/documentos', function () {
     });
 
     it('Should not return an excel document', function (done) {
-        const findOneFake = sinon.fake.throws(new Error("not apple pie"));
+        const findOneFake = sinon.fake.rejects(dummyIndicador);
         sinon.replace(Indicador, 'findOne', findOneFake);
         chai.request(app)
             .get('/api/v1/documentos/1/xlsx')
@@ -319,6 +319,17 @@ describe('v1/documentos', function () {
             });
     });
 
+    it('Should not return a csv document', function (done) {
+        const findOneFake = sinon.fake.rejects(dummyIndicador);
+        sinon.replace(Indicador, 'findOne', findOneFake);
+        chai.request(app)
+            .get('/api/v1/documentos/1/csv')
+            .end(function (err, res) {
+                expect(res).to.have.status(500);
+                done();
+            });
+    });
+
     it('Should return a json document', function (done) {
         const findOneFake = sinon.fake.resolves(dummyIndicador);
         sinon.replace(Indicador, 'findOne', findOneFake);
@@ -333,5 +344,26 @@ describe('v1/documentos', function () {
             });
     });
 
+    it('Should not return a json document', function (done) {
+        const findOneFake = sinon.fake.rejects(dummyIndicador);
+        sinon.replace(Indicador, 'findOne', findOneFake);
+        chai.request(app)
+            .get('/api/v1/documentos/1/json')
+            .end(function (err, res) {
+                expect(res).to.have.status(500);
+                done();
+            });
+    });
+
+   it('Should return 422 because of typo error', function (done) {
+        const findOneFake = sinon.fake.resolves(dummyIndicador);
+        sinon.replace(Indicador, 'findOne', findOneFake);
+        chai.request(app)
+            .get('/api/v1/documentos/1/xslx')
+            .end(function (err, res) {
+                expect(res).to.have.status(422);
+                done();
+            });
+    });
 
 })
