@@ -10,6 +10,13 @@ describe('Indicador service', function () {
 
     const indicadores = [anIndicador(1), anIndicador(2)];
 
+    const indicadoresFromUser = [
+        anIndicador(1),
+        anIndicador(1),
+        anIndicador(1),
+        anIndicador(1),
+    ];
+
     this.afterEach(function () {
         sinon.restore();
     });
@@ -65,6 +72,38 @@ describe('Indicador service', function () {
             .catch(err => {
             });
     });
+
+    describe('Indicadores from user', function () {
+        it('Should return a list of indicadores from an user', function () {
+            const findAndCountAllIndicadoresFromUserFake = sinon.fake.resolves({ indicadores: indicadoresFromUser, total: indicadoresFromUser.length });
+            sinon.replace(Indicador, 'findAndCountAll', findAndCountAllIndicadoresFromUserFake);
+            return IndicadorService.getIndicadoresFromUser(1)
+                .then(res => {
+                    expect(res).to.not.be.null;
+                    expect(findAndCountAllIndicadoresFromUserFake.calledOnce).to.be.true;
+                    expect(res.indicadores).to.be.an('array').that.is.not.empty;
+                    expect(res.total).to.equal(indicadoresFromUser.length);
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+        }) 
+
+        it('Should not return a list of indicadores from an user', function () {
+            const findAndCountAllIndicadoresFromUserFake = sinon.fake.rejects({ indicadores: indicadoresFromUser, total: indicadoresFromUser.length });
+            sinon.replace(Indicador, 'findAndCountAll', findAndCountAllIndicadoresFromUserFake);
+            return IndicadorService.getIndicadoresFromUser(1)
+                .then(res => {
+                    expect(findAndCountAllIndicadoresFromUserFake.calledOnce).to.be.true;
+                    expect(res.indicadores).to.be.an('array').that.is.not.empty;
+                    expect(res.total).to.equal(indicadoresFromUser.length);
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+        }) 
+
+    })
 
 });
 

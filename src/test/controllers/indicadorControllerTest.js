@@ -6,7 +6,7 @@ const { Indicador } = require('../../models');
 const { Modulo } = require('../../models');
 const { app, server } = require('../../../app');
 const sinon = require('sinon');
-const { anIndicador, aModulo, anIndicadorPDFFormat } = require('../../utils/factories');
+const { anIndicador, aModulo } = require('../../utils/factories');
 
 describe('v1/indicadores', function () {
 

@@ -112,7 +112,6 @@ describe('v1/usuarios', function () {
       .set({ Authorization: `Bearer ${token}` })
       .send(userFake)
       .end((err, res) => {
-        console.log(res.body)
         expect(res).have.status(500);
         done();
       });

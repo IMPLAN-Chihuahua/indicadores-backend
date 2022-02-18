@@ -55,6 +55,7 @@ const anIndicador = (id) => {
         codigo: '00' + faker.datatype.number(9),
         codigoObjeto: '00' + faker.datatype.number(9),
         createdAt: new Date(),
+        createdBy: id,
         updatedAt: new Date(),
     }};
 };
