@@ -42,7 +42,7 @@ const getUsuarioByCorreo = async (correo) => {
     try {
         return await Usuario.findOne({ where: { correo: correo } });
     } catch (err) {
-        throw new Error('Error al buscar usuario por correo: ' + err.message);
+        throw (new Error('Error al buscar usuario por correo: ' + err.message));
     }
 };
 

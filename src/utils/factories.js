@@ -67,6 +67,7 @@ const aUser = (id) => {
         apellidoMaterno: faker.name.lastName(),
         correo: faker.internet.email(),
         clave: faker.internet.password(8, false),
+        activo: 'SI',
         idRol: 1
     };
 };

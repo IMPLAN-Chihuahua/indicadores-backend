@@ -10,20 +10,15 @@ const { aDummyWithName } = require('../../utils/factories');
 describe('/catalogos', function () {
 
     let dummyList;
-
     this.beforeAll(function () {
         dummyList = [aDummyWithName(1), aDummyWithName(2), aDummyWithName(3)];
     })
-
     this.afterEach(function () {
         sinon.restore();
     });
-
     this.afterAll(function () {
         server.close();
     });
-
-
     it('Should return a list of Catalogos', function (done) {
         sinon.replace(Ods, 'findAll', sinon.fake.resolves(dummyList));
         sinon.replace(CoberturaGeografica, 'findAll', sinon.fake.resolves(dummyList));
@@ -41,7 +36,7 @@ describe('/catalogos', function () {
             });
     });
 
-
+  
     it('Should not return Catalogos', function (done) {
         sinon.replace(Ods, 'findAll', sinon.fake.rejects());
         sinon.replace(UnidadMedida, 'findAll', sinon.fake.resolves(dummyList));
