@@ -9,23 +9,54 @@ const aDummyWithName = (id) => {
 
 const anIndicador = (id) => {
     return {
+        dataValues: {
         id,
-        urlImagen: faker.image.imageUrl(),
         nombre: "Test " + faker.random.word(),
         definicion: faker.lorem.sentence(),
-        codigo: '00' + faker.datatype.number(9),
-        codigoObjeto: '00' + faker.datatype.number(9),
-        ultimoValorDisponible: faker.datatype.number(),
-        anioUltimoValorDisponible: faker.datatype.number({ 'min': 2000, 'max': new Date().getFullYear() }),
-        idModulo: faker.datatype.number(10),
+        urlImagen: faker.image.imageUrl(),
         idOds: faker.datatype.number(15),
-        idCobertura: faker.datatype.number(10),
+        ods: faker.random.word(),
+        idModulo: faker.datatype.number(10),
+        modulo: faker.random.word(),
+        ultimoValorDisponible: faker.datatype.number(),
         idUnidadMedida: faker.datatype.number(10),
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        unidadMedida: faker.random.word(),
+        anioUltimoValorDisponible: faker.datatype.number({ 'min': 2000, 'max': new Date().getFullYear() }),
+        idCobertura: faker.datatype.number(10),
+        coberturaGeografica: faker.random.word(),
         tendenciaActual: faker.datatype.boolean() ? "ASCENDENTE" : "DESCENDENTE",
         tendenciaDeseada: faker.datatype.boolean() ? "ASCENDENTE" : "DESCENDENTE",
-    };
+        mapa: faker.datatype.number(10),
+        Mapa: {
+            id: faker.datatype.number(10),
+            ubicacion: faker.random.word(),
+            url: faker.image.imageUrl()
+        },
+        Formula: {
+            id: faker.datatype.number(10),
+            ecuacion: 'Z=x^2 + y^2',
+            descripcion: faker.lorem.sentence(),
+            Variables: [{
+                dataValues: {
+                    nombre: faker.random.word(),
+                    nombreAtributo: faker.random.word(),
+                    dato: faker.datatype.number(),
+                    Unidad: faker.random.word()
+                }
+            }]
+        },
+        Historicos: [{
+            dataValues: {
+                anio: faker.datatype.number({ 'min': 2000, 'max': new Date().getFullYear() }),
+                valor: faker.datatype.number(),
+                fuente: faker.random.word()
+            },
+        }],
+        codigo: '00' + faker.datatype.number(9),
+        codigoObjeto: '00' + faker.datatype.number(9),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+    }};
 };
 
 const aUser = (id) => {

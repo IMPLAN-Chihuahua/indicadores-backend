@@ -1,4 +1,4 @@
-  const {
+const {
   Indicador,
   Ods,
   CoberturaGeografica,
@@ -62,15 +62,13 @@ const getIndicador = async (idIndicador, Format) => {
     },
     {
       model: Historico,
-      required: true,
+      required: false,
       attributes: ["anio", "valor", "fuente"],
       order: [["anio", "DESC"]],
     },
   ]
   let limit = [];
-  
   typeof Format != 'undefined' ? limit = historicos[1] : limit = historicos[0];
-
   const indicador = await Indicador.findOne({
     where: {
       id: idIndicador,
@@ -122,23 +120,25 @@ const getIndicador = async (idIndicador, Format) => {
     ],
     attributes: [
       "id",
-        "nombre",
-        "definicion",
-        "urlImagen",
-        [sequelize.literal('"Od"."nombre"'), "ods"],
-        [sequelize.literal('"Modulo"."temaIndicador"'), "modulo"],
-        "ultimoValorDisponible",
-        [sequelize.literal('"UnidadMedida"."nombre"'), "unidadMedida"],
-        "anioUltimoValorDisponible",
-        [sequelize.literal('"CoberturaGeografica"."nombre"'), "coberturaGeografica"],
-        "tendenciaActual",
-        "tendenciaDeseada",
-        "mapa",
+      "nombre",
+      "definicion",
+      "urlImagen",
+      [sequelize.literal('"Od"."nombre"'), "ods"],
+      [sequelize.literal('"Modulo"."temaIndicador"'), "modulo"],
+      "ultimoValorDisponible",
+      [sequelize.literal('"UnidadMedida"."nombre"'), "unidadMedida"],
+      "anioUltimoValorDisponible",
+      [sequelize.literal('"CoberturaGeografica"."nombre"'), "coberturaGeografica"],
+      "tendenciaActual",
+      "tendenciaDeseada",
+      "mapa",
     ],
   });
-
-  return indicador;
-
+  if (typeof Format === 'undefined' || indicador === null) {
+    return indicador;
+  }else {
+    return {... indicador.dataValues};
+  }
 }
 
 
