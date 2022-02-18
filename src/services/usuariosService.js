@@ -1,4 +1,5 @@
-const { Usuario } = require('../models');
+const { Usuario, Rol, sequelize,
+  Sequelize } = require('../models');
 
 const addUsuario = async (usuario) => {
     try {
@@ -29,8 +30,15 @@ const getUsuarioById = async (id) => {
                 'apellidoPaterno',
                 'apellidoMaterno',
                 'activo',
-                'avatar'
-            ]
+                'avatar',
+                [sequelize.literal('"Rol"."id"'), "idRol"],
+                [sequelize.literal('"Rol"."rol"'), "Roles"],
+                [sequelize.literal('"Rol"."activo"'), "Activo"],
+            ],
+            include: [{
+                model: Rol,
+                attributes: [],
+            }],
         });
         return usuario;
     } catch (err) {
