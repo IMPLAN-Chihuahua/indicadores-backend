@@ -94,7 +94,6 @@ const generatePDF = async (data) => {
   await page.setContent(html, {
     waitUntil: "networkidle0",
   });
-  console.log(indicador);
   const years = indicador.Historicos.map((elem) => elem.anio);
   const values = indicador.Historicos.map((elem) => elem.valor);
 

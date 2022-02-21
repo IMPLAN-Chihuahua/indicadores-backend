@@ -141,7 +141,6 @@ const getIndicador = async (idIndicador, Format) => {
   }
 }
 
-
 // Validation for catalogs
 const validateCatalog = ({ idOds, idCobertura, idUnidadMedida }) => {
   const catalogFilters = {};
@@ -212,4 +211,20 @@ const getIndicadorIncludes = ({ idFuente }) => {
   return indicadorFilter;
 };
 
-module.exports = { getIndicadores, getIndicador };
+// Retrieves a list of indicadores based on user 
+const getIndicadoresFromUser = async (id) => {
+  try {
+    const result = await Indicador.findAndCountAll({
+      where: {
+        createdBy: id,
+      }
+    });
+    return {
+      indicadores: result.rows,
+      total: result.count,
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}
+module.exports = { getIndicadores, getIndicador, getIndicadoresFromUser };

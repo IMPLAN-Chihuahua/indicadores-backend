@@ -74,7 +74,24 @@ const generateFile = async (format, res, data) => {
 }
 
 
+/** USER SECTION */
+
+const getIndicadoresFromUser = async (req, res) => {
+  try {
+    const idUsuario = req.sub;
+    const {indicadores, total} = await IndicadorService.getIndicadoresFromUser(idUsuario);
+    return res.status(200).json({
+      cantidadIndicadores: total,
+      data: indicadores,
+    })
+
+  } catch (err) {
+    return res.status(500);
+  }
+}
+
 module.exports = {
   getIndicadores,
   getIndicador,
+  getIndicadoresFromUser,
 };
