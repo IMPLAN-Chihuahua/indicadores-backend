@@ -1,10 +1,10 @@
 const express = require('express');
 const moduloRouter = express.Router();
 const indicadorRouter = express.Router({ mergeParams: true });
-const { getModulos } = require('../controllers/moduloController');
+const { getModulos, createModulo } = require('../controllers/moduloController');
 const { getIndicadores, getIndicador } = require('../controllers/indicadorController');
 const { paramValidationRules, paginationValidationRules,
-    validate, filterIndicadoresValidationRules, sortValidationRules } = require('../middlewares/validator');
+    validate, filterIndicadoresValidationRules, sortValidationRules, createModuloValidationRules } = require('../middlewares/validator');
 const { moduloExists } = require('../middlewares/verifyIdModulo');
 
 /**
@@ -243,6 +243,14 @@ indicadorRouter.route('/')
         getIndicadores
     );
 
+    /** Administrative section */
+
+    moduloRouter.route('/create')
+        .post(
+            createModuloValidationRules(),
+            validate,
+            createModulo
+        )
 
 
 module.exports = moduloRouter;
