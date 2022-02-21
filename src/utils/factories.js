@@ -76,12 +76,12 @@ const aUser = (id) => {
 const aModulo = (id) => {
     return {
         id,
-        temaIndicador: faker.random.word(),
-        codigo: '00' + faker.datatype.number(9),
+        temaIndicador: 'New value',
+        codigo: '666',
         observaciones: faker.lorem.words(20),
         activo: faker.datatype.boolean() ? 'SI' : 'NO',
         urlImagen: faker.image.imageUrl(),
-        color: faker.commerce.color()
+        color:faker.commerce.color()
     };
 };
 

@@ -39,6 +39,7 @@ const createModulo = async (req, res) => {
     } = req.body;
     try {
         if (await isTemaIndicadorAlreadyInUse(temaIndicador)) {
+            console.log('test');
             return res.status(400).json({
                 message: `El tema indicador ${temaIndicador} ya está en uso`,
             });

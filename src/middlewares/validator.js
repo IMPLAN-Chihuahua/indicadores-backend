@@ -127,10 +127,8 @@ const createModuloValidationRules = () => {
             .exists()
             .withMessage('por favor agrega un codigo')
             .isLength({ min: 3 })
-            .withMessage('El codigo debe tener 3 caracteres')
-            .matches(/[\d]{3,}/g)
-            .withMessage('El codigo debe tener numeros'),
-        
+            .withMessage('El codigo debe tener 3 caracteres'),
+                    
         check('activo')
             .optional()
             .toUpperCase()
