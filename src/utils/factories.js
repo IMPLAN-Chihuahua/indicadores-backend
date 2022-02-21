@@ -81,7 +81,7 @@ const aModulo = (id) => {
         observaciones: faker.lorem.words(20),
         activo: faker.datatype.boolean() ? 'SI' : 'NO',
         urlImagen: faker.image.imageUrl(),
-        color: '#2d2d2d'
+        color: faker.commerce.color()
     };
 };
 

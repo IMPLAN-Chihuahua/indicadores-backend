@@ -7,6 +7,8 @@ const { Modulo } = require('../../models');
 const sinon = require('sinon');
 const { aModulo } = require('../../utils/factories');
 
+
+
 describe('/modulos', function () {
 
     describe('GET', function () {
