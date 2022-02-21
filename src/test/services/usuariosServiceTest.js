@@ -127,4 +127,24 @@ describe('User service', function () {
             });
     });
 
+    it('Should return the rol of a user', function () {
+        const findOneFake = sinon.fake.resolves({ dataValues: { rol: 'ADMIN' } });
+        sinon.replace(Usuario, 'findOne', findOneFake);
+        return UsuarioService.getRol(1)
+            .then(res => {
+                expect(findOneFake.calledOnce).to.be.true;
+                expect(res).to.equal('ADMIN');
+            })
+    })
+
+    it('Should fail when returnin a rol', function () {
+        const findOneFake = sinon.fake.rejects(new Error('Connection to DB failed'));
+        sinon.replace(Usuario, 'findOne', findOneFake);
+        return UsuarioService.getRol(1)
+            .catch(err => {
+                expect(err, 'err is not null').to.not.be.null;
+                expect(findOneFake.calledOnce, 'find one fake was called once').to.be.true;
+            })
+    });
+
 });

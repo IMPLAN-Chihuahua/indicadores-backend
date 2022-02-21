@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const { getRol } = require('../services/usuariosService');
 require('dotenv').config();
 const { TOKEN_SECRET } = process.env;
 
@@ -16,13 +17,21 @@ const verifyJWT = (req, res, next) => {
         });
     } else {
         // peticion no tiene datos en el header de authorization
-        return res.sendStatus(401); 
+        return res.sendStatus(401);
     }
 };
 
-const verifyRole = () => {
-
+const verifyRoles = (roles) => {
+    return async (req, res, next) => {
+        const rol = await getRol(req.sub);
+        const isAllowed = roles.includes(rol);
+        if (isAllowed) {
+            next();
+        } else {
+            return res.status(403).json({message: 'Su rol no tiene permiso a este recurso'});
+        }
+    }
 };
 
 
-module.exports = { verifyJWT };
+module.exports = { verifyJWT, verifyRoles };

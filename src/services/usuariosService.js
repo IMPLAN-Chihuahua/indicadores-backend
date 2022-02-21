@@ -1,5 +1,4 @@
-const { Usuario, Rol, sequelize,
-  Sequelize } = require('../models');
+const { Usuario, Rol, Sequelize, sequelize } = require('../models');
 
 const addUsuario = async (usuario) => {
     try {
@@ -13,10 +12,9 @@ const addUsuario = async (usuario) => {
             correo,
             apellidoPaterno,
             apellidoMaterno,
-
         };
     } catch (err) {
-        return Promise.reject(new Error(`Error al crear usuario ${err.message}`));
+        throw new Error(`Error al crear usuario ${err.message}`);
     }
 };
 
@@ -60,7 +58,7 @@ const isCorreoAlreadyInUse = async (correo) => {
             attributes: ['correo'],
             where: { correo: correo }
         });
-        return existingCorreo != null;
+        return existingCorreo !== null;
     } catch (err) {
         throw new Error('Error al buscar si correo ha sido utilizado: ' + err.message);
     }
@@ -92,11 +90,32 @@ const updateUsuario = async (id, { nombres, apellidoPaterno, apellidoMaterno, ac
 };
 
 
+const getRol = async (id) => {
+    try {
+        const response = await Usuario.findOne({
+            where: { id },
+            include: [
+                {
+                    model: Rol,
+                    required: true,
+                    attributes: []
+                }
+            ],
+            attributes: [[Sequelize.literal('"Rol"."rol"'), 'rol']],
+        });
+        return response.dataValues.rol;
+    } catch (err) {
+        throw new Error('Error al obtener rol de usuario: ' + err.message);
+    }
+};
+
+
 module.exports = {
     addUsuario,
     getUsuarioById,
     getUsuarioByCorreo,
     getUsuarios,
     isCorreoAlreadyInUse,
-    updateUsuario
+    updateUsuario,
+    getRol
 }
