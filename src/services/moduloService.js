@@ -18,11 +18,24 @@ const addModulo = async (modulo) => {
             urlImagen,
             color,
         }
+    
     } catch(err) {
         return Promise.reject(new Error(`Error al crear modulo ${err.message}`));
     }
 };
 
+const updateModulo = async (id, {temaIndicador, observaciones, activo, codigo, urlImagen, color}) => {
+    try {
+        const affectedRows = await Modulo.update(
+            {temaIndicador, observaciones, activo, codigo, urlImagen, color},
+            {where: {id: id}}
+        );
+        return affectedRows > 0;
+    } catch(err) {
+        throw new Error(`Error al actualizar modulo ${err.message}`);
+    }
+};
+ 
 const isTemaIndicadorAlreadyInUse = async (temaIndicador) => {
     try {
         const existingTema = await Modulo.findOne({
@@ -35,7 +48,10 @@ const isTemaIndicadorAlreadyInUse = async (temaIndicador) => {
     }
 }
 
+
+
 module.exports = {
     addModulo,
-    isTemaIndicadorAlreadyInUse
+    isTemaIndicadorAlreadyInUse,
+    updateModulo,
 }
