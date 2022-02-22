@@ -70,7 +70,7 @@ describe('/modulos', function () {
             sinon.replace(Modulo, 'create', createModuloFake);
             sinon.replace(Modulo, 'findOne', findOneFake);
             chai.request(app)
-                .post('/api/v1/modulos/create')
+                .post('/api/v1/modulos')
                 .set({ Authorization: `Bearer ${token}` })
                 .send(moduloFake)
                 .end((err, res) => {
@@ -87,7 +87,7 @@ describe('/modulos', function () {
             sinon.replace(Modulo, 'create', createModuloFake);
             sinon.replace(Modulo, 'findOne', findOneFake);
             chai.request(app)
-                .post('/api/v1/modulos/create')
+                .post('/api/v1/modulos')
                 .set({ Authorization: `Bearer ${token}` })
                 .send(moduloFake)
                 .end((err, res) => {
@@ -103,7 +103,7 @@ describe('/modulos', function () {
             sinon.replace(Modulo, 'create', createModuloFake);
             sinon.replace(Modulo, 'findOne', findOneFake);
             chai.request(app)
-                .post('/api/v1/modulos/create')
+                .post('/api/v1/modulos')
                 .set({ Authorization: `Bearer ${token}` })
                 .send(moduloFake)
                 .end((err, res) => {
@@ -119,7 +119,7 @@ describe('/modulos', function () {
             sinon.replace(Modulo, 'create', createModuloFake);
             sinon.replace(Modulo, 'findOne', findOneFake);
             chai.request(app)
-                .post('/api/v1/modulos/create')
+                .post('/api/v1/modulos')
                 .set({ Authorization: `Bearer ${token}` })
                 .send(moduloFake)
                 .end((err, res) => {
@@ -135,7 +135,7 @@ describe('/modulos', function () {
             sinon.replace(Modulo, 'create', createModuloFake);
             sinon.replace(Modulo, 'findOne', findOneFake);
             chai.request(app)
-                .post('/api/v1/modulos/create')
+                .post('/api/v1/modulos')
                 .set({ Authorization: `Bearer ${token}` })
                 .send(moduloFake)
                 .end((err, res) => {
@@ -150,7 +150,7 @@ describe('/modulos', function () {
             sinon.replace(Modulo, 'create', createModuloFake);
             sinon.replace(Modulo, 'findOne', findOneFake);
             chai.request(app)
-                .post('/api/v1/modulos/create')
+                .post('/api/v1/modulos')
                 .end((err, res) => {
                     expect(res).to.have.status(401);
                     done();

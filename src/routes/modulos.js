@@ -245,7 +245,7 @@ indicadorRouter.route('/')
 
 /**
  * @swagger
- * /modulos/create:
+ * /modulos:
  *   post:
  *     summary: Creates a new module
  *     tags: [Modulos]
@@ -267,7 +267,7 @@ indicadorRouter.route('/')
  *         description: Internal server error
  */
 
-moduloRouter.route('/create')
+moduloRouter.route('/')
     .post(
         verifyJWT,
         createModuloValidationRules(),
