@@ -6,6 +6,7 @@ const { getIndicadores, getIndicador } = require('../controllers/indicadorContro
 const { paramValidationRules, paginationValidationRules,
     validate, filterIndicadoresValidationRules, sortValidationRules, createModuloValidationRules } = require('../middlewares/validator');
 const { moduloExists } = require('../middlewares/verifyIdModulo');
+const { verifyJWT } = require('../middlewares/auth');
 
 /**
  * @swagger
@@ -247,6 +248,7 @@ indicadorRouter.route('/')
 
     moduloRouter.route('/create')
         .post(
+            verifyJWT,
             createModuloValidationRules(),
             validate,
             createModulo

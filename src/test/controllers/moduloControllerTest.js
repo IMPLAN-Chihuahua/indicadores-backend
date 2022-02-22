@@ -6,10 +6,15 @@ const { app, server } = require('../../../app');
 const { Modulo } = require('../../models');
 const sinon = require('sinon');
 const { aModulo } = require('../../utils/factories');
-
+const bcrypt = require("bcrypt");
+const jwt = require('jsonwebtoken')
+const SALT_ROUNDS = 10;
+require('dotenv').config();
+const { TOKEN_SECRET } = process.env;
 
 
 describe('/modulos', function () {
+    const token = jwt.sign({ sub: 1 }, TOKEN_SECRET, { expiresIn: '5h' });
 
     describe('GET', function () {
         const modulosFake = [aModulo(1), aModulo(2), aModulo(3)];
@@ -66,6 +71,7 @@ describe('/modulos', function () {
             sinon.replace(Modulo, 'findOne', findOneFake);
             chai.request(app)
                 .post('/api/v1/modulos/create')
+                .set({ Authorization: `Bearer ${token}` })
                 .send(moduloFake)
                 .end((err, res) => {
                     expect(res).to.have.status(201);
@@ -82,6 +88,7 @@ describe('/modulos', function () {
             sinon.replace(Modulo, 'findOne', findOneFake);
             chai.request(app)
                 .post('/api/v1/modulos/create')
+                .set({ Authorization: `Bearer ${token}` })
                 .send(moduloFake)
                 .end((err, res) => {
                     expect(res).to.have.status(400);
@@ -97,6 +104,7 @@ describe('/modulos', function () {
             sinon.replace(Modulo, 'findOne', findOneFake);
             chai.request(app)
                 .post('/api/v1/modulos/create')
+                .set({ Authorization: `Bearer ${token}` })
                 .send(moduloFake)
                 .end((err, res) => {
                     expect(res).to.have.status(422);
@@ -112,6 +120,7 @@ describe('/modulos', function () {
             sinon.replace(Modulo, 'findOne', findOneFake);
             chai.request(app)
                 .post('/api/v1/modulos/create')
+                .set({ Authorization: `Bearer ${token}` })
                 .send(moduloFake)
                 .end((err, res) => {
                     expect(res).to.have.status(422);
@@ -127,12 +136,26 @@ describe('/modulos', function () {
             sinon.replace(Modulo, 'findOne', findOneFake);
             chai.request(app)
                 .post('/api/v1/modulos/create')
+                .set({ Authorization: `Bearer ${token}` })
                 .send(moduloFake)
                 .end((err, res) => {
                     expect(res).to.have.status(500);
                     done();
                 });
         });
+
+        it('Should restrict a module creation due to invalid token', function (done) {
+            const createModuloFake = sinon.fake.rejects(aModulo(1));
+            const findOneFake = sinon.fake.resolves(null);
+            sinon.replace(Modulo, 'create', createModuloFake);
+            sinon.replace(Modulo, 'findOne', findOneFake);
+            chai.request(app)
+                .post('/api/v1/modulos/create')
+                .end((err, res) => {
+                    expect(res).to.have.status(401);
+                    done();
+                    });
+        })
 
     });
 })
