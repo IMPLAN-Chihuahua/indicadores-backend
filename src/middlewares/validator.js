@@ -143,6 +143,33 @@ const createModuloValidationRules = () => {
     ];
 }
 
+const updateModuloValidationRules = () => {
+    return [
+        param(['idModulo'])
+            .exists()
+            .withMessage('por favor agrega un id de modulo')
+            .isInt()
+            .withMessage('campo debe ser entero')
+            .toInt(),
+
+        check('codigo')
+            .optional()
+            .isLength({ min: 3 })
+            .withMessage('El codigo debe tener 3 caracteres'),
+
+        check('activo')
+            .optional()
+            .toUpperCase()
+            .isIn(['SI', 'NO'])
+            .withMessage('estado invalido'),
+        
+        check('temaIndicador')
+            .optional()
+            .isLength({ min: 5 })
+            .withMessage('El tema no puede estar vacio'),
+    ]
+}
+
 // funcion que hace la validacion (hubo errores en la peticion?)
 const validate = (req, res, next) => {
     const errors = validationResult(req);
@@ -174,5 +201,6 @@ module.exports = {
     filterIndicadoresValidationRules,
     sortValidationRules,
     createModuloValidationRules,
+    updateModuloValidationRules,
 };
 
