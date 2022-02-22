@@ -49,8 +49,6 @@ const getIndicadores = async (page = 1, per_page = 15, matchedData) => {
   };
 };
 
-
-
 const getIndicador = async (idIndicador, Format) => {
   const historicos = [
     {
@@ -141,6 +139,11 @@ const getIndicador = async (idIndicador, Format) => {
   }
 }
 
+const getAllIndicadores = async() => {
+  const indicadores = await Indicador.findAll({});
+  return indicadores;
+}
+
 // Validation for catalogs
 const validateCatalog = ({ idOds, idCobertura, idUnidadMedida }) => {
   const catalogFilters = {};
@@ -227,4 +230,4 @@ const getIndicadoresFromUser = async (id) => {
     console.log(err);
   }
 }
-module.exports = { getIndicadores, getIndicador, getIndicadoresFromUser };
+module.exports = { getIndicadores, getIndicador, getIndicadoresFromUser, getAllIndicadores };

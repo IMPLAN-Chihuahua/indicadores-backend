@@ -158,6 +158,18 @@ describe('v1/indicadores', function () {
                 });
         });
 
+        it('Should return a list of items', function(done) {
+            chai.request(app)
+                .get('/api/v1/indicadores')
+                .end(function(err, res) {
+                    expect(res).to.have.status(200);
+                    expect(res.body.data).to.be.an('array').that.is.not.empty;
+                    expect(res.body.data[0].id).to.be.a('number');
+                    expect(res.body.data[0].nombre).to.be.a('string');
+                    done();
+                });
+        });
+
         it('Should return status code 422 if :idIndicador is invalid', function (done) {
             chai.request(app)
                 .get('/api/v1/indicadores/uno')

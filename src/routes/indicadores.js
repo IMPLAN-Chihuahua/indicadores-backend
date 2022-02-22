@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { paramValidationRules,
     validate } = require('../middlewares/validator');
-const { getIndicador } = require('../controllers/indicadorController');
+const { getIndicador, getAllIndicadores } = require('../controllers/indicadorController');
 
 /**
  * @swagger
@@ -38,5 +38,9 @@ router.route('/:idIndicador/')
     .get(paramValidationRules(),
         validate,
         getIndicador);
+
+
+router.route('/')
+    .get(getAllIndicadores);
 
 module.exports = router;
