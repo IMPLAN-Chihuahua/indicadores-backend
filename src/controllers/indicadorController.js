@@ -74,6 +74,8 @@ const generateFile = async (format, res, data) => {
 }
 
 const getAllIndicadores = async (req, res) => {
+  const id = req.sub;
+  console.log(id);
   try {
     const indicadores = await IndicadorService.getAllIndicadores();
     return res.status(200).json({ data: indicadores})

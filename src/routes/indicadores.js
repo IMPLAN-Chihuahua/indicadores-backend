@@ -3,6 +3,7 @@ const router = express.Router();
 const { paramValidationRules,
     validate } = require('../middlewares/validator');
 const { getIndicador, getAllIndicadores } = require('../controllers/indicadorController');
+const { verifyJWT } = require('../middlewares/auth');
 
 /**
  * @swagger
@@ -41,6 +42,6 @@ router.route('/:idIndicador/')
 
 
 router.route('/')
-    .get(getAllIndicadores);
+    .get(verifyJWT, getAllIndicadores);
 
 module.exports = router;

@@ -7,8 +7,11 @@ const { Modulo } = require('../../models');
 const { app, server } = require('../../../app');
 const sinon = require('sinon');
 const { anIndicador, aModulo } = require('../../utils/factories');
+const { TOKEN_SECRET } = process.env;
+const jwt = require('jsonwebtoken')
 
 describe('v1/indicadores', function () {
+    const token = jwt.sign({ sub: 1 }, TOKEN_SECRET, { expiresIn: '5h' });
 
     const activeFilter = {
         anioUltimoValorDisponible: 2019
@@ -161,11 +164,21 @@ describe('v1/indicadores', function () {
         it('Should return a list of items', function(done) {
             chai.request(app)
                 .get('/api/v1/indicadores')
+                .set({ Authorization: `Bearer ${token}` })
                 .end(function(err, res) {
                     expect(res).to.have.status(200);
                     expect(res.body.data).to.be.an('array').that.is.not.empty;
                     expect(res.body.data[0].id).to.be.a('number');
                     expect(res.body.data[0].nombre).to.be.a('string');
+                    done();
+                });
+        });
+
+        it('Should return not authorized if token is not present', function(done) {
+            chai.request(app)
+                .get('/api/v1/indicadores')
+                .end(function(err, res) {
+                    expect(res).to.have.status(401);
                     done();
                 });
         });
