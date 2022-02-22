@@ -27,7 +27,7 @@ const { verifyJWT } = require('../middlewares/auth');
  *           codigo:
  *             type: string
  *             description: Code of a module
- *             example: 001 
+ *             example: '666'
  *           observaciones:
  *             type: string
  *             description: Commentaries of a module
@@ -35,18 +35,15 @@ const { verifyJWT } = require('../middlewares/auth');
  *           activo:
  *             type: string
  *             description: Active state of a module
- *             example: SI
- *             readOnly: true
+ *             example: 'SI'
  *           urlImagen:
  *             type: string
  *             description: URL to the image of a module
  *             example: http://example.com/image.png
- *             readOnly: true
  *           color:
  *             type: string
  *             description: Color of a module
- *             example: #FF0000
- *             readOnly: true     
+ *             example: 'green'
  *           createdAt:
  *             type: string 
  *             description: Date of creation of a module
@@ -244,15 +241,39 @@ indicadorRouter.route('/')
         getIndicadores
     );
 
-    /** Administrative section */
+/** Administrative section */
 
-    moduloRouter.route('/create')
-        .post(
-            verifyJWT,
-            createModuloValidationRules(),
-            validate,
-            createModulo
-        )
+/**
+ * @swagger
+ * /modulos/create:
+ *   post:
+ *     summary: Creates a new module
+ *     tags: [Modulos]
+ *     security:
+ *       - bearer: []
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Modulo'
+ *     responses:
+ *       201:
+ *         description: Module created successfully
+ *       400:
+ *         description: Unable to create new modulo (temaIndicador is already on use)
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal server error
+ */
+
+moduloRouter.route('/create')
+    .post(
+        verifyJWT,
+        createModuloValidationRules(),
+        validate,
+        createModulo
+    )
 
 
 module.exports = moduloRouter;
