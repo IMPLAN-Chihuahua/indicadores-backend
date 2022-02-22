@@ -66,7 +66,7 @@ const editModulo = async (req, res) => {
     try {
         const updatedModulo = await updateModulo(idModulo, fields);
         if(updatedModulo) {
-            return res.status(204);
+            return res.sendStatus(204);
         } else{
             return res.sendStatus(404);
         }

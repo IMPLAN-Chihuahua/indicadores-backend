@@ -275,6 +275,38 @@ moduloRouter.route('/')
         createModulo
     )
 
+/**
+ * @swagger
+ *   /modulos/{idModulo}:
+ *     patch:
+ *      summary: Updates a module
+ *      tags: [Modulos]
+ *      parameters:
+ *        - name: idModulo
+ *          in: path
+ *          required: true
+ *          schema:
+ *            type: integer
+ *            format: int64
+ *            minimum: 1
+ *            description: Identifier of a module
+ *      security:
+ *        - bearer: []
+ *      requestBody:
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Modulo'
+ *      responses:
+ *        204:
+ *          description: Module updated successfully
+ *        404:
+ *          description: Bad request
+ *        500:
+ *          description: Internal server error
+ * 
+ */
+
 moduloRouter.route('/:idModulo')
     .patch(
         verifyJWT,
