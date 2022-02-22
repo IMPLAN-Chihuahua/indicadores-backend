@@ -161,6 +161,28 @@ const sortValidationRules = () => {
     ];
 }
 
+const createModuloValidationRules = () => {
+    return [
+        check('codigo')
+            .exists()
+            .withMessage('por favor agrega un codigo')
+            .isLength({ min: 3 })
+            .withMessage('El codigo debe tener 3 caracteres'),
+                    
+        check('activo')
+            .optional()
+            .toUpperCase()
+            .isIn(['SI', 'NO'])
+            .withMessage('estado invalido'),
+
+        check('temaIndicador')
+            .exists()
+            .withMessage('por favor agrega un tema')
+            .isLength({ min: 5 })
+            .withMessage('El tema no puede estar vacio'),
+    ];
+}
+
 // funcion que hace la validacion (hubo errores en la peticion?)
 const validate = (req, res, next) => {
     const errors = validationResult(req);
@@ -192,5 +214,6 @@ module.exports = {
     paramValidationRules,
     filterIndicadoresValidationRules,
     sortValidationRules,
+    createModuloValidationRules,
 };
 

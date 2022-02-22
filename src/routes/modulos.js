@@ -1,11 +1,12 @@
 const express = require('express');
 const moduloRouter = express.Router();
 const indicadorRouter = express.Router({ mergeParams: true });
-const { getModulos } = require('../controllers/moduloController');
+const { getModulos, createModulo } = require('../controllers/moduloController');
 const { getIndicadores, getIndicador } = require('../controllers/indicadorController');
 const { paramValidationRules, paginationValidationRules,
-    validate, filterIndicadoresValidationRules, sortValidationRules } = require('../middlewares/validator');
+    validate, filterIndicadoresValidationRules, sortValidationRules, createModuloValidationRules } = require('../middlewares/validator');
 const { moduloExists } = require('../middlewares/verifyIdModulo');
+const { verifyJWT } = require('../middlewares/auth');
 
 /**
  * @swagger
@@ -26,7 +27,7 @@ const { moduloExists } = require('../middlewares/verifyIdModulo');
  *           codigo:
  *             type: string
  *             description: Code of a module
- *             example: 001 
+ *             example: '666'
  *           observaciones:
  *             type: string
  *             description: Commentaries of a module
@@ -34,18 +35,15 @@ const { moduloExists } = require('../middlewares/verifyIdModulo');
  *           activo:
  *             type: string
  *             description: Active state of a module
- *             example: SI
- *             readOnly: true
+ *             example: 'SI'
  *           urlImagen:
  *             type: string
  *             description: URL to the image of a module
  *             example: http://example.com/image.png
- *             readOnly: true
  *           color:
  *             type: string
  *             description: Color of a module
- *             example: #FF0000
- *             readOnly: true     
+ *             example: 'green'
  *           createdAt:
  *             type: string 
  *             description: Date of creation of a module
@@ -243,6 +241,39 @@ indicadorRouter.route('/')
         getIndicadores
     );
 
+/** Administrative section */
+
+/**
+ * @swagger
+ * /modulos:
+ *   post:
+ *     summary: Creates a new module
+ *     tags: [Modulos]
+ *     security:
+ *       - bearer: []
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Modulo'
+ *     responses:
+ *       201:
+ *         description: Module created successfully
+ *       400:
+ *         description: Unable to create new modulo (temaIndicador is already on use)
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal server error
+ */
+
+moduloRouter.route('/')
+    .post(
+        verifyJWT,
+        createModuloValidationRules(),
+        validate,
+        createModulo
+    )
 
 
 module.exports = moduloRouter;
