@@ -1,7 +1,7 @@
 const express = require('express');
 const moduloRouter = express.Router();
 const indicadorRouter = express.Router({ mergeParams: true });
-const { getModulos, createModulo } = require('../controllers/moduloController');
+const { getModulos, createModulo, editModulo } = require('../controllers/moduloController');
 const { getIndicadores, getIndicador } = require('../controllers/indicadorController');
 const { paramValidationRules, paginationValidationRules,
     validate, filterIndicadoresValidationRules, sortValidationRules, createModuloValidationRules } = require('../middlewares/validator');
@@ -275,5 +275,12 @@ moduloRouter.route('/')
         createModulo
     )
 
+moduloRouter.route('/:idModulo')
+    .patch(
+        verifyJWT,
+        paramValidationRules(),
+        validate,
+        editModulo
+    )
 
 module.exports = moduloRouter;
