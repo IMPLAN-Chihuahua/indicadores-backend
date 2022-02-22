@@ -7,6 +7,7 @@ const { Modulo } = require('../../models');
 const sinon = require('sinon');
 const { aModulo } = require('../../utils/factories');
 const ModuloService = require('../../services/moduloService');
+const faker = require('faker');
 
 describe('Modulo service', function() {
     afterEach(function () {
@@ -57,4 +58,39 @@ describe('Modulo service', function() {
                 });
         })
     });
+
+    describe('PATCH', function() {
+        it('Should update a modulo\'s temaIndicador', function() {
+            const updateModulo = faker.random.word();
+            const updateFake = sinon.fake.resolves(1);
+            sinon.replace(Modulo, 'update', updateFake);
+            return ModuloService.updateModulo(aModulo(1).id, { temaIndicador: updateModulo })
+                .then(res => {
+                    expect(updateFake.calledOnce).to.be.true;
+                    expect(res).to.be.true;
+                });
+        });
+
+        it('Should update an entire modulo', function() {
+            const updateModulo = aModulo(2);
+            const updateFake = sinon.fake.resolves(1);
+            sinon.replace(Modulo, 'update', updateFake);
+            return ModuloService.updateModulo(aModulo(1).id, updateModulo)
+                .then(res => {
+                    expect(updateFake.calledOnce).to.be.true;
+                    expect(res).to.be.true;
+                });
+        });
+
+        it('Should not update a modulo due to internal error', function() {
+            const updateFake = sinon.fake.throws('Error');
+            sinon.replace(Modulo, 'update', updateFake);
+            return ModuloService.updateModulo(aModulo(1).id, aModulo(1))
+                .catch(err => {
+                    expect(updateFake.calledOnce).to.be.true;
+                    expect(err).to.be.an('error');
+                });
+        })
+    });
+
 });
