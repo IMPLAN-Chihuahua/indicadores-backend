@@ -195,6 +195,4 @@ describe('v1/usuarios', function () {
       });
   });
 
-
-
 });

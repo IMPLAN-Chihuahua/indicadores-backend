@@ -1,6 +1,6 @@
 const { Modulo, Indicador, Sequelize } = require('../models');
 const faker = require('faker');
-const {addModulo, isTemaIndicadorAlreadyInUse} = require('../services/moduloService');
+const { addModulo, isTemaIndicadorAlreadyInUse, updateModulo} = require('../services/moduloService');
 
 const getModulos = async (req, res) => {
     try {
@@ -37,6 +37,7 @@ const createModulo = async (req, res) => {
         urlImagen,
         color,
     } = req.body;
+
     try {
         if (await isTemaIndicadorAlreadyInUse(temaIndicador)) {
             console.log('test');
@@ -59,5 +60,20 @@ const createModulo = async (req, res) => {
     }
 };
 
+const editModulo = async (req, res) => {
+    const fields = req.body;
+    const { idModulo } = req.matchedData;
+    try {
+        const updatedModulo = await updateModulo(idModulo, fields);
+        if(updatedModulo) {
+            return res.status(204).json({ data: updatedModulo });
+        } else{
+            return res.sendStatus(404);
+        }
+    } catch(err) {
+        console.log(err);
+        return res.sendStatus(500).json({message: err.message});
+    }
+}
 
-module.exports = { getModulos, createModulo }
+module.exports = { getModulos, createModulo, editModulo }
