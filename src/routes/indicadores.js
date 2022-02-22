@@ -40,6 +40,26 @@ router.route('/:idIndicador/')
         validate,
         getIndicador);
 
+/**
+ * @swagger
+ *   /indicadores:
+ *     get:
+ *       summary: Retrieves a list of indicadores
+ *       tags: [Indicadores]
+ *       security:
+ *         - bearer: []
+ *       responses:
+ *         200:
+ *           description: A very friendly list of indicadores
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/components/schemas/Indicador'
+ *         401:
+ *           description: Unauthorized request (not valid JWT in Authorization header)
+ *         500:
+ *           description: Internal server error
+ */
 
 router.route('/')
     .get(verifyJWT, getAllIndicadores);
