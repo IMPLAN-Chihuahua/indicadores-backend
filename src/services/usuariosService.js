@@ -104,9 +104,9 @@ const getRol = async (id) => {
                     attributes: []
                 }
             ],
-            attributes: [[Sequelize.literal('"rol"."rol"'), 'rol']],
+            attributes: [[Sequelize.literal('"rol"."rol"'), 'roles']],
         });
-        return response.dataValues.rol;
+        return response.dataValues.roles;
     } catch (err) {
         throw new Error('Error al obtener rol de usuario: ' + err.message);
     }
