@@ -26,17 +26,16 @@ const anIndicador = (id) => {
         coberturaGeografica: faker.random.word(),
         tendenciaActual: faker.datatype.boolean() ? "ASCENDENTE" : "DESCENDENTE",
         tendenciaDeseada: faker.datatype.boolean() ? "ASCENDENTE" : "DESCENDENTE",
-        mapa: faker.datatype.number(10),
-        Mapa: {
+        mapa: {
             id: faker.datatype.number(10),
             ubicacion: faker.random.word(),
             url: faker.image.imageUrl()
         },
-        Formula: {
+        formula: {
             id: faker.datatype.number(10),
             ecuacion: 'Z=x^2 + y^2',
             descripcion: faker.lorem.sentence(),
-            Variables: [{
+            variables: [{
                 dataValues: {
                     nombre: faker.random.word(),
                     nombreAtributo: faker.random.word(),
@@ -45,7 +44,7 @@ const anIndicador = (id) => {
                 }
             }]
         },
-        Historicos: [{
+        historicos: [{
             dataValues: {
                 anio: faker.datatype.number({ 'min': 2000, 'max': new Date().getFullYear() }),
                 valor: faker.datatype.number(),
@@ -55,7 +54,7 @@ const anIndicador = (id) => {
         codigo: '00' + faker.datatype.number(9),
         codigoObjeto: '00' + faker.datatype.number(9),
         createdAt: new Date(),
-        createdBy: id,
+        createdBy: faker.datatype.number(9),
         updatedAt: new Date(),
     }};
 };
