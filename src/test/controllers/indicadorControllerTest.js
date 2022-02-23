@@ -6,7 +6,8 @@ const { Indicador } = require('../../models');
 const { Modulo } = require('../../models');
 const { app, server } = require('../../../app');
 const sinon = require('sinon');
-const { anIndicador, aModulo } = require('../../utils/factories');
+const { anIndicador, aModulo, aUser } = require('../../utils/factories');
+const usuario = require('../../models/usuario');
 
 describe('v1/indicadores', function () {
 
@@ -14,31 +15,26 @@ describe('v1/indicadores', function () {
         anioUltimoValorDisponible: 2019
     };
 
-    let indicadoresList = [];
+    const indicadoresList = [
+        anIndicador(1),
+        anIndicador(2),
+        anIndicador(3),
+        anIndicador(4),
+        anIndicador(5)
+    ];
     const dummyModulo = aModulo(1);
     const dummyIndicador = anIndicador(1);
-
-    this.beforeAll(function () {
-        indicadoresList = [
-            anIndicador(1),
-            anIndicador(2),
-            anIndicador(3),
-            anIndicador(4),
-            anIndicador(5)
-        ];
-    });
-
+    const dummyUser = aUser(1);
 
     this.afterAll(function () {
         server.close();
     });
 
+    this.afterEach(function () {
+        sinon.restore();
+    })
+
     describe('GET /indicadores', function () {
-
-        this.afterEach(function () {
-            sinon.restore();
-        })
-
         it('Should return indicadores of :idModulo', function (done) {
             const findOneFake = sinon.fake.resolves(aModulo)
             const findAndCountAllFake = sinon.fake.resolves(
@@ -256,7 +252,6 @@ describe('v1/indicadores', function () {
                 });
         });
 
-
         it('Should return not found if sort by or order is undefined', function (done) {
             chai.request(app)
                 .get('/api/v1/modulos/1/indicadores')
@@ -268,102 +263,38 @@ describe('v1/indicadores', function () {
         })
 
     });
+
+    describe('POST /indicadores', function () {
+        const adminRol = { dataValues: { rol: 'ADMIN' } };
+        /**
+         * Test when everything is ok
+         * - has jwt, no constraint errors, permission
+         * - does not have a jwt
+         * - jwt expired
+         * - has jwt, constraint errors
+         * - has jwt, no constraint errors, no permission
+         * - model throws error
+         */
+
+        this.beforeEach(function() {
+            const findOneFake = sinon.fake.resolves(adminRol);
+            sinon.replace(usuario, 'findOne', findOneFake);
+        });
+
+        it('Should create an indicador successfully', function (done) {
+            chai.request(app)
+                .post('/api/v1/indicadores')
+                .send(dummyIndicador)
+                .end(function (err, res) {
+                    expect(res.body.data).to.not.be.undefined;
+                    done();
+                });
+        });
+
+        it('Should not create indicador due to semantic errors', function (done) {
+            done();
+        });
+
+    });
+
 });
-
-describe('v1/documentos', function () {
-    const dummyIndicador = anIndicador(1);
-    this.afterAll(function () {
-        server.close();
-    });
-
-    this.afterEach(function () {
-        sinon.restore();
-    });
-
-    it('Should return an excel document', function (done) {
-        const findOneFake = sinon.fake.resolves(dummyIndicador);
-        sinon.replace(Indicador, 'findOne', findOneFake);
-        chai.request(app)
-            .get('/api/v1/documentos/1/xlsx')
-            .end(function (err, res) {
-                expect(res).to.have.status(200);
-                expect(res.header['content-type']).to.be.equal('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-                expect(res.header['content-disposition']).to.have.string('attachment');
-                expect(res.header['connection']).to.be.equal('close');
-                done();
-            });
-    });
-
-    it('Should not return an excel document', function (done) {
-        const findOneFake = sinon.fake.rejects(dummyIndicador);
-        sinon.replace(Indicador, 'findOne', findOneFake);
-        chai.request(app)
-            .get('/api/v1/documentos/1/xlsx')
-            .end(function (err, res) {
-                expect(res).to.have.status(500);
-                done();
-            });
-    });
-
-    it('Should return a csv document', function (done) {
-        const findOneFake = sinon.fake.resolves(dummyIndicador);
-        sinon.replace(Indicador, 'findOne', findOneFake);
-        chai.request(app)
-            .get('/api/v1/documentos/1/csv')
-            .end(function (err, res) {
-                expect(res).to.have.status(200);
-                expect(res.header['content-type']).to.be.equal('text/csv; charset=utf-8');
-                expect(res.header['content-disposition']).to.have.string('attachment');
-                expect(res.header['connection']).to.be.equal('close');
-                done();
-            });
-    });
-
-    it('Should not return a csv document', function (done) {
-        const findOneFake = sinon.fake.rejects(dummyIndicador);
-        sinon.replace(Indicador, 'findOne', findOneFake);
-        chai.request(app)
-            .get('/api/v1/documentos/1/csv')
-            .end(function (err, res) {
-                expect(res).to.have.status(500);
-                done();
-            });
-    });
-
-    it('Should return a json document', function (done) {
-        const findOneFake = sinon.fake.resolves(dummyIndicador);
-        sinon.replace(Indicador, 'findOne', findOneFake);
-        chai.request(app)
-            .get('/api/v1/documentos/1/json')
-            .end(function (err, res) {
-                expect(res).to.have.status(200);
-                expect(res.header['content-type']).to.be.equal('application/json; charset=utf-8');
-                expect(res.header['content-disposition']).to.have.string('attachment');
-                expect(res.header['connection']).to.be.equal('close');
-                done();
-            });
-    });
-
-    it('Should not return a json document', function (done) {
-        const findOneFake = sinon.fake.rejects(dummyIndicador);
-        sinon.replace(Indicador, 'findOne', findOneFake);
-        chai.request(app)
-            .get('/api/v1/documentos/1/json')
-            .end(function (err, res) {
-                expect(res).to.have.status(500);
-                done();
-            });
-    });
-
-   it('Should return 422 because of typo error', function (done) {
-        const findOneFake = sinon.fake.resolves(dummyIndicador);
-        sinon.replace(Indicador, 'findOne', findOneFake);
-        chai.request(app)
-            .get('/api/v1/documentos/1/xslx')
-            .end(function (err, res) {
-                expect(res).to.have.status(422);
-                done();
-            });
-    });
-
-})
