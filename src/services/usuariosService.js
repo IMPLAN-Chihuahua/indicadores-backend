@@ -1,4 +1,5 @@
-const { Usuario, Rol, Sequelize, sequelize } = require('../models');
+const { Usuario, Rol, Indicador, Sequelize, sequelize } = require('../models');
+const { Op } = Sequelize;
 
 const addUsuario = async (usuario) => {
     try {
@@ -109,6 +110,43 @@ const getRol = async (id) => {
     }
 };
 
+// Retrieves a list of indicadores based on user 
+const getIndicadoresFromUser = async (id) => {
+    try {
+        const result = await Usuario.findOne({
+            attributes: [],
+            where: {
+                id: id,
+                activo: 'SI'
+            },
+            include: {
+                model: Indicador,
+                attributes: {
+                    include: [
+                        [Sequelize.literal('"indicadores->usuarioIndicador"."fechaHasta" - CURRENT_DATE'), 'remainingDays']
+                    ]
+                },
+                through: {
+                    as: 'usuarioIndicador',
+                    attributes: [],
+                    where: {
+                        activo: 'SI',
+                        fechaHasta: {
+                            [Op.gte]: Sequelize.literal('CURRENT_DATE')
+                        }
+                    }
+                }
+            }
+        });
+        return {
+            indicadores: result.dataValues.indicadores,
+            total: result.dataValues.indicadores.length,
+        }
+    } catch (err) {
+        throw new Error('Error al obtener indicadores de un usuario: ' + err.message);
+    }
+};
+
 
 module.exports = {
     addUsuario,
@@ -117,5 +155,6 @@ module.exports = {
     getUsuarios,
     isCorreoAlreadyInUse,
     updateUsuario,
-    getRol
+    getRol,
+    getIndicadoresFromUser
 }
