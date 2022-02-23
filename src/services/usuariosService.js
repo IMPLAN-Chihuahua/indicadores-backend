@@ -7,12 +7,14 @@ const addUsuario = async (usuario) => {
             correo,
             apellidoPaterno,
             apellidoMaterno,
+            activo
         } = await Usuario.create(usuario);
         return {
             nombres,
             correo,
             apellidoPaterno,
             apellidoMaterno,
+            activo
         };
     } catch (err) {
         throw new Error(`Error al crear usuario ${err.message}`);
@@ -30,9 +32,9 @@ const getUsuarioById = async (id) => {
                 'apellidoMaterno',
                 'activo',
                 'avatar',
-                [sequelize.literal('"Rol"."id"'), "idRol"],
-                [sequelize.literal('"Rol"."rol"'), "Roles"],
-                [sequelize.literal('"Rol"."activo"'), "Activo"],
+                [sequelize.literal('"rol"."id"'), "idRol"],
+                [sequelize.literal('"rol"."rol"'), "roles"],
+                [sequelize.literal('"rol"."activo"'), "activo"],
             ],
             include: [{
                 model: Rol,

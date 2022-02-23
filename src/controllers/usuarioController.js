@@ -34,6 +34,7 @@ const createUser = async (req, res) => {
         nombres,
         apellidoPaterno,
         apellidoMaterno,
+        activo
     } = req.body;
     try {
         if (await isCorreoAlreadyInUse(correo)) {
@@ -46,7 +47,8 @@ const createUser = async (req, res) => {
             clave: hashedClave,
             nombres,
             apellidoPaterno,
-            apellidoMaterno
+            apellidoMaterno,
+            activo
         });
         return res.status(201).json(savedUser);
     } catch (err) {
