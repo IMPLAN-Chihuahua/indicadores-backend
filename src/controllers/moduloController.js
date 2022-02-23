@@ -1,6 +1,5 @@
 const { Modulo, Indicador, Sequelize } = require('../models');
-const faker = require('faker');
-const { addModulo, isTemaIndicadorAlreadyInUse, updateModulo} = require('../services/moduloService');
+const { addModulo, isTemaIndicadorAlreadyInUse, updateModulo } = require('../services/moduloService');
 
 const getModulos = async (req, res) => {
     try {
@@ -14,10 +13,11 @@ const getModulos = async (req, res) => {
                 'codigo',
                 'urlImagen',
                 'color',
-                [Sequelize.fn('COUNT', Sequelize.col('Indicadors.id')), 'indicadoresCount']
+                [Sequelize.fn('COUNT', Sequelize.col('indicadores.id')), 'indicadoresCount']
             ],
             include: [{
-                model: Indicador, attributes: []
+                model: Indicador,
+                attributes: []
             }],
             group: ['Modulo.id'],
             order: [['id']],
@@ -40,7 +40,6 @@ const createModulo = async (req, res) => {
 
     try {
         if (await isTemaIndicadorAlreadyInUse(temaIndicador)) {
-            console.log('test');
             return res.status(400).json({
                 message: `El tema indicador ${temaIndicador} ya está en uso`,
             });
@@ -65,14 +64,14 @@ const editModulo = async (req, res) => {
     const { idModulo } = req.matchedData;
     try {
         const updatedModulo = await updateModulo(idModulo, fields);
-        if(updatedModulo) {
+        if (updatedModulo) {
             return res.sendStatus(204);
-        } else{
+        } else {
             return res.sendStatus(404);
         }
-    } catch(err) {
+    } catch (err) {
         console.log(err);
-        return res.sendStatus(500).json({message: err.message});
+        return res.sendStatus(500).json({ message: err.message });
     }
 }
 
