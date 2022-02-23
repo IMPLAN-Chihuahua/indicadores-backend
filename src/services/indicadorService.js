@@ -33,11 +33,11 @@ const getIndicadores = async (page = 1, per_page = 15, matchedData) => {
       "tendenciaActual",
       "tendenciaDeseada",
       "idOds",
-      [sequelize.literal('"Od"."nombre"'), "Ods"],
+      [sequelize.literal('"ods"."nombre"'), "ods"],
       "idCobertura",
-      [sequelize.literal('"CoberturaGeografica"."nombre"'), "Cobertura"],
+      [sequelize.literal('"coberturaGeografica"."nombre"'), "coberturaGeografica"],
       "idUnidadMedida",
-      [sequelize.literal('"UnidadMedida"."nombre"'), "Unidad"],
+      [sequelize.literal('"unidadMedida"."nombre"'), "unidadMedida"],
       "createdAt",
       "updatedAt",
       "idModulo",
@@ -48,8 +48,6 @@ const getIndicadores = async (page = 1, per_page = 15, matchedData) => {
     total: result.count,
   };
 };
-
-
 
 const getIndicador = async (idIndicador, Format) => {
   const historicos = [
@@ -113,7 +111,11 @@ const getIndicador = async (idIndicador, Format) => {
               required: true,
               attributes: []
             }],
-            attributes: ['nombre', 'nombreAtributo', 'dato', [sequelize.literal('"Formula->Variables->UnidadMedida"."nombre"'), "Unidad"],],
+            attributes: [
+              'nombre',
+              'nombreAtributo',
+              'dato',
+              [sequelize.literal('"formula->variables->unidadMedida"."nombre"'), "unidadMedida"],],
           }
         ]
       }
@@ -123,21 +125,20 @@ const getIndicador = async (idIndicador, Format) => {
       "nombre",
       "definicion",
       "urlImagen",
-      [sequelize.literal('"Od"."nombre"'), "ods"],
-      [sequelize.literal('"Modulo"."temaIndicador"'), "modulo"],
+      [sequelize.literal('"ods"."nombre"'), "ods"],
+      [sequelize.literal('"modulo"."temaIndicador"'), "modulo"],
       "ultimoValorDisponible",
-      [sequelize.literal('"UnidadMedida"."nombre"'), "unidadMedida"],
+      [sequelize.literal('"unidadMedida"."nombre"'), "unidadMedida"],
       "anioUltimoValorDisponible",
-      [sequelize.literal('"CoberturaGeografica"."nombre"'), "coberturaGeografica"],
+      [sequelize.literal('"coberturaGeografica"."nombre"'), "coberturaGeografica"],
       "tendenciaActual",
       "tendenciaDeseada",
-      "mapa",
     ],
   });
   if (typeof Format === 'undefined' || indicador === null) {
     return indicador;
-  }else {
-    return {... indicador.dataValues};
+  } else {
+    return { ...indicador.dataValues };
   }
 }
 
@@ -211,20 +212,13 @@ const getIndicadorIncludes = ({ idFuente }) => {
   return indicadorFilter;
 };
 
-// Retrieves a list of indicadores based on user 
-const getIndicadoresFromUser = async (id) => {
+const createIndicador = async (indicador) => {
   try {
-    const result = await Indicador.findAndCountAll({
-      where: {
-        createdBy: id,
-      }
-    });
-    return {
-      indicadores: result.rows,
-      total: result.count,
-    }
+    const saved = await Indicador.create(indicador);
+    return saved;
   } catch (err) {
-    console.log(err);
+    throw new Error('Error al crear indicador: ' + err.message);
   }
 }
-module.exports = { getIndicadores, getIndicador, getIndicadoresFromUser };
+
+module.exports = { getIndicadores, getIndicador, createIndicador };

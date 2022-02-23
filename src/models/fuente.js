@@ -15,21 +15,26 @@ module.exports = (sequelize, DataTypes) => {
   };
   Fuente.init({
     id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
     },
 
     bibliografia: {
-        type: DataTypes.STRING,
-        allowNull: true,
-        defaultValue: 'No aplica'
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: 'No aplica'
     },
-},
-{
-    sequelize,
-    modelName: 'Fuente',
-    timestamps: false
-});
+  },
+    {
+
+      sequelize,
+      name: {
+        singular: 'fuente',
+        plural: 'fuentes'
+      },
+      modelName: 'Fuente',
+      timestamps: false
+    });
   return Fuente;
 };

@@ -35,6 +35,10 @@ module.exports = (sequelize, DataTypes) => {
         },
         {
             sequelize,
+            name: {
+                singular: 'mapa',
+                plural: 'mapas'
+            },
             modelName: 'Mapa',
             timestamps: false
         }

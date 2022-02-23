@@ -10,13 +10,6 @@ describe('Indicador service', function () {
 
     const indicadores = [anIndicador(1), anIndicador(2)];
 
-    const indicadoresFromUser = [
-        anIndicador(1),
-        anIndicador(1),
-        anIndicador(1),
-        anIndicador(1),
-    ];
-
     this.afterEach(function () {
         sinon.restore();
     });
@@ -25,85 +18,93 @@ describe('Indicador service', function () {
         server.close();
     });
 
-    it('Returns a list of indicadores and the total number of them', function () {
-        const findAndCountAllFake = sinon.fake.resolves({ rows: indicadores, count: indicadores.length });
-        sinon.replace(Indicador, 'findAndCountAll', findAndCountAllFake);
-        return IndicadorService.getIndicadores(1, 15, { idModulo: 15 })
-            .then(res => {
-                expect(findAndCountAllFake.calledOnce).to.be.true;
-                expect(res.indicadores).to.be.an('array').that.is.not.empty;
-                expect(res.total).to.equal(indicadores.length);
-            });
-    });
-
-    it('Returns an indicador', function () {
-        const findOneFake = sinon.fake.resolves({ ...anIndicador(1) });
-        sinon.replace(Indicador, 'findOne', findOneFake);
-        return IndicadorService.getIndicador(1)
-            .then(res => {
-                expect(findOneFake.args[0][0].where.id).to.be.equal(1);
-                expect(findOneFake.calledOnce).to.be.true;
-                expect(res).to.not.be.null;
-            })
-    });
-
-    it('Rejects promise if there\'s an error', function () {
-        const findAndCountAllFake = sinon.fake.rejects(new Error());
-        sinon.replace(Indicador, 'findAndCountAll', findAndCountAllFake);
-        return IndicadorService.getIndicadores(1, 15, { idModulo: 15 })
-            .then(res => {
-                expect(res).to.be.null;
-            })
-            .catch(err => {
-                expect(findAndCountAllFake.calledOnce).to.be.true;
-                expect(err).to.not.be.null;
-            });
-    });
-
-    it('Returns null if no indicador is found', function () {
-        const findOneFake = sinon.fake.resolves(null);
-        sinon.replace(Indicador, 'findOne', findOneFake);
-        return IndicadorService.getIndicador(1)
-            .then(res => {
-                expect(res).to.be.null;
-                expect(findOneFake.calledOnce).to.be.true;
-                expect(findOneFake.args[0][0]).to.not.be.null;
-            })
-            .catch(err => {
-            });
-    });
-
-    describe('Indicadores from user', function () {
-        it('Should return a list of indicadores from an user', function () {
-            const findAndCountAllIndicadoresFromUserFake = sinon.fake.resolves({ indicadores: indicadoresFromUser, total: indicadoresFromUser.length });
-            sinon.replace(Indicador, 'findAndCountAll', findAndCountAllIndicadoresFromUserFake);
-            return IndicadorService.getIndicadoresFromUser(1)
+    describe('Read operations', function () {
+        it('Returns a list of indicadores and the total number of them', function () {
+            const findAndCountAllFake = sinon.fake.resolves({ rows: indicadores, count: indicadores.length });
+            sinon.replace(Indicador, 'findAndCountAll', findAndCountAllFake);
+            return IndicadorService.getIndicadores(1, 15, { idModulo: 15 })
                 .then(res => {
+                    expect(findAndCountAllFake.calledOnce).to.be.true;
+                    expect(res.indicadores).to.be.an('array').that.is.not.empty;
+                    expect(res.total).to.equal(indicadores.length);
+                });
+        });
+
+        it('Returns an indicador', function () {
+            const findOneFake = sinon.fake.resolves({ ...anIndicador(1) });
+            sinon.replace(Indicador, 'findOne', findOneFake);
+            return IndicadorService.getIndicador(1)
+                .then(res => {
+                    expect(findOneFake.args[0][0].where.id).to.be.equal(1);
+                    expect(findOneFake.calledOnce).to.be.true;
                     expect(res).to.not.be.null;
-                    expect(findAndCountAllIndicadoresFromUserFake.calledOnce).to.be.true;
-                    expect(res.indicadores).to.be.an('array').that.is.not.empty;
-                    expect(res.total).to.equal(indicadoresFromUser.length);
                 })
-                .catch(err => {
-                    console.log(err);
-                });
-        }) 
+        });
 
-        it('Should not return a list of indicadores from an user', function () {
-            const findAndCountAllIndicadoresFromUserFake = sinon.fake.rejects({ indicadores: indicadoresFromUser, total: indicadoresFromUser.length });
-            sinon.replace(Indicador, 'findAndCountAll', findAndCountAllIndicadoresFromUserFake);
-            return IndicadorService.getIndicadoresFromUser(1)
+        it('Rejects promise if there\'s an error', function () {
+            const findAndCountAllFake = sinon.fake.rejects(new Error());
+            sinon.replace(Indicador, 'findAndCountAll', findAndCountAllFake);
+            return IndicadorService.getIndicadores(1, 15, { idModulo: 15 })
                 .then(res => {
-                    expect(findAndCountAllIndicadoresFromUserFake.calledOnce).to.be.true;
-                    expect(res.indicadores).to.be.an('array').that.is.not.empty;
-                    expect(res.total).to.equal(indicadoresFromUser.length);
+                    expect(res).to.be.null;
                 })
                 .catch(err => {
-                    console.log(err);
+                    expect(findAndCountAllFake.calledOnce).to.be.true;
+                    expect(err).to.not.be.null;
                 });
-        }) 
+        });
 
-    })
+        it('Returns null if no indicador is found', function () {
+            const findOneFake = sinon.fake.resolves(null);
+            sinon.replace(Indicador, 'findOne', findOneFake);
+            return IndicadorService.getIndicador(1)
+                .then(res => {
+                    expect(res).to.be.null;
+                    expect(findOneFake.calledOnce).to.be.true;
+                    expect(findOneFake.args[0][0]).to.not.be.null;
+                })
+        });
+
+    });
+
+    describe('Create operations', function () {
+
+        it('Should create an indicador with no errors', function () {
+            const indicadorDummy = anIndicador().dataValues;
+            const createFake = sinon.fake.resolves(indicadorDummy);
+            sinon.replace(Indicador, 'create', createFake);
+            return IndicadorService.createIndicador(indicadorDummy)
+                .then(res => {
+                    expect(res).to.not.be.undefined;
+                    expect(createFake.calledWith(indicadorDummy));
+                    expect(createFake.calledOnce).to.be.true;
+                });
+        });
+
+        it('Should not create indicador, because connection to DB failed', function () {
+            const indicadorDummy = anIndicador().dataValues;
+            const createFake = sinon.fake.rejects(new Error('Connection to DB failed'));
+            sinon.replace(Indicador, 'create', createFake);
+            return IndicadorService.createIndicador(indicadorDummy)
+                .catch(err => {
+                    expect(err).to.not.be.undefined;
+                    expect(createFake.calledOnce).to.be.true;
+                    expect(createFake.calledWith(indicadorDummy));
+                });
+        });
+
+        it('Should not create indicador, because it has constraint errors', function () {
+            const indicadorDummy = anIndicador().dataValues;
+            const createFake = sinon.fake.rejects(new Error('Constraint Error'));
+            sinon.replace(Indicador, 'create', createFake);
+            return IndicadorService.createIndicador(indicadorDummy)
+                .catch(err => {
+                    expect(err).to.not.be.undefined;
+                    expect(createFake.calledOnce).to.be.true;
+                    expect(createFake.calledWith(indicadorDummy))
+                });
+        });
+    });
 
 });
 

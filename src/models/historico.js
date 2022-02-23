@@ -41,6 +41,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
+      name: {
+        singular: 'historico',
+        plural: 'historicos'
+      },
       modelName: 'Historico',
       timestamps: true,
       updatedAt: false

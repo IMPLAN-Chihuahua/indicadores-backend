@@ -63,6 +63,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
+      name: {
+        singular: 'modulo',
+        plural: 'modulos'
+      },
       modelName: 'Modulo',
       timestamps: true,
       scopes: {
