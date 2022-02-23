@@ -142,6 +142,11 @@ const getIndicador = async (idIndicador, Format) => {
   }
 }
 
+const getAllIndicadores = async() => {
+  const indicadores = await Indicador.findAll({});
+  return indicadores;
+}
+
 // Validation for catalogs
 const validateCatalog = ({ idOds, idCobertura, idUnidadMedida }) => {
   const catalogFilters = {};
@@ -221,4 +226,4 @@ const createIndicador = async (indicador) => {
   }
 }
 
-module.exports = { getIndicadores, getIndicador, createIndicador };
+module.exports = { getIndicadores, getIndicador, createIndicador, getAllIndicadores };

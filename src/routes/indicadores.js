@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { paramValidationRules,
     validate } = require('../middlewares/validator');
-const { getIndicador } = require('../controllers/indicadorController');
+const { getIndicador, getAllIndicadores } = require('../controllers/indicadorController');
+const { verifyJWT } = require('../middlewares/auth');
 
 /**
  * @swagger
@@ -38,5 +39,29 @@ router.route('/:idIndicador/')
     .get(paramValidationRules(),
         validate,
         getIndicador);
+
+/**
+ * @swagger
+ *   /indicadores:
+ *     get:
+ *       summary: Retrieves a list of indicadores
+ *       tags: [Indicadores]
+ *       security:
+ *         - bearer: []
+ *       responses:
+ *         200:
+ *           description: A very friendly list of indicadores
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/components/schemas/Indicador'
+ *         401:
+ *           description: Unauthorized request (not valid JWT in Authorization header)
+ *         500:
+ *           description: Internal server error
+ */
+
+router.route('/')
+    .get(verifyJWT, getAllIndicadores);
 
 module.exports = router;
