@@ -31,6 +31,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
+      name: {
+        singular: 'unidadMedida',
+        plural: 'unidadesMedida'
+      },
       modelName: 'UnidadMedida',
       timestamps: false
     }

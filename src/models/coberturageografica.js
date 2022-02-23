@@ -29,6 +29,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
+      name: {
+        singular: 'coberturaGeografica',
+        plural: 'coberturasGeograficas'
+      },
       modelName: 'CoberturaGeografica',
       timestamps: false
     }

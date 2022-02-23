@@ -44,6 +44,10 @@ module.exports = (sequelize, DataTypes) => {
         },
         {
             sequelize,
+            name: {
+                singular: 'rol',
+                plural: 'roles'
+            },
             modelName: 'Rol',
             tableName: 'Roles',
             timestamps: true
