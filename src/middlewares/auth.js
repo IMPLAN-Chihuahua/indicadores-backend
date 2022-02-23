@@ -25,6 +25,7 @@ const verifyRoles = (roles) => {
     return async (req, res, next) => {
         const rol = await getRol(req.sub);
         const isAllowed = roles.includes(rol);
+        console.log('rol', rol)
         if (isAllowed) {
             next();
         } else {
