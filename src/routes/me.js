@@ -55,6 +55,6 @@ router.route('/').get(verifyJWT, getUserFromToken);
  *           description: Internal server error
  */
 
-router.route('/indicadores').get( verifyJWT, getIndicadoresFromUser );
+router.route('/indicadores').get(verifyJWT, getIndicadoresFromUser);
 
 module.exports = router;
