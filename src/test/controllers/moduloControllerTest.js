@@ -158,4 +158,59 @@ describe('/modulos', function () {
         })
 
     });
+
+    describe('PATCH', function() {
+        this.afterEach(function () {
+            sinon.restore();
+        });
+
+        this.afterAll(function () {
+            server.close();
+        });
+
+        it('Should edit a modulo', function(done) {
+            const moduloFake = aModulo(1);
+            const editModuloFake = sinon.fake.resolves(true);
+            sinon.replace(Modulo, 'update', editModuloFake);
+            chai.request(app)
+                .patch('/api/v1/modulos/1')
+                .set({ Authorization: `Bearer ${token}` })
+                .send(moduloFake)
+                .end((err, res) => {
+                    expect(res).to.have.status(204);
+                    expect(res.body.data).to.not.be.null;
+                    done();
+                });
+        });
+
+        it('Should not edit a modulo -bad request', function(done) {
+            const moduloFake = aModulo(1);
+            const editModuloFake = sinon.fake.resolves(moduloFake);
+            sinon.replace(Modulo, 'update', editModuloFake);
+            
+            chai.request(app)
+                .patch('/api/v1/modulos/1')
+                .send(moduloFake)
+                .set({ Authorization: `Bearer ${token}` })
+                .end((err, res) => {
+                    expect(res).to.have.status(404);
+                    done();
+                });
+        });
+
+        it('Should not edit a modulo due to internal errors', function(done) {
+            const moduloFake = aModulo(1);
+            const editModuloFake = sinon.fake.throws('Error');
+            sinon.replace(Modulo, 'update', editModuloFake);
+            chai.request(app)
+                .patch('/api/v1/modulos/1')
+                .set({ Authorization: `Bearer ${token}` })
+                .send(moduloFake)
+                .end((err, res) => {
+                    expect(res).to.have.status(500);
+                    done();
+                });
+        });
+
+    })
 })
