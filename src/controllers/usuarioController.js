@@ -38,7 +38,7 @@ const createUser = async (req, res) => {
     } = req.body;
     try {
         if (await isCorreoAlreadyInUse(correo)) {
-            return res.status(403).json({ message: 'Correo no disponible' })
+            return res.status(409).json({ message: 'Correo no disponible' })
         }
 
         const hashedClave = await bcrypt.hash(clave, SALT_ROUNDS);

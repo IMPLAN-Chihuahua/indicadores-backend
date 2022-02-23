@@ -82,7 +82,7 @@ describe('User service', function () {
         });
 
         it('Should return the rol of a user', function () {
-            const findOneFake = sinon.fake.resolves({ dataValues: { rol: 'ADMIN' } });
+            const findOneFake = sinon.fake.resolves({ dataValues: { roles: 'ADMIN' } });
             sinon.replace(Usuario, 'findOne', findOneFake);
             return UsuarioService.getRol(1)
                 .then(res => {
