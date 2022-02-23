@@ -58,7 +58,7 @@ app.use('/api/v1/modulos', require('./src/routes/modulos'));
 app.use('/api/v1/indicadores', require('./src/routes/indicadores'));
 app.use('/api/v1/catalogos', require('./src/routes/catalogos'));
 app.use('/api/v1/documentos', require('./src/routes/documentos'));
-app.use('/api/v1/me', require('./src/routes/perfiles'));
+app.use('/api/v1/me', require('./src/routes/me'));
 
 const PORT = 8080;
 

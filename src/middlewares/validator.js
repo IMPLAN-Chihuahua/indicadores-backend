@@ -54,6 +54,46 @@ const registerValidationRules = () => {
     ];
 };
 
+const updateValidationRules = () => {
+    return [
+        // correo tenga patron correcto
+        check('correo')
+            .optional()
+            .isEmail()
+            .withMessage('El correo tiene un formato incorrecto'),
+
+        // valida que la clave exista y que tenga al menos 8 caracteres
+        // y que cumpla con un formato
+        check('clave')
+            .optional()
+            .isLength({ min: 8 })
+            .withMessage('La clave debe tener al menos 8 caracteres'),
+
+        // nombres se encuentra en la peticion
+        check('nombres')
+            .optional()
+            .isAlpha('es-ES', { ignore: '\s' })
+            .withMessage('nombre invalido'),
+
+        // apellido paterno se encuentra en la peticion
+        check('apellidoPaterno')
+            .optional()
+            .isAlpha('es-ES', { ignore: '\s' })
+            .withMessage('apellido paterno invalido'),
+
+        check('apellidoMaterno')
+            .optional()
+            .isAlpha('es-ES', { ignore: '\s' })
+            .withMessage('apellido materno invalido'),
+
+        check('activo')
+            .optional()
+            .toUpperCase()
+            .isIn(['SI', 'NO'])
+            .withMessage('estado invalido')
+    ];
+}
+
 const paginationValidationRules = () => {
     return [
         query(['page', 'per_page'])
@@ -102,7 +142,7 @@ const paramValidationRules = () => {
             }),
         param(["format"])
             .optional()
-            .isIn(['csv','xlsx','pdf','json'])
+            .isIn(['csv', 'xlsx', 'pdf', 'json'])
             .withMessage('formato debe ser csv, xlsx, pdf o json')
     ];
 };
@@ -117,9 +157,9 @@ const sortValidationRules = () => {
             .optional()
             .toUpperCase()
             .isIn(['ASC', 'DESC'])
-            
+
     ];
-} 
+}
 
 const createModuloValidationRules = () => {
     return [
@@ -195,6 +235,7 @@ const validate = (req, res, next) => {
 module.exports = {
     loginValidationRules,
     registerValidationRules,
+    updateValidationRules,
     paginationValidationRules,
     validate,
     paramValidationRules,

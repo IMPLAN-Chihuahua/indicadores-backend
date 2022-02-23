@@ -39,6 +39,11 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.STRING
             },
 
+            codigoObjeto: {
+                allowNull: false,
+                type: DataTypes.STRING
+            },
+
             nombre: {
                 type: DataTypes.STRING,
                 allowNull: false
@@ -74,12 +79,6 @@ module.exports = (sequelize, DataTypes) => {
                 defaultValue: 'No aplica'
             },
 
-            mapa: {
-                type: DataTypes.SMALLINT,
-                allowNull: false,
-                defaultValue: 0
-            },
-
             observaciones: {
                 type: DataTypes.TEXT,
                 allowNull: false,
@@ -113,12 +112,17 @@ module.exports = (sequelize, DataTypes) => {
         },
         {
             sequelize,
+            name: {
+                singular: 'indicador',
+                plural: 'indicadores'
+            },
             indexes: [
                 {
                     unique: false,
                     fields: ['createdBy', 'updatedBy', 'idOds', 'idCobertura', 'idUnidadMedida']
                 }
             ],
+            modelName: 'Indicador',
             tableName: 'Indicadores',
             timestamps: true
         }

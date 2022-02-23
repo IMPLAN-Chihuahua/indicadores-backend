@@ -62,6 +62,10 @@ module.exports = (sequelize, DataTypes) => {
     
   }, {
     sequelize,
+    name: {
+      singular: 'variable',
+      plural: 'variables'
+    },
     modelName: 'Variable',
     timestamps: false,
     indexes : [

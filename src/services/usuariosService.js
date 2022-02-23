@@ -1,5 +1,5 @@
-const { Usuario, Rol, sequelize,
-  Sequelize } = require('../models');
+const { Usuario, Rol, Indicador, Sequelize, sequelize } = require('../models');
+const { Op } = Sequelize;
 
 const addUsuario = async (usuario) => {
     try {
@@ -13,10 +13,9 @@ const addUsuario = async (usuario) => {
             correo,
             apellidoPaterno,
             apellidoMaterno,
-
         };
     } catch (err) {
-        return Promise.reject(new Error(`Error al crear usuario ${err.message}`));
+        throw new Error(`Error al crear usuario ${err.message}`);
     }
 };
 
@@ -60,7 +59,7 @@ const isCorreoAlreadyInUse = async (correo) => {
             attributes: ['correo'],
             where: { correo: correo }
         });
-        return existingCorreo != null;
+        return existingCorreo !== null;
     } catch (err) {
         throw new Error('Error al buscar si correo ha sido utilizado: ' + err.message);
     }
@@ -92,11 +91,70 @@ const updateUsuario = async (id, { nombres, apellidoPaterno, apellidoMaterno, ac
 };
 
 
+const getRol = async (id) => {
+    try {
+        const response = await Usuario.findOne({
+            where: { id },
+            include: [
+                {
+                    model: Rol,
+                    required: true,
+                    attributes: []
+                }
+            ],
+            attributes: [[Sequelize.literal('"Rol"."rol"'), 'rol']],
+        });
+        return response.dataValues.rol;
+    } catch (err) {
+        throw new Error('Error al obtener rol de usuario: ' + err.message);
+    }
+};
+
+// Retrieves a list of indicadores based on user 
+const getIndicadoresFromUser = async (id) => {
+    try {
+        const result = await Usuario.findOne({
+            attributes: [],
+            where: {
+                id: id,
+                activo: 'SI'
+            },
+            include: {
+                model: Indicador,
+                attributes: {
+                    include: [
+                        [Sequelize.literal('"indicadores->usuarioIndicador"."fechaHasta" - CURRENT_DATE'), 'remainingDays']
+                    ]
+                },
+                through: {
+                    as: 'usuarioIndicador',
+                    attributes: [],
+                    where: {
+                        activo: 'SI',
+                        fechaHasta: {
+                            [Op.gte]: Sequelize.literal('CURRENT_DATE')
+                        }
+                    }
+                }
+            }
+        });
+        return {
+            indicadores: result.dataValues.indicadores,
+            total: result.dataValues.indicadores.length,
+        }
+    } catch (err) {
+        throw new Error('Error al obtener indicadores de un usuario: ' + err.message);
+    }
+};
+
+
 module.exports = {
     addUsuario,
     getUsuarioById,
     getUsuarioByCorreo,
     getUsuarios,
     isCorreoAlreadyInUse,
-    updateUsuario
+    updateUsuario,
+    getRol,
+    getIndicadoresFromUser
 }

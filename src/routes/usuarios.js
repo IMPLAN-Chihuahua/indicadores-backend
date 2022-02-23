@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { getUsers, createUser, getUserFromId, editUser } = require('../controllers/usuarioController');
-const { verifyJWT } = require('../middlewares/auth');
+const { verifyJWT, verifyRoles } = require('../middlewares/auth');
 const {
     registerValidationRules,
     paginationValidationRules,
     validate,
-    paramValidationRules } = require('../middlewares/validator');
+    paramValidationRules, 
+    updateValidationRules} = require('../middlewares/validator');
 /**
  * @swagger
  *   components:
@@ -125,12 +126,19 @@ const {
  *         401:
  *           description: Unauthorized request (not valid JWT in Authorization header)
  *         403:
- *           description: The request has an invalid or expired token
+ *           description: The request has an invalid token or rol
  *         422:
  *           description: Unable to process request due to semantic errors in the body or param payload
  *       
  */
-router.get('/', paginationValidationRules(), validate, verifyJWT, getUsers);
+router.get(
+    '/',
+    paginationValidationRules(),
+    validate,
+    verifyJWT,
+    verifyRoles(['ADMIN']),
+    getUsers
+);
 
 /**
  * @swagger
@@ -147,11 +155,18 @@ router.get('/', paginationValidationRules(), validate, verifyJWT, getUsers);
  *         201:
  *           description: Account created successfully 
  *         403:
- *           description: Unable to create account (email is already in use)
+ *           description: Unable to create account (email is already in use, invalid token or rol)
  *         422:
  *           description: Unable to process request due to semantic errors in the body or param payload
  */
-router.post('/', registerValidationRules(), validate, createUser);
+router.post(
+    '/',
+    registerValidationRules(),
+    validate,
+    verifyJWT,
+    verifyRoles(['ADMIN']),
+    createUser
+);
 
 
 /**
@@ -175,13 +190,20 @@ router.post('/', registerValidationRules(), validate, createUser);
  *        204:
  *          description: Not user was found with the given id
  *        401:
- *          description: Unauthorized request (not valid JWT in Authorization header)
+ *          description: Unauthorized request (not JWT in Authorization header)
  *        403:
- *          description: The request has an invalid or expired token
+ *          description: The request has an invalid token or rol
  *        422:
  *          description: Unable to process request due to semantic errors in the body or param payload
  */
-router.get('/:idUser', paramValidationRules(), validate, verifyJWT, getUserFromId);
+router.get(
+    '/:idUser',
+    paramValidationRules(),
+    validate,
+    verifyJWT,
+    verifyRoles(['ADMIN']),
+    getUserFromId
+);
 
 
 /**
@@ -209,10 +231,18 @@ router.get('/:idUser', paramValidationRules(), validate, verifyJWT, getUserFromI
  *        401:
  *          description: Unauthorized request (not valid JWT in Authorization header)
  *        403:
- *          description: The request has an invalid or expired token
+ *          description: The request has an invalid token or rol
  *        422:
  *          description: Unable to process request due to semantic errors in the body or param payload
  */
-router.patch('/:idUser', paramValidationRules(), validate, verifyJWT, editUser);
+router.patch(
+    '/:idUser',
+    paramValidationRules(),
+    updateValidationRules(),
+    validate,
+    verifyJWT,
+    verifyRoles(['ADMIN']),
+    editUser
+);
 
 module.exports = router;
