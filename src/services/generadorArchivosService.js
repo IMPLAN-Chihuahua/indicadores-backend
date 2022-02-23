@@ -22,9 +22,9 @@ const generateXLSX = (data) => {
     indicador.unidadMedida,
     indicador.anioUltimoValorDisponible,
     indicador.coberturaGeografica,
-    indicador.Formula?.ecuacion ?? "NA",
-    indicador.Formula?.descripcion ?? "NA",
-    indicador.Formula?.Variables ?? "NA",
+    indicador.formula?.ecuacion ?? "NA",
+    indicador.formula?.descripcion ?? "NA",
+    indicador.formula?.Variables ?? "NA",
     indicador.Historicos ?? "NA",
   ];
   
@@ -41,7 +41,7 @@ const generateXLSX = (data) => {
         let actualCell = i + 1;
         if (typeof indicadorInfo[i] === "object") {
           indicadorInfo[i].map((item, index) => {
-            if (item.dataValues.hasOwnProperty("UnidadMedida")) {
+            if (item.dataValues.hasOwnProperty("unidadMedida")) {
               [item.dataValues].map((singularItem, index) => {
                 let row = ws.getRow(initialRow);
                 row.getCell(actualCell).value = singularItem.nombre ?? "NA";

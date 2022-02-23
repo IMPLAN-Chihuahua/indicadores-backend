@@ -216,11 +216,11 @@
         <tbody>
           <tr>
             <td>
-              <p>$${{Formula.ecuacion}}$$</p>
+              <p>$${{formula.ecuacion}}$$</p>
             </td>
           </tr>
           <tr>
-            <td>{{Formula.descripcion}}</td>
+            <td>{{formula.descripcion}}</td>
           </tr>
         </tbody>
       </table>
@@ -234,7 +234,7 @@
           </tr>
         </thead>
         <tbody>
-          {{#each Formula.Variables}}
+          {{#each formula.variables}}
           <tr>
             <td>{{this.nombre}}</td>
             <td>{{this.nombreAtributo}}</td>
@@ -316,7 +316,7 @@
           </tr>
         </thead>
         <tbody>
-          {{#each Historicos}}
+          {{#each historicos}}
           <tr>
             <td style="text-align: right !important;">{{this.anio}}</td>
             <td style="text-align: right !important;">{{numberWithCommas this.valor}}</td>
@@ -339,7 +339,7 @@
     </div>
     <h1 class="text">Mapa</h1>
     <div style="display: flex; justify-content: center">
-      {{#if Mapa}}
+      {{#if mapa}}
       <img
         id="mapImg"
         src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644535117/mapa_mwlhkq.png"

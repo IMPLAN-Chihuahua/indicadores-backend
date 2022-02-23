@@ -104,7 +104,7 @@ const getRol = async (id) => {
                     attributes: []
                 }
             ],
-            attributes: [[Sequelize.literal('"Rol"."rol"'), 'rol']],
+            attributes: [[Sequelize.literal('"rol"."rol"'), 'rol']],
         });
         return response.dataValues.rol;
     } catch (err) {
