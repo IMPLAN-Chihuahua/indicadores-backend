@@ -1,4 +1,27 @@
-const { Modulo, sequelize, Sequelize } = require('../models');
+const { Modulo, sequelize, Sequelize, Indicador } = require('../models');
+
+const retrieveModulos = async () => {
+    const modulos = await Modulo.findAll({
+        where: {
+            activo: 'SI'
+        },
+        attributes: [
+            'id',
+            'temaIndicador',
+            'codigo',
+            'urlImagen',
+            'color',
+            [Sequelize.fn('COUNT', Sequelize.col('indicadores.id')), 'indicadoresCount']
+        ],
+        include: [{
+            model: Indicador,
+            attributes: []
+        }],
+        group: ['Modulo.id'],
+        order: [['id']],
+    });
+    return modulos;
+}
 
 const addModulo = async (modulo) => {
     try {
@@ -49,8 +72,8 @@ const isTemaIndicadorAlreadyInUse = async (temaIndicador) => {
 }
 
 
-
 module.exports = {
+    retrieveModulos,
     addModulo,
     isTemaIndicadorAlreadyInUse,
     updateModulo,

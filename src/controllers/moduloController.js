@@ -1,27 +1,9 @@
 const { Modulo, Indicador, Sequelize } = require('../models');
-const { addModulo, isTemaIndicadorAlreadyInUse, updateModulo } = require('../services/moduloService');
+const { addModulo, isTemaIndicadorAlreadyInUse, updateModulo, retrieveModulos } = require('../services/moduloService');
 
 const getModulos = async (req, res) => {
     try {
-        const modulos = await Modulo.findAll({
-            where: {
-                activo: 'SI'
-            },
-            attributes: [
-                'id',
-                'temaIndicador',
-                'codigo',
-                'urlImagen',
-                'color',
-                [Sequelize.fn('COUNT', Sequelize.col('indicadores.id')), 'indicadoresCount']
-            ],
-            include: [{
-                model: Indicador,
-                attributes: []
-            }],
-            group: ['Modulo.id'],
-            order: [['id']],
-        });
+        const test = await retrieveModulos();
         return res.status(200).json({ data: modulos });
     } catch (err) {
         return res.sendStatus(500);
