@@ -70,7 +70,6 @@ const generateXLSX = (data) => {
       return await wb.xlsx.writeBuffer();;
     })
     .catch(err => {
-      console.log(err);
       throw err;
     });
 };

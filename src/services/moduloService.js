@@ -78,7 +78,8 @@ const getAllModulos = async (page = 1, per_page = 5) => {
             offset: (page - 1) * per_page,
             order: [['id', 'ASC']],
         });
-        return {modulos: result.rows, total: result.count};
+        const inactiveModulos = await Modulo.count({where: {activo: 'NO'}});
+        return {modulos: result.rows, total: result.count, totalInactivos: inactiveModulos};
     } catch(err) {
         throw new Error(`Error al obtener todos los modulos ${err.message}`);
     }
