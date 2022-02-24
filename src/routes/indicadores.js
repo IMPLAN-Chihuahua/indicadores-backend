@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { paramValidationRules,
-    validate } = require('../middlewares/validator');
-const { getIndicador, getAllIndicadores } = require('../controllers/indicadorController');
-const { verifyJWT } = require('../middlewares/auth');
+    validate,
+    createIndicadorValidationRules } = require('../middlewares/validator');
+const { getIndicador, getAllIndicadores, createIndicador } = require('../controllers/indicadorController');
+const { verifyJWT, verifyRoles } = require('../middlewares/auth');
 
 /**
  * @swagger
@@ -35,7 +36,7 @@ const { verifyJWT } = require('../middlewares/auth');
  *           description: Internal server error
  * 
  */
-router.route('/:idIndicador/')
+router.route('/:idIndicador')
     .get(paramValidationRules(),
         validate,
         getIndicador);
@@ -63,5 +64,45 @@ router.route('/:idIndicador/')
 
 router.route('/')
     .get(verifyJWT, getAllIndicadores);
+
+
+/**
+ * @swagger
+ *   /indicadores:
+ *     post:
+ *       summary: Creates a new indicador
+ *       tags: [Indicadores]
+ *       security:
+ *         - bearer: []
+ *       requestBody:
+ *         required: true
+ *         content: 
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Indicador'
+ *       responses:
+ *         201:
+ *           description: Indicador created successfully
+ *           content:
+ *             application/json:
+ *                schema:
+ *                  $ref: '#/components/schemas/Indicador'
+ *         401: 
+ *           description: Request does not have token in Authorization header
+ *         403: 
+ *           description: Invalid token or not permission 
+ *         422:
+ *           description: The value of some fields are invalid
+ *         500:
+ *           description: Internal server error
+ */
+router.route('/')
+    .post(
+        createIndicadorValidationRules(),
+        validate,
+        verifyJWT,
+        verifyRoles(['ADMIN']),
+        createIndicador
+    );
 
 module.exports = router;

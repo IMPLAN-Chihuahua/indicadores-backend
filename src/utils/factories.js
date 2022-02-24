@@ -9,7 +9,6 @@ const aDummyWithName = (id) => {
 
 const anIndicador = (id) => {
     return {
-        dataValues: {
         id,
         nombre: "Test " + faker.random.word(),
         definicion: faker.lorem.sentence(),
@@ -56,8 +55,26 @@ const anIndicador = (id) => {
         createdAt: new Date(),
         createdBy: faker.datatype.number(9),
         updatedAt: new Date(),
-    }};
+    };
 };
+
+const indicadorToCreate = () => {
+    return {
+        nombre: faker.random.word(),
+        codigo: '00' + faker.datatype.number(9),
+        codigoObjeto: '00' + faker.datatype.number(9),
+        definicion: faker.lorem.sentence(),
+        ultimoValorDisponible: faker.datatype.number(),
+        anioUltimoValorDisponible: faker.datatype.number({ 'min': 2000, 'max': new Date().getFullYear() }),
+        tendenciaActual: faker.datatype.boolean() ? "ASCENDENTE" : "DESCENDENTE",
+        tendenciaDeseada: faker.datatype.boolean() ? "ASCENDENTE" : "DESCENDENTE",
+        observaciones: faker.random.words(10),
+        idOds: faker.datatype.number(9),
+        idCobertura: faker.datatype.number(9),
+        idUnidadMedida: faker.datatype.number(9),
+        idModulo: faker.datatype.number(9),
+    };
+}
 
 const aUser = (id) => {
     return {
@@ -80,7 +97,7 @@ const aModulo = (id) => {
         observaciones: faker.lorem.words(20),
         activo: faker.datatype.boolean() ? 'SI' : 'NO',
         urlImagen: faker.image.imageUrl(),
-        color:faker.commerce.color()
+        color: faker.commerce.color()
     };
 };
 
@@ -100,5 +117,6 @@ module.exports = {
     aUser,
     aModulo,
     aDummyWithName,
-    aRol
+    aRol,
+    indicadorToCreate
 };

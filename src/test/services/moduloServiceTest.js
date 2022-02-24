@@ -18,7 +18,7 @@ describe('Modulo service', function() {
         server.close();
     });
 
-    describe('POST', function () {
+    describe('Create operations', function () {
         it('Should create a new modulo and show its data', function() {
             const moduloFake = aModulo(1);
             const createOneFake = sinon.fake.resolves(moduloFake);
@@ -59,7 +59,7 @@ describe('Modulo service', function() {
         })
     });
 
-    describe('PATCH', function() {
+    describe('Update operations', function() {
         it('Should update a modulo\'s temaIndicador', function() {
             const updateModulo = faker.random.word();
             const updateFake = sinon.fake.resolves(1);

@@ -2,21 +2,21 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 chai.use(chaiHttp);
 const expect = chai.expect;
-const { Indicador } = require('../../models');
-const { Modulo } = require('../../models');
+const { Indicador, Modulo, Usuario } = require('../../models');
 const { app, server } = require('../../../app');
 const sinon = require('sinon');
+const { anIndicador, aModulo, aUser, indicadorToCreate } = require('../../utils/factories');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 const { TOKEN_SECRET } = process.env;
-const jwt = require('jsonwebtoken')
-const { anIndicador, aModulo, aUser } = require('../../utils/factories');
-const usuario = require('../../models/usuario');
 
 describe('v1/indicadores', function () {
-    const token = jwt.sign({ sub: 1 }, TOKEN_SECRET, { expiresIn: '5h' });
 
     const activeFilter = {
         anioUltimoValorDisponible: 2019
     };
+
+    const validToken = jwt.sign({ sub: 100 }, TOKEN_SECRET, { expiresIn: '5h' });
 
     const indicadoresList = [
         anIndicador(1),
@@ -157,28 +157,6 @@ describe('v1/indicadores', function () {
                 });
         });
 
-        it('Should return a list of items', function(done) {
-            chai.request(app)
-                .get('/api/v1/indicadores')
-                .set({ Authorization: `Bearer ${token}` })
-                .end(function(err, res) {
-                    expect(res).to.have.status(200);
-                    expect(res.body.data).to.be.an('array').that.is.not.empty;
-                    expect(res.body.data[0].id).to.be.a('number');
-                    expect(res.body.data[0].nombre).to.be.a('string');
-                    done();
-                });
-        });
-
-        it('Should return not authorized if token is not present', function(done) {
-            chai.request(app)
-                .get('/api/v1/indicadores')
-                .end(function(err, res) {
-                    expect(res).to.have.status(401);
-                    done();
-                });
-        });
-
         it('Should return status code 422 if :idIndicador is invalid', function (done) {
             chai.request(app)
                 .get('/api/v1/indicadores/uno')
@@ -290,36 +268,102 @@ describe('v1/indicadores', function () {
     });
 
     describe('POST /indicadores', function () {
-        const adminRol = { dataValues: { rol: 'ADMIN' } };
-        /**
-         * Test when everything is ok
-         * - has jwt, no constraint errors, permission
-         * - does not have a jwt
-         * - jwt expired
-         * - has jwt, constraint errors
-         * - has jwt, no constraint errors, no permission
-         * - model throws error
-         */
+        const adminRol = { roles: 'ADMIN' };
+        const userRol = { roles: 'USER' };
+        const validIndicador = indicadorToCreate();
+        let accessRolFake;
 
-        this.beforeEach(function() {
-            const findOneFake = sinon.fake.resolves(adminRol);
-            sinon.replace(usuario, 'findOne', findOneFake);
+        this.beforeEach(function () {
+            accessRolFake = sinon.fake.resolves({ dataValues: adminRol });
+            sinon.replace(Usuario, 'findOne', accessRolFake);
         });
 
         it('Should create an indicador successfully', function (done) {
+            const createFake = sinon.fake.resolves(anIndicador());
+            sinon.replace(Indicador, 'create', createFake);
             chai.request(app)
                 .post('/api/v1/indicadores')
-                .send(dummyIndicador)
+                .set({ Authorization: `Bearer ${validToken}` })
+                .send(validIndicador)
                 .end(function (err, res) {
-                    expect(res.body.data).to.not.be.undefined;
+                    expect(accessRolFake.calledOnce).to.be.true;
+                    expect(createFake.calledOnce).to.be.true;
+                    expect(res.body.data, 'data not undefiend').to.not.be.undefined;
+                    expect(res).to.have.status(201);
                     done();
                 });
         });
 
         it('Should not create indicador due to semantic errors', function (done) {
-            done();
+            const invalidIndicador = indicadorToCreate();
+            invalidIndicador.nombre = null;
+            invalidIndicador.codigo = 'not valid'
+            chai.request(app)
+                .post('/api/v1/indicadores')
+                .set({ Authorization: `Bearer ${validToken}` })
+                .send(invalidIndicador)
+                .end(function (err, res) {
+                    expect(res).to.have.status(422);
+                    expect(accessRolFake.calledOnce).to.be.false;
+                    done();
+                });
+
         });
 
+        it('Should not create indicador because req does not have the token', function (done) {
+            chai.request(app)
+                .post('/api/v1/indicadores')
+                .send(validIndicador)
+                .end(function (err, res) {
+                    expect(res).to.have.status(401);
+                    expect(accessRolFake.calledOnce).to.be.false;
+                    done();
+                });
+        });
+
+        it('Should not create indicador because token expired', function (done) {
+            chai.request(app)
+                .post('/api/v1/indicadores')
+                .set({ Authorization: 'Bearer valid' })
+                .send(validIndicador)
+                .end(function (err, res) {
+                    expect(accessRolFake.calledOnce).to.be.false;
+                    expect(res).to.have.status(403)
+                    done()
+                });
+        });
+
+        it('Should not create indicador because user has no permission', function (done) {
+            sinon.restore()
+            const accessRolUserFake = sinon.fake.resolves({ dataValues: userRol });
+            sinon.replace(Usuario, 'findOne', accessRolUserFake);
+            chai.request(app)
+                .post('/api/v1/indicadores')
+                .set({ Authorization: `Bearer ${validToken}` })
+                .send(validIndicador)
+                .end(function (err, res) {
+                    expect(accessRolUserFake.calledOnce).to.be.true;
+                    expect(accessRolFake.calledOnce).to.be.false;
+                    expect(res).to.have.status(403);
+                    done();
+                });
+        });
+
+        it('Should not create indicador because connection to DB failed', function (done) {
+            const createFake = sinon.fake.rejects(new Error('Connection to DB failed'));
+            sinon.replace(Indicador, 'create', createFake);
+            chai.request(app)
+                .post('/api/v1/indicadores')
+                .set({ Authorization: `Bearer ${validToken}` })
+                .send(validIndicador)
+                .end(function (err, res) {
+                    expect(accessRolFake.calledOnce).to.be.true;
+                    expect(createFake.calledOnce).to.be.true;
+                    expect(res).to.have.status(500);
+                    expect(res.error.text).to.not.be.empty
+                    done();
+                })
+        });
     });
 
 });
