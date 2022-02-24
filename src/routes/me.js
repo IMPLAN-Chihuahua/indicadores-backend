@@ -66,6 +66,7 @@ router.route('/modulos')
         paramValidationRules(), 
         paginationValidationRules(), 
         validate, 
+        verifyJWT,
         getAllModulos);
 
 module.exports = router;

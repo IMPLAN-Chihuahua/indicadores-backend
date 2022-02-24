@@ -63,10 +63,11 @@ const editModulo = async (req, res) => {
 const getAllModulos = async (req, res) => {
     const {page, per_page} = getPaginationModulos(req.matchedData);
     try{
-        const {modulos, total} = await moduloService.getAllModulos(page, per_page);
-        const total_pages = Math.ceil(total / per_page);
+        const modulos = await moduloService.getAllModulos(page, per_page);
+        console.log(modulos);
+        // const total_pages = Math.ceil(total / per_page);
 
-        return res.status(200).json({page: page, per_page: per_page, total: total, total_pages: total_pages, data: modulos });
+        return res.status(200).json({page: page, per_page: per_page, data: modulos });
     } catch(err) {
         return res.status(500).json({ message: err.message });
     }

@@ -78,7 +78,6 @@ const getAllModulos = async (page = 1, per_page = 5) => {
             offset: (page - 1) * per_page,
             order: [['id', 'ASC']],
         });
-        console.dir(result.rows);
         return {modulos: result.rows, total: result.count};
     } catch(err) {
         throw new Error(`Error al obtener todos los modulos ${err.message}`);
