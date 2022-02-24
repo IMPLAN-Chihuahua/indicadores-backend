@@ -1,32 +1,17 @@
 const { Modulo, Indicador, Sequelize } = require('../models');
-const { addModulo, isTemaIndicadorAlreadyInUse, updateModulo } = require('../services/moduloService');
+const moduloService = require('../services/moduloService');
+const { getPaginationModulos } = require("../utils/pagination");
 
 const getModulos = async (req, res) => {
     try {
-        const modulos = await Modulo.findAll({
-            where: {
-                activo: 'SI'
-            },
-            attributes: [
-                'id',
-                'temaIndicador',
-                'codigo',
-                'urlImagen',
-                'color',
-                [Sequelize.fn('COUNT', Sequelize.col('indicadores.id')), 'indicadoresCount']
-            ],
-            include: [{
-                model: Indicador,
-                attributes: []
-            }],
-            group: ['Modulo.id'],
-            order: [['id']],
-        });
+        const modulos = await moduloService.getModulos();
         return res.status(200).json({ data: modulos });
     } catch (err) {
         return res.sendStatus(500);
     }
 };
+
+/** Admin section */
 
 const createModulo = async (req, res) => {
     const {
@@ -39,12 +24,12 @@ const createModulo = async (req, res) => {
     } = req.body;
 
     try {
-        if (await isTemaIndicadorAlreadyInUse(temaIndicador)) {
+        if (await moduloService.isTemaIndicadorAlreadyInUse(temaIndicador)) {
             return res.status(400).json({
                 message: `El tema indicador ${temaIndicador} ya está en uso`,
             });
         }
-        const savedModulo = await addModulo({
+        const savedModulo = await moduloService.addModulo({
             temaIndicador,
             observaciones,
             activo,
@@ -63,7 +48,7 @@ const editModulo = async (req, res) => {
     const fields = req.body;
     const { idModulo } = req.matchedData;
     try {
-        const updatedModulo = await updateModulo(idModulo, fields);
+        const updatedModulo = await moduloService.updateModulo(idModulo, fields);
         if (updatedModulo) {
             return res.sendStatus(204);
         } else {
@@ -75,4 +60,15 @@ const editModulo = async (req, res) => {
     }
 }
 
-module.exports = { getModulos, createModulo, editModulo }
+const getAllModulos = async (req, res) => {
+    const {page, per_page} = getPaginationModulos(req.matchedData);
+    try{
+        const {modulos, total, totalInactivos} = await moduloService.getAllModulos(page, per_page);
+        const total_pages = Math.ceil(total / per_page);
+
+        return res.status(200).json({page: page, per_page: per_page, total_pages: total_pages, total: total, totalInactivos: totalInactivos, data: modulos });
+    } catch(err) {
+        return res.status(500).json({ message: err.message });
+    }
+}
+module.exports = { getModulos, createModulo, editModulo, getAllModulos }

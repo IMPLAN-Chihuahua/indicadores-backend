@@ -1,4 +1,4 @@
-const { check, validationResult, query, param, matchedData } = require('express-validator');
+const { check, validationResult, query, param, matchedData, body } = require('express-validator');
 
 const loginValidationRules = () => {
     return [
@@ -168,7 +168,7 @@ const createModuloValidationRules = () => {
             .withMessage('por favor agrega un codigo')
             .isLength({ min: 3 })
             .withMessage('El codigo debe tener 3 caracteres'),
-                    
+
         check('activo')
             .optional()
             .toUpperCase()
@@ -202,7 +202,7 @@ const updateModuloValidationRules = () => {
             .toUpperCase()
             .isIn(['SI', 'NO'])
             .withMessage('estado invalido'),
-        
+
         check('temaIndicador')
             .optional()
             .isLength({ min: 5 })
@@ -210,17 +210,45 @@ const updateModuloValidationRules = () => {
     ]
 }
 
-// funcion que hace la validacion (hubo errores en la peticion?)
+const createIndicadorValidationRules = () => {
+    return [
+        body(['codigo', 'codigoObjeto'])
+            .exists()
+            .isLength({ max: 3 })
+            .matches(/\d{3}$/),
+        body('nombre')
+            .exists()
+            .trim().escape(),
+        body('definicion')
+            .optional()
+            .trim().escape(),
+        body('ultimoValorDisponible')
+            .optional()
+            .trim().escape(),
+        body('anioUltimoValorDisponible')
+            .exists()
+            .isInt().toInt(),
+        body(['tendenciaActual', 'tendenciaDeseada'])
+            .optional()
+            .toUpperCase()
+            .isIn(['ASCENDENTE', 'DESCENDENTE']),
+        body('observaciones')
+            .optional()
+            .trim().escape(),
+        body(['idOds', 'idCobertura', 'idUnidadMedida', 'idModulo'])
+            .exists()
+            .isInt().toInt()
+    ];
+}
+
 const validate = (req, res, next) => {
     const errors = validationResult(req);
 
-    // si no hubo errores pasar a la siguiente funcion
     if (errors.isEmpty()) {
         req.matchedData = matchedData(req);
         return next();
     }
 
-    // dar formato a errores
     const extractedErrors = [];
     errors.array().map(error => {
         extractedErrors.push({ [error.param]: error.msg });
@@ -243,5 +271,6 @@ module.exports = {
     sortValidationRules,
     createModuloValidationRules,
     updateModuloValidationRules,
+    createIndicadorValidationRules
 };
 

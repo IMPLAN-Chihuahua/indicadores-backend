@@ -40,6 +40,32 @@ describe('/modulos', function () {
                 })
         });
 
+        it('Should return a list of Modulos with pagination and requiring authorization', function(done) {
+            const findAndCountAllFake = sinon.fake.resolves({rows: modulosFake, count: modulosFake.length});
+            sinon.replace(Modulo, 'findAndCountAll', findAndCountAllFake);
+            chai.request(app)
+                .get('/api/v1/me/modulos')
+                .set('Authorization', `Bearer ${token}`)
+                .end(function (err, res) {
+                    expect(findAndCountAllFake.calledOnce).to.be.true;
+                    expect(res).to.have.status(200);
+                    done();
+                })
+        })
+        
+        it('Should return an error if getAllModulos fails to retrieve data', function(done) {
+            const findAndCountAllFake = sinon.fake.throws('error');
+            sinon.replace(Modulo, 'findAndCountAll', findAndCountAllFake);
+            chai.request(app)
+                .get('/api/v1/me/modulos')
+                .set('Authorization', `Bearer ${token}`)
+                .end(function (err, res) {
+                    expect(findAndCountAllFake.calledOnce).to.be.true;
+                    expect(res).to.have.status(500);
+                    done();
+                });
+        });
+
         it('Should return status 500 if any error is found', function (done) {
             const findAllFake = sinon.fake.throws('Error');
             sinon.replace(Modulo, 'findAll', findAllFake);

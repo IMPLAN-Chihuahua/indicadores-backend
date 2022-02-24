@@ -18,7 +18,35 @@ describe('Modulo service', function() {
         server.close();
     });
 
-    describe('POST', function () {
+    describe('Read operations', function() {
+        const modulos = [aModulo(1), aModulo(2), aModulo(3)];
+        it('Should return a list of modulos and the total number of them', function() {
+            const findAndCountAllFake = sinon.fake.resolves({rows: modulos, count: modulos.length});
+            sinon.replace(Modulo, 'findAndCountAll', findAndCountAllFake);
+            return ModuloService.getAllModulos(1, 3)
+                .then(res => {
+                    expect(findAndCountAllFake.calledOnce).to.be.true;
+                    expect(res.modulos).to.be.an('array').that.is.not.empty;
+                    expect(res.total).to.equal(modulos.length);
+                })
+        });
+
+        it('Should return an error if getAllModulos fails to retrieve data', function() {
+            const findAndCountAllFake = sinon.fake.rejects(new Error());
+            sinon.replace(Modulo, 'findAndCountAll', findAndCountAllFake);
+            return ModuloService.getAllModulos(1, 3)
+                .then(res => {
+                    expect(res).to.be.null;
+                })
+                .catch(err => {
+                    expect(findAndCountAllFake.calledOnce).to.be.true;
+                    expect(err).to.not.be.null;
+                });
+        })
+
+    })
+
+    describe('Create operations', function () {
         it('Should create a new modulo and show its data', function() {
             const moduloFake = aModulo(1);
             const createOneFake = sinon.fake.resolves(moduloFake);
@@ -59,7 +87,7 @@ describe('Modulo service', function() {
         })
     });
 
-    describe('PATCH', function() {
+    describe('Update operations', function() {
         it('Should update a modulo\'s temaIndicador', function() {
             const updateModulo = faker.random.word();
             const updateFake = sinon.fake.resolves(1);

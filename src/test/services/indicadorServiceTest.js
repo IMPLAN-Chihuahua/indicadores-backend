@@ -70,8 +70,8 @@ describe('Indicador service', function () {
     describe('Create operations', function () {
 
         it('Should create an indicador with no errors', function () {
-            const indicadorDummy = anIndicador().dataValues;
-            const createFake = sinon.fake.resolves(indicadorDummy);
+            const indicadorDummy = anIndicador();
+            const createFake = sinon.fake.resolves({ dataValues: indicadorDummy });
             sinon.replace(Indicador, 'create', createFake);
             return IndicadorService.createIndicador(indicadorDummy)
                 .then(res => {

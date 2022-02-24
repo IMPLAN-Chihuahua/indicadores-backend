@@ -3,23 +3,18 @@ const chaiHttp = require('chai-http');
 chai.use(chaiHttp);
 const sinon = require('sinon');
 const { app, server } = require('../../../app');
-const { Rol, Usuario } = require('../../models');
-const { aRol, aUser } = require('../../utils/factories');
+const { Usuario } = require('../../models');
+const { aUser } = require('../../utils/factories');
 const expect = chai.expect;
 const jwt = require('jsonwebtoken');
 const faker = require('faker');
-const { create } = require('combined-stream');
 require('dotenv').config();
 const { TOKEN_SECRET } = process.env;
 
 describe('v1/usuarios', function () {
-  let token;
-  const adminRol = { dataValues: { rol: 'ADMIN' } };
-  const userRol = { dataValues: { rol: 'USER' } };
-
-  this.beforeAll(function () {
-    token = jwt.sign({ sub: 100 }, TOKEN_SECRET, { expiresIn: '5h' });
-  });
+  const token = jwt.sign({ sub: 100 }, TOKEN_SECRET, { expiresIn: '5h' });;
+  const adminRol = { dataValues: { roles: 'ADMIN' } };
+  const userRol = { dataValues: { roles: 'USER' } };
 
   this.afterEach(function () {
     sinon.restore();
@@ -104,7 +99,7 @@ describe('v1/usuarios', function () {
       .send(userFake)
       .end((err, res) => {
         expect(findOneFake.calledTwice).to.be.true;
-        expect(res).have.status(403);
+        expect(res).have.status(409);
         done();
       });
   });
