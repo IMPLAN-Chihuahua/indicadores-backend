@@ -219,8 +219,7 @@ const getIndicadorIncludes = ({ idFuente }) => {
 
 const createIndicador = async (indicador) => {
   try {
-    const saved = await Indicador.create(indicador);
-    return saved;
+    return await Indicador.create(indicador);
   } catch (err) {
     throw new Error('Error al crear indicador: ' + err.message);
   }

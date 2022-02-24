@@ -2,6 +2,7 @@ const IndicadorService = require("../services/indicadorService")
 const { getPagination } = require("../utils/pagination");
 const { generateCSV, generateXLSX, generatePDF } = require("../services/generadorArchivosService");
 const stream = require('stream');
+const UsuarioService = require('../services/usuariosService');
 
 const getIndicadores = async (req, res) => {
   const { page, per_page } = getPagination(req.matchedData);
@@ -74,35 +75,43 @@ const generateFile = async (format, res, data) => {
 }
 
 const getAllIndicadores = async (req, res) => {
-  const id = req.sub;
-  console.log(id);
   try {
     const indicadores = await IndicadorService.getAllIndicadores();
-    return res.status(200).json({ data: indicadores})
-  } catch(err) {
-    return res.status(500);
-  }
-}
-
-/** USER SECTION */
-
-const getIndicadoresFromUser = async (req, res) => {
-  try {
-    const idUsuario = req.sub;
-    const {indicadores, total} = await IndicadorService.getIndicadoresFromUser(idUsuario);
-    return res.status(200).json({
-      cantidadIndicadores: total,
-      data: indicadores,
-    })
-
+    return res.status(200).json({ data: indicadores })
   } catch (err) {
     return res.status(500);
   }
 }
 
+const getIndicadoresFromUser = async (req, res) => {
+  try {
+    const idUsuario = req.sub;
+    const { indicadores, total } = await UsuarioService.getIndicadoresFromUser(idUsuario);
+    return res.status(200).json({
+      total: total,
+      data: indicadores,
+    });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+}
+
+const createIndicador = async (req, res) => {
+  try {
+    const indicador = req.matchedData;
+    indicador['createdBy'] = req.sub;
+    indicador['updatedBy'] = req.sub;
+    const savedIndicador = await IndicadorService.createIndicador(indicador);
+    return res.status(201).json({ data: savedIndicador });
+  } catch (err) {
+    return res.status(500).send(err.message);
+  }
+};
+
 module.exports = {
   getIndicadores,
   getIndicador,
   getIndicadoresFromUser,
-  getAllIndicadores
+  getAllIndicadores,
+  createIndicador
 };
