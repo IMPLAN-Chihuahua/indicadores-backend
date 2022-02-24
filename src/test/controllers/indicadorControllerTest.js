@@ -366,4 +366,29 @@ describe('v1/indicadores', function () {
         });
     });
 
+    describe('PATCH /indicadores/:idIndicador', function() {
+        /**
+         * admin can update any indicador
+         *   success valid body, jwt present, valid jwt
+         * 
+         * user can update only its assigned indicadores
+         *   success updates indicador assigned to them
+         *   error valid body, jwt present, user updates indicador that are not for them
+         * 
+         * test scenarios:
+         *   error invalid body, jwt present, valid jwt
+         *   error valid body, jwt not present
+         *   error valid body, jwt present, invalid jwt
+         *   fails connection to db
+         */
+        it('Should update indicador successfully (admin rol)');
+        it('Should update indicador successfully (user rol)');
+        it('Should update indicador and have a side effect with indicadot historicos');
+        it('Should not update indicador due to semantic errors');
+        it('Should not update indicador because token is not present');
+        it('Should not update indicador because token is invalid');
+        it('Should not update indicador because user rol has no permission over other indicadores');
+        it('Should not update because connection to DB fails');
+    });
+
 });

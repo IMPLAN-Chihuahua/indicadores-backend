@@ -106,6 +106,19 @@ describe('Indicador service', function () {
         });
     });
 
+    describe('Update operations', function() {
+        
+        /**
+         * Test scenarios
+         *   update indicador successfully
+         *   fail to update due to any error (db connection or constraint error)
+         */
+        it('Should update indicador');
+        it('Should not update indidcador due to DB connection error');
+        it('Should not update indidcador due to contraint errors');
+        
+    });
+
 });
 
 
