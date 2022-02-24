@@ -289,37 +289,37 @@ describe('v1/indicadores', function () {
 
     });
 
-    describe('POST /indicadores', function () {
-        const adminRol = { dataValues: { rol: 'ADMIN' } };
-        /**
-         * Test when everything is ok
-         * - has jwt, no constraint errors, permission
-         * - does not have a jwt
-         * - jwt expired
-         * - has jwt, constraint errors
-         * - has jwt, no constraint errors, no permission
-         * - model throws error
-         */
+    // describe('POST /indicadores', function () {
+    //     const adminRol = { dataValues: { rol: 'ADMIN' } };
+    //     /**
+    //      * Test when everything is ok
+    //      * - has jwt, no constraint errors, permission
+    //      * - does not have a jwt
+    //      * - jwt expired
+    //      * - has jwt, constraint errors
+    //      * - has jwt, no constraint errors, no permission
+    //      * - model throws error
+    //      */
 
-        this.beforeEach(function() {
-            const findOneFake = sinon.fake.resolves(adminRol);
-            sinon.replace(usuario, 'findOne', findOneFake);
-        });
+    //     this.beforeEach(function() {
+    //         const findOneFake = sinon.fake.resolves(adminRol);
+    //         sinon.replace(usuario, 'findOne', findOneFake);
+    //     });
 
-        it('Should create an indicador successfully', function (done) {
-            chai.request(app)
-                .post('/api/v1/indicadores')
-                .send(dummyIndicador)
-                .end(function (err, res) {
-                    expect(res.body.data).to.not.be.undefined;
-                    done();
-                });
-        });
+    //     it('Should create an indicador successfully', function (done) {
+    //         chai.request(app)
+    //             .post('/api/v1/indicadores')
+    //             .send(dummyIndicador)
+    //             .end(function (err, res) {
+    //                 expect(res.body.data).to.not.be.undefined;
+    //                 done();
+    //             });
+    //     });
 
-        it('Should not create indicador due to semantic errors', function (done) {
-            done();
-        });
+    //     it('Should not create indicador due to semantic errors', function (done) {
+    //         done();
+    //     });
 
-    });
+    // });
 
 });

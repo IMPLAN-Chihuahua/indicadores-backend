@@ -69,44 +69,44 @@ describe('v1/me', function () {
   });
 
 
-  describe('me/indicadores', function () {
-    it('Should return a list of indicadores based on a user', function (done) {
-      const findOneFake = sinon.fake.resolves({
-        dataValues: {
-          indicadores: indicadoresFromUser
-        }
-      });
-      sinon.replace(Usuario, 'findOne', findOneFake);
-      chai.request(app)
-        .get('/api/v1/me/indicadores')
-        .set({ Authorization: `Bearer ${token}` })
-        .end((err, res) => {
-          expect(res).to.have.status(200);
-          expect(findOneFake.calledOnce).to.be.true;
-          expect(res.body.total).to.be.equal(indicadoresFromUser.length);
-          expect(res.body.data).to.be.an('array');
-          done();
-        });
-    });
+  // describe('me/indicadores', function () {
+  //   it('Should return a list of indicadores based on a user', function (done) {
+  //     const findOneFake = sinon.fake.resolves({
+  //       dataValues: {
+  //         indicadores: indicadoresFromUser
+  //       }
+  //     });
+  //     sinon.replace(Usuario, 'findOne', findOneFake);
+  //     chai.request(app)
+  //       .get('/api/v1/me/indicadores')
+  //       .set({ Authorization: `Bearer ${token}` })
+  //       .end((err, res) => {
+  //         expect(res).to.have.status(200);
+  //         expect(findOneFake.calledOnce).to.be.true;
+  //         expect(res.body.total).to.be.equal(indicadoresFromUser.length);
+  //         expect(res.body.data).to.be.an('array');
+  //         done();
+  //       });
+  //   });
 
-    it('Should not return a list of indicadores based on a user because of token expiration', function (done) {
-      chai.request(app)
-        .get('/api/v1/me/indicadores')
-        .set({ Authorization: `Bearer expired` })
-        .end((err, res) => {
-          expect(res).to.have.status(403);
-          done();
-        });
-    });
+  //   it('Should not return a list of indicadores based on a user because of token expiration', function (done) {
+  //     chai.request(app)
+  //       .get('/api/v1/me/indicadores')
+  //       .set({ Authorization: `Bearer expired` })
+  //       .end((err, res) => {
+  //         expect(res).to.have.status(403);
+  //         done();
+  //       });
+  //   });
 
-    it('Should not return a list of indicadores based on a user because of token is not present', function (done) {
-      chai.request(app)
-        .get('/api/v1/me/indicadores')
-        .end((err, res) => {
-          expect(res).to.have.status(401);
-          done();
-        });
-    });
-  });
+  //   it('Should not return a list of indicadores based on a user because of token is not present', function (done) {
+  //     chai.request(app)
+  //       .get('/api/v1/me/indicadores')
+  //       .end((err, res) => {
+  //         expect(res).to.have.status(401);
+  //         done();
+  //       });
+  //   });
+  // });
 
 });
