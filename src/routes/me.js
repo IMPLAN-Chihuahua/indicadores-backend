@@ -3,7 +3,9 @@ const router = express.Router();
 const { getUserFromToken } = require('../controllers/usuarioController');
 const { verifyJWT } = require('../middlewares/auth');
 const { getIndicadoresFromUser } = require('../controllers/indicadorController');
-
+const { getAllModulos } = require('../controllers/moduloController');
+const { paramValidationRules, paginationValidationRules,
+    validate } = require('../middlewares/validator');
 /**
  * @swagger
  *  /me:
@@ -55,6 +57,15 @@ router.route('/').get(verifyJWT, getUserFromToken);
  *           description: Internal server error
  */
 
+/* TODO: Implementar VerifyRole */
+
 router.route('/indicadores').get(verifyJWT, getIndicadoresFromUser);
+
+router.route('/modulos')
+    .get(
+        paramValidationRules(), 
+        paginationValidationRules(), 
+        validate, 
+        getAllModulos);
 
 module.exports = router;

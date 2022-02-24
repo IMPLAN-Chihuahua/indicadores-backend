@@ -1,6 +1,6 @@
 const { Modulo, sequelize, Sequelize, Indicador } = require('../models');
 
-const retrieveModulos = async () => {
+const getModulos = async () => {
     const modulos = await Modulo.findAll({
         where: {
             activo: 'SI'
@@ -71,10 +71,24 @@ const isTemaIndicadorAlreadyInUse = async (temaIndicador) => {
     }
 }
 
+const getAllModulos = async (page = 1, per_page = 5) => {
+    try{
+        const result = await Modulo.findAndCountAll({
+            limit: per_page,
+            offset: (page - 1) * per_page,
+            order: [['id', 'ASC']],
+        });
+        console.dir(result.rows);
+        return {modulos: result.rows, total: result.count};
+    } catch(err) {
+        throw new Error(`Error al obtener todos los modulos ${err.message}`);
+    }
+}
 
 module.exports = {
-    retrieveModulos,
+    getModulos,
     addModulo,
     isTemaIndicadorAlreadyInUse,
     updateModulo,
+    getAllModulos
 }
