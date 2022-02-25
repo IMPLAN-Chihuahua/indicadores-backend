@@ -77,6 +77,7 @@ const getAllModulos = async (page = 1, per_page = 5) => {
             limit: per_page,
             offset: (page - 1) * per_page,
             order: [['id', 'ASC']],
+            attributes: ['id', 'codigo', 'temaIndicador', 'createdAt', 'updatedAt', 'urlImagen', 'color', 'observaciones', 'activo'],
         });
         const inactiveModulos = await Modulo.count({where: {activo: 'NO'}});
         return {modulos: result.rows, total: result.count, totalInactivos: inactiveModulos};
