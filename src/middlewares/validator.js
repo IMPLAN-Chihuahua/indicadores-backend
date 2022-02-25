@@ -128,6 +128,15 @@ const filterIndicadoresValidationRules = () => {
     ];
 };
 
+const filterModulosValidationRules = () => {
+    return [
+        query(['temaIndicador', 'codigo', 'activo', 'observaciones', 'createdAt', 'updatedAt', 'color'])
+            .optional()
+            .isAlpha('es-ES', { ignore: '\s' })
+            .withMessage('campo debe ser alfabetico')
+    ]
+}
+
 const paramValidationRules = () => {
     return [
         param(['idModulo', 'idIndicador', 'idUser'])
