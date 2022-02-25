@@ -65,6 +65,7 @@ router.route('/modulos')
     .get(
         paramValidationRules(), 
         paginationValidationRules(), 
+        sortValidationRules(),
         validate, 
         verifyJWT,
         getAllModulos);

@@ -21,7 +21,7 @@ const getModulos = async () => {
         order: [['id']],
     });
     return modulos;
-}
+};
 
 const addModulo = async (modulo) => {
     try {
@@ -69,11 +69,14 @@ const isTemaIndicadorAlreadyInUse = async (temaIndicador) => {
     } catch(err) {
         throw new Error(`Error al buscar tema indicador ${err.message}`);
     }
-}
+};
 
-const getAllModulos = async (page = 1, per_page = 5) => {
+const getAllModulos = async (page = 1, per_page = 5, matchedData) => {
     try{
         const result = await Modulo.findAndCountAll({
+            where: {
+                ...getAllModulosFilters(matchedData)
+            },
             limit: per_page,
             offset: (page - 1) * per_page,
             order: [['id', 'ASC']],
@@ -83,6 +86,39 @@ const getAllModulos = async (page = 1, per_page = 5) => {
         return {modulos: result.rows, total: result.count, totalInactivos: inactiveModulos};
     } catch(err) {
         throw new Error(`Error al obtener todos los modulos ${err.message}`);
+    }
+};
+
+
+const getModulosSorting = ({ sort_by, order }) => {
+    const arrangement = [];
+    arrangement.push([sort_by || 'id', order || 'ASC']);
+    return arrangement;
+};
+
+const getAllModulosFilters = (matchedData) => {
+    const {temaIndicador, codigo, activo, observaciones, createdAt, updatedAt, color} = matchedData;
+    const filters = {};
+    if (temaIndicador){
+        filters.temaIndicador = temaIndicador;
+    }
+    if (codigo){
+        filters.codigo = codigo;
+    }
+    if (activo){
+        filters.activo = activo;
+    }
+    if (observaciones){
+        filters.observaciones = observaciones;
+    }
+    if (createdAt){
+        filters.createdAt = createdAt;
+    }
+    if (updatedAt){
+        filters.updatedAt = updatedAt;
+    }
+    if (color){
+        filters.color = color;
     }
 }
 
