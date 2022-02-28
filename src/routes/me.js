@@ -5,7 +5,7 @@ const { verifyJWT } = require('../middlewares/auth');
 const { getIndicadoresFromUser } = require('../controllers/indicadorController');
 const { getAllModulos } = require('../controllers/moduloController');
 const { paramValidationRules, paginationValidationRules,
-    validate } = require('../middlewares/validator');
+    validate, filterModulosValidationRules, sortModulosValidationRules } = require('../middlewares/validator');
 /**
  * @swagger
  *  /me:
@@ -63,11 +63,12 @@ router.route('/indicadores').get(verifyJWT, getIndicadoresFromUser);
 
 router.route('/modulos')
     .get(
-        paramValidationRules(), 
         paginationValidationRules(), 
-        sortValidationRules(),
+        filterModulosValidationRules(),
+        sortModulosValidationRules(),
         validate, 
         verifyJWT,
-        getAllModulos);
+        getAllModulos,
+        );
 
 module.exports = router;
