@@ -49,8 +49,11 @@ const getAllModulos = async (req, res) => {
     try{
         const {modulos, total, totalInactivos} = await moduloService.getAllModulos(page, per_page, req.matchedData);
         const total_pages = Math.ceil(total / per_page);
-
-        return res.status(200).json({page: page, per_page: per_page, total_pages: total_pages, total: total, totalInactivos: totalInactivos, data: modulos });
+        if(modulos.length > 0){
+            return res.status(200).json({page: page, per_page: per_page, total_pages: total_pages, total: total, totalInactivos: totalInactivos, data: modulos });
+        } else {
+            return res.status(404).json({message: "No hay modulos registrados"});
+        }
     } catch(err) {
         return res.status(500).json({ message: err.message });
     }
