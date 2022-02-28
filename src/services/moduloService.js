@@ -120,6 +120,23 @@ const getAllModulosFilters = (matchedData) => {
     }
 };
 
+const updateModuloStatus = async (id) => {
+    try {
+        const modulo = await Modulo.findOne({
+            where: {id: id},
+            attributes: ['activo'],
+        });
+        const nuevoEstado = modulo.activo === 'SI' ? 'NO' : 'SI';
+        const updatedModulo = await Modulo.update(
+            {activo: nuevoEstado},
+            {where: {id: id}}
+        );
+        return updatedModulo > 0;
+    } catch( err ) {
+        throw new Error(`Error al buscar el módulo ${err.message}`);
+    }
+}
+
 module.exports = {
     getModulos,
     countModulos,
@@ -127,4 +144,5 @@ module.exports = {
     isTemaIndicadorAlreadyInUse,
     updateModulo,
     getAllModulos,
+    updateModuloStatus
 }

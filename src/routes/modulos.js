@@ -1,7 +1,7 @@
 const express = require('express');
 const moduloRouter = express.Router();
 const indicadorRouter = express.Router({ mergeParams: true });
-const { getModulos, createModulo, editModulo } = require('../controllers/moduloController');
+const { getModulos, createModulo, editModulo, updateModuloStatus } = require('../controllers/moduloController');
 const { getIndicadores, getIndicador } = require('../controllers/indicadorController');
 const { paramValidationRules, paginationValidationRules,
     validate, filterIndicadoresValidationRules, sortValidationRules, createModuloValidationRules, updateModuloValidationRules } = require('../middlewares/validator');
@@ -273,7 +273,7 @@ moduloRouter.route('/')
         createModuloValidationRules(),
         validate,
         createModulo
-    )
+    );
 
 /**
  * @swagger
@@ -308,11 +308,19 @@ moduloRouter.route('/')
  */
 
 moduloRouter.route('/:idModulo')
-    .patch(
+    .put(
         verifyJWT,
         updateModuloValidationRules(),
         validate,
         editModulo
-    )
+    );
+
+moduloRouter.route('/:idModulo')
+    .patch(
+        verifyJWT,
+        updateModuloValidationRules(),
+        validate,
+        updateModuloStatus
+    );
 
 module.exports = moduloRouter;
