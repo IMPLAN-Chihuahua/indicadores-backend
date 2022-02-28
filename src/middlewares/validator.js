@@ -132,8 +132,6 @@ const filterModulosValidationRules = () => {
     return [
         query(['searchQuery'])
             .optional()
-            .isAlpha('es-ES', { ignore: '\s' })
-            .withMessage('campo debe ser alfabetico'),
     ];
 };
 
