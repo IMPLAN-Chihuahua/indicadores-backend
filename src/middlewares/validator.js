@@ -130,12 +130,12 @@ const filterIndicadoresValidationRules = () => {
 
 const filterModulosValidationRules = () => {
     return [
-        query(['temaIndicador', 'codigo', 'activo', 'observaciones', 'createdAt', 'updatedAt', 'color'])
+        query(['searchQuery'])
             .optional()
             .isAlpha('es-ES', { ignore: '\s' })
-            .withMessage('campo debe ser alfabetico')
-    ]
-}
+            .withMessage('campo debe ser alfabetico'),
+    ];
+};
 
 const paramValidationRules = () => {
     return [
@@ -169,6 +169,20 @@ const sortValidationRules = () => {
 
     ];
 }
+
+const sortModulosValidationRules = () => {
+    return [
+        query('sort_by')
+            .optional()
+            .isIn(['id', 'codigo', 'temaIndicador', 'createdAt', 'updatedAt', 'urlImagen', 'color', 'observaciones', 'activo'])
+            .withMessage('Valor de ordenamiento no válido con la solicitud'),
+        query('order')
+            .optional()
+            .toUpperCase()
+            .isIn(['ASC', 'DESC'])
+            .withMessage('orden debe ser ascendente o descendente')
+    ];
+};
 
 const createModuloValidationRules = () => {
     return [
@@ -280,6 +294,8 @@ module.exports = {
     sortValidationRules,
     createModuloValidationRules,
     updateModuloValidationRules,
-    createIndicadorValidationRules
+    createIndicadorValidationRules,
+    filterModulosValidationRules,
+    sortModulosValidationRules
 };
 
