@@ -68,7 +68,7 @@ const editModulo = async (req, res) => {
         }
     } catch (err) {
         console.log(err);
-        return res.sendStatus(500).json({ message: err.message });
+        return res.sendStatus(500);
     }
 }
 

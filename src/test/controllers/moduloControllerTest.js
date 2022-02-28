@@ -185,7 +185,7 @@ describe('/modulos', function () {
 
     });
 
-    describe('PATCH', function() {
+    describe('PUT', function() {
         this.afterEach(function () {
             sinon.restore();
         });
@@ -199,7 +199,7 @@ describe('/modulos', function () {
             const editModuloFake = sinon.fake.resolves(true);
             sinon.replace(Modulo, 'update', editModuloFake);
             chai.request(app)
-                .patch('/api/v1/modulos/1')
+                .put('/api/v1/modulos/1')
                 .set({ Authorization: `Bearer ${token}` })
                 .send(moduloFake)
                 .end((err, res) => {
@@ -215,7 +215,7 @@ describe('/modulos', function () {
             sinon.replace(Modulo, 'update', editModuloFake);
             
             chai.request(app)
-                .patch('/api/v1/modulos/1')
+                .put('/api/v1/modulos/1')
                 .send(moduloFake)
                 .set({ Authorization: `Bearer ${token}` })
                 .end((err, res) => {
@@ -229,7 +229,7 @@ describe('/modulos', function () {
             const editModuloFake = sinon.fake.throws('Error');
             sinon.replace(Modulo, 'update', editModuloFake);
             chai.request(app)
-                .patch('/api/v1/modulos/1')
+                .put('/api/v1/modulos/1')
                 .set({ Authorization: `Bearer ${token}` })
                 .send(moduloFake)
                 .end((err, res) => {
@@ -237,6 +237,61 @@ describe('/modulos', function () {
                     done();
                 });
         });
+    });
 
-    })
+    describe('PATCH', function() {
+        this.afterEach(function () {
+            sinon.restore();
+        });
+
+        this.afterAll(function () {
+            server.close();
+        });
+
+        it('Should edit a given modulo status', function(done) {
+            const moduloFake = aModulo(1);
+            const findOneFake = sinon.fake.resolves(moduloFake);
+            const editOneFake = sinon.fake.resolves(true);
+            sinon.replace(Modulo, 'findOne', findOneFake);
+            sinon.replace(Modulo, 'update', editOneFake);
+            chai.request(app)
+                .patch('/api/v1/modulos/1')
+                .set({ Authorization: `Bearer ${token}` })
+                .end((err, res) => {
+                    expect(res).to.have.status(204);
+                    expect(res.body.data).to.not.be.null;
+                    done();
+                });
+        });
+
+        it('Should not edit a given modulo status -bad request', function(done) {
+            const moduloFake = aModulo(1);
+            const findOneFake = sinon.fake.resolves(moduloFake);
+            const editOneFake = sinon.fake.resolves(false);
+            sinon.replace(Modulo, 'findOne', findOneFake);
+            sinon.replace(Modulo, 'update', editOneFake);
+            chai.request(app)
+                .patch('/api/v1/modulos/1')
+                .set({ Authorization: `Bearer ${token}` })
+                .end((err, res) => {
+                    expect(res).to.have.status(404);
+                    done();
+                });
+        });
+
+        it('Should not edit a given modulo status due to internal errors', function(done) {
+            const moduloFake = aModulo(1);
+            const findOneFake = sinon.fake.resolves(moduloFake);
+            const editOneFake = sinon.fake.throws('Error');
+            sinon.replace(Modulo, 'findOne', findOneFake);
+            sinon.replace(Modulo, 'update', editOneFake);
+            chai.request(app)
+                .patch('/api/v1/modulos/1')
+                .set({ Authorization: `Bearer ${token}` })
+                .end((err, res) => {
+                    expect(res).to.have.status(500);
+                    done();
+                });
+        });
+    });
 })
