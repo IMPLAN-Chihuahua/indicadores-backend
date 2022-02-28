@@ -61,6 +61,7 @@ const editModulo = async (req, res) => {
 }
 
 const getAllModulos = async (req, res) => {
+    console.log(req.matchedData);
     const {page, per_page} = getPaginationModulos(req.matchedData);
     try{
         const {modulos, total, totalInactivos} = await moduloService.getAllModulos(page, per_page, req.matchedData);

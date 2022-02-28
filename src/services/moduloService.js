@@ -1,4 +1,5 @@
 const { Modulo, sequelize, Sequelize, Indicador } = require('../models');
+const { Op } = Sequelize;
 
 const getModulos = async () => {
     const modulos = await Modulo.findAll({
@@ -74,12 +75,10 @@ const isTemaIndicadorAlreadyInUse = async (temaIndicador) => {
 const getAllModulos = async (page = 1, per_page = 5, matchedData) => {
     try{
         const result = await Modulo.findAndCountAll({
-            where: {
-                ...getAllModulosFilters(matchedData)
-            },
+            where: getAllModulosFilters(matchedData),
             limit: per_page,
             offset: (page - 1) * per_page,
-            order: [['id', 'ASC']],
+            order:  getModulosSorting(matchedData), 
             attributes: ['id', 'codigo', 'temaIndicador', 'createdAt', 'updatedAt', 'urlImagen', 'color', 'observaciones', 'activo'],
         });
         const inactiveModulos = await Modulo.count({where: {activo: 'NO'}});
@@ -97,30 +96,21 @@ const getModulosSorting = ({ sort_by, order }) => {
 };
 
 const getAllModulosFilters = (matchedData) => {
-    const {temaIndicador, codigo, activo, observaciones, createdAt, updatedAt, color} = matchedData;
-    const filters = {};
-    if (temaIndicador){
-        filters.temaIndicador = temaIndicador;
+    const {searchQuery} = matchedData;
+    if (searchQuery) {
+        const filter = {
+            [Op.or]: [
+                {temaIndicador: {[Op.iLike]: `%${searchQuery}%`}},
+                {codigo: {[Op.iLike]: `%${searchQuery}%`}},
+                {observaciones: {[Op.iLike]: `%${searchQuery}%`}},
+                {activo: {[Op.iLike]: `%${searchQuery}%`}}
+            ]
+        }
+        return filter;
+    } else {
+        return {};
     }
-    if (codigo){
-        filters.codigo = codigo;
-    }
-    if (activo){
-        filters.activo = activo;
-    }
-    if (observaciones){
-        filters.observaciones = observaciones;
-    }
-    if (createdAt){
-        filters.createdAt = createdAt;
-    }
-    if (updatedAt){
-        filters.updatedAt = updatedAt;
-    }
-    if (color){
-        filters.color = color;
-    }
-}
+};
 
 module.exports = {
     getModulos,
