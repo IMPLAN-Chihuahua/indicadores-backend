@@ -3,6 +3,8 @@ const { getPagination } = require("../utils/pagination");
 const { generateCSV, generateXLSX, generatePDF } = require("../services/generadorArchivosService");
 const stream = require('stream');
 const UsuarioService = require('../services/usuariosService');
+const { areConnected } = require("../services/usuarioIndicadorService");
+const { Error } = require("sequelize");
 
 const getIndicadores = async (req, res) => {
   const { page, per_page } = getPagination(req.matchedData);
@@ -108,10 +110,39 @@ const createIndicador = async (req, res) => {
   }
 };
 
+const updateIndicador = async (req, res) => {
+  try {
+    const { idIndicador, ...indicador } = req.matchedData;
+    const idUsuario = req.sub;
+    const rol = req.rol || await UsuarioService.getRol(idUsuario);
+
+    let saved;
+    if (rol === 'ADMIN') {
+      saved = await IndicadorService.updateIndicador(idIndicador, indicador);
+    } else {
+      const isAllowed = await areConnected(idUsuario, idIndicador);
+      if (!isAllowed) {
+        return res.status(403).send('No tiene permiso para actualizar este indicador');
+      }
+      saved = await IndicadorService.updateIndicador(idIndicador, indicador);
+    }
+
+    if (saved) {
+      return res.sendStatus(204);
+    } else {
+      return res.sendStatus(400);
+    }
+
+  } catch (err) {
+    return res.status(500).send(err.message)
+  }
+}
+
 module.exports = {
   getIndicadores,
   getIndicador,
   getIndicadoresFromUser,
   getAllIndicadores,
-  createIndicador
+  createIndicador,
+  updateIndicador
 };

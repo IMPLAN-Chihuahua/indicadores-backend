@@ -1,10 +1,10 @@
 const chai = require('chai');
 const expect = chai.expect;
-const { Indicador } = require('../../models');
+const { Indicador, UsuarioIndicador } = require('../../models');
 const sinon = require('sinon');
 const IndicadorService = require('../../services/indicadorService');
 const { server } = require('../../../app');
-const { anIndicador } = require('../../utils/factories');
+const { anIndicador, indicadorToCreate } = require('../../utils/factories');
 
 describe('Indicador service', function () {
 
@@ -104,6 +104,40 @@ describe('Indicador service', function () {
                     expect(createFake.calledWith(indicadorDummy))
                 });
         });
+    });
+
+    describe('Update operations', function () {
+        const indicador = indicadorToCreate();
+        it('Should update indicador', function () {
+            const updateFake = sinon.fake.resolves(1);
+            sinon.replace(Indicador, 'update', updateFake);
+            return IndicadorService.updateIndicador(1, indicador)
+                .then(res => {
+                    expect(res).to.not.be.undefined;
+                    expect(updateFake.calledOnce).to.be.true;
+                });
+        });
+
+        it('Should not update indidcador due to DB connection error', function () {
+            const updateFake = sinon.fake.rejects(new Error('Connection to DB failed'));
+            sinon.replace(Indicador, 'update', updateFake);
+            return IndicadorService.updateIndicador(1, indicador)
+                .catch(err => {
+                    expect(err).to.not.be.undefined;
+                    expect(updateFake.calledOnce).to.be.true;
+                });
+        });
+
+        it('Should not update indidcador due to validation errors', function () {
+            const updateFake = sinon.fake.rejects(new Error('Validation Error'))
+            sinon.replace(Indicador, 'update', updateFake);
+            return IndicadorService.updateIndicador(1, indicadorToCreate)
+                .catch(err => {
+                    expect(err).to.not.be.undefined;
+                    expect(updateFake.calledOnce).to.be.true;
+                });
+        });
+
     });
 
 });
