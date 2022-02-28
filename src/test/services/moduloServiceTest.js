@@ -23,7 +23,9 @@ describe('Modulo service', function() {
         it('Should return a list of modulos and the total number of them', function() {
             const findAndCountAllFake = sinon.fake.resolves({rows: modulos, count: modulos.length});
             sinon.replace(Modulo, 'findAndCountAll', findAndCountAllFake);
-            return ModuloService.getAllModulos(1, 3)
+            const countFake = sinon.fake.resolves(modulos.length);
+            sinon.replace(Modulo, 'count', countFake);
+            return ModuloService.getAllModulos(1, 3, { temaIndicador: 'lorem'})
                 .then(res => {
                     expect(findAndCountAllFake.calledOnce).to.be.true;
                     expect(res.modulos).to.be.an('array').that.is.not.empty;
@@ -34,7 +36,7 @@ describe('Modulo service', function() {
         it('Should return an error if getAllModulos fails to retrieve data', function() {
             const findAndCountAllFake = sinon.fake.rejects(new Error());
             sinon.replace(Modulo, 'findAndCountAll', findAndCountAllFake);
-            return ModuloService.getAllModulos(1, 3)
+            return ModuloService.getAllModulos(1, 3, { temaIndicador: 'lorem'})
                 .then(res => {
                     expect(res).to.be.null;
                 })
@@ -44,6 +46,29 @@ describe('Modulo service', function() {
                 });
         })
 
+        it('Should return the count of inactive modulos', function() {
+            const countInactiveFake = sinon.fake.resolves(modulos.length);
+            sinon.replace(Modulo, 'count', countInactiveFake);
+            return ModuloService.countModulos()
+                .then(res => {
+                    expect(countInactiveFake.calledOnce).to.be.true;
+                    expect(res).to.equal(modulos.length);
+                });
+        });
+
+        it('Should fail to retrieve the count of inactive modulos', function() {
+            const countInactiveFake = sinon.fake.rejects(new Error());
+            sinon.replace(Modulo, 'count', countInactiveFake);
+            return ModuloService.countModulos()
+                .then(res => {
+                    expect(res).to.be.null;
+                })
+                .catch(err => {
+                    expect(countInactiveFake.calledOnce).to.be.true;
+                    expect(err).to.not.be.null;
+                });
+        });
+        
     })
 
     describe('Create operations', function () {

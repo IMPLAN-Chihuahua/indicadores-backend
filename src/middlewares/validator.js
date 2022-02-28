@@ -128,6 +128,13 @@ const filterIndicadoresValidationRules = () => {
     ];
 };
 
+const filterModulosValidationRules = () => {
+    return [
+        query(['searchQuery'])
+            .optional()
+    ];
+};
+
 const paramValidationRules = () => {
     return [
         param(['idModulo', 'idIndicador', 'idUser'])
@@ -160,6 +167,20 @@ const sortValidationRules = () => {
 
     ];
 }
+
+const sortModulosValidationRules = () => {
+    return [
+        query('sort_by')
+            .optional()
+            .isIn(['id', 'codigo', 'temaIndicador', 'createdAt', 'updatedAt', 'urlImagen', 'color', 'observaciones', 'activo'])
+            .withMessage('Valor de ordenamiento no válido con la solicitud'),
+        query('order')
+            .optional()
+            .toUpperCase()
+            .isIn(['ASC', 'DESC'])
+            .withMessage('orden debe ser ascendente o descendente')
+    ];
+};
 
 const createModuloValidationRules = () => {
     return [
@@ -288,6 +309,8 @@ module.exports = {
     createModuloValidationRules,
     updateModuloValidationRules,
     createIndicadorValidationRules,
+    filterModulosValidationRules,
+    sortModulosValidationRules,
     updateIndicadorValidationRules
 };
 

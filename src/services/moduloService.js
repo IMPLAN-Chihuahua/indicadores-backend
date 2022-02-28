@@ -1,4 +1,5 @@
 const { Modulo, sequelize, Sequelize, Indicador } = require('../models');
+const { Op } = Sequelize;
 
 const getModulos = async () => {
     const modulos = await Modulo.findAll({
@@ -21,7 +22,7 @@ const getModulos = async () => {
         order: [['id']],
     });
     return modulos;
-}
+};
 
 const addModulo = async (modulo) => {
     try {
@@ -69,27 +70,61 @@ const isTemaIndicadorAlreadyInUse = async (temaIndicador) => {
     } catch(err) {
         throw new Error(`Error al buscar tema indicador ${err.message}`);
     }
-}
+};
 
-const getAllModulos = async (page = 1, per_page = 5) => {
+const getAllModulos = async (page = 1, per_page = 5, matchedData) => {
     try{
         const result = await Modulo.findAndCountAll({
+            where: getAllModulosFilters(matchedData),
+            order: getModulosSorting(matchedData), 
             limit: per_page,
             offset: (page - 1) * per_page,
-            order: [['id', 'ASC']],
             attributes: ['id', 'codigo', 'temaIndicador', 'createdAt', 'updatedAt', 'urlImagen', 'color', 'observaciones', 'activo'],
         });
-        const inactiveModulos = await Modulo.count({where: {activo: 'NO'}});
+        const inactiveModulos = await countModulos();
         return {modulos: result.rows, total: result.count, totalInactivos: inactiveModulos};
     } catch(err) {
         throw new Error(`Error al obtener todos los modulos ${err.message}`);
     }
+};
+
+const countModulos = async () => {
+    try {
+        const inactiveCount = await Modulo.count({where: {activo: 'NO'}});
+        return  inactiveCount;
+    } catch( err ) {
+        throw new Error(`Error al contar modulos ${err.message}`);
+    }
 }
+
+const getModulosSorting = ({ sort_by, order }) => {
+    const arrangement = [];
+    arrangement.push([sort_by || 'id', order || 'ASC']);
+    return arrangement;
+};
+
+const getAllModulosFilters = (matchedData) => {
+    const {searchQuery} = matchedData;
+    if (searchQuery) {
+        const filter = {
+            [Op.or]: [
+                {temaIndicador: {[Op.iLike]: `%${searchQuery}%`}},
+                {codigo: {[Op.iLike]: `%${searchQuery}%`}},
+                {observaciones: {[Op.iLike]: `%${searchQuery}%`}},
+                {activo: {[Op.iLike]: `%${searchQuery}%`}}
+            ]
+        }
+        return filter;
+    } else {
+        return {};
+    }
+};
 
 module.exports = {
     getModulos,
+    countModulos,
     addModulo,
     isTemaIndicadorAlreadyInUse,
     updateModulo,
-    getAllModulos
+    getAllModulos,
 }
