@@ -104,7 +104,8 @@ const getModulosSorting = ({ sort_by, order }) => {
 };
 
 const getAllModulosFilters = (matchedData) => {
-    if (matchedData.searchQuery) {
+    const {searchQuery} = matchedData;
+    if (searchQuery) {
         const filter = {
             [Op.or]: [
                 {temaIndicador: {[Op.iLike]: `%${searchQuery}%`}},
