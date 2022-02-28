@@ -142,7 +142,7 @@ const getIndicador = async (idIndicador, Format) => {
   }
 }
 
-const getAllIndicadores = async() => {
+const getAllIndicadores = async () => {
   const indicadores = await Indicador.findAll({});
   return indicadores;
 }
@@ -225,4 +225,19 @@ const createIndicador = async (indicador) => {
   }
 }
 
-module.exports = { getIndicadores, getIndicador, createIndicador, getAllIndicadores };
+const updateIndicador = async (id, indicador) => {
+  try {
+    const affectedRows = await Indicador.update({ ...indicador }, { where: { id: id } });
+    return affectedRows > 0;
+  } catch (err) {
+    throw new Error('Error al actualizar indicador: ' + err.message);
+  }
+}
+
+module.exports = {
+  getIndicadores,
+  getIndicador,
+  createIndicador,
+  getAllIndicadores,
+  updateIndicador,
+};

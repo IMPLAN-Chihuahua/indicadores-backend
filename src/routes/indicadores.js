@@ -2,8 +2,13 @@ const express = require('express');
 const router = express.Router();
 const { paramValidationRules,
     validate,
-    createIndicadorValidationRules } = require('../middlewares/validator');
-const { getIndicador, getAllIndicadores, createIndicador } = require('../controllers/indicadorController');
+    createIndicadorValidationRules, 
+    updateIndicadorValidationRules} = require('../middlewares/validator');
+const {
+    getIndicador,
+    getAllIndicadores,
+    createIndicador,
+    updateIndicador } = require('../controllers/indicadorController');
 const { verifyJWT, verifyRoles } = require('../middlewares/auth');
 
 /**
@@ -32,8 +37,6 @@ const { verifyJWT, verifyRoles } = require('../middlewares/auth');
  *           description: Indicador or Modulo was not found
  *         422:
  *           description: Unable to process request due to semantic errors
- *         500:
- *           description: Internal server error
  * 
  */
 router.route('/:idIndicador')
@@ -58,8 +61,6 @@ router.route('/:idIndicador')
  *                 $ref: '#/components/schemas/Indicador'
  *         401:
  *           description: Unauthorized request (not valid JWT in Authorization header)
- *         500:
- *           description: Internal server error
  */
 
 router.route('/')
@@ -93,8 +94,6 @@ router.route('/')
  *           description: Invalid token or not permission 
  *         422:
  *           description: The value of some fields are invalid
- *         500:
- *           description: Internal server error
  */
 router.route('/')
     .post(
@@ -103,6 +102,46 @@ router.route('/')
         verifyJWT,
         verifyRoles(['ADMIN']),
         createIndicador
+    );
+
+/**
+ * @swagger
+ *   /indicadores:
+ *     patch:
+ *       summary: Update information about an Indicador
+ *       tags: [Indicadores]
+ *       security:
+ *         - bearer: []
+ *       parameters:
+ *         - in: path
+ *           name: idIndicador
+ *           schema:
+ *             type: integer
+ *           required: true
+ *           description: Identifier of an indicador
+ *       requestBody:
+ *         required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Indicador'
+ *       responses:
+ *         204:
+ *           description: Updated
+ *         401:
+ *           description: Unauthorized
+ *         403:
+ *           description: Forbidden
+ *         422:
+ *           description: Unable to process request due to semantic errors
+ */
+router.route('/:idIndicador')
+    .patch(
+        paramValidationRules(),
+        updateIndicadorValidationRules(),
+        validate,
+        verifyJWT,
+        updateIndicador
     );
 
 module.exports = router;

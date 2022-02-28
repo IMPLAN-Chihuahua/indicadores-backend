@@ -242,10 +242,7 @@ const createIndicadorValidationRules = () => {
         body('nombre')
             .exists()
             .trim().escape(),
-        body('definicion')
-            .optional()
-            .trim().escape(),
-        body('ultimoValorDisponible')
+        body(['definicion', 'ultimoValorDisponible', 'observaciones'])
             .optional()
             .trim().escape(),
         body('anioUltimoValorDisponible')
@@ -255,14 +252,33 @@ const createIndicadorValidationRules = () => {
             .optional()
             .toUpperCase()
             .isIn(['ASCENDENTE', 'DESCENDENTE']),
-        body('observaciones')
-            .optional()
-            .trim().escape(),
         body(['idOds', 'idCobertura', 'idUnidadMedida', 'idModulo'])
             .exists()
             .isInt().toInt()
     ];
-}
+};
+
+const updateIndicadorValidationRules = () => {
+    return [
+        body(['codigo', 'codigoObjeto'])
+            .optional()
+            .isLength({ max: 3 })
+            .matches(/\d{3}$/),
+        body(['nombre', 'definicion',
+            'ultimoValorDisponible', 'observaciones'])
+            .optional()
+            .trim().escape(),
+        body(['tendenciaActual', 'tendenciaDeseada'])
+            .optional()
+            .toUpperCase()
+            .isIn(['ASCENDENTE', 'DESCENDENTE']),
+        body(['idOds', 'idCobertura',
+            'idUnidadMedida', 'idModulo',
+            'anioUltimoValorDisponible'])
+            .optional()
+            .isInt().toInt()
+    ];
+};
 
 const validate = (req, res, next) => {
     const errors = validationResult(req);
@@ -284,11 +300,11 @@ const validate = (req, res, next) => {
 }
 
 module.exports = {
+    validate,
     loginValidationRules,
     registerValidationRules,
     updateValidationRules,
     paginationValidationRules,
-    validate,
     paramValidationRules,
     filterIndicadoresValidationRules,
     sortValidationRules,
@@ -296,6 +312,7 @@ module.exports = {
     updateModuloValidationRules,
     createIndicadorValidationRules,
     filterModulosValidationRules,
-    sortModulosValidationRules
+    sortModulosValidationRules,
+    updateIndicadorValidationRules
 };
 

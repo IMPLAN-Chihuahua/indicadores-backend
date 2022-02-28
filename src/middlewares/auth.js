@@ -26,6 +26,7 @@ const verifyRoles = (roles) => {
         const rol = await getRol(req.sub);
         const isAllowed = roles.includes(rol);
         if (isAllowed) {
+            req.rol = rol;
             next();
         } else {
             return res.status(403).json({message: 'Su rol no tiene permiso a este recurso'});
