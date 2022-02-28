@@ -10,7 +10,7 @@ const verifyJWT = (req, res, next) => {
         const bearerToken = reqHeader.split(' ')[1];
         jwt.verify(bearerToken, TOKEN_SECRET, (err, decoded) => {
             if (err) {
-                return res.sendStatus(403);
+                return res.status(403).send('Invalid or expired token');
             }
             req.sub = decoded.sub;
             next();
