@@ -1,7 +1,7 @@
 const express = require('express');
 const moduloRouter = express.Router();
 const indicadorRouter = express.Router({ mergeParams: true });
-const { getModulos, createModulo, editModulo } = require('../controllers/moduloController');
+const { getModulos, createModulo, editModulo, updateModuloStatus } = require('../controllers/moduloController');
 const { getIndicadores, getIndicador } = require('../controllers/indicadorController');
 const { paramValidationRules, paginationValidationRules,
     validate, filterIndicadoresValidationRules, sortValidationRules, createModuloValidationRules, updateModuloValidationRules } = require('../middlewares/validator');
@@ -273,13 +273,13 @@ moduloRouter.route('/')
         createModuloValidationRules(),
         validate,
         createModulo
-    )
+    );
 
 /**
  * @swagger
  *   /modulos/{idModulo}:
- *     patch:
- *      summary: Updates a module
+ *     put:
+ *      summary: Updates a module with given parameters
  *      tags: [Modulos]
  *      parameters:
  *        - name: idModulo
@@ -308,11 +308,45 @@ moduloRouter.route('/')
  */
 
 moduloRouter.route('/:idModulo')
-    .patch(
+    .put(
         verifyJWT,
         updateModuloValidationRules(),
         validate,
         editModulo
-    )
+    );
+
+/**
+ * @swagger
+ *   /modulos/{idModulo}:
+ *     patch:
+ *       summary: Updates a modulo status (active/inactive)
+ *       tags: [Modulos]
+ *       parameters:
+ *         - name: idModulo
+ *           in: path
+ *           required: true
+ *           schema:
+ *             type: integer
+ *             format: int64
+ *             minimum: 1
+ *             description: Identifier of a module
+ *       security:
+ *         - bearer: []
+ *       responses:
+ *         204:
+ *           description: Module status updated successfully
+ *         404:
+ *           description: Bad request
+ *         500:
+ *           description: Internal server error
+ */
+
+moduloRouter.route('/:idModulo')
+    .patch(
+        verifyJWT,
+        updateModuloValidationRules(),
+        validate,
+        updateModuloStatus
+    );
 
 module.exports = moduloRouter;

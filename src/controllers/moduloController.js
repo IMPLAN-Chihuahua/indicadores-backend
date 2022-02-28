@@ -44,6 +44,21 @@ const createModulo = async (req, res) => {
     }
 };
 
+const getAllModulos = async (req, res) => {
+    const {page, per_page} = getPaginationModulos(req.matchedData);
+    try{
+        const {modulos, total, totalInactivos} = await moduloService.getAllModulos(page, per_page, req.matchedData);
+        const total_pages = Math.ceil(total / per_page);
+        if(modulos.length > 0){
+            return res.status(200).json({page: page, per_page: per_page, total_pages: total_pages, total: total, totalInactivos: totalInactivos, data: modulos });
+        } else {
+            return res.status(404).json({message: "No hay modulos registrados"});
+        }
+    } catch(err) {
+        return res.status(500).json({ message: err.message });
+    }
+};
+
 const editModulo = async (req, res) => {
     const fields = req.body;
     const { idModulo } = req.matchedData;
@@ -56,19 +71,24 @@ const editModulo = async (req, res) => {
         }
     } catch (err) {
         console.log(err);
+        return res.sendStatus(500);
+    }
+}
+
+const updateModuloStatus = async (req, res) => {
+    const { idModulo } = req.matchedData;
+    try {
+        const updatedEstado = await moduloService.updateModuloStatus(idModulo);
+        if (updatedEstado) {
+            return res.sendStatus(204);
+        } else {
+            return res.sendStatus(404);
+        }
+    } catch (err) {
+        console.log(err);
         return res.sendStatus(500).json({ message: err.message });
     }
-}
+};
 
-const getAllModulos = async (req, res) => {
-    const {page, per_page} = getPaginationModulos(req.matchedData);
-    try{
-        const {modulos, total, totalInactivos} = await moduloService.getAllModulos(page, per_page, req.matchedData);
-        const total_pages = Math.ceil(total / per_page);
 
-        return res.status(200).json({page: page, per_page: per_page, total_pages: total_pages, total: total, totalInactivos: totalInactivos, data: modulos });
-    } catch(err) {
-        return res.status(500).json({ message: err.message });
-    }
-}
-module.exports = { getModulos, createModulo, editModulo, getAllModulos }
+module.exports = { getModulos, createModulo, editModulo, getAllModulos, updateModuloStatus }

@@ -143,7 +143,34 @@ describe('Modulo service', function() {
                     expect(updateFake.calledOnce).to.be.true;
                     expect(err).to.be.an('error');
                 });
-        })
+        });
+
+        it('Should update a modulo status', function() {
+            const findOneFake = sinon.fake.resolves(aModulo(1));
+            const updateFake = sinon.fake.resolves(1);
+            sinon.replace(Modulo, 'findOne', findOneFake);
+            sinon.replace(Modulo, 'update', updateFake);
+            return ModuloService.updateModuloStatus(aModulo(1).id, { status: 'inactive' })
+                .then(res => {
+                    expect(findOneFake.calledOnce).to.be.true;
+                    expect(updateFake.calledOnce).to.be.true;
+                    expect(res).to.be.true;
+                }
+            );
+        });
+
+        it('Should not update a modulo status due to internal error', function() {
+            const findOneFake = sinon.fake.resolves(aModulo(1));
+            const updateFake = sinon.fake.throws('Error');
+            sinon.replace(Modulo, 'findOne', findOneFake);
+            sinon.replace(Modulo, 'update', updateFake);
+            return ModuloService.updateModuloStatus(aModulo(1).id, { status: 'inactive' })
+                .catch(err => {
+                    expect(findOneFake.calledOnce).to.be.true;
+                    expect(updateFake.calledOnce).to.be.true;
+                    expect(err).to.be.an('error');
+                });
+        });
     });
 
 });
