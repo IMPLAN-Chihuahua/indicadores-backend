@@ -12,7 +12,7 @@ The backend itself is implemented in Nodejs using the following technologies:
 
 #### For the complete API reference forward to the documentation made with Swagger, available in the following route:
 
-```http
+```
   GET /api/v1/documentation
 ```
 
