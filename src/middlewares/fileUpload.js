@@ -15,24 +15,40 @@ const validateFileType = (file, cb) => {
 
     const isValidMimetype = validMimetypes.includes(file.mimetype);
 
-    if (isValidMimetype) {
-        return cb(null, true);
-    }else {
-       return cb(new Error('Invalid mime type'));
+    if (!isValidMimetype) {
+        return cb(new Error('FILE_TYPE_NOT_ALLOWED'));
     }
+    return cb(null, true);
 }
 
+const uploadImage = (req, res, next) => {
+    const upload = multer({
+        storage: storage,
+        limits: {
+            fileSize: 1000000,
+            files: 1
+        },
+        fileFilter: (req, file, cb) => {
+            validateFileType(file, cb);
+        },
+    }).single('urlImagen');
 
-const upload = multer({
-    storage: storage,
-    limits: {
-        fileSize: 1000000
-    },
-    fileFilter: (req, file, cb) => {
-        validateFileType(file, cb);
-    },
-}).single('urlImagen');
+    upload(req, res, (err) => {
+        console.log(err);
+        if(err){
+            if (err.message === 'FILE_TYPE_NOT_ALLOWED') {
+                return res.status(422).json({
+                    message: err.message,
+                });
+            } 
+            if (err.code === 'LIMIT_FILE_SIZE') {
+                return res.status(413).json({
+                    message: err.code,
+                });
+            }
+        }
+        next();
+    });
+};
 
-
-module.exports = {upload};
-//upload.single('urlImagen'),
+module.exports = {uploadImage};
