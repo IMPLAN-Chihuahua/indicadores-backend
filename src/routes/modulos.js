@@ -7,7 +7,7 @@ const { paramValidationRules, paginationValidationRules,
     validate, filterIndicadoresValidationRules, sortValidationRules, createModuloValidationRules, updateModuloValidationRules } = require('../middlewares/validator');
 const { moduloExists } = require('../middlewares/verifyIdModulo');
 const { verifyJWT } = require('../middlewares/auth');
-const { upload } = require('../middlewares/fileUpload');
+const { uploadImage } = require('../middlewares/fileUpload');
 
 /**
  * @swagger
@@ -270,9 +270,9 @@ indicadorRouter.route('/')
 
 moduloRouter.route('/')
     .post(
-      //  verifyJWT,
-      //  createModuloValidationRules(),
-        upload,
+        verifyJWT,
+        createModuloValidationRules(),
+        uploadImage,
         createModulo
     );
 
