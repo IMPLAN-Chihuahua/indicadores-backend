@@ -270,6 +270,8 @@ indicadorRouter.route('/')
 
 moduloRouter.route('/')
     .post(
+      //  verifyJWT,
+      //  createModuloValidationRules(),
         upload,
         createModulo
     );
