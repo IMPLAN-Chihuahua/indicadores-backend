@@ -271,11 +271,11 @@ indicadorRouter.route('/')
 moduloRouter.route('/')
     .post(
         verifyJWT,
-        createModuloValidationRules(),
         uploadImage,
+        createModuloValidationRules(),
+        validate,
         createModulo
     );
-
 /** 
  * @swagger
  *   /modulos/{idModulo}:
