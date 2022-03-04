@@ -7,6 +7,7 @@ const { paramValidationRules, paginationValidationRules,
     validate, filterIndicadoresValidationRules, sortValidationRules, createModuloValidationRules, updateModuloValidationRules } = require('../middlewares/validator');
 const { moduloExists } = require('../middlewares/verifyIdModulo');
 const { verifyJWT } = require('../middlewares/auth');
+const { uploadImage } = require('../middlewares/fileUpload');
 
 /**
  * @swagger
@@ -270,12 +271,12 @@ indicadorRouter.route('/')
 moduloRouter.route('/')
     .post(
         verifyJWT,
+        uploadImage('usuarios'),
         createModuloValidationRules(),
         validate,
         createModulo
     );
-
-/**
+/** 
  * @swagger
  *   /modulos/{idModulo}:
  *     put:
