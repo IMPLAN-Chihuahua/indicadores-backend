@@ -97,6 +97,7 @@ const countModulos = async () => {
     }
 }
 
+
 const getModulosSorting = ({ sort_by, order }) => {
     const arrangement = [];
     arrangement.push([sort_by || 'id', order || 'ASC']);
