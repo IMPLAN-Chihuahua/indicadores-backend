@@ -271,7 +271,7 @@ indicadorRouter.route('/')
 moduloRouter.route('/')
     .post(
         verifyJWT,
-        uploadImage,
+        uploadImage('usuarios'),
         createModuloValidationRules(),
         validate,
         createModulo
