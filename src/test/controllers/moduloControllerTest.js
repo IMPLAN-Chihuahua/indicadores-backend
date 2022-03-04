@@ -29,6 +29,8 @@ describe('/modulos', function () {
 
         it('Should return a list of Modulos', function (done) {
             const findAllFake = sinon.fake.resolves(modulosFake);
+            const countFake = sinon.fake.resolves(modulosFake.length);
+            sinon.replace(Modulo, 'count', countFake);
             sinon.replace(Modulo, 'findAll', findAllFake);
             chai.request(app)
                 .get('/api/v1/modulos')
@@ -42,6 +44,8 @@ describe('/modulos', function () {
 
         it('Should return a list of Modulos with pagination and requiring authorization', function(done) {
             const findAndCountAllFake = sinon.fake.resolves({rows: modulosFake, count: modulosFake.length});
+            const countFake = sinon.fake.resolves(modulosFake.length);
+            sinon.replace(Modulo, 'count', countFake);
             sinon.replace(Modulo, 'findAndCountAll', findAndCountAllFake);
             chai.request(app)
                 .get('/api/v1/me/modulos')
