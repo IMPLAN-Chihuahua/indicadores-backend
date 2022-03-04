@@ -12,7 +12,7 @@ const getUsers = async (req, res) => {
     const perPage = req.matchedData.per_page || 25;
     
     try {
-        const { usuarios, total } = await getUsuarios(perPage, (page - 1) * perPage);
+        const { usuarios, total, totalInactivos } = await getUsuarios(perPage, (page - 1) * perPage);
         const totalPages = Math.ceil(total / perPage);
 
         return res.status(200).json({
@@ -20,6 +20,7 @@ const getUsers = async (req, res) => {
             per_page: perPage,
             total: total,
             total_pages: totalPages,
+            totalInactivos: totalInactivos,
             data: [...usuarios]
         });
     } catch (err) {
