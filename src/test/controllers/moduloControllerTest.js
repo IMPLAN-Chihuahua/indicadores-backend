@@ -13,7 +13,7 @@ require('dotenv').config();
 const { TOKEN_SECRET } = process.env;
 
 
-describe('/modulos', function () {
+describe.only('/modulos', function () {
     const token = jwt.sign({ sub: 1 }, TOKEN_SECRET, { expiresIn: '5h' });
 
     describe('GET', function () {
@@ -89,24 +89,77 @@ describe('/modulos', function () {
             server.close();
         });
 
-       it('Should create a new modulo', function (done) {
-            const moduloFake = aModulo(2);
+        it('Should reject the creation of a new modulo due to not allowed file type', function(done) {
+            const moduloFake = aModulo(5);
             const createModuloFake = sinon.fake.resolves(moduloFake);
             const findOneFake = sinon.fake.resolves(null);
             sinon.replace(Modulo, 'create', createModuloFake);
             sinon.replace(Modulo, 'findOne', findOneFake);
             chai.request(app)
                 .post('/api/v1/modulos')
-                .set({ Authorization: `Bearer ${token}` })
-                .send(moduloFake)
-                .end((err, res) => {
-                    expect(res).to.have.status(201);
-                    expect(res.body.data).to.have.property('temaIndicador', 'New value');
+                .set('Authorization', `Bearer ${token}`)
+                .type('form')
+                .field('temaIndicador', moduloFake.temaIndicador)
+                .field('id', moduloFake.id)
+                .field('codigo', moduloFake.codigo)
+                .field('activo', moduloFake.activo)
+                .field('observaciones', moduloFake.observaciones)
+                .field('color', moduloFake.color)
+                .attach('urlImagen', 'src/test/resources/samplePDF.pdf', 'samplePDF.pdf')
+                .end(function (err, res) {
+                    expect(res).to.have.status(422);
                     done();
                 });
         });
 
-       it('Should not create a new modulo due to repeated temaIndicador', function (done) {
+        it('Should create a new modulo with an image', function(done) {
+            const moduloFake = aModulo(5);
+            const createModuloFake = sinon.fake.resolves(moduloFake);
+            const findOneFake = sinon.fake.resolves(null);
+            sinon.replace(Modulo, 'create', createModuloFake);
+            sinon.replace(Modulo, 'findOne', findOneFake);
+            chai.request(app)
+                .post('/api/v1/modulos')
+                .set('Authorization', `Bearer ${token}`)
+                .type('form')
+                .field('temaIndicador', moduloFake.temaIndicador)
+                .field('id', moduloFake.id)
+                .field('codigo', moduloFake.codigo)
+                .field('activo', moduloFake.activo)
+                .field('observaciones', moduloFake.observaciones)
+                .field('color', moduloFake.color)
+                .attach('urlImagen', 'src/test/resources/avatar.jpg', 'avatar.jpg')
+                .end(function (err, res) {
+                    expect(createModuloFake.calledOnce).to.be.true;
+                    expect(res).to.have.status(201);
+                    expect(res.body.data).to.have.property('temaIndicador');
+                    expect(res.body.data).to.have.property('codigo');
+                    expect(res.body.data).to.have.property('activo');
+                    expect(res.body.data).to.have.property('observaciones');
+                    expect(res.body.data).to.have.property('color');
+                    expect(res.body.data).to.have.property('urlImagen');
+                    done();
+                });
+        });
+
+        it('Should create a new modulo', function (done) {
+                const moduloFake = aModulo(2);
+                const createModuloFake = sinon.fake.resolves(moduloFake);
+                const findOneFake = sinon.fake.resolves(null);
+                sinon.replace(Modulo, 'create', createModuloFake);
+                sinon.replace(Modulo, 'findOne', findOneFake);
+                chai.request(app)
+                    .post('/api/v1/modulos')
+                    .set({ Authorization: `Bearer ${token}` })
+                    .send(moduloFake)
+                    .end((err, res) => {
+                        expect(res).to.have.status(201);
+                        expect(res.body.data).to.have.property('temaIndicador', 'New value');
+                        done();
+                    });
+            });
+
+        it('Should not create a new modulo due to repeated temaIndicador', function (done) {
             const moduloFake = aModulo(1);
             const createModuloFake = sinon.fake.resolves(moduloFake);
             const findOneFake = sinon.fake.resolves(false);
