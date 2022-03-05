@@ -105,7 +105,7 @@ describe.only('/modulos', function () {
                 .field('activo', moduloFake.activo)
                 .field('observaciones', moduloFake.observaciones)
                 .field('color', moduloFake.color)
-                .attach('urlImagen', 'src/test/resources/samplePDF.pdf', 'samplePDF.pdf')
+                .attach('urlImagen', 'src/tests/resources/samplePDF.pdf', 'samplePDF.pdf')
                 .end(function (err, res) {
                     expect(res).to.have.status(422);
                     done();
@@ -128,7 +128,7 @@ describe.only('/modulos', function () {
                 .field('activo', moduloFake.activo)
                 .field('observaciones', moduloFake.observaciones)
                 .field('color', moduloFake.color)
-                .attach('urlImagen', 'src/test/resources/avatar.jpg', 'avatar.jpg')
+                .attach('urlImagen', 'src/tests/resources/avatar.jpg', 'avatar.jpg')
                 .end(function (err, res) {
                     expect(createModuloFake.calledOnce).to.be.true;
                     expect(res).to.have.status(201);
