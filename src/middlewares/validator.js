@@ -124,9 +124,12 @@ const filterIndicadoresValidationRules = () => {
         query('tendenciaActual')
             .optional()
             .toUpperCase()
-            .isIn(['ASCENDENTE', 'DESCENDENTE', 'NO APLICA'])
+            .isIn(['ASCENDENTE', 'DESCENDENTE', 'NO APLICA']),
+        query('searchQuery')
+            .optional()
     ];
 };
+
 
 const filterModulosValidationRules = () => {
     return [

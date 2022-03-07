@@ -3,7 +3,11 @@ const router = express.Router();
 const { paramValidationRules,
     validate,
     createIndicadorValidationRules, 
-    updateIndicadorValidationRules} = require('../middlewares/validator');
+    updateIndicadorValidationRules,
+    paginationValidationRules,
+    filterIndicadoresValidationRules,
+    sortValidationRules
+} = require('../middlewares/validator');
 const {
     getIndicador,
     getAllIndicadores,
@@ -64,7 +68,7 @@ router.route('/:idIndicador')
  */
 
 router.route('/')
-    .get(verifyJWT, getAllIndicadores);
+    .get(verifyJWT, paginationValidationRules(), sortValidationRules(), filterIndicadoresValidationRules(), validate, getAllIndicadores);
 
 
 /**

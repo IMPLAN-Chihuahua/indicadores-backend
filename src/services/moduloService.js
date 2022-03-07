@@ -116,9 +116,8 @@ const getAllModulosFilters = (matchedData) => {
             ]
         }
         return filter;
-    } else {
-        return {};
-    }
+    } 
+    return {};
 };
 
 const updateModuloStatus = async (id) => {
