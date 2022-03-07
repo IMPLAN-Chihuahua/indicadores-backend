@@ -7,6 +7,7 @@ const { paramValidationRules, paginationValidationRules,
     validate, filterIndicadoresValidationRules, sortValidationRules, createModuloValidationRules, updateModuloValidationRules } = require('../middlewares/validator');
 const { moduloExists } = require('../middlewares/verifyIdModulo');
 const { verifyJWT } = require('../middlewares/auth');
+const { uploadImage } = require('../middlewares/fileUpload');
 
 /**
  * @swagger
@@ -253,9 +254,23 @@ indicadorRouter.route('/')
  *       - bearer: []
  *     requestBody:
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/Modulo'
+ *             type: object
+ *             properties:
+ *               temaIndicador:
+ *                 type: string
+ *               codigo:
+ *                 type: string
+ *               activo:
+ *                 type: string
+ *               color:
+ *                 type: string
+ *               observaciones:
+ *                 type: string
+ *               urlImagen:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       201:
  *         description: Module created successfully
@@ -270,12 +285,12 @@ indicadorRouter.route('/')
 moduloRouter.route('/')
     .post(
         verifyJWT,
+        uploadImage('modulos'),
         createModuloValidationRules(),
         validate,
         createModulo
     );
-
-/**
+/** 
  * @swagger
  *   /modulos/{idModulo}:
  *     put:

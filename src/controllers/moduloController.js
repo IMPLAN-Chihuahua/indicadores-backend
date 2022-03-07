@@ -19,10 +19,12 @@ const createModulo = async (req, res) => {
         observaciones,
         activo,
         codigo,
-        urlImagen,
         color,
     } = req.body;
+    let urlImagen = 'images/avatar.jpg';
 
+    urlImagen = req.file ? `images/${req.file.filename}` : urlImagen;
+    
     try {
         if (await moduloService.isTemaIndicadorAlreadyInUse(temaIndicador)) {
             return res.status(400).json({
