@@ -19,7 +19,6 @@ const { TOKEN_SECRET } = process.env;
 describe('v1/usuarios', function () {
   const token = jwt.sign({ sub: 100 }, TOKEN_SECRET, { expiresIn: '5h' });;
   const adminRol = { dataValues: { roles: 'ADMIN' } };
-
   this.afterEach(function () {
     sinon.restore();
   });
@@ -115,7 +114,29 @@ describe('v1/usuarios', function () {
   });
 
   describe('POST /usuarios', function () {
-    it('Should create a user', function (done) {
+    it('Should create a user with no avatar', function (done) {
+      const findOneUserFake = sinon.stub(Usuario, 'findOne');
+      findOneUserFake.onFirstCall().resolves(adminRol);
+      findOneUserFake.onSecondCall().resolves(null);
+
+      const createUserFake = sinon.fake.resolves(aUser(1));
+      sinon.replace(Usuario, 'create', createUserFake);
+
+      chai.request(app)
+        .post('/api/v1/usuarios')
+        .set({ Authorization: `Bearer ${token}` })
+        .send(aUser())
+        .end((err, res) => {
+          expect(err).to.be.null;
+          expect(res).to.have.status(201);
+          expect(findOneUserFake.calledTwice).to.be.true;
+          expect(createUserFake.calledOnce).to.be.true;
+          done();
+        });
+    })
+
+    it('Should create a user with avatar', function (done) {
+      const uploadFake = sinon.s
       const userFake = aUser(1);
       const findOneFake = sinon.stub(Usuario, 'findOne');
       findOneFake.onFirstCall().resolves(adminRol);
@@ -125,11 +146,8 @@ describe('v1/usuarios', function () {
       chai.request(app)
         .post('/api/v1/usuarios')
         .set({ Authorization: `Bearer ${token}` })
-        .attach(
-          'avatar',
-          fs.readFileSync('uploads/images/avatar.jpg'),
-          'johndoe.jpg'
-        )
+        .set('Content-Type', 'multipart/form-data')
+        .attach('urlImagen', fs.readFileSync('uploads/images/avatar.jpg'), 'avatar.jpg')
         .field('nombres', userFake.nombres)
         .field('apellidoPaterno', userFake.apellidoPaterno)
         .field('apellidoMaterno', userFake.apellidoPaterno)
@@ -200,7 +218,7 @@ describe('v1/usuarios', function () {
         .attach(
           'avatar',
           fs.readFileSync('uploads/images/avatar.jpg'),
-          'johndoe.jpg'
+          'avatar.jpg'
         )
         .field('nombres', userFake.nombres)
         .field('apellidoPaterno', userFake.nombres)
@@ -247,5 +265,5 @@ describe('v1/usuarios', function () {
         });
     });
   });
-  
+
 });
