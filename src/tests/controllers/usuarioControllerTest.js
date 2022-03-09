@@ -136,7 +136,6 @@ describe('v1/usuarios', function () {
     })
 
     it('Should create a user with avatar', function (done) {
-      const uploadFake = sinon.s
       const userFake = aUser(1);
       const findOneFake = sinon.stub(Usuario, 'findOne');
       findOneFake.onFirstCall().resolves(adminRol);
