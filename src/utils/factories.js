@@ -1,16 +1,13 @@
 const faker = require('faker');
 
-const aDummyWithName = (id) => {
-    return {
-        id: id,
-        nombre: faker.random.word()
-    };
-};
-
-const anIndicador = (id) => {
-    return {
+const aDummyWithName = (id) => ({
         id,
-        nombre: "Test " + faker.random.word(),
+        nombre: faker.random.word()
+    });
+
+const anIndicador = (id) => ({
+        id,
+        nombre: `Test ${  faker.random.word()}`,
         definicion: faker.lorem.sentence(),
         urlImagen: faker.image.imageUrl(),
         idOds: faker.datatype.number(15),
@@ -50,19 +47,17 @@ const anIndicador = (id) => {
                 fuente: faker.random.word()
             },
         }],
-        codigo: '00' + faker.datatype.number(9),
-        codigoObjeto: '00' + faker.datatype.number(9),
+        codigo: `00${  faker.datatype.number(9)}`,
+        codigoObjeto: `00${  faker.datatype.number(9)}`,
         createdAt: new Date(),
         createdBy: faker.datatype.number(9),
         updatedAt: new Date(),
-    };
-};
+    });
 
-const indicadorToCreate = () => {
-    return {
+const indicadorToCreate = () => ({
         nombre: faker.random.word(),
-        codigo: '00' + faker.datatype.number(9),
-        codigoObjeto: '00' + faker.datatype.number(9),
+        codigo: `00${  faker.datatype.number(9)}`,
+        codigoObjeto: `00${  faker.datatype.number(9)}`,
         definicion: faker.lorem.sentence(),
         ultimoValorDisponible: faker.datatype.number(),
         anioUltimoValorDisponible: faker.datatype.number({ 'min': 2000, 'max': new Date().getFullYear() }),
@@ -73,11 +68,9 @@ const indicadorToCreate = () => {
         idCobertura: faker.datatype.number(9),
         idUnidadMedida: faker.datatype.number(9),
         idModulo: faker.datatype.number(9),
-    };
-}
+    })
 
-const aUser = (id) => {
-    return {
+const aUser = (id) => ({
         id,
         nombres: faker.name.firstName(),
         apellidoPaterno: faker.name.lastName(),
@@ -86,11 +79,9 @@ const aUser = (id) => {
         clave: faker.internet.password(8, false),
         activo: 'SI',
         idRol: 1
-    };
-};
+    });
 
-const aModulo = (id) => {
-    return {
+const aModulo = (id) => ({
         id,
         temaIndicador: 'New value',
         codigo: '666',
@@ -98,19 +89,16 @@ const aModulo = (id) => {
         activo: faker.datatype.boolean() ? 'SI' : 'NO',
         urlImagen: faker.image.imageUrl(),
         color: faker.commerce.color()
-    };
-};
+    });
 
-const aRol = (id) => {
-    return {
+const aRol = (id) => ({
         id,
         rol: faker.random.word().toUpperCase(),
         descripcion: faker.lorem.words(8),
         activo: faker.datatype.boolean ? 'SI' : 'NO',
         createdAt: new Date(),
         updatedAt: new Date()
-    };
-};
+    });
 
 module.exports = {
     anIndicador,

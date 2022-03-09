@@ -1,7 +1,9 @@
 const express = require('express');
+
 const router = express.Router();
 const { getUsers, createUser, getUserFromId, editUser } = require('../controllers/usuarioController');
 const { verifyJWT, verifyRoles } = require('../middlewares/auth');
+const { uploadImage } = require('../middlewares/fileUpload');
 const {
     registerValidationRules,
     paginationValidationRules,
@@ -161,6 +163,7 @@ router.get(
  */
 router.post(
     '/',
+    uploadImage('usuarios'),
     registerValidationRules(),
     validate,
     verifyJWT,
