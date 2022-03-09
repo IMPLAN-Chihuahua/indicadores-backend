@@ -142,10 +142,41 @@ const getIndicador = async (idIndicador, Format) => {
   }
 }
 
-const getAllIndicadores = async () => {
-  const indicadores = await Indicador.findAll({});
-  return indicadores;
+const getAllIndicadores = async (page = 1, per_page = 5, matchedData) => {
+  try {
+  const result = await Indicador.findAndCountAll({
+    where: getAllIndicadoresFilters(matchedData),
+    order: getIndicadoresSorting(matchedData),
+    limit: per_page,
+    offset: (page - 1) * per_page,
+  });
+  return {indicadores: result.rows, total: result.count};
+  } catch(err) {
+    throw new Error(`Error al obtener los indicadores: ${err.message}`);
+  }
 }
+
+
+const getAllIndicadoresFilters = (matchedData) => {
+  const {searchQuery} = matchedData;
+  if(searchQuery){
+    const filter = {
+      [Op.or]: [
+        {nombre: {[Op.like]: `%${searchQuery}%`}},
+        {definicion: {[Op.like]: `%${searchQuery}%`}},
+        {codigo: {[Op.like]: `%${searchQuery}%`}},
+        {codigoObjeto : {[Op.like]: `%${searchQuery}%`}},
+        {tendenciaActual: {[Op.like]: `%${searchQuery}%`}},
+        {tendenciaDeseada: {[Op.like]: `%${searchQuery}%`}},
+        {observaciones: {[Op.like]: `%${searchQuery}%`}},
+      ]
+    };
+    return filter;
+  }
+  return {};
+}
+
+
 
 // Validation for catalogs
 const validateCatalog = ({ idOds, idCobertura, idUnidadMedida }) => {

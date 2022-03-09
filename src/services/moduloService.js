@@ -97,6 +97,7 @@ const countModulos = async () => {
     }
 }
 
+
 const getModulosSorting = ({ sort_by, order }) => {
     const arrangement = [];
     arrangement.push([sort_by || 'id', order || 'ASC']);
@@ -115,9 +116,8 @@ const getAllModulosFilters = (matchedData) => {
             ]
         }
         return filter;
-    } else {
-        return {};
-    }
+    } 
+    return {};
 };
 
 const updateModuloStatus = async (id) => {

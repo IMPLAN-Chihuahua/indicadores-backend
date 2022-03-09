@@ -73,11 +73,21 @@ const getUsuarios = async (limit = 25, offset = 0) => {
             .findAndCountAll({ limit, offset });
         const usuarios = result.rows;
         const total = result.count;
-        return { usuarios, total };
+        const inactiveModulos = await countInactiveUsers();
+        return {usuarios, total, totalInactivos: inactiveModulos};
     } catch (err) {
         throw new Error('Error al obtener lista de usuarios: ' + err.message);
     }
 };
+
+const countInactiveUsers = async () => {
+    try {
+        const inactiveCount = await Usuario.count({where: {activo: 'NO'}});
+        return  inactiveCount;
+    } catch( err ) {
+        throw new Error(`Error al contar usuarios inactivos ${err.message}`);
+    }
+}
 
 
 // returns true if usuario was updated

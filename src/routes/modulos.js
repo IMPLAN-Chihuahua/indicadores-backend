@@ -254,9 +254,23 @@ indicadorRouter.route('/')
  *       - bearer: []
  *     requestBody:
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/Modulo'
+ *             type: object
+ *             properties:
+ *               temaIndicador:
+ *                 type: string
+ *               codigo:
+ *                 type: string
+ *               activo:
+ *                 type: string
+ *               color:
+ *                 type: string
+ *               observaciones:
+ *                 type: string
+ *               urlImagen:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       201:
  *         description: Module created successfully
@@ -271,7 +285,7 @@ indicadorRouter.route('/')
 moduloRouter.route('/')
     .post(
         verifyJWT,
-        uploadImage('usuarios'),
+        uploadImage('modulos'),
         createModuloValidationRules(),
         validate,
         createModulo
