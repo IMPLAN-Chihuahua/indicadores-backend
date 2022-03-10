@@ -1,9 +1,10 @@
 const multer = require('multer');
 
+const isTestEnv = process.env.NODE_ENV === 'test';
 
 const moduleStorage = multer.diskStorage({
     destination: (req, file, cb) =>{
-        cb(null, 'uploads/modules/images/')     
+        cb(null, isTestEnv ? 'uploads/tmp' : 'uploads/modules/images/')     
     },
     filename: (req, file, cb) => {
         cb(null, `${Date.now()}.${file.originalname.split('.')[1]}`)
@@ -12,7 +13,7 @@ const moduleStorage = multer.diskStorage({
 
 const userStorage = multer.diskStorage({
     destination: (req, file, cb) =>{
-        cb(null, 'uploads/users/images/')     
+        cb(null, isTestEnv ? 'uploads/tmp' : 'uploads/users/images/')     
     },
     filename: (req, file, cb) => {
         cb(null, `${Date.now()}.${file.originalname.split('.')[1]}`)
@@ -30,8 +31,7 @@ const validateFileType = (file, cb) => {
     return cb(null, true);
 }
 
-const uploadImage = (route) => {
-    return (req, res, next) => {
+const uploadImage = (route) => (req, res, next) => {
         const upload = multer({
             storage: route === 'modulos' ? moduleStorage : userStorage,
             limits: {
@@ -44,23 +44,17 @@ const uploadImage = (route) => {
         }).single('urlImagen');
 
         upload(req, res, (err) => {
-            console.log(err);
             if(err){
                 if (err.message === 'FILE_TYPE_NOT_ALLOWED') {
-                    return res.status(422).json({
-                        message: err.message,
-                    });
+                    return res.status(422).send(err.message);
                 } 
                 if (err.code === 'LIMIT_FILE_SIZE') {
-                    return res.status(413).json({
-                        message: err.code,
-                    });
+                    return res.status(413).send(err.code);
                 }
             }
             next();
         });
-    };
-}
+    }
 
 
 module.exports = {uploadImage};
