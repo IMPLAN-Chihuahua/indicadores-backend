@@ -11,6 +11,9 @@ const mochaGlobalTeardown = function () {
     
     // eslint-disable-next-line no-restricted-syntax
     for (const file of files) {
+      if (file === '.gitignore') {
+        continue;
+      }
       fs.unlink(path.join(dir, file), (error) => {
         if (error) {
           throw error;
