@@ -43,7 +43,7 @@ app.use(cors());
 app.use(helmet());
 
 // Log HTTP requests 
-app.use(morgan('dev'));
+app.use(morgan('\t:method :url :status :res[content-length] - :response-time ms'));
 
 // Parse data from requests
 app.use(express.json());
