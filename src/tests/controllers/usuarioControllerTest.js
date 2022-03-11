@@ -19,7 +19,7 @@ const { TOKEN_SECRET } = process.env;
 describe('v1/usuarios', function () {
   const token = jwt.sign({ sub: 100 }, TOKEN_SECRET, { expiresIn: '5h' });;
   const adminRol = { dataValues: { roles: 'ADMIN' } };
-  const bigImage = Buffer.alloc(10000000, '.jpg')
+  const bigImage = Buffer.alloc(100200000, '.jpg')
   const allowedImage = Buffer.alloc(1000, '.jpg')
   const notAllowedFile = Buffer.alloc(10000, '.pdf')
 
