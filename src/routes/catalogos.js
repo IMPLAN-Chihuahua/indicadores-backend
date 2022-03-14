@@ -125,4 +125,74 @@ catalogoRouter.route('/ods/:idOds')
         validate,
         Catalogos.deleteOds);
 
+// Cobertura geográfica
+catalogoRouter.route('/cobertura')
+    .get(
+        verifyJWT,
+        Catalogos.getCoberturas
+    );
+
+catalogoRouter.route('/cobertura/:idCobertura')
+    .get(
+        verifyJWT,
+        paramValidationRules(),
+        validate,
+        Catalogos.getCoberturaById
+    );
+   
+catalogoRouter.route('/cobertura/:idCobertura')
+    .patch(
+        verifyJWT,
+        paramValidationRules(),
+        validate,
+        Catalogos.updateCobertura
+    );
+
+catalogoRouter.route('/cobertura')
+    .post(
+        verifyJWT,
+        Catalogos.createCobertura);
+
+catalogoRouter.route('/cobertura/:idCobertura')
+    .delete(
+        verifyJWT,
+        paramValidationRules(),
+        validate,
+        Catalogos.deleteCobertura);
+
+// Unidad Medida
+catalogoRouter.route('/unidadMedida')
+    .get(
+        verifyJWT,
+        Catalogos.getUnidades
+    );
+
+catalogoRouter.route('/unidadMedida/:idUnidadMedida')
+    .get(
+        verifyJWT,
+        paramValidationRules(),
+        validate,
+        Catalogos.getUnidadById
+    );
+   
+catalogoRouter.route('/unidadMedida/:idUnidadMedida')
+    .patch(
+        verifyJWT,
+        paramValidationRules(),
+        validate,
+        Catalogos.updateUnidad
+    );
+
+catalogoRouter.route('/unidadMedida')
+    .post(
+        verifyJWT,
+        Catalogos.createUnidad);
+
+catalogoRouter.route('/unidadMedida/:idUnidadMedida')
+    .delete(
+        verifyJWT,
+        paramValidationRules(),
+        validate,
+        Catalogos.deleteUnidad);
+
 module.exports = catalogoRouter;
