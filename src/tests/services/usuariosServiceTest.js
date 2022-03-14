@@ -1,9 +1,13 @@
+/* eslint-disable no-unused-expressions */
+/* eslint-disable prefer-arrow-callback */
+/* eslint-disable import/no-extraneous-dependencies */
 const chai = require('chai');
-const expect = chai.expect;
 const faker = require('faker');
-const { Usuario } = require('../../models');
-const UsuarioService = require('../../services/usuariosService');
 const sinon = require('sinon');
+const UsuarioService = require('../../services/usuariosService');
+
+const { expect } = chai;
+const { Usuario } = require('../../models');
 const { server } = require('../../../app')
 const { aUser, anIndicador } = require('../../utils/factories');
 
@@ -26,6 +30,8 @@ describe('User service', function () {
     });
 
     describe('Read operations', function () {
+        const userList = [aUser(1), aUser(2), aUser(3)]
+
         it('Should return a user with a given id', function () {
             const findOneIdFake = sinon.fake.resolves(usuario);
             sinon.replace(Usuario, 'findOne', findOneIdFake);
@@ -58,7 +64,6 @@ describe('User service', function () {
         });
 
         it('Should return a list of users', function () {
-            const userList = [aUser(1), aUser(2), aUser(3)]
             const findAndCountAllFake = sinon.fake.resolves({ rows: userList, count: userList.length })
             sinon.replace(Usuario, 'findAndCountAll', findAndCountAllFake);
             return UsuarioService.getUsuarios()
@@ -99,6 +104,17 @@ describe('User service', function () {
                     expect(err, 'err is not null').to.not.be.null;
                     expect(findOneFake.calledOnce, 'find one fake was called once').to.be.true;
                 })
+        });
+
+        it('Should return a list of users based on a search query', function () {
+            const findAndCountAllFake = sinon.fake.resolves({ rows: userList, count: userList.length });
+            sinon.replace(Usuario, 'findAndCountAll', findAndCountAllFake);
+            return UsuarioService.getUsuarios(25, 0, 'john')
+                .then(res => {
+                    expect(findAndCountAllFake.calledOnce).to.be.true;
+                    expect(res.usuarios).to.be.an('array');
+                    expect(res.total).to.equal(userList.length);
+                });
         });
 
 
