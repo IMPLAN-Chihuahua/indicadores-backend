@@ -1,4 +1,7 @@
 const { Ods, CoberturaGeografica, UnidadMedida } = require('../models');
+const catalogosService = require('../services/catalogosService');
+
+/** PUBLIC WEBSITE QUESTION  */
 
 const getCatalogos = async (_, res) => {
     const Promises = [
@@ -24,6 +27,79 @@ const getCatalogos = async (_, res) => {
     );
 };
 
+/** ADMINISTRATIVE SECTION */
+// ODS
+const getOds = async (req, res) => {
+    try {
+        const odsList = await catalogosService.getOds();
+        return res.status(200).json({ data: odsList });
+    } catch (err) {
+        return res.status(500).json({ error: err });
+    }
+};
 
+const getOdsById = async (req, res) => {
+    const odsID = req.matchedData.idOds;
+    try {
+        const ods = await catalogosService.getOdsById(odsID);
+        if(ods === null) {
+            return res.status(404).json({ message: 'Ods not found' });
+        }
 
-module.exports = { getCatalogos };
+        return res.status(200).json({ data: ods });
+    } catch (err) {
+        return res.status(500).json({ error: err });
+    }
+};
+
+const createOds = async (req, res) => {
+    const nombre  = req.body;
+    const nombreExists = await catalogosService.getOdsByName(nombre);
+    try {
+        if (nombreExists) {
+            return res.status(409).json({ message: 'Ods already exists' });
+        }
+        const ods = await catalogosService.createOds(nombre);
+        return res.status(201).json({ data: ods });
+    } catch (err) {
+        return res.status(500).json({ error: err });
+    }
+};
+
+const updateOds = async (req, res) => {
+    const id = req.params.idOds;
+    const { nombre } = req.body;
+    const nombreExists = await catalogosService.getOdsByName(nombre);
+    try {
+        if (nombreExists) {
+            return res.status(409).json({ message: 'Ods already exists' });
+        }
+        const ods = await catalogosService.updateOds(id, nombre);
+        return res.status(200).json({ ods });
+    } catch (err) {
+        return res.status(500).json({ error: err });
+    }
+};
+
+const deleteOds = async (req, res) => {
+    const id = req.params.idOds;
+    const odsExists = await catalogosService.getOdsById(id);
+    try {
+        if (!odsExists) {
+            return res.status(404).json({ message: 'Ods not found' });
+        }
+        const ods = await catalogosService.deleteOds(id);
+        return res.status(200).json({ ods });
+    } catch (err) {
+        return res.status(500).json({ error: err });
+    }
+};
+
+module.exports = { 
+    getCatalogos,
+    getOds,
+    getOdsById,
+    createOds,
+    updateOds,
+    deleteOds,
+};
