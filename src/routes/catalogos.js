@@ -1,7 +1,10 @@
 const express = require('express');
 const catalogoRouter = express.Router();
 
-const { getCatalogos } = require('../controllers/catalogoController');
+const Catalogos = require('../controllers/catalogoController');
+const { paramValidationRules, validate } = require('../middlewares/validator');
+
+const { verifyJWT } = require('../middlewares/auth');
 
 /**
  * @swagger
@@ -83,8 +86,43 @@ const { getCatalogos } = require('../controllers/catalogoController');
  */
 
 catalogoRouter.route('/')
-    .get(getCatalogos);
+    .get(Catalogos.getCatalogos);
 
 
+/** ADMINISTRATIVE SECTION  */
+
+catalogoRouter.route('/ods')
+    .get(
+        verifyJWT,
+        Catalogos.getOds
+    );
+
+catalogoRouter.route('/ods/:idOds')
+    .get(
+        verifyJWT,
+        paramValidationRules(),
+        validate,
+        Catalogos.getOdsById
+    );
+   
+catalogoRouter.route('/ods/:idOds')
+    .patch(
+        verifyJWT,
+        paramValidationRules(),
+        validate,
+        Catalogos.updateOds
+    );
+
+catalogoRouter.route('/ods')
+    .post(
+        verifyJWT,
+        Catalogos.createOds);
+
+catalogoRouter.route('/ods/:idOds')
+    .delete(
+        verifyJWT,
+        paramValidationRules(),
+        validate,
+        Catalogos.deleteOds);
 
 module.exports = catalogoRouter;
