@@ -3,7 +3,8 @@ const { addUsuario,
     getUsuarios,
     isCorreoAlreadyInUse,
     getUsuarioById,
-    updateUsuario } = require('../services/usuariosService');
+    updateUsuario,
+    countInactiveUsers } = require('../services/usuariosService');
 require('dotenv').config();
 
 const SALT_ROUNDS = 10;
@@ -13,7 +14,8 @@ const getUsers = async (req, res) => {
     const perPage = req.matchedData.per_page || 25;
 
     try {
-        const { usuarios, total, totalInactivos } = await getUsuarios(perPage, (page - 1) * perPage);
+        const { usuarios, total } = await getUsuarios(perPage, (page - 1) * perPage);
+        const totalInactivos = await countInactiveUsers();
         const totalPages = Math.ceil(total / perPage);
 
         return res.status(200).json({
@@ -21,7 +23,7 @@ const getUsers = async (req, res) => {
             per_page: perPage,
             total,
             total_pages: totalPages,
-            totalInactivos: totalInactivos,
+            totalInactivos,
             data: [...usuarios]
         });
     } catch (err) {

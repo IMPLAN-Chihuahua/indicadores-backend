@@ -1,4 +1,5 @@
 const { Usuario, Rol, Indicador, Sequelize, sequelize } = require('../models');
+
 const { Op } = Sequelize;
 
 const addUsuario = async (usuario) => {
@@ -59,7 +60,7 @@ const isCorreoAlreadyInUse = async (correo) => {
     try {
         const existingCorreo = await Usuario.findOne({
             attributes: ['correo'],
-            where: { correo: correo }
+            where: { correo }
         });
         return existingCorreo !== null;
     } catch (err) {
@@ -73,8 +74,7 @@ const getUsuarios = async (limit = 25, offset = 0) => {
             .findAndCountAll({ limit, offset });
         const usuarios = result.rows;
         const total = result.count;
-        const inactiveModulos = await countInactiveUsers();
-        return {usuarios, total, totalInactivos: inactiveModulos};
+        return {usuarios, total};
     } catch (err) {
         throw new Error('Error al obtener lista de usuarios: ' + err.message);
     }
@@ -168,5 +168,6 @@ module.exports = {
     isCorreoAlreadyInUse,
     updateUsuario,
     getRol,
-    getIndicadoresFromUser
+    getIndicadoresFromUser,
+    countInactiveUsers
 }

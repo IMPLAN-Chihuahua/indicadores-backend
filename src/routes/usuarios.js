@@ -240,6 +240,7 @@ router.get(
  */
 router.patch(
     '/:idUser',
+    uploadImage('usuarios'),
     paramValidationRules(),
     updateValidationRules(),
     validate,
