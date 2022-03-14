@@ -140,7 +140,7 @@ const filterModulosValidationRules = () => {
 
 const paramValidationRules = () => {
     return [
-        param(['idModulo', 'idIndicador', 'idUser'])
+        param(['idModulo', 'idIndicador', 'idUser', 'idOds', 'idCobertura', 'idUnidadMedida'])
             .optional()
             .isInt().withMessage('Campo debe ser entero')
             .toInt()
@@ -153,7 +153,7 @@ const paramValidationRules = () => {
         param(["format"])
             .optional()
             .isIn(['csv', 'xlsx', 'pdf', 'json'])
-            .withMessage('formato debe ser csv, xlsx, pdf o json')
+            .withMessage('formato debe ser csv, xlsx, pdf o json'),
     ];
 };
 

@@ -12,9 +12,10 @@ const SALT_ROUNDS = 10;
 const getUsers = async (req, res) => {
     const page = req.matchedData.page || 1;
     const perPage = req.matchedData.per_page || 25;
-
+    const { searchQuery } = req.matchedData;
+    
     try {
-        const { usuarios, total } = await getUsuarios(perPage, (page - 1) * perPage);
+        const { usuarios, total } = await getUsuarios(perPage, (page - 1) * perPage, searchQuery);
         const totalInactivos = await countInactiveUsers();
         const totalPages = Math.ceil(total / perPage);
 
@@ -43,7 +44,7 @@ const createUser = async (req, res) => {
     const avatar = `images/${req.file ? req.file.originalName : 'avatar.jpg'}`;
     try {
         if (await isCorreoAlreadyInUse(correo)) {
-            return res.status(409).json({ message: 'Correo no disponible' })
+            return res.status(409).send('Correo no disponible')
         }
         const hashedClave = await bcrypt.hash(clave, SALT_ROUNDS);
         const savedUser = await addUsuario({
