@@ -106,6 +106,7 @@ const createOds = async (data) => {
     console.log(data);
     try {
         const result = await Ods.create({nombre: data});
+        console.log(result);
         return result;
     } catch (err) {
         throw new Error('Error al crear Ods: ' + err.message);
@@ -114,7 +115,7 @@ const createOds = async (data) => {
 
 const createUnidadMedida = async (data) => {
     try {
-        const result = await UnidadMedida.create(data);
+        const result = await UnidadMedida.create({nombre: data});
         return result;
     } catch (err) {
         throw new Error('Error al crear Unidad Medida: ' + err.message);
@@ -123,7 +124,7 @@ const createUnidadMedida = async (data) => {
 
 const createCobertura = async (data) => {
     try {
-        const result = await CoberturaGeografica.create(data);
+        const result = await CoberturaGeografica.create({nombre: data});
         return result;
     } catch (err) {
         throw new Error('Error al crear Cobertura: ' + err.message);

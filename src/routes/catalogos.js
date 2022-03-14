@@ -94,16 +94,23 @@ catalogoRouter.route('/')
 // GET ALL
 /**
  * @swagger
- *   /catalogos/ods:
+ *   /catalogos/{catalog}:
  *     get:
- *       summary: Get a list of Ods
- *       description: Returns a list of Ods
+ *       summary: Get a list of catalog items
+ *       description: Returns a list of catalog items
  *       tags: [Catalogos]
  *       security:
  *         - bearer: []
+ *       parameters:
+ *         - name: catalog
+ *           in: path
+ *           required: true
+ *           schema:
+ *             type: string
+ *             enum: [ods, cobertura, unidadMedida]
  *       responses:
  *         200:
- *           description: A very friendly list of Ods
+ *           description: A very friendly list of items
  *           content:
  *             application/json:
  *               schema:
@@ -115,12 +122,19 @@ catalogoRouter.route('/')
 // CREATE ONE
 /**
  * @swagger
- *   /catalogos/ods:
+ *   /catalogos/{catalog}:
  *     post:
  *       summary: Creates an Ods
  *       tags: [Catalogos]
  *       security:
  *         - bearer: []
+ *       parameters:
+ *         - name: catalog
+ *           in: path
+ *           required: true
+ *           schema:
+ *             type: string
+ *             enum: [ods, cobertura, unidadMedida]
  *       requestBody:
  *         content:
  *           application/json:
@@ -160,7 +174,7 @@ catalogoRouter.route('/')
  *             type: string
  *             format: string
  *             description: Catalog to update
- *             enum: [ods, coberturaGeografica, unidadMedida]
+ *             enum: [ods, cobertura, unidadMedida]
  *       security:
  *         - bearer: []
  *       requestBody:
@@ -201,7 +215,7 @@ catalogoRouter.route('/')
  *           schema:
  *             type: string
  *             description: Catalog to delete
- *             enum: [ods, coberturaGeografica, unidadMedida]
+ *             enum: [ods, cobertura, unidadMedida]
  *       security:
  *         - bearer: []
  *       responses:

@@ -54,9 +54,7 @@ const getOdsById = async (req, res) => {
 
 const createOds = async (req, res) => {
     const {nombre}  = req.body;
-    console.log(nombre);
     const nombreExists = await catalogosService.getOdsByName(nombre);
-    console.log(nombreExists);
     try {
         if (nombreExists) {
             return res.status(409).json({ message: 'Ods already exists' });
@@ -122,7 +120,7 @@ const getCoberturaById = async (req, res) => {
 };
 
 const createCobertura = async (req, res) => {
-    const nombre  = req.body;
+    const {nombre}  = req.body;
     const nombreExists = await catalogosService.getCoberturaByName(nombre);
     try {
         if (nombreExists) {
@@ -188,7 +186,7 @@ const getUnidadById = async (req, res) => {
 };
 
 const createUnidad = async (req, res) => {
-    const nombre  = req.body;
+    const {nombre}  = req.body;
     const nombreExists = await catalogosService.getUnidadMedidaByName(nombre);
     try {
         if (nombreExists) {
