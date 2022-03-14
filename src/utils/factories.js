@@ -100,11 +100,32 @@ const aRol = (id) => ({
         updatedAt: new Date()
     });
 
+
+
+/** CATÁLOGOS  */  
+const anOds = (id) => ({
+    id,
+    nombre: faker.random.word(),
+});
+
+const anUnidadMedida = (id) => ({
+    id,
+    nombre: faker.random.word(),
+});
+
+const aCoberturaGeografica = (id) => ({
+    id,
+    nombre: faker.random.word(),
+});
+
 module.exports = {
     anIndicador,
     aUser,
     aModulo,
     aDummyWithName,
     aRol,
-    indicadorToCreate
+    indicadorToCreate,
+    anOds,
+    anUnidadMedida,
+    aCoberturaGeografica
 };
