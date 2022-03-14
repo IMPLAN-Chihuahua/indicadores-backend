@@ -53,8 +53,10 @@ const getOdsById = async (req, res) => {
 };
 
 const createOds = async (req, res) => {
-    const nombre  = req.body;
+    const {nombre}  = req.body;
+    console.log(nombre);
     const nombreExists = await catalogosService.getOdsByName(nombre);
+    console.log(nombreExists);
     try {
         if (nombreExists) {
             return res.status(409).json({ message: 'Ods already exists' });
@@ -75,6 +77,7 @@ const updateOds = async (req, res) => {
             return res.status(409).json({ message: 'Ods already exists' });
         }
         const ods = await catalogosService.updateOds(id, nombre);
+        
         return res.status(200).json({ ods });
     } catch (err) {
         return res.status(500).json({ error: err });

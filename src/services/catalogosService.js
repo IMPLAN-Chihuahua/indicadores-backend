@@ -102,8 +102,10 @@ const getCoberturaByName = async (name) => {
 
 /** WRITE  */
 const createOds = async (data) => {
+    console.log('here');
+    console.log(data);
     try {
-        const result = await Ods.create(data);
+        const result = await Ods.create({nombre: data});
         return result;
     } catch (err) {
         throw new Error('Error al crear Ods: ' + err.message);
@@ -131,7 +133,7 @@ const createCobertura = async (data) => {
 /** UPDATE   */
 const updateOds = async (id, data) => {
     try {
-        const result = await Ods.update({...data}, 
+        const result = await Ods.update({nombre: data}, 
             { 
                 where: { id: id } 
             });

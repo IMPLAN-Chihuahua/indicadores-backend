@@ -91,6 +91,128 @@ catalogoRouter.route('/')
 
 /** ADMINISTRATIVE SECTION  */
 
+// GET ALL
+/**
+ * @swagger
+ *   /catalogos/ods:
+ *     get:
+ *       summary: Get a list of Ods
+ *       description: Returns a list of Ods
+ *       tags: [Catalogos]
+ *       security:
+ *         - bearer: []
+ *       responses:
+ *         200:
+ *           description: A very friendly list of Ods
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 %ref: '#/components/schemas/Ods'
+ *         500:
+ *           description: Internal server error
+ */
+
+// CREATE ONE
+/**
+ * @swagger
+ *   /catalogos/ods:
+ *     post:
+ *       summary: Creates an Ods
+ *       tags: [Catalogos]
+ *       security:
+ *         - bearer: []
+ *       requestBody:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 nombre:
+ *                   type: string 
+ *       responses:
+ *         200:
+ *           description: Ods created
+ *         409:
+ *           description: Ods already exists
+ *         500:
+ *           description: Internal server error
+ */
+
+// UPDATE ONE
+/**
+ * @swagger
+ *   /catalogos/{catalog}/{idOds}:
+ *     patch:
+ *       summary: Updates an ODS
+ *       tags: [Catalogos]
+ *       parameters:
+ *         - name: idOds
+ *           in: path
+ *           required: true
+ *           schema:
+ *             type: integer
+ *             format: int64
+ *             description: Identifier of the Ods
+ *         - name: catalog
+ *           in: path
+ *           required: true
+ *           schema:
+ *             type: string
+ *             format: string
+ *             description: Catalog to update
+ *             enum: [ods, coberturaGeografica, unidadMedida]
+ *       security:
+ *         - bearer: []
+ *       requestBody:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties: 
+ *                 nombre:
+ *                   type: string
+ *       responses:
+ *         200:
+ *           description: Ods updated
+ *         404:
+ *           description: Ods not found
+ *         500:
+ *           description: Internal server error
+ *  */   
+
+// DELETE ONE
+/**
+ * @swagger
+ *   /catalogos/{catalog}/{idOds}:
+ *     delete:
+ *       summary: Deletes an ODS
+ *       tags: [Catalogos]
+ *       parameters:
+ *         - name: idOds
+ *           in: path
+ *           required: true
+ *           schema:
+ *             type: integer
+ *             format: int64
+ *             description: Identifier of the Ods
+ *         - name: catalog
+ *           in: path
+ *           required: true
+ *           schema:
+ *             type: string
+ *             description: Catalog to delete
+ *             enum: [ods, coberturaGeografica, unidadMedida]
+ *       security:
+ *         - bearer: []
+ *       responses:
+ *         200:
+ *           description: Ods deleted
+ *         404:
+ *           description: Ods not found
+ *         500:
+ *           description: Internal server error
+ *  */  
+
 catalogoRouter.route('/ods')
     .get(
         verifyJWT,
@@ -105,6 +227,7 @@ catalogoRouter.route('/ods/:idOds')
         Catalogos.getOdsById
     );
    
+ 
 catalogoRouter.route('/ods/:idOds')
     .patch(
         verifyJWT,
@@ -118,6 +241,7 @@ catalogoRouter.route('/ods')
         verifyJWT,
         Catalogos.createOds);
 
+      
 catalogoRouter.route('/ods/:idOds')
     .delete(
         verifyJWT,
