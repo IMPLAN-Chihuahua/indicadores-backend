@@ -15,7 +15,7 @@ const { TOKEN_SECRET } = process.env;
 const fileUpload = require('../../middlewares/fileUpload');
 
 
-describe.only('/modulos', function () {
+describe('/modulos', function () {
     const token = jwt.sign({ sub: 1 }, TOKEN_SECRET, { expiresIn: '5h' });
 
     describe('GET', function () {
