@@ -33,6 +33,8 @@ describe('Modulo service', function() {
                 })
         });
 
+        it('Should return an empty array if not modulos were found');
+
         it('Should return an error if getAllModulos fails to retrieve data', function() {
             const findAndCountAllFake = sinon.fake.rejects(new Error());
             sinon.replace(Modulo, 'findAndCountAll', findAndCountAllFake);
