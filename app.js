@@ -43,7 +43,7 @@ app.use(cors());
 app.use(helmet());
 
 // Log HTTP requests 
-app.use(morgan('\t:method :url :status :res[content-length] - :response-time ms'));
+app.use(morgan('dev'));
 
 // Parse data from requests
 app.use(express.json());
@@ -54,7 +54,7 @@ app.use('/api/v1/documentation', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 
 // Define routes
-app.use('/api/v1/login', require('./src/routes/auth'));
+app.use('/api/v1/auth', require('./src/routes/auth'));
 app.use('/api/v1/usuarios', require('./src/routes/usuarios'));
 app.use('/api/v1/roles', require('./src/routes/roles'));
 app.use('/api/v1/modulos', require('./src/routes/modulos'));
