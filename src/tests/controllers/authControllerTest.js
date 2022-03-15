@@ -23,7 +23,7 @@ describe("auth controller", function () {
     sinon.replace(bcrypt, "compare", compareFake);
     chai
       .request(app)
-      .post("/api/v1/login")
+      .post("/api/v1/auth/login")
       .set("Accept", "application/json")
       .set("Content-Type", "application/json")
       .send({ correo: "johndoe@email.com", clave: "password" })
@@ -43,7 +43,7 @@ describe("auth controller", function () {
     sinon.replace(bcrypt, "compare", compareFake);
     chai
       .request(app)
-      .post("/api/v1/login")
+      .post("/api/v1/auth/login")
       .set("Accept", "application/json")
       .set("Content-Type", "application/json")
       .send({ correo: "johndoe@email.com", clave: "password" })
@@ -63,7 +63,7 @@ describe("auth controller", function () {
     sinon.replace(bcrypt, "compare", compareFake);
     chai
       .request(app)
-      .post("/api/v1/login")
+      .post("/api/v1/auth/login")
       .set("Accept", "application/json")
       .set("Content-Type", "application/json")
       .send({ correo: "johndoe@email.com", clave: "password" })
@@ -83,7 +83,7 @@ it("Should fail if user is disable", function (done) {
     sinon.replace(bcrypt, "compare", compareFake);
     chai
       .request(app)
-      .post("/api/v1/login")
+      .post("/api/v1/auth/login")
       .set("Accept", "application/json")
       .set("Content-Type", "application/json")
       .send({ correo: "johndoe@email.com", clave: "password" })
@@ -103,7 +103,7 @@ it("Should fail", function (done) {
   sinon.replace(bcrypt, "compare", compareFake);
   chai
     .request(app)
-    .post("/api/v1/login")
+    .post("/api/v1/auth/login")
     .set("Accept", "application/json")
     .set("Content-Type", "application/json")
     .send({ correo: "johndoe@email.com", clave: "password" })
