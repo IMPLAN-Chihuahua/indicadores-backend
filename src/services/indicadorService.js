@@ -12,17 +12,18 @@ const {
   sequelize,
   Sequelize
 } = require("../models");
+
 const { Op } = Sequelize;
 
-const getIndicadores = async (page = 1, per_page = 15, matchedData) => {
+const getIndicadores = async (page, perPage, matchedData) => {
   const result = await Indicador.findAndCountAll({
     where: {
       idModulo: matchedData.idModulo,
       ...validateCatalog(matchedData),
       ...getIndicadorFilters(matchedData),
     },
-    limit: per_page,
-    offset: per_page * (page - 1),
+    limit: perPage,
+    offset: perPage * (page - 1),
     order: [getIndicadoresSorting(matchedData)],
     include: getIndicadorIncludes(matchedData),
     attributes: [
@@ -66,7 +67,7 @@ const getIndicador = async (idIndicador, Format) => {
     },
   ]
   let limit = [];
-  typeof Format != 'undefined' ? limit = historicos[1] : limit = historicos[0];
+  limit = typeof Format !== 'undefined' ? historicos[1] : historicos[0];
   const indicador = await Indicador.findOne({
     where: {
       id: idIndicador,
@@ -137,38 +138,37 @@ const getIndicador = async (idIndicador, Format) => {
   });
   if (typeof Format === 'undefined' || indicador === null) {
     return indicador;
-  } else {
-    return { ...indicador.dataValues };
   }
+  return { ...indicador.dataValues };
 }
 
-const getAllIndicadores = async (page = 1, per_page = 5, matchedData) => {
+const getAllIndicadores = async (page, perPage, matchedData) => {
   try {
-  const result = await Indicador.findAndCountAll({
-    where: getAllIndicadoresFilters(matchedData),
-    order: getIndicadoresSorting(matchedData),
-    limit: per_page,
-    offset: (page - 1) * per_page,
-  });
-  return {indicadores: result.rows, total: result.count};
-  } catch(err) {
+    const result = await Indicador.findAndCountAll({
+      where: getAllIndicadoresFilters(matchedData),
+      order: getIndicadoresSorting(matchedData),
+      limit: perPage,
+      offset: (page - 1) * perPage,
+    });
+    return { indicadores: result.rows, total: result.count };
+  } catch (err) {
     throw new Error(`Error al obtener los indicadores: ${err.message}`);
   }
 }
 
 
 const getAllIndicadoresFilters = (matchedData) => {
-  const {searchQuery} = matchedData;
-  if(searchQuery){
+  const { searchQuery } = matchedData;
+  if (searchQuery) {
     const filter = {
       [Op.or]: [
-        {nombre: {[Op.like]: `%${searchQuery}%`}},
-        {definicion: {[Op.like]: `%${searchQuery}%`}},
-        {codigo: {[Op.like]: `%${searchQuery}%`}},
-        {codigoObjeto : {[Op.like]: `%${searchQuery}%`}},
-        {tendenciaActual: {[Op.like]: `%${searchQuery}%`}},
-        {tendenciaDeseada: {[Op.like]: `%${searchQuery}%`}},
-        {observaciones: {[Op.like]: `%${searchQuery}%`}},
+        { nombre: { [Op.like]: `%${searchQuery}%` } },
+        { definicion: { [Op.like]: `%${searchQuery}%` } },
+        { codigo: { [Op.like]: `%${searchQuery}%` } },
+        { codigoObjeto: { [Op.like]: `%${searchQuery}%` } },
+        { tendenciaActual: { [Op.like]: `%${searchQuery}%` } },
+        { tendenciaDeseada: { [Op.like]: `%${searchQuery}%` } },
+        { observaciones: { [Op.like]: `%${searchQuery}%` } },
       ]
     };
     return filter;
@@ -248,22 +248,51 @@ const getIndicadorIncludes = ({ idFuente }) => {
   return indicadorFilter;
 };
 
-const createIndicador = async (indicador) => {
-  try {
-    return await Indicador.create(indicador);
-  } catch (err) {
-    throw new Error('Error al crear indicador: ' + err.message);
+const getCreateIndicadorIncludes = (indicador) => {
+  const includes = [];
+  if (indicador.formula) {
+    includes.push({
+      association: Indicador.associations.formula,
+      include: [Formula.associations.variables]
+    });
   }
-}
+  if (indicador.historicos) {
+    includes.push(Indicador.associations.historicos);
+  }
+  if (indicador.fuentes) {
+    includes.push(Indicador.associations.fuentes);
+  }
+  if (indicador.mapa) {
+    includes.push(Indicador.associations.mapa);
+  }
+  return { include: includes };
+};
+
+const createIndicador = async (indicador) => {
+  const t = await sequelize.transaction();
+  try {
+
+    const createdIndicador = await Indicador.create(indicador, {
+      ...getCreateIndicadorIncludes(indicador), transaction: t
+    });
+
+    await t.commit();
+    return createdIndicador;
+
+  } catch (err) {
+    await t.rollback();
+    throw new Error(`Error al crear indicador: ${err.message}`);
+  }
+};
 
 const updateIndicador = async (id, indicador) => {
   try {
-    const affectedRows = await Indicador.update({ ...indicador }, { where: { id: id } });
+    const affectedRows = await Indicador.update({ ...indicador }, { where: { id } });
     return affectedRows > 0;
   } catch (err) {
-    throw new Error('Error al actualizar indicador: ' + err.message);
+    throw new Error(`Error al actualizar indicador: ${err.message}`);
   }
-}
+};
 
 module.exports = {
   getIndicadores,
