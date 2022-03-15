@@ -52,7 +52,8 @@ const getUsuarioById = async (id) => {
 
 const getUsuarioByCorreo = async (correo) => {
     try {
-        return await Usuario.findOne({ where: { correo } });
+        const usuario = await Usuario.findOne({ where: { correo } });
+        return usuario;
     } catch (err) {
         throw (new Error(`Error al buscar usuario por correo: ${err.message}`));
     }
@@ -193,11 +194,11 @@ const updateUserPasswordStatus = async (id) => {
             attributes: ['requestedPasswordChange'],
             where: { id: id }
         });
-        const newStatus = actualStatus.dataValues.requestedPasswordChange === 'SI' ? 'NO' : 'SI';
+        const newStatus = actualStatus.requestedPasswordChange === 'SI' ? 'NO' : 'SI';
         const affectedRows = await Usuario.update(
             { requestedPasswordChange: newStatus },
             { where: { id: id } });
-        return affectedRows > 0;
+        return affectedRows ? true : false;
     } catch (err) {
         throw new Error(`Error al actualizar contraseña: ${err.message}`);
     }

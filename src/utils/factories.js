@@ -78,7 +78,8 @@ const aUser = (id) => ({
         correo: faker.internet.email(),
         clave: faker.internet.password(8, false),
         activo: 'SI',
-        idRol: 1
+        idRol: 1,
+        requestedPasswordChange: id % 2 === 0 ? 'SI' : 'NO',
     });
 
 const aModulo = (id) => ({

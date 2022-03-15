@@ -21,6 +21,8 @@ const sendEmail = async (email, text) => {
         text: 'boop',
         html: `<a href="${recoverURL}">Password recover</a>`,
     });
+
+    return info ? true : false;
 };
 
 module.exports = {

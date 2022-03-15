@@ -104,7 +104,6 @@ const getCoberturaByName = async (name) => {
 const createOds = async (data) => {
     try {
         const result = await Ods.create({nombre: data});
-        console.log(result);
         return result;
     } catch (err) {
         throw new Error('Error al crear Ods: ' + err.message);
