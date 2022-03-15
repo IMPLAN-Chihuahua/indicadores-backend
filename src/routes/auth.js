@@ -43,7 +43,7 @@ const { loginValidationRules, validate, tokenValidationRules } = require('../mid
  */
 router.post('/login', loginValidationRules(), validate, login);
 
-router.get('/password-reset', generatePasswordRecoveryToken)
+router.post('/password-reset', generatePasswordRecoveryToken)
 
 router.patch('/password-reset/:token?', tokenValidationRules(), validate, handlePasswordRecoveryToken)
 
