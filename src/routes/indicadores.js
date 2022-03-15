@@ -1,8 +1,9 @@
 const express = require('express');
+
 const router = express.Router();
 const { paramValidationRules,
     validate,
-    createIndicadorValidationRules, 
+    createIndicadorValidationRules,
     updateIndicadorValidationRules,
     paginationValidationRules,
     filterIndicadoresValidationRules,
@@ -68,7 +69,12 @@ router.route('/:idIndicador')
  */
 
 router.route('/')
-    .get(verifyJWT, paginationValidationRules(), sortValidationRules(), filterIndicadoresValidationRules(), validate, getAllIndicadores);
+    .get(verifyJWT,
+        paginationValidationRules(),
+        sortValidationRules(),
+        filterIndicadoresValidationRules(),
+        validate,
+        getAllIndicadores);
 
 
 /**
