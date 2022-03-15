@@ -64,6 +64,14 @@ module.exports = (sequelize, DataTypes) => {
                 validate: {
                     isIn: [['SI', 'NO']]
                 }
+            },
+            requestedPasswordChange: {
+                type: DataTypes.STRING(2),
+                allowNull: true,
+                defaultValue: 'NO',
+                validate: {
+                    isIn: [['SI', 'NO']]
+                }
             }
         },
         {

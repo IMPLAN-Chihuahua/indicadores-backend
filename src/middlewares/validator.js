@@ -157,6 +157,15 @@ const paramValidationRules = () => {
     ];
 };
 
+const tokenValidationRules = () => {
+    return [
+        param(["token"])
+            .optional()
+            .isLength({ min: 1 })
+            .withMessage('token debe tener al menos 1 caracter'),
+    ];
+};
+
 const sortValidationRules = () => {
     return [
         query('sort_by')
@@ -314,6 +323,7 @@ module.exports = {
     createIndicadorValidationRules,
     filterModulosValidationRules,
     sortModulosValidationRules,
-    updateIndicadorValidationRules
+    updateIndicadorValidationRules,
+    tokenValidationRules
 };
 
