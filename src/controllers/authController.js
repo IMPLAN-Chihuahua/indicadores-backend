@@ -44,20 +44,23 @@ const generatePasswordRecoveryToken = async (req, res) => {
     try {
         const { correo } = req.body;
         const existingUser = await getUsuarioByCorreo(correo);
-        if (existingUser && existingUser.requestedPasswordChange === 'NO') {
+        if (existingUser) {
             const token = jwt.sign(
                 { sub: existingUser.id },
                 TOKEN_SECRET,
                 { expiresIn: '2h' }
             );
-            await updateUserPasswordStatus(existingUser.id);
+
+            if (existingUser.requestedPasswordChange === 'NO') {
+                ('Status changed');
+                const updater = await updateUserPasswordStatus(existingUser.id);
+            }
             const sender = await sendEmail(existingUser.correo, token);
-            return res.status(200).json({ token });
+            if (sender) {
+                return res.status(200).json({ message: 'Se ha enviado un correo de recuperación de contraseña' });
+            }
         }
-        if (!existingUser) {
-            return res.status(404).json({ message: "El usuario no existe" });
-        }
-        return res.status(401).json({ message: "El usuario ya ha solicitado un cambio de contraseña" });
+        return res.status(404).json({ message: "El usuario no existe" });
     } catch (err) {
         console.log(err);
         return res.status(500).json({ message: err.message });

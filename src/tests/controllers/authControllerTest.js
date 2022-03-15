@@ -9,7 +9,7 @@ const { aUser } = require("../../utils/factories");
 chai.use(chaiHttp);
 const sinon = require("sinon");
 
-describe("auth controller", function () {
+describe.only("auth controller", function () {
 
   this.afterEach(function () {
     sinon.restore();
@@ -96,27 +96,43 @@ it("Should fail if user is disable", function (done) {
 
 });
 
-it("Should fail", function (done) {
-  const findOneFakeDisable = sinon.fake.rejects(new Error('NA'));
-  const compareFake = sinon.fake.resolves(true);
-  sinon.replace(Usuario, "findOne", findOneFakeDisable);
-  sinon.replace(bcrypt, "compare", compareFake);
-  chai
-    .request(app)
-    .post("/api/v1/auth/login")
-    .set("Accept", "application/json")
-    .set("Content-Type", "application/json")
-    .send({ correo: "johndoe@email.com", clave: "password" })
-    .end(function (err, res) {
-      expect(res).to.have.status(500);
-      done();
-    });
+  it("Should fail", function (done) {
+    const findOneFakeDisable = sinon.fake.rejects(new Error('NA'));
+    const compareFake = sinon.fake.resolves(true);
+    sinon.replace(Usuario, "findOne", findOneFakeDisable);
+    sinon.replace(bcrypt, "compare", compareFake);
+    chai
+      .request(app)
+      .post("/api/v1/auth/login")
+      .set("Accept", "application/json")
+      .set("Content-Type", "application/json")
+      .send({ correo: "johndoe@email.com", clave: "password" })
+      .end(function (err, res) {
+        expect(res).to.have.status(500);
+        done();
+      });
 
-});
+  });
 
-
- 
-
-  
+  it.only('Should generate an user token for password recovery', function(done) {
+    const findOneFake = sinon.fake.resolves(aUser(1));
+    const updateOneFake = sinon.fake.resolves(aUser(1));
+    
+    sinon.replace(Usuario, "findOne", findOneFake);
+    sinon.replace(Usuario, "update", updateOneFake);
+    
+    chai
+      .request(app)
+      .get("/api/v1/auth/password-reset")
+      .set("Accept", "application/json")
+      .set("Content-Type", "application/json")
+      .send({ correo: "mailer@mail.com" })
+      .end(function (err, res) {
+        expect(res).to.have.status(200);
+        expect(res.body).not.to.be.empty;
+        expect(res.body).to.be.an("object");
+        done();
+      });
+  });
 
 });
