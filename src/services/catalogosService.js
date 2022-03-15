@@ -102,8 +102,6 @@ const getCoberturaByName = async (name) => {
 
 /** WRITE  */
 const createOds = async (data) => {
-    console.log('here');
-    console.log(data);
     try {
         const result = await Ods.create({nombre: data});
         console.log(result);

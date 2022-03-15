@@ -551,7 +551,6 @@ describe('/catalogos', function () {
                     .get('/api/v1/catalogos/unidadMedida')
                     .set('Authorization', `Bearer ${token}`)
                     .end(function (err, res) {
-                        console.log(res.body);
                         expect(findAndCountAllFake.calledOnce).to.be.true;
                         expect(err).to.be.null;
                         expect(res).to.have.status(200);

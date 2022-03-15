@@ -27,12 +27,14 @@ const getUsuarioById = async (id) => {
         const usuario = await Usuario.findOne({
             where: { id },
             attributes: [
+                'id',
                 'correo',
                 'nombres',
                 'apellidoPaterno',
                 'apellidoMaterno',
                 'activo',
                 'avatar',
+                'requestedPasswordChange',
                 [sequelize.literal('"rol"."id"'), "idRol"],
                 [sequelize.literal('"rol"."rol"'), "roles"],
                 [sequelize.literal('"rol"."activo"'), "activo"],
@@ -105,7 +107,6 @@ const countInactiveUsers = async () => {
     }
 }
 
-
 // returns true if usuario was updated
 const updateUsuario = async (id, { nombres, apellidoPaterno, apellidoMaterno, activo, avatar }) => {
     try {
@@ -175,6 +176,32 @@ const getIndicadoresFromUser = async (id) => {
     }
 };
 
+const updateUserPassword = async (id, password) => {
+    try {
+        const affectedRows = await Usuario.update(
+            { clave: password },
+            { where:{ id: id} });
+        return affectedRows > 0;
+    } catch (err) {
+        throw new Error(`Error al actualizar contraseña: ${err.message}`);
+    }
+};
+
+const updateUserPasswordStatus = async (id) => {
+    try {
+        const actualStatus = await Usuario.findOne({
+            attributes: ['requestedPasswordChange'],
+            where: { id: id }
+        });
+        const newStatus = actualStatus.dataValues.requestedPasswordChange === 'SI' ? 'NO' : 'SI';
+        const affectedRows = await Usuario.update(
+            { requestedPasswordChange: newStatus },
+            { where: { id: id } });
+        return affectedRows > 0;
+    } catch (err) {
+        throw new Error(`Error al actualizar contraseña: ${err.message}`);
+    }
+};
 
 module.exports = {
     addUsuario,
@@ -185,5 +212,7 @@ module.exports = {
     updateUsuario,
     getRol,
     getIndicadoresFromUser,
-    countInactiveUsers
+    countInactiveUsers,
+    updateUserPassword,
+    updateUserPasswordStatus
 }
