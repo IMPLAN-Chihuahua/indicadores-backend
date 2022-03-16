@@ -159,7 +159,7 @@ const paramValidationRules = () => {
 
 const sortValidationRules = () => {
     return [
-        query('sort_by')
+        query('sortBy')
             .optional()
             .isIn(['nombre'])
             .withMessage('orden debe ser ascendente o descendente'),
@@ -173,7 +173,7 @@ const sortValidationRules = () => {
 
 const sortModulosValidationRules = () => {
     return [
-        query('sort_by')
+        query('sortBy')
             .optional()
             .isIn(['id', 'codigo', 'temaIndicador', 'createdAt', 'updatedAt', 'urlImagen', 'color', 'observaciones', 'activo'])
             .withMessage('Valor de ordenamiento no válido con la solicitud'),
