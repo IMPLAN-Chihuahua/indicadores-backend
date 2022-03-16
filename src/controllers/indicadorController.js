@@ -25,7 +25,7 @@ const getIndicadores = async (req, res) => {
 
 const getIndicador = async (req, res) => {
   try {
-    const { idIndicador, format } = req.matchedData.idIndicador;
+    const { idIndicador, format } = req.matchedData;
     const indicador = await IndicadorService.getIndicador(idIndicador, format);
     if (indicador === null) {
       return res.sendStatus(404);

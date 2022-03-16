@@ -104,15 +104,16 @@ const aMapa = () => ({
 });
 
 const aUser = (id) => ({
-    id,
-    nombres: faker.name.firstName(),
-    apellidoPaterno: faker.name.lastName(),
-    apellidoMaterno: faker.name.lastName(),
-    correo: faker.internet.email(),
-    clave: faker.internet.password(8, false),
-    activo: 'SI',
-    idRol: 1
-});
+        id,
+        nombres: faker.name.firstName(),
+        apellidoPaterno: faker.name.lastName(),
+        apellidoMaterno: faker.name.lastName(),
+        correo: faker.internet.email(),
+        clave: faker.internet.password(8, false),
+        activo: 'SI',
+        idRol: 1,
+        requestedPasswordChange: id % 2 === 0 ? 'SI' : 'NO',
+    });
 
 const aModulo = (id) => ({
     id,

@@ -9,8 +9,7 @@ const {
     paginationValidationRules,
     validate,
     paramValidationRules, 
-    updateValidationRules,
-    filterModulosValidationRules} = require('../middlewares/validator');
+    updateValidationRules} = require('../middlewares/validator');
 /**
  * @swagger
  *   components:
@@ -98,13 +97,6 @@ const {
  *             type: integer
  *           description: number of usuarios in the data array result
  *           example: 25
- *         - in: query
- *           name: searchQuery
- *           required: false
- *           schema:
- *             type: string
- *           description: Search query to filter users
- *           example: john
  *       responses: 
  *         200:
  *           description: A list of users
@@ -144,7 +136,6 @@ const {
 router.get(
     '/',
     paginationValidationRules(),
-    filterModulosValidationRules(),
     validate,
     verifyJWT,
     verifyRoles(['ADMIN']),
@@ -249,7 +240,6 @@ router.get(
  */
 router.patch(
     '/:idUser',
-    uploadImage('usuarios'),
     paramValidationRules(),
     updateValidationRules(),
     validate,
