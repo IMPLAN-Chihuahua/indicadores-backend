@@ -92,7 +92,7 @@ const {
  *           description: the page number
  *           example: 1
  *         - in: query
- *           name: per_page
+ *           name: perPage
  *           required: false
  *           schema:
  *             type: integer
@@ -117,16 +117,16 @@ const {
  *                     type: integer
  *                     example: 1
  *                     description: page number
- *                   per_page:
+ *                   perPage:
  *                     type: integer
  *                     example: 25
  *                     description: items per page
  *                   total:
  *                     type: integer
  *                     description: total number of usuarios
- *                   total_pages:
+ *                   totalPages:
  *                     type: integer
- *                     description: total number of pages with per_page elements
+ *                     description: total number of pages with perPage elements
  *                   data:
  *                     type: array
  *                     items: 

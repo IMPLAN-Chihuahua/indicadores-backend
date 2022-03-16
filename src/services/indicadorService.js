@@ -14,15 +14,15 @@ const {
 } = require("../models");
 const { Op } = Sequelize;
 
-const getIndicadores = async (page = 1, per_page = 15, matchedData) => {
+const getIndicadores = async (page = 1, perPage = 15, matchedData) => {
   const result = await Indicador.findAndCountAll({
     where: {
       idModulo: matchedData.idModulo,
       ...validateCatalog(matchedData),
       ...getIndicadorFilters(matchedData),
     },
-    limit: per_page,
-    offset: per_page * (page - 1),
+    limit: perPage,
+    offset: perPage * (page - 1),
     order: [getIndicadoresSorting(matchedData)],
     include: getIndicadorIncludes(matchedData),
     attributes: [
@@ -142,13 +142,13 @@ const getIndicador = async (idIndicador, Format) => {
   }
 }
 
-const getAllIndicadores = async (page = 1, per_page = 5, matchedData) => {
+const getAllIndicadores = async (page = 1, perPage = 5, matchedData) => {
   try {
   const result = await Indicador.findAndCountAll({
     where: getAllIndicadoresFilters(matchedData),
     order: getIndicadoresSorting(matchedData),
-    limit: per_page,
-    offset: (page - 1) * per_page,
+    limit: perPage,
+    offset: (page - 1) * perPage,
   });
   return {indicadores: result.rows, total: result.count};
   } catch(err) {
@@ -205,9 +205,9 @@ const getIndicadorFilters = (matchedData) => {
 };
 
 // Sorting logic for list5
-const getIndicadoresSorting = ({ sort_by, order }) => {
+const getIndicadoresSorting = ({ sortBy, order }) => {
   const arrangement = [];
-  arrangement.push([sort_by || "id", order || "ASC"]);
+  arrangement.push([sortBy || "id", order || "ASC"]);
   return arrangement;
 };
 

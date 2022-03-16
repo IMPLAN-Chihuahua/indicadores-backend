@@ -11,7 +11,7 @@ const SALT_ROUNDS = 10;
 
 const getUsers = async (req, res) => {
     const page = req.matchedData.page || 1;
-    const perPage = req.matchedData.per_page || 25;
+    const perPage = req.matchedData.perPage || 25;
     const { searchQuery } = req.matchedData;
     
     try {
@@ -21,9 +21,9 @@ const getUsers = async (req, res) => {
 
         return res.status(200).json({
             page,
-            per_page: perPage,
+            perPage: perPage,
             total,
-            total_pages: totalPages,
+            totalPages: totalPages,
             totalInactivos,
             data: [...usuarios]
         });

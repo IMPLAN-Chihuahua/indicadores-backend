@@ -172,7 +172,7 @@ moduloRouter.route('/')
  *             format: int64
  *             minimum: 1
  *             description: Page number
- *         - name: per_page
+ *         - name: perPage
  *           in: query
  *           required: false
  *           schema:

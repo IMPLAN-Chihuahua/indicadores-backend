@@ -48,16 +48,16 @@ const createModulo = async (req, res) => {
 
 const getAllModulos = async (req, res) => {
     const page = req.matchedData.page || 1;
-    const perPage = req.matchedData.per_page || 15;
+    const perPage = req.matchedData.perPage || 15;
     try {
         const { modulos, total, totalInactivos } = await moduloService.getAllModulos(page, perPage, req.matchedData);
         const totalPages = Math.ceil(total / perPage);
         return res.status(200).json({
             page,
-            per_page: perPage,
-            total_pages: totalPages,
+            perPage: perPage,
+            totalPages: totalPages,
             total,
-            total_inactivos: totalInactivos,
+            totalInactivos: totalInactivos,
             data: modulos
         });
     } catch (err) {
