@@ -1,13 +1,19 @@
+/* eslint-disable func-names */
+/* eslint-disable no-unused-expressions */
+/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable prefer-arrow-callback */
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-chai.use(chaiHttp);
-const expect = chai.expect;
-const { Indicador, Modulo, Usuario, UsuarioIndicador } = require('../../models');
-const { app, server } = require('../../../app');
 const sinon = require('sinon');
-const { anIndicador, aModulo, aUser, indicadorToCreate } = require('../../utils/factories');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+
+chai.use(chaiHttp);
+const { expect } = chai;
+const { Indicador, Modulo, Usuario, UsuarioIndicador } = require('../../models');
+const { anIndicador, aModulo, indicadorToCreate, aFormula, aVariable, anHistorico, aMapa } = require('../../utils/factories');
+const { app, server } = require('../../../app');
+
 const { TOKEN_SECRET } = process.env;
 
 describe('v1/indicadores', function () {
@@ -294,7 +300,113 @@ describe('v1/indicadores', function () {
                 });
         });
 
-        it('Should not create indicador due to semantic errors', function (done) {
+        it('Should create an indicador with formula and variables', function(done) {
+            const toCreate = indicadorToCreate();
+            const formula = aFormula(1);
+            formula.variables = [aVariable(), aVariable()];
+            toCreate.formula = formula;
+            const createFake = sinon.fake.resolves(anIndicador(1));
+            sinon.replace(Indicador, 'create', createFake);
+            chai.request(app)
+                .post('/api/v1/indicadores')
+                .set({ Authorization: `Bearer ${validToken}` })
+                .send(toCreate)
+                .end(function(err, res) {
+                    expect(err).to.be.null;
+                    expect(res).to.have.status(201);
+                    done()
+                });
+        });
+
+        it('Should fail to create an indicador with formula and variables', function(done) {
+            const toCreate = indicadorToCreate();
+            const formula = aFormula(1);
+            const badVariable = aVariable();
+            badVariable.codigoAtributo = 'incorrect';
+            formula.variables = [badVariable];
+            toCreate.formula = formula;
+            chai.request(app)
+                .post('/api/v1/indicadores')
+                .set({ Authorization: `Bearer ${validToken}` })
+                .send(toCreate)
+                .end(function(err, res) {
+                    expect(err).to.be.null;
+                    expect(res).to.have.status(422);
+                    expect(res.body.errors).to.be.an('array');
+                    done()
+                });
+        });
+
+        it('Should create an indicador with historicos', function(done) {
+            const toCreate = indicadorToCreate();
+            toCreate.historicos = [anHistorico()];
+            const createFake = sinon.fake.resolves(anIndicador(1));
+            sinon.replace(Indicador, 'create', createFake);
+            chai.request(app)
+                .post('/api/v1/indicadores')
+                .set({ Authorization: `Bearer ${validToken}` })
+                .send(toCreate)
+                .end(function(err, res) {
+                    expect(err).to.be.null;
+                    expect(res).to.have.status(201);
+                    expect(createFake.calledOnce).to.be.true;
+                    done()
+                });
+        });
+
+        it('Should fail to create an indicador with bad formatted historicos', function(done) {
+            const toCreate = indicadorToCreate();
+            const badHistorico = anHistorico();
+            badHistorico.anio = 'not a year';
+            badHistorico.valor = 'not a number';
+            toCreate.historicos = [badHistorico];
+            chai.request(app)
+                .post('/api/v1/indicadores')
+                .set({ Authorization: `Bearer ${validToken}` })
+                .send(toCreate)
+                .end(function(err, res) {
+                    expect(err).to.be.null;
+                    expect(res).to.have.status(422);
+                    expect(res.body.errors).to.be.an('array').with.lengthOf(2);
+                    done()
+                });
+        });
+
+        it('Should create an indicador with a mapa', function(done) {
+            const toCreate = indicadorToCreate();
+            toCreate.mapa = aMapa();
+            const createFake = sinon.fake.resolves(anIndicador(1));
+            sinon.replace(Indicador, 'create', createFake);
+            chai.request(app)
+                .post('/api/v1/indicadores')
+                .set({ Authorization: `Bearer ${validToken}` })
+                .send(toCreate)
+                .end(function(err, res) {
+                    expect(err).to.be.null;
+                    expect(res).to.have.status(201);
+                    expect(createFake.calledOnce).to.be.true;
+                    done()
+                });
+        });
+
+        it('Should fail to create an indicador with a bad formatted mapa', function(done) {
+            const toCreate = indicadorToCreate();
+            const badMapa = aMapa();
+            badMapa.url = 'not a url pattern';
+            toCreate.mapa = badMapa;
+            chai.request(app)
+                .post('/api/v1/indicadores')
+                .set({ Authorization: `Bearer ${validToken}` })
+                .send(toCreate)
+                .end(function(err, res) {
+                    expect(err).to.be.null;
+                    expect(res).to.have.status(422);
+                    expect(res.body.errors).to.be.an('array').with.lengthOf(1);
+                    done()
+                });
+        });
+
+        it('Should fail to create indicador due to semantic errors', function (done) {
             const invalidIndicador = indicadorToCreate();
             invalidIndicador.codigo = 'not valid'
             chai.request(app)
