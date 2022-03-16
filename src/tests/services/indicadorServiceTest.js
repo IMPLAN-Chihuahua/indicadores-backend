@@ -1,10 +1,15 @@
+/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable no-unused-expressions */
+/* eslint-disable prefer-arrow-callback */
+/* eslint-disable func-names */
 const chai = require('chai');
-const expect = chai.expect;
-const { Indicador, UsuarioIndicador } = require('../../models');
 const sinon = require('sinon');
-const IndicadorService = require('../../services/indicadorService');
+
+const { expect } = chai;
+const { Indicador } = require('../../models');
 const { server } = require('../../../app');
-const { anIndicador, indicadorToCreate } = require('../../utils/factories');
+const { anIndicador, indicadorToCreate, aFormula, aVariable, anHistorico, aFuente, aMapa } = require('../../utils/factories');
+const IndicadorService = require('../../services/indicadorService');
 
 describe('Indicador service', function () {
 
@@ -19,7 +24,7 @@ describe('Indicador service', function () {
     });
 
     describe('Read operations', function () {
-        it('Returns a list of indicadores and the total number of them', function () {
+        it('Should return a list of indicadores and the total number of them', function () {
             const findAndCountAllFake = sinon.fake.resolves({ rows: indicadores, count: indicadores.length });
             sinon.replace(Indicador, 'findAndCountAll', findAndCountAllFake);
             return IndicadorService.getIndicadores(1, 15, { idModulo: 15 })
@@ -30,7 +35,7 @@ describe('Indicador service', function () {
                 });
         });
 
-        it('Returns an indicador', function () {
+        it('Should return an indicador', function () {
             const findOneFake = sinon.fake.resolves({ ...anIndicador(1) });
             sinon.replace(Indicador, 'findOne', findOneFake);
             return IndicadorService.getIndicador(1)
@@ -41,7 +46,7 @@ describe('Indicador service', function () {
                 })
         });
 
-        it('Rejects promise if there\'s an error', function () {
+        it('Should reject promise if an error occurs', function () {
             const findAndCountAllFake = sinon.fake.rejects(new Error());
             sinon.replace(Indicador, 'findAndCountAll', findAndCountAllFake);
             return IndicadorService.getIndicadores(1, 15, { idModulo: 15 })
@@ -62,47 +67,133 @@ describe('Indicador service', function () {
                     expect(res).to.be.null;
                     expect(findOneFake.calledOnce).to.be.true;
                     expect(findOneFake.args[0][0]).to.not.be.null;
-                })
+                });
         });
 
     });
 
     describe('Create operations', function () {
-
         it('Should create an indicador with no errors', function () {
-            const indicadorDummy = anIndicador();
+            const indicadorDummy = anIndicador(1);
             const createFake = sinon.fake.resolves({ dataValues: indicadorDummy });
             sinon.replace(Indicador, 'create', createFake);
             return IndicadorService.createIndicador(indicadorDummy)
                 .then(res => {
                     expect(res).to.not.be.undefined;
-                    expect(createFake.calledWith(indicadorDummy));
                     expect(createFake.calledOnce).to.be.true;
                 });
         });
 
         it('Should not create indicador, because connection to DB failed', function () {
-            const indicadorDummy = anIndicador().dataValues;
+            const indicadorDummy = anIndicador(1);
             const createFake = sinon.fake.rejects(new Error('Connection to DB failed'));
             sinon.replace(Indicador, 'create', createFake);
             return IndicadorService.createIndicador(indicadorDummy)
+                .then(res => {
+                    expect(res).to.be.null;
+                })
                 .catch(err => {
                     expect(err).to.not.be.undefined;
                     expect(createFake.calledOnce).to.be.true;
-                    expect(createFake.calledWith(indicadorDummy));
                 });
         });
 
         it('Should not create indicador, because it has constraint errors', function () {
-            const indicadorDummy = anIndicador().dataValues;
+            const indicadorDummy = anIndicador(1);
             const createFake = sinon.fake.rejects(new Error('Constraint Error'));
             sinon.replace(Indicador, 'create', createFake);
             return IndicadorService.createIndicador(indicadorDummy)
+                .then(res => {
+                    expect(res).to.be.null;
+                })
                 .catch(err => {
                     expect(err).to.not.be.undefined;
                     expect(createFake.calledOnce).to.be.true;
-                    expect(createFake.calledWith(indicadorDummy))
                 });
+        });
+
+        it('Should create indicador with a formula and variables', function () {
+            const toCreate = indicadorToCreate();
+            const formula = aFormula(1);
+            formula.variables = [aVariable(), aVariable()];
+            toCreate.formula = formula;
+            const createFake = sinon.fake.resolves(anIndicador(1));
+            sinon.replace(Indicador, 'create', createFake);
+            return IndicadorService.createIndicador(toCreate)
+                .then(res => {
+                    expect(res).to.not.be.undefined;
+                    expect(createFake.calledOnce).to.be.true;
+                });
+        });
+
+        it('Should fail to create an indicador', function () {
+            const toCreate = indicadorToCreate();
+            const createFake = sinon.fake.rejects(new Error('Formula Constraint Error'));
+            sinon.replace(Indicador, 'create', createFake);
+            return IndicadorService.createIndicador(toCreate)
+                .then(res => {
+                    expect(res).to.be.null;
+                })
+                .catch(err => {
+                    expect(err).to.not.be.undefined;
+                    expect(createFake.calledOnce).to.be.true;
+                    expect(err.message).to.contain('Formula Constraint Error')
+                });
+        });
+
+        it('Should create indicador with historicos', function () {
+            const toCreate = indicadorToCreate();
+            toCreate.historicos = [anHistorico(), anHistorico()];
+            const createFake = sinon.fake.resolves(anIndicador(1));
+            sinon.replace(Indicador, 'create', createFake);
+            return IndicadorService.createIndicador(toCreate)
+                .then(res => {
+                    expect(res).to.not.be.undefined;
+                    expect(createFake.calledOnce).to.be.true;
+                });
+        });
+
+        it('Should create indicador with fuentes', function () {
+            const toCreate = indicadorToCreate();
+            toCreate.fuentes = [aFuente(), aFuente()];
+            const createFake = sinon.fake.resolves(anIndicador(1));
+            sinon.replace(Indicador, 'create', createFake);
+            return IndicadorService.createIndicador(toCreate)
+                .then(res => {
+                    expect(res).to.not.be.undefined;
+                    expect(createFake.calledOnce).to.be.true;
+                });
+        });
+
+        it('Should create indicador with mapa', function () {
+            const toCreate = indicadorToCreate();
+            toCreate.mapa = aMapa();
+            const createFake = sinon.fake.resolves(anIndicador(1));
+            sinon.replace(Indicador, 'create', createFake);
+            return IndicadorService.createIndicador(toCreate)
+                .then(res => {
+                    expect(res).to.not.be.undefined;
+                    expect(createFake.calledOnce).to.be.true;
+                });
+        });
+
+        it('Should create indicador with every model embedded', function () {
+            this.timeout(5000);
+            const toCreate = indicadorToCreate();
+            const formula = aFormula(1);
+            formula.variables = [aVariable(), aVariable()];
+            toCreate.formula = formula;
+            toCreate.historicos = [anHistorico(), anHistorico()];
+            toCreate.fuentes = [aFuente(), aFuente()];
+            toCreate.mapa = aMapa();
+            const createFake = sinon.fake.resolves(anIndicador(1));
+            sinon.replace(Indicador, 'create', createFake);
+            return IndicadorService.createIndicador(toCreate)
+                .then(res => {
+                    expect(res).to.not.be.undefined;
+                    expect(createFake.calledOnce).to.be.true;
+                });
+
         });
     });
 

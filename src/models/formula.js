@@ -39,7 +39,7 @@ module.exports = (sequelize, DataTypes) => {
         plural: 'formulas'
       },
       modelName: 'Formula',
-      timestamps: false
+      timestamps: true
     }
   );
   return Formula;

@@ -9,7 +9,7 @@ const { aUser } = require("../../utils/factories");
 chai.use(chaiHttp);
 const sinon = require("sinon");
 
-describe.only("auth controller", function () {
+describe("auth controller", function () {
 
   this.afterEach(function () {
     sinon.restore();
@@ -114,7 +114,7 @@ it("Should fail if user is disable", function (done) {
 
   });
 
-  it.only('Should generate an user token for password recovery', function(done) {
+  it('Should generate an user token for password recovery', function(done) {
     const findOneFake = sinon.fake.resolves(aUser(1));
     const updateOneFake = sinon.fake.resolves(aUser(1));
     
