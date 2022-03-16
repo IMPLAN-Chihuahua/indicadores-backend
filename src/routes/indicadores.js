@@ -36,6 +36,10 @@ const { verifyJWT, verifyRoles } = require('../middlewares/auth');
  *             type: string
  *             description: Code for Indicator
  *             example: '001'
+ *           codigoObjeto:
+ *             type: string
+ *             description: SIGMUN code
+ *             example: '001'
  *           nombre:
  *             type: string
  *             description: Name of the Indicator
@@ -48,9 +52,9 @@ const { verifyJWT, verifyRoles } = require('../middlewares/auth');
  *             type: string
  *             description: Last value available for the Indicator
  *           anioUltimoValorDisponible:
- *             type: string
+ *             type: integer
  *             description: Year of the late information of an Indicador
- *             example: 2019
+ *             example: 2022
  *           tendenciaActual:
  *             type: string
  *             description: Tendency based on historical data
@@ -81,6 +85,10 @@ const { verifyJWT, verifyRoles } = require('../middlewares/auth');
  *             type: array
  *             items:
  *               $ref: '#/components/schemas/Historico'
+ *           idModulo:
+ *             type: integer
+ *             description: Module in which the indicador is part of
+ *             example: 1
  *           idOds:
  *             type: integer
  *             description: Identifier of the ODS (Objectivo de Desarrollo Sostenible)
@@ -130,6 +138,7 @@ const { verifyJWT, verifyRoles } = require('../middlewares/auth');
  *           anio:
  *             type: integer
  *             description: TODO
+ *             example: 2022
  *       Historico:
  *         type: object
  *         properties:
@@ -140,6 +149,7 @@ const { verifyJWT, verifyRoles } = require('../middlewares/auth');
  *             type: string
  *           anio:
  *             type: integer
+ *             example: 2022
  *           fuente:
  *             type: string     
  *       Fuente:
@@ -163,6 +173,7 @@ const { verifyJWT, verifyRoles } = require('../middlewares/auth');
  *           url:
  *             type: string
  *             description: TODO
+ *             example: 'http://example.com/map'
  */
 
 /**
