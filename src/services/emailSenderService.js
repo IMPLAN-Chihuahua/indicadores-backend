@@ -1,4 +1,6 @@
 const nodemailer = require('nodemailer');
+const fs = require("fs");
+const templateHtml = fs.readFileSync("./src/templates/email.html", "utf8");
 
 const sendEmail = async (email, text) => {
     const recoverURL = `http://localhost:8080/api/v1/auth/password-reset/${text}`;
@@ -19,7 +21,7 @@ const sendEmail = async (email, text) => {
         to: email,
         subject: 'Password Recovery',
         text: 'boop',
-        html: `<a href="${recoverURL}">Password recover</a>`,
+        html: templateHtml,
     });
 
     return info ? true : false;

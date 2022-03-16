@@ -120,7 +120,7 @@ it("Should fail if user is disable", function (done) {
     
     sinon.replace(Usuario, "findOne", findOneFake);
     sinon.replace(Usuario, "update", updateOneFake);
-    
+    this.timeout(1000000);
     chai
       .request(app)
       .get("/api/v1/auth/password-reset")

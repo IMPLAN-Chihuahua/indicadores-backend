@@ -16,7 +16,6 @@ const login = async (req, res) => {
 
         // compare existing user hashed clave against the hash of the clave in the request
         if (existingUser && await bcrypt.compare(clave, existingUser.clave)) {
-
             // denied access if account is disabled (status code)
             if (existingUser.activo === 'NO') {
                 return res.status(403).json({
@@ -52,7 +51,6 @@ const generatePasswordRecoveryToken = async (req, res) => {
             );
 
             if (existingUser.requestedPasswordChange === 'NO') {
-                ('Status changed');
                 const updater = await updateUserPasswordStatus(existingUser.id);
             }
             const sender = await sendEmail(existingUser.correo, token);
