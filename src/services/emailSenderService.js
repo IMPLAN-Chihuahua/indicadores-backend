@@ -1,9 +1,15 @@
 const nodemailer = require('nodemailer');
 const fs = require("fs");
 const templateHtml = fs.readFileSync("./src/templates/email.html", "utf8");
+const handlebars = require('handlebars');
 
-const sendEmail = async (email, text) => {
+const sendEmail = async (user, text) => {
     const recoverURL = `http://localhost:8080/api/v1/auth/password-reset/${text}`;
+    const nombres = user.nombres;
+    const todaysDate = new Date().getFullYear();
+    const template = handlebars.compile(templateHtml);
+    const html = template({ nombres, recoverURL, todaysDate, allowProtoPropertiesByDefault: true });
+    const plainText = `¿No puede visualizar el contenido? Visite el siguiente hipervinculo para reiniciar la contraseña: ${recoverURL}`;
     //TODO: REPLACE WITH PERSONAL EMAIL ACCOUNT
     //TODO: REPLACE WITH PERSONAL SMTP SERVER
     let transporter = nodemailer.createTransport({
@@ -18,10 +24,16 @@ const sendEmail = async (email, text) => {
 
     let info = await transporter.sendMail({
         from: '"John Doe 👻"',
-        to: email,
+        to: user.correo,
         subject: 'Password Recovery',
-        text: 'boop',
-        html: templateHtml,
+        text: plainText,
+        html: html,
+        attachments: [{
+            filename: 'logo.jpg',
+            path: './src/templates/logo.jpg',
+            cid: 'cid:logo',
+        }],
+        date: new Date(),
     });
 
     return info ? true : false;

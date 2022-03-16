@@ -53,7 +53,7 @@ const generatePasswordRecoveryToken = async (req, res) => {
             if (existingUser.requestedPasswordChange === 'NO') {
                 const updater = await updateUserPasswordStatus(existingUser.id);
             }
-            const sender = await sendEmail(existingUser.correo, token);
+            const sender = await sendEmail(existingUser, token);
             if (sender) {
                 return res.status(200).json({ message: 'Se ha enviado un correo de recuperación de contraseña' });
             }
