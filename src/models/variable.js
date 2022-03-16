@@ -38,11 +38,6 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
 
-    formulaCalculo: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-
     dato: {
       type: DataTypes.STRING,
       allowNull: true,

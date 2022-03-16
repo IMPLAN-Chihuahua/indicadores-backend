@@ -1,45 +1,53 @@
-const IndicadorService = require("../services/indicadorService")
-const { getPagination } = require("../utils/pagination");
-const { generateCSV, generateXLSX, generatePDF } = require("../services/generadorArchivosService");
 const stream = require('stream');
+const IndicadorService = require("../services/indicadorService")
+const { generateCSV, generateXLSX, generatePDF } = require("../services/generadorArchivosService");
 const UsuarioService = require('../services/usuariosService');
 const { areConnected } = require("../services/usuarioIndicadorService");
-const { Error } = require("sequelize");
 
 const getIndicadores = async (req, res) => {
+<<<<<<< HEAD
+  const page = req.matchedData.page || 1;
+  const perPage = req.matchedData.per_page || 15;
+=======
   const { page, perPage } = getPagination(req.matchedData);
+>>>>>>> dev
   try {
     const { indicadores, total } = await IndicadorService.getIndicadores(page, perPage, req.matchedData);
     const totalPages = Math.ceil(total / perPage);
 
     return res.status(200).json({
       page,
+<<<<<<< HEAD
+      per_page: perPage,
+      total,
+      total_pages: totalPages,
+=======
       perPage,
       total,
       totalPages,
+>>>>>>> dev
       data: indicadores,
     });
   } catch (err) {
-    return res.status(500);
+    return res.status(500).send(err.message);
   }
 };
 
 const getIndicador = async (req, res) => {
   try {
-    const idIndicador = req.matchedData.idIndicador;
-    const format = req.matchedData.format;
+    const { idIndicador, format } = req.matchedData.idIndicador;
     const indicador = await IndicadorService.getIndicador(idIndicador, format);
     if (indicador === null) {
       return res.sendStatus(404);
     }
 
-    if (typeof format != 'undefined') {
+    if (typeof format !== 'undefined') {
       return generateFile(format, res, indicador)
     }
 
-    return (res.status(200).json({ data: indicador, }))
+    return (res.status(200).json({ data: indicador }))
   } catch (err) {
-    return res.sendStatus(500);
+    return res.status(500).send(err.message);
   }
 };
 
@@ -77,15 +85,25 @@ const generateFile = async (format, res, data) => {
 }
 
 const getAllIndicadores = async (req, res) => {
+<<<<<<< HEAD
+  const page = req.matchedData.page || 1;
+  const perPage = req.matchedData.per_page || 15;
+  try {
+    const { indicadores, total } = await IndicadorService.getAllIndicadores(page, perPage, req.matchedData);
+    const totalPages = Math.ceil(total / perPage);
+    if (indicadores.length > 0) {
+      return res.status(200).json({ page, per_page: perPage, total, total_pages: totalPages, data: indicadores });
+=======
   const {page, perPage} = getPagination(req.matchedData);
   try {
     const {indicadores, total} = await IndicadorService.getAllIndicadores(page, perPage, req.matchedData);
     const totalPages = Math.ceil(total / perPage);
     if(indicadores.length > 0) {
       return res.status(200).json({ page: page, perPage: perPage, total: total, totalPages: totalPages, data: indicadores });
+>>>>>>> dev
     }
   } catch (err) {
-    return res.status(500).json({message: err.message});
+    return res.status(500).json(err.message);
   }
 }
 
@@ -94,7 +112,7 @@ const getIndicadoresFromUser = async (req, res) => {
     const idUsuario = req.sub;
     const { indicadores, total } = await UsuarioService.getIndicadoresFromUser(idUsuario);
     return res.status(200).json({
-      total: total,
+      total,
       data: indicadores,
     });
   } catch (err) {
@@ -105,8 +123,8 @@ const getIndicadoresFromUser = async (req, res) => {
 const createIndicador = async (req, res) => {
   try {
     const indicador = req.matchedData;
-    indicador['createdBy'] = req.sub;
-    indicador['updatedBy'] = req.sub;
+    indicador.createdBy = req.sub;
+    indicador.updatedBy = req.sub;
     const savedIndicador = await IndicadorService.createIndicador(indicador);
     return res.status(201).json({ data: savedIndicador });
   } catch (err) {
@@ -133,10 +151,9 @@ const updateIndicador = async (req, res) => {
 
     if (saved) {
       return res.sendStatus(204);
-    } else {
-      return res.sendStatus(400);
     }
-
+    return res.sendStatus(400);
+    
   } catch (err) {
     return res.status(500).send(err.message)
   }
