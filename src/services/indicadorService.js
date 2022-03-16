@@ -50,7 +50,9 @@ const getIndicadores = async (page, perPage, matchedData) => {
   };
 };
 
-const getIndicador = async (idIndicador, Format) => {
+const getIndicador = async (idIndicador, Format, pathway) => {
+  console.log(defineIndicadorInformation(Format, pathway));
+  
   const historicos = [
     {
       model: Historico,
@@ -141,6 +143,29 @@ const getIndicador = async (idIndicador, Format) => {
   }
   return { ...indicador.dataValues };
 }
+
+const defineIndicadorInformation = (format, pathway) => {
+  let limitOfHistoricos = [];
+  switch(pathway) {
+    case 'file': {
+      limitOfHistoricos.push({
+        model: Historico,
+        required: false,
+        attributes: ["anio", "valor", "fuente"],
+        order: [["anio", "DESC"]],
+      }); return limitOfHistoricos;
+    };
+    case 'site': {
+      limitOfHistoricos.push({
+        model: Historico,
+        required: true,
+        attributes: ["anio", "valor", "fuente"],
+        limit: 5,
+        order: [["anio", "DESC"]],
+      }); return limitOfHistoricos;
+    };
+  };
+};
 
 const getAllIndicadores = async (page, perPage, matchedData) => {
   try {

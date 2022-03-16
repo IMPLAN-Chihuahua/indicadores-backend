@@ -15,6 +15,7 @@ const {
     createIndicador,
     updateIndicador } = require('../controllers/indicadorController');
 const { verifyJWT, verifyRoles } = require('../middlewares/auth');
+const { determinePathway } = require('../middlewares/pathway');
 
 /**
  * @swagger
@@ -207,6 +208,7 @@ const { verifyJWT, verifyRoles } = require('../middlewares/auth');
 router.route('/:idIndicador')
     .get(paramValidationRules(),
         validate,
+        determinePathway('site'),
         getIndicador);
 
 /**
