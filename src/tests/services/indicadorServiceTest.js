@@ -6,7 +6,7 @@ const chai = require('chai');
 const sinon = require('sinon');
 
 const { expect } = chai;
-const { Indicador, Sequelize } = require('../../models');
+const { Indicador } = require('../../models');
 const { server } = require('../../../app');
 const { anIndicador, indicadorToCreate, aFormula, aVariable, anHistorico, aFuente, aMapa } = require('../../utils/factories');
 const IndicadorService = require('../../services/indicadorService');
@@ -112,13 +112,6 @@ describe('Indicador service', function () {
                 });
         });
 
-        /**
-         * Create indicador with formula and variables (success and fail)
-         * Create indicador with historicos (success and fail)
-         * Create indicador with fuentes (success and fail)
-         * Create indicdaor with mapa (success and fail)
-         * Create indicador with everything (success and fail)
-         */
         it('Should create indicador with a formula and variables', function () {
             const toCreate = indicadorToCreate();
             const formula = aFormula(1);
@@ -133,7 +126,7 @@ describe('Indicador service', function () {
                 });
         });
 
-        it('Should failt to create an indicador', function () {
+        it('Should fail to create an indicador', function () {
             const toCreate = indicadorToCreate();
             const createFake = sinon.fake.rejects(new Error('Formula Constraint Error'));
             sinon.replace(Indicador, 'create', createFake);

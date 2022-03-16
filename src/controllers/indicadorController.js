@@ -1,6 +1,5 @@
 const stream = require('stream');
 const IndicadorService = require("../services/indicadorService")
-const { getPagination } = require("../utils/pagination");
 const { generateCSV, generateXLSX, generatePDF } = require("../services/generadorArchivosService");
 const UsuarioService = require('../services/usuariosService');
 const { areConnected } = require("../services/usuarioIndicadorService");
