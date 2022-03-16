@@ -89,12 +89,12 @@ describe('v1/indicadores', function () {
             sinon.replace(Modulo, 'findOne', findOneFake);
             chai.request(app)
                 .get('/api/v1/modulos/1/indicadores')
-                .query({ per_page: perPage })
+                .query({ perPage: perPage })
                 .end(function (err, res) {
                     expect(findAndCountAllFake.calledOnce).to.be.true;
                     expect(findOneFake.calledOnce).to.be.true;
                     expect(res).to.have.status(200);
-                    expect(res.body.total_pages).to.be.at.least(1);
+                    expect(res.body.totalPages).to.be.at.least(1);
                     expect(res.body.data).to.have.lengthOf(perPage);
                     done();
                 });
@@ -111,13 +111,13 @@ describe('v1/indicadores', function () {
             sinon.replace(Indicador, 'findAndCountAll', findAndCountAllFake)
             chai.request(app)
                 .get('/api/v1/modulos/1/indicadores')
-                .query({ anioUltimoValorDisponible: 2019, page: 1, per_page: 2 })
+                .query({ anioUltimoValorDisponible: 2019, page: 1, perPage: 2 })
                 .end(function (err, res) {
                     expect(findAndCountAllFake.calledOnce).to.be.true;
                     expect(findOneFake.calledOnce).to.be.true;
                     expect(activeFilter).is.not.empty;
                     expect(res).to.have.status(200);
-                    expect(res.body.total_pages).to.be.at.least(1);
+                    expect(res.body.totalPages).to.be.at.least(1);
                     expect(res.body.data).to.have.length.within(0, 2);
                     expect(res.body.data[0].anioUltimoValorDisponible).to.be.equals(2019);
                     done();
@@ -247,7 +247,7 @@ describe('v1/indicadores', function () {
 
             chai.request(app)
                 .get('/api/v1/modulos/1/indicadores')
-                .query({ sort_by: 'nombre', order: 'asc' })
+                .query({ sortBy: 'nombre', order: 'asc' })
                 .end(function (err, res) {
                     expect(findAndCountAllFake.calledOnce).to.be.true;
                     expect(findOneFake.calledOnce).to.be.true;
@@ -261,7 +261,7 @@ describe('v1/indicadores', function () {
         it('Should return not found if sort by or order is undefined', function (done) {
             chai.request(app)
                 .get('/api/v1/modulos/1/indicadores')
-                .query({ sort_by: 'invalid', order: 'invalid' })
+                .query({ sortBy: 'invalid', order: 'invalid' })
                 .end(function (err, res) {
                     expect(res).to.have.status(422);
                     done();

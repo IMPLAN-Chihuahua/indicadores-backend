@@ -96,7 +96,7 @@ const updateValidationRules = () => {
 
 const paginationValidationRules = () => {
     return [
-        query(['page', 'per_page'])
+        query(['page', 'perPage'])
             .optional()
             .isInt().withMessage('campo debe ser entero')
             .toInt()

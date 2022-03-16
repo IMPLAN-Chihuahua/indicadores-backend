@@ -80,7 +80,7 @@ router.route('/indicadores').get(verifyJWT, getIndicadoresFromUser);
  *             format: int64
  *             minimum: 1
  *             description: Page number
- *         - name: per_page
+ *         - name: perPage
  *           in: query
  *           description: Number of items per page
  *           required: false
@@ -89,7 +89,7 @@ router.route('/indicadores').get(verifyJWT, getIndicadoresFromUser);
  *             format: int64
  *             minimum: 1
  *             description: Number of items per page
- *         - name: sort_by
+ *         - name: sortBy
  *           in: query
  *           description: Sort by field
  *           required: false
