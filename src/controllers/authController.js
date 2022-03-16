@@ -68,11 +68,11 @@ const generatePasswordRecoveryToken = async (req, res) => {
 const handlePasswordRecoveryToken = async (req, res) => {
     try {
         const token = req.matchedData.token;
-        const { password } = req.body;
+        const { clave } = req.body;
         const decoded = jwt.verify(token, TOKEN_SECRET);
         const user = await getUsuarioById(decoded.sub);
-        if (password && user && user.requestedPasswordChange === 'SI') {
-            const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+        if (clave && user && user.requestedPasswordChange === 'SI') {
+            const hashedPassword = await bcrypt.hash(clave, SALT_ROUNDS);
             const updatePassword = await updateUserPassword(user.id, hashedPassword);
             const changeStatus = await updateUserPasswordStatus(user.id);
             if(updatePassword && changeStatus) {
