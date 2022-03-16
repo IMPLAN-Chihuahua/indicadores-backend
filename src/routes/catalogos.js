@@ -1,7 +1,10 @@
 const express = require('express');
 const catalogoRouter = express.Router();
 
-const { getCatalogos } = require('../controllers/catalogoController');
+const Catalogos = require('../controllers/catalogoController');
+const { paramValidationRules, validate } = require('../middlewares/validator');
+
+const { verifyJWT } = require('../middlewares/auth');
 
 /**
  * @swagger
@@ -83,8 +86,251 @@ const { getCatalogos } = require('../controllers/catalogoController');
  */
 
 catalogoRouter.route('/')
-    .get(getCatalogos);
+    .get(Catalogos.getCatalogos);
 
 
+/** ADMINISTRATIVE SECTION  */
+
+// GET ALL
+/**
+ * @swagger
+ *   /catalogos/{catalog}:
+ *     get:
+ *       summary: Get a list of catalog items
+ *       description: Returns a list of catalog items
+ *       tags: [Catalogos]
+ *       security:
+ *         - bearer: []
+ *       parameters:
+ *         - name: catalog
+ *           in: path
+ *           required: true
+ *           schema:
+ *             type: string
+ *             enum: [ods, cobertura, unidadMedida]
+ *       responses:
+ *         200:
+ *           description: A very friendly list of items
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 %ref: '#/components/schemas/Ods'
+ *         500:
+ *           description: Internal server error
+ */
+
+// CREATE ONE
+/**
+ * @swagger
+ *   /catalogos/{catalog}:
+ *     post:
+ *       summary: Creates an Ods
+ *       tags: [Catalogos]
+ *       security:
+ *         - bearer: []
+ *       parameters:
+ *         - name: catalog
+ *           in: path
+ *           required: true
+ *           schema:
+ *             type: string
+ *             enum: [ods, cobertura, unidadMedida]
+ *       requestBody:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 nombre:
+ *                   type: string 
+ *       responses:
+ *         200:
+ *           description: Ods created
+ *         409:
+ *           description: Ods already exists
+ *         500:
+ *           description: Internal server error
+ */
+
+// UPDATE ONE
+/**
+ * @swagger
+ *   /catalogos/{catalog}/{idOds}:
+ *     patch:
+ *       summary: Updates an ODS
+ *       tags: [Catalogos]
+ *       parameters:
+ *         - name: idOds
+ *           in: path
+ *           required: true
+ *           schema:
+ *             type: integer
+ *             format: int64
+ *             description: Identifier of the Ods
+ *         - name: catalog
+ *           in: path
+ *           required: true
+ *           schema:
+ *             type: string
+ *             format: string
+ *             description: Catalog to update
+ *             enum: [ods, cobertura, unidadMedida]
+ *       security:
+ *         - bearer: []
+ *       requestBody:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties: 
+ *                 nombre:
+ *                   type: string
+ *       responses:
+ *         200:
+ *           description: Ods updated
+ *         404:
+ *           description: Ods not found
+ *         500:
+ *           description: Internal server error
+ *  */   
+
+// DELETE ONE
+/**
+ * @swagger
+ *   /catalogos/{catalog}/{idOds}:
+ *     delete:
+ *       summary: Deletes an ODS
+ *       tags: [Catalogos]
+ *       parameters:
+ *         - name: idOds
+ *           in: path
+ *           required: true
+ *           schema:
+ *             type: integer
+ *             format: int64
+ *             description: Identifier of the Ods
+ *         - name: catalog
+ *           in: path
+ *           required: true
+ *           schema:
+ *             type: string
+ *             description: Catalog to delete
+ *             enum: [ods, cobertura, unidadMedida]
+ *       security:
+ *         - bearer: []
+ *       responses:
+ *         200:
+ *           description: Ods deleted
+ *         404:
+ *           description: Ods not found
+ *         500:
+ *           description: Internal server error
+ *  */  
+
+catalogoRouter.route('/ods')
+    .get(
+        verifyJWT,
+        Catalogos.getOds
+    );
+
+catalogoRouter.route('/ods/:idOds')
+    .get(
+        verifyJWT,
+        paramValidationRules(),
+        validate,
+        Catalogos.getOdsById
+    );
+   
+ 
+catalogoRouter.route('/ods/:idOds')
+    .patch(
+        verifyJWT,
+        paramValidationRules(),
+        validate,
+        Catalogos.updateOds
+    );
+
+catalogoRouter.route('/ods')
+    .post(
+        verifyJWT,
+        Catalogos.createOds);
+
+      
+catalogoRouter.route('/ods/:idOds')
+    .delete(
+        verifyJWT,
+        paramValidationRules(),
+        validate,
+        Catalogos.deleteOds);
+
+// Cobertura geográfica
+catalogoRouter.route('/cobertura')
+    .get(
+        verifyJWT,
+        Catalogos.getCoberturas
+    );
+
+catalogoRouter.route('/cobertura/:idCobertura')
+    .get(
+        verifyJWT,
+        paramValidationRules(),
+        validate,
+        Catalogos.getCoberturaById
+    );
+   
+catalogoRouter.route('/cobertura/:idCobertura')
+    .patch(
+        verifyJWT,
+        paramValidationRules(),
+        validate,
+        Catalogos.updateCobertura
+    );
+
+catalogoRouter.route('/cobertura')
+    .post(
+        verifyJWT,
+        Catalogos.createCobertura);
+
+catalogoRouter.route('/cobertura/:idCobertura')
+    .delete(
+        verifyJWT,
+        paramValidationRules(),
+        validate,
+        Catalogos.deleteCobertura);
+
+// Unidad Medida
+catalogoRouter.route('/unidadMedida')
+    .get(
+        verifyJWT,
+        Catalogos.getUnidades
+    );
+
+catalogoRouter.route('/unidadMedida/:idUnidadMedida')
+    .get(
+        verifyJWT,
+        paramValidationRules(),
+        validate,
+        Catalogos.getUnidadById
+    );
+   
+catalogoRouter.route('/unidadMedida/:idUnidadMedida')
+    .patch(
+        verifyJWT,
+        paramValidationRules(),
+        validate,
+        Catalogos.updateUnidad
+    );
+
+catalogoRouter.route('/unidadMedida')
+    .post(
+        verifyJWT,
+        Catalogos.createUnidad);
+
+catalogoRouter.route('/unidadMedida/:idUnidadMedida')
+    .delete(
+        verifyJWT,
+        paramValidationRules(),
+        validate,
+        Catalogos.deleteUnidad);
 
 module.exports = catalogoRouter;

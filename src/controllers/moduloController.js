@@ -24,7 +24,7 @@ const createModulo = async (req, res) => {
     let urlImagen = 'images/avatar.jpg';
 
     urlImagen = req.file ? `images/${req.file.filename}` : urlImagen;
-    
+
     try {
         if (await moduloService.isTemaIndicadorAlreadyInUse(temaIndicador)) {
             return res.status(400).json({
@@ -47,16 +47,20 @@ const createModulo = async (req, res) => {
 };
 
 const getAllModulos = async (req, res) => {
-    const {page, per_page} = getPaginationModulos(req.matchedData);
-    try{
-        const {modulos, total, totalInactivos} = await moduloService.getAllModulos(page, per_page, req.matchedData);
-        const total_pages = Math.ceil(total / per_page);
-        if(modulos.length > 0){
-            return res.status(200).json({page: page, per_page: per_page, total_pages: total_pages, total: total, totalInactivos: totalInactivos, data: modulos });
-        } else {
-            return res.status(404).json({message: "No hay modulos registrados"});
-        }
-    } catch(err) {
+    const page = req.matchedData.page || 1;
+    const perPage = req.matchedData.perPage || 15;
+    try {
+        const { modulos, total, totalInactivos } = await moduloService.getAllModulos(page, perPage, req.matchedData);
+        const totalPages = Math.ceil(total / perPage);
+        return res.status(200).json({
+            page,
+            perPage: perPage,
+            totalPages: totalPages,
+            total,
+            totalInactivos: totalInactivos,
+            data: modulos
+        });
+    } catch (err) {
         return res.status(500).json({ message: err.message });
     }
 };

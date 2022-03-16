@@ -133,6 +133,24 @@ const aRol = (id) => ({
     updatedAt: new Date()
 });
 
+
+
+/** CATÁLOGOS  */  
+const anOds = (id) => ({
+    id,
+    nombre: faker.random.word(),
+});
+
+const anUnidadMedida = (id) => ({
+    id,
+    nombre: faker.random.word(),
+});
+
+const aCoberturaGeografica = (id) => ({
+    id,
+    nombre: faker.random.word(),
+});
+
 module.exports = {
     anIndicador,
     aUser,
@@ -144,5 +162,8 @@ module.exports = {
     aVariable,
     aFuente,
     anHistorico,
-    aMapa
+    aMapa,
+    anOds,
+    anUnidadMedida,
+    aCoberturaGeografica
 };

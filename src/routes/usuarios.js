@@ -9,7 +9,8 @@ const {
     paginationValidationRules,
     validate,
     paramValidationRules, 
-    updateValidationRules} = require('../middlewares/validator');
+    updateValidationRules,
+    filterModulosValidationRules} = require('../middlewares/validator');
 /**
  * @swagger
  *   components:
@@ -91,12 +92,19 @@ const {
  *           description: the page number
  *           example: 1
  *         - in: query
- *           name: per_page
+ *           name: perPage
  *           required: false
  *           schema:
  *             type: integer
  *           description: number of usuarios in the data array result
  *           example: 25
+ *         - in: query
+ *           name: searchQuery
+ *           required: false
+ *           schema:
+ *             type: string
+ *           description: Search query to filter users
+ *           example: john
  *       responses: 
  *         200:
  *           description: A list of users
@@ -109,16 +117,16 @@ const {
  *                     type: integer
  *                     example: 1
  *                     description: page number
- *                   per_page:
+ *                   perPage:
  *                     type: integer
  *                     example: 25
  *                     description: items per page
  *                   total:
  *                     type: integer
  *                     description: total number of usuarios
- *                   total_pages:
+ *                   totalPages:
  *                     type: integer
- *                     description: total number of pages with per_page elements
+ *                     description: total number of pages with perPage elements
  *                   data:
  *                     type: array
  *                     items: 
@@ -136,6 +144,7 @@ const {
 router.get(
     '/',
     paginationValidationRules(),
+    filterModulosValidationRules(),
     validate,
     verifyJWT,
     verifyRoles(['ADMIN']),

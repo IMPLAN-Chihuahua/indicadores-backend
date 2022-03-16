@@ -144,14 +144,14 @@ const getIndicador = async (idIndicador, Format) => {
 
 const getAllIndicadores = async (page, perPage, matchedData) => {
   try {
-    const result = await Indicador.findAndCountAll({
-      where: getAllIndicadoresFilters(matchedData),
-      order: getIndicadoresSorting(matchedData),
-      limit: perPage,
-      offset: (page - 1) * perPage,
-    });
-    return { indicadores: result.rows, total: result.count };
-  } catch (err) {
+  const result = await Indicador.findAndCountAll({
+    where: getAllIndicadoresFilters(matchedData),
+    order: getIndicadoresSorting(matchedData),
+    limit: perPage,
+    offset: (page - 1) * perPage,
+  });
+  return {indicadores: result.rows, total: result.count};
+  } catch(err) {
     throw new Error(`Error al obtener los indicadores: ${err.message}`);
   }
 }
@@ -205,9 +205,9 @@ const getIndicadorFilters = (matchedData) => {
 };
 
 // Sorting logic for list5
-const getIndicadoresSorting = ({ sort_by, order }) => {
+const getIndicadoresSorting = ({ sortBy, order }) => {
   const arrangement = [];
-  arrangement.push([sort_by || "id", order || "ASC"]);
+  arrangement.push([sortBy || "id", order || "ASC"]);
   return arrangement;
 };
 

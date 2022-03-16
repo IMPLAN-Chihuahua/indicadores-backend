@@ -77,7 +77,7 @@ const updateValidationRules = () => [
 ]
 
 const paginationValidationRules = () => [
-    query(['page', 'per_page'])
+    query(['page', 'perPage'])
         .optional()
         .isInt().withMessage('campo debe ser entero')
         .toInt()
@@ -116,7 +116,7 @@ const filterModulosValidationRules = () => [
 ];
 
 const paramValidationRules = () => [
-    param(['idModulo', 'idIndicador', 'idUser'])
+    param(['idModulo', 'idIndicador', 'idUser', 'idOds', 'idCobertura', 'idUnidadMedida'])
         .optional()
         .isInt().withMessage('Campo debe ser entero')
         .toInt()
@@ -129,23 +129,23 @@ const paramValidationRules = () => [
     param(["format"])
         .optional()
         .isIn(['csv', 'xlsx', 'pdf', 'json'])
-        .withMessage('formato debe ser csv, xlsx, pdf o json')
+        .withMessage('formato debe ser csv, xlsx, pdf o json'),
 ];
 
 const sortValidationRules = () => [
-    query('sort_by')
+    query('sortBy')
         .optional()
-        .isIn(['nombre']),
+        .isIn(['nombre'])
+        .withMessage('orden debe ser ascendente o descendente'),
     query('order')
         .optional()
         .toUpperCase()
         .isIn(['ASC', 'DESC'])
-        .withMessage('orden debe ser ascendente o descendente')
 
-]
+];
 
 const sortModulosValidationRules = () => [
-    query('sort_by')
+    query('sortBy')
         .optional()
         .isIn(['id', 'codigo', 'temaIndicador', 'createdAt', 'updatedAt', 'urlImagen', 'color', 'observaciones', 'activo'])
         .withMessage('Valor de ordenamiento no válido con la solicitud'),
@@ -174,7 +174,7 @@ const createModuloValidationRules = () => [
         .withMessage('por favor agrega un tema')
         .isLength({ min: 5 })
         .withMessage('El tema no puede estar vacio'),
-]
+];
 
 const updateModuloValidationRules = () => [
     param(['idModulo'])

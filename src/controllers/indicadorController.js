@@ -5,17 +5,27 @@ const UsuarioService = require('../services/usuariosService');
 const { areConnected } = require("../services/usuarioIndicadorService");
 
 const getIndicadores = async (req, res) => {
+<<<<<<< HEAD
   const page = req.matchedData.page || 1;
   const perPage = req.matchedData.per_page || 15;
+=======
+  const { page, perPage } = getPagination(req.matchedData);
+>>>>>>> dev
   try {
     const { indicadores, total } = await IndicadorService.getIndicadores(page, perPage, req.matchedData);
     const totalPages = Math.ceil(total / perPage);
 
     return res.status(200).json({
       page,
+<<<<<<< HEAD
       per_page: perPage,
       total,
       total_pages: totalPages,
+=======
+      perPage,
+      total,
+      totalPages,
+>>>>>>> dev
       data: indicadores,
     });
   } catch (err) {
@@ -75,6 +85,7 @@ const generateFile = async (format, res, data) => {
 }
 
 const getAllIndicadores = async (req, res) => {
+<<<<<<< HEAD
   const page = req.matchedData.page || 1;
   const perPage = req.matchedData.per_page || 15;
   try {
@@ -82,6 +93,14 @@ const getAllIndicadores = async (req, res) => {
     const totalPages = Math.ceil(total / perPage);
     if (indicadores.length > 0) {
       return res.status(200).json({ page, per_page: perPage, total, total_pages: totalPages, data: indicadores });
+=======
+  const {page, perPage} = getPagination(req.matchedData);
+  try {
+    const {indicadores, total} = await IndicadorService.getAllIndicadores(page, perPage, req.matchedData);
+    const totalPages = Math.ceil(total / perPage);
+    if(indicadores.length > 0) {
+      return res.status(200).json({ page: page, perPage: perPage, total: total, totalPages: totalPages, data: indicadores });
+>>>>>>> dev
     }
   } catch (err) {
     return res.status(500).json(err.message);
