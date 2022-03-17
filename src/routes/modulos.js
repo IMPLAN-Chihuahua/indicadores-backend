@@ -2,12 +2,13 @@ const express = require('express');
 const moduloRouter = express.Router();
 const indicadorRouter = express.Router({ mergeParams: true });
 const { getModulos, createModulo, editModulo, updateModuloStatus } = require('../controllers/moduloController');
-const { getIndicadores, getIndicador } = require('../controllers/indicadorController');
+const { getIndicadores, getIndicador, getAllIndicadores } = require('../controllers/indicadorController');
 const { paramValidationRules, paginationValidationRules,
     validate, filterIndicadoresValidationRules, sortValidationRules, createModuloValidationRules, updateModuloValidationRules } = require('../middlewares/validator');
 const { moduloExists } = require('../middlewares/verifyIdModulo');
 const { verifyJWT } = require('../middlewares/auth');
 const { uploadImage } = require('../middlewares/fileUpload');
+const { determinePathway } = require('../middlewares/pathway');
 
 /**
  * @swagger
@@ -172,7 +173,8 @@ indicadorRouter.route('/')
         sortValidationRules(),
         validate,
         moduloExists,
-        getIndicadores
+        determinePathway('site'),
+        getAllIndicadores
     );
 
 /** Administrative section */

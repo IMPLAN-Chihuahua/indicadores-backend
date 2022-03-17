@@ -236,6 +236,7 @@ router.route('/')
         sortValidationRules(),
         filterIndicadoresValidationRules(),
         validate,
+        determinePathway('front'),
         getAllIndicadores);
 
 

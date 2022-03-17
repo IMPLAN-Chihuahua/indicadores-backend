@@ -50,6 +50,26 @@ const getIndicadores = async (page, perPage, matchedData) => {
   };
 };
 
+const getAllIndicadores = async (page, perPage, matchedData, pathway) => {
+  const where = defineWhere(pathway, matchedData);
+  const order = defineOrder(pathway, matchedData);
+  const attributes = defineAttributes(pathway);
+  const includes = defineIncludes(pathway, matchedData);
+  try {
+  const result = await Indicador.findAndCountAll({
+    where: where,
+    order: order,
+    limit: perPage,
+    offset: (page - 1) * perPage,
+    attributes: attributes,
+    includes: includes,
+  });
+  return {indicadores: result.rows, total: result.count};
+  } catch(err) {
+    throw new Error(`Error al obtener los indicadores: ${err.message}`);
+  }
+}
+
 const getIndicador = async (idIndicador, pathway) => {
   const {includes} = defineIncludes(pathway);
   const {attributes} = defineAttributes(pathway);
@@ -67,7 +87,10 @@ const getIndicador = async (idIndicador, pathway) => {
 }
 
 const defineAttributes = (pathway) => {
-let attributes = [
+let attributes = [  ];
+  switch(pathway) {
+    case 'file': {
+      attributes.push(
       "id",
       "nombre",
       "definicion",
@@ -79,13 +102,55 @@ let attributes = [
       "anioUltimoValorDisponible",
       [sequelize.literal('"coberturaGeografica"."nombre"'), "coberturaGeografica"],
       "tendenciaActual",
-      "tendenciaDeseada",    
-  ];
-
+      "tendenciaDeseada",)
+    };
+    case 'sitio': {
+      attributes.push( 
+      "id",
+      "nombre",
+      "ultimoValorDisponible",
+      "anioUltimoValorDisponible",
+      "tendenciaActual",
+      "tendenciaDeseada",
+      "idOds",
+      [sequelize.literal('"ods"."nombre"'), "ods"],
+      "idCobertura",
+      [sequelize.literal('"coberturaGeografica"."nombre"'), "coberturaGeografica"],
+      "idUnidadMedida",
+      [sequelize.literal('"unidadMedida"."nombre"'), "unidadMedida"],
+      "createdAt",
+      "updatedAt",
+      "idModulo", )
+    };
+    case 'front': {
+    attributes.push( 
+      "id",
+      "nombre",
+      "urlImagen",
+      "definicion",
+      "codigo",
+      "codigoObjeto",
+      "ultimoValorDisponible",
+      "anioUltimoValorDisponible",
+      "tendenciaActual",
+      "tendenciaDeseada",
+      "mapa",
+      "observaciones",
+      "createdBy",
+      "updatedBy",
+      "idModulo",
+      "idOds",
+      "idCobertura",
+      "idUnidadMedida",
+      "createdAt",
+      "updatedAt",
+      "activo", )
+    };
+  }
   return attributes;
-}
+};
 
-const defineIncludes = (pathway) => {
+const defineIncludes = (pathway, matchedData) => {
   let includes = [
       {
         model: UnidadMedida,
@@ -134,7 +199,6 @@ const defineIncludes = (pathway) => {
         ]
       },
     ];
-  
   switch(pathway) {
     case 'file': {
       includes.push({
@@ -145,32 +209,58 @@ const defineIncludes = (pathway) => {
       });
     };
     case 'site': {
-      includes.push({
-        model: Historico,
-        required: true,
-        attributes: ["anio", "valor", "fuente"],
-        limit: 5,
-        order: [["anio", "DESC"]],
-      });
+      if (typeof matchedData != 'undefined') {
+        includes = [];
+        includes.push(getIndicadorIncludes(matchedData));
+      } else {
+        includes.push({
+          model: Historico,
+          required: true,
+          attributes: ["anio", "valor", "fuente"],
+          limit: 5,
+          order: [["anio", "DESC"]],
+        });
+      }
     };
+    case 'front': {
+      includes = [];
+    }
   };
   const queryAttributes = {includes}
   return queryAttributes
 };
 
-const getAllIndicadores = async (page, perPage, matchedData) => {
-  try {
-  const result = await Indicador.findAndCountAll({
-    where: getAllIndicadoresFilters(matchedData),
-    order: getIndicadoresSorting(matchedData),
-    limit: perPage,
-    offset: (page - 1) * perPage,
-  });
-  return {indicadores: result.rows, total: result.count};
-  } catch(err) {
-    throw new Error(`Error al obtener los indicadores: ${err.message}`);
+const defineOrder = (pathway, matchedData) => {
+  let order = [];
+  switch(pathway) {
+    case 'site': {
+      order.push(getIndicadoresSorting(matchedData))
+    };
+    case 'front': {
+      order.push(getIndicadoresSorting(matchedData))
+    };
+  };
+  return order;
+};
+
+const defineWhere = (pathway, matchedData) => {
+  let where = {};
+  switch(pathway) {
+    case 'site': {
+        where = {
+          idModulo: matchedData.idModulo,
+          ...validateCatalog(matchedData),
+          ...getIndicadorFilters(matchedData),
+        };
+    };
+    case 'front': {
+      where = { 
+        ...getAllIndicadoresFilters(matchedData)
+      }
+    };
   }
-}
+  return where;
+};
 
 
 const getAllIndicadoresFilters = (matchedData) => {
@@ -191,8 +281,6 @@ const getAllIndicadoresFilters = (matchedData) => {
   }
   return {};
 }
-
-
 
 // Validation for catalogs
 const validateCatalog = ({ idOds, idCobertura, idUnidadMedida }) => {
@@ -226,7 +314,6 @@ const getIndicadoresSorting = ({ sortBy, order }) => {
   arrangement.push([sortBy || "id", order || "ASC"]);
   return arrangement;
 };
-
 
 // Includes for inner join to filter list 
 const getIndicadorIncludes = ({ idFuente }) => {

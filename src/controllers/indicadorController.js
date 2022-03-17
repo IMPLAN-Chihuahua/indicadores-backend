@@ -27,7 +27,7 @@ const getIndicador = async (req, res) => {
   try {
     const { pathway } = req;
     const { idIndicador, format } = req.matchedData;
-    const indicador = await IndicadorService.getIndicador(idIndicador, format, pathway);
+    const indicador = await IndicadorService.getIndicador(idIndicador, pathway);
     if (indicador === null) {
       return res.sendStatus(404);
     }
@@ -76,9 +76,10 @@ const generateFile = async (format, res, data) => {
 }
 
 const getAllIndicadores = async (req, res) => {
+  const { pathway } = req;
   const {page, perPage} = getPagination(req.matchedData);
   try {
-    const {indicadores, total} = await IndicadorService.getAllIndicadores(page, perPage, req.matchedData);
+    const {indicadores, total} = await IndicadorService.getAllIndicadores(page, perPage, req.matchedData, pathway);
     const totalPages = Math.ceil(total / perPage);
     if(indicadores.length > 0) {
       return res.status(200).json({ page: page, perPage: perPage, total: total, totalPages: totalPages, data: indicadores });
