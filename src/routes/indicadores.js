@@ -11,10 +11,11 @@ const { paramValidationRules,
 } = require('../middlewares/validator');
 const {
     getIndicador,
-    getAllIndicadores,
+    getIndicadores,
     createIndicador,
     updateIndicador } = require('../controllers/indicadorController');
 const { verifyJWT, verifyRoles } = require('../middlewares/auth');
+const { determinePathway } = require('../middlewares/determinePathway');
 
 /**
  * @swagger
@@ -207,6 +208,7 @@ const { verifyJWT, verifyRoles } = require('../middlewares/auth');
 router.route('/:idIndicador')
     .get(paramValidationRules(),
         validate,
+        determinePathway('site'),
         getIndicador);
 
 /**
@@ -234,7 +236,8 @@ router.route('/')
         sortValidationRules(),
         filterIndicadoresValidationRules(),
         validate,
-        getAllIndicadores);
+        determinePathway('front'),
+        getIndicadores);
 
 
 /**

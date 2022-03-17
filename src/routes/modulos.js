@@ -8,6 +8,7 @@ const { paramValidationRules, paginationValidationRules,
 const { moduloExists } = require('../middlewares/verifyIdModulo');
 const { verifyJWT } = require('../middlewares/auth');
 const { uploadImage } = require('../middlewares/fileUpload');
+const { determinePathway } = require('../middlewares/determinePathway');
 
 /**
  * @swagger
@@ -172,6 +173,7 @@ indicadorRouter.route('/')
         sortValidationRules(),
         validate,
         moduloExists,
+        determinePathway('site'),
         getIndicadores
     );
 

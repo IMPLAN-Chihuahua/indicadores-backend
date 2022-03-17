@@ -211,25 +211,6 @@ describe('v1/indicadores', function () {
                 });
         });
 
-        it('Should return an empty data array if indicadores is filtered by an unexisting idOds ', function (done) {
-            const findAndCountAllFake = sinon.fake.resolves({ rows: [], count: 0 });
-            sinon.replace(Indicador, 'findAndCountAll', findAndCountAllFake);
-
-            const findOneFake = sinon.fake.resolves(dummyModulo);
-            sinon.replace(Modulo, 'findOne', findOneFake);
-
-            chai.request(app)
-                .get('/api/v1/modulos/1/indicadores')
-                .query({ idOds: 1 })
-                .end(function (err, res) {
-                    expect(findAndCountAllFake.calledOnce).to.be.true;
-                    expect(findOneFake.calledOnce).to.be.true;
-                    expect(res).to.have.status(200);
-                    expect(res.body.data).to.be.an('array').that.is.empty;
-                    done();
-                });
-        });
-
         it('Should not process request if indicadores is filtered by an invalid idOds', function (done) {
             chai.request(app)
                 .get('/api/v1/modulos/1/indicadores')
