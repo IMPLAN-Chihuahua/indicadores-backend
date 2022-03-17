@@ -44,8 +44,10 @@ const generatePasswordRecoveryToken = async (req, res) => {
         const { correo } = req.body;
         const existingUser = await getUsuarioByCorreo(correo);
         if (existingUser) {
-            const token = jwt.sign(
-                { sub: existingUser.id },
+            const token = jwt.sign({ 
+                sub: existingUser.id,
+                user: {nombres: existingUser.nombres, correo: existingUser.correo}
+             },
                 TOKEN_SECRET,
                 { expiresIn: '2h' }
             );

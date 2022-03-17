@@ -4,7 +4,7 @@ const templateHtml = fs.readFileSync("./src/templates/email.html", "utf8");
 const handlebars = require('handlebars');
 
 const sendEmail = async (user, text) => {
-    const recoverURL = `http://localhost:8080/api/v1/auth/password-reset/${text}`;
+    const recoverURL = `http://localhost:3500/recuperacion-de-cuenta/${text}`;
     const nombres = user.nombres;
     const todaysDate = new Date().getFullYear();
     const template = handlebars.compile(templateHtml);
