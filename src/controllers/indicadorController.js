@@ -5,24 +5,6 @@ const UsuarioService = require('../services/usuariosService');
 const { areConnected } = require("../services/usuarioIndicadorService");
 const { getPagination } = require('../utils/pagination');
 
-const getIndicadores = async (req, res) => {
-  const { page, perPage } = getPagination(req.matchedData);
-  try {
-    const { indicadores, total } = await IndicadorService.getIndicadores(page, perPage, req.matchedData);
-    const totalPages = Math.ceil(total / perPage);
-
-    return res.status(200).json({
-      page,
-      perPage,
-      total,
-      totalPages,
-      data: indicadores,
-    });
-  } catch (err) {
-    return res.status(500).send(err.message);
-  }
-};
-
 const getIndicador = async (req, res) => {
   try {
     const { pathway } = req;
@@ -75,11 +57,11 @@ const generateFile = async (format, res, data) => {
   }
 }
 
-const getAllIndicadores = async (req, res) => {
+const getIndicadores = async (req, res) => {
   const { pathway } = req;
   const {page, perPage} = getPagination(req.matchedData);
   try {
-    const {indicadores, total} = await IndicadorService.getAllIndicadores(page, perPage, req.matchedData, pathway);
+    const {indicadores, total} = await IndicadorService.getIndicadores(page, perPage, req.matchedData, pathway);
     const totalPages = Math.ceil(total / perPage);
     if(indicadores.length > 0) {
       return res.status(200).json({ page: page, perPage: perPage, total: total, totalPages: totalPages, data: indicadores });
@@ -145,7 +127,6 @@ module.exports = {
   getIndicadores,
   getIndicador,
   getIndicadoresFromUser,
-  getAllIndicadores,
   createIndicador,
   updateIndicador
 };

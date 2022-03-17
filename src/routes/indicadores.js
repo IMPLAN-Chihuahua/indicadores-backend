@@ -11,7 +11,7 @@ const { paramValidationRules,
 } = require('../middlewares/validator');
 const {
     getIndicador,
-    getAllIndicadores,
+    getIndicadores,
     createIndicador,
     updateIndicador } = require('../controllers/indicadorController');
 const { verifyJWT, verifyRoles } = require('../middlewares/auth');
@@ -237,7 +237,7 @@ router.route('/')
         filterIndicadoresValidationRules(),
         validate,
         determinePathway('front'),
-        getAllIndicadores);
+        getIndicadores);
 
 
 /**

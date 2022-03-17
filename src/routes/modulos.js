@@ -2,7 +2,7 @@ const express = require('express');
 const moduloRouter = express.Router();
 const indicadorRouter = express.Router({ mergeParams: true });
 const { getModulos, createModulo, editModulo, updateModuloStatus } = require('../controllers/moduloController');
-const { getIndicadores, getIndicador, getAllIndicadores } = require('../controllers/indicadorController');
+const { getIndicadores, getIndicador } = require('../controllers/indicadorController');
 const { paramValidationRules, paginationValidationRules,
     validate, filterIndicadoresValidationRules, sortValidationRules, createModuloValidationRules, updateModuloValidationRules } = require('../middlewares/validator');
 const { moduloExists } = require('../middlewares/verifyIdModulo');
@@ -174,7 +174,7 @@ indicadorRouter.route('/')
         validate,
         moduloExists,
         determinePathway('site'),
-        getAllIndicadores
+        getIndicadores
     );
 
 /** Administrative section */
