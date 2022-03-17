@@ -50,31 +50,43 @@ const getIndicadores = async (page, perPage, matchedData) => {
   };
 };
 
-const getIndicador = async (idIndicador, Format, pathway) => {
-  console.log(defineIndicadorInformation(Format, pathway));
-  
-  const historicos = [
-    {
-      model: Historico,
-      required: true,
-      attributes: ["anio", "valor", "fuente"],
-      limit: 5,
-      order: [["anio", "DESC"]],
-    },
-    {
-      model: Historico,
-      required: false,
-      attributes: ["anio", "valor", "fuente"],
-      order: [["anio", "DESC"]],
-    },
-  ]
-  let limit = [];
-  limit = typeof Format !== 'undefined' ? historicos[1] : historicos[0];
+const getIndicador = async (idIndicador, pathway) => {
+  const {includes} = defineIncludes(pathway);
+  const {attributes} = defineAttributes(pathway);
+
   const indicador = await Indicador.findOne({
-    where: {
-      id: idIndicador,
-    },
-    include: [
+    where: { id: idIndicador, },
+    include: includes,
+    attributes: attributes,
+  });
+  
+  if (typeof pathway !== 'file' || indicador === null) {
+    return indicador;
+  }
+  return { ...indicador.dataValues };
+}
+
+const defineAttributes = (pathway) => {
+let attributes = [
+      "id",
+      "nombre",
+      "definicion",
+      "urlImagen",
+      [sequelize.literal('"ods"."nombre"'), "ods"],
+      [sequelize.literal('"modulo"."temaIndicador"'), "modulo"],
+      "ultimoValorDisponible",
+      [sequelize.literal('"unidadMedida"."nombre"'), "unidadMedida"],
+      "anioUltimoValorDisponible",
+      [sequelize.literal('"coberturaGeografica"."nombre"'), "coberturaGeografica"],
+      "tendenciaActual",
+      "tendenciaDeseada",    
+  ];
+
+  return attributes;
+}
+
+const defineIncludes = (pathway) => {
+  let includes = [
       {
         model: UnidadMedida,
         required: true,
@@ -95,7 +107,6 @@ const getIndicador = async (idIndicador, Format, pathway) => {
         required: true,
         attributes: [],
       },
-      limit,
       {
         model: Mapa,
         required: false,
@@ -121,50 +132,30 @@ const getIndicador = async (idIndicador, Format, pathway) => {
               [sequelize.literal('"formula->variables->unidadMedida"."nombre"'), "unidadMedida"],],
           }
         ]
-      }
-    ],
-    attributes: [
-      "id",
-      "nombre",
-      "definicion",
-      "urlImagen",
-      [sequelize.literal('"ods"."nombre"'), "ods"],
-      [sequelize.literal('"modulo"."temaIndicador"'), "modulo"],
-      "ultimoValorDisponible",
-      [sequelize.literal('"unidadMedida"."nombre"'), "unidadMedida"],
-      "anioUltimoValorDisponible",
-      [sequelize.literal('"coberturaGeografica"."nombre"'), "coberturaGeografica"],
-      "tendenciaActual",
-      "tendenciaDeseada",
-    ],
-  });
-  if (typeof Format === 'undefined' || indicador === null) {
-    return indicador;
-  }
-  return { ...indicador.dataValues };
-}
-
-const defineIndicadorInformation = (format, pathway) => {
-  let limitOfHistoricos = [];
+      },
+    ];
+  
   switch(pathway) {
     case 'file': {
-      limitOfHistoricos.push({
+      includes.push({
         model: Historico,
         required: false,
         attributes: ["anio", "valor", "fuente"],
         order: [["anio", "DESC"]],
-      }); return limitOfHistoricos;
+      });
     };
     case 'site': {
-      limitOfHistoricos.push({
+      includes.push({
         model: Historico,
         required: true,
         attributes: ["anio", "valor", "fuente"],
         limit: 5,
         order: [["anio", "DESC"]],
-      }); return limitOfHistoricos;
+      });
     };
   };
+  const queryAttributes = {includes}
+  return queryAttributes
 };
 
 const getAllIndicadores = async (page, perPage, matchedData) => {
