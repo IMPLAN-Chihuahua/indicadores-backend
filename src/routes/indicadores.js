@@ -15,7 +15,7 @@ const {
     createIndicador,
     updateIndicador } = require('../controllers/indicadorController');
 const { verifyJWT, verifyRoles } = require('../middlewares/auth');
-const { determinePathway } = require('../middlewares/pathway');
+const { determinePathway } = require('../middlewares/determinePathway');
 
 /**
  * @swagger

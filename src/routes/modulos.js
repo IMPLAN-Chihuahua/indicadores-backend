@@ -8,7 +8,7 @@ const { paramValidationRules, paginationValidationRules,
 const { moduloExists } = require('../middlewares/verifyIdModulo');
 const { verifyJWT } = require('../middlewares/auth');
 const { uploadImage } = require('../middlewares/fileUpload');
-const { determinePathway } = require('../middlewares/pathway');
+const { determinePathway } = require('../middlewares/determinePathway');
 
 /**
  * @swagger
