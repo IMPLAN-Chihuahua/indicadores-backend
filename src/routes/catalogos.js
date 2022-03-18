@@ -233,6 +233,7 @@ catalogoRouter.route('/ods')
         Catalogos.getOds
     );
 
+/** GET ODS BY ID */
 catalogoRouter.route('/ods/:idOds')
     .get(
         verifyJWT,
@@ -241,7 +242,7 @@ catalogoRouter.route('/ods/:idOds')
         Catalogos.getOdsById
     );
    
- 
+ /** PATCH ODS WITH ID */
 catalogoRouter.route('/ods/:idOds')
     .patch(
         verifyJWT,
@@ -250,12 +251,13 @@ catalogoRouter.route('/ods/:idOds')
         Catalogos.updateOds
     );
 
+/** POST ODS */
 catalogoRouter.route('/ods')
     .post(
         verifyJWT,
         Catalogos.createOds);
 
-      
+/** DELETE ODS ONLY ADMIN */   
 catalogoRouter.route('/ods/:idOds')
     .delete(
         verifyJWT,
