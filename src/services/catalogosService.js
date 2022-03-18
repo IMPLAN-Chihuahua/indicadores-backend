@@ -1,15 +1,13 @@
 const {
-    Ods,
-    CoberturaGeografica,
-    UnidadMedida,
-    Sequelize
+    CatalogoDetail,
 } = require('../models');
-const { Op } = Sequelize;
 
 /** RETRIEVE  */
 // Plural
 const getOds = async () => {
-    const result = await Ods.findAndCountAll({});
+    const result = await CatalogoDetail.findAndCountAll({
+        where: { idCatalogo: 1 }
+    });
     return {
         ods: result.rows,
         total: result.count
@@ -17,7 +15,9 @@ const getOds = async () => {
 };
 
 const getUnidades = async () => {
-    const result = await UnidadMedida.findAndCountAll({});
+    const result = await CatalogoDetail.findAndCountAll({
+        where: { idCatalogo: 2 }
+    });
     return {
         unidades: result.rows,
         total: result.count
@@ -25,7 +25,9 @@ const getUnidades = async () => {
 };
 
 const getCoberturas = async () => {
-    const result = await CoberturaGeografica.findAndCountAll({});
+    const result = await CatalogoDetail.findAndCountAll({
+        where: { idCatalogo: 3 }
+    });
     return {
         coberturas: result.rows,
         total: result.count
@@ -35,167 +37,167 @@ const getCoberturas = async () => {
 // Singular
 const getOdsById = async (id) => {
     try {
-        const result = await Ods.findOne({
-            where: { id: id }
+        const result = await CatalogoDetail.findOne({
+            where: { id }
         });
         return result;
     } catch (err) {
-        throw new Error('Error al obtener Ods: ' + err.message);
+        throw new Error(`Error al obtener Ods: ${err.message}`);
     }
 };
 
 
 const getOdsByName = async (name) => {
     try {
-        const result = await Ods.findOne({
+        const result = await CatalogoDetail.findOne({
             where: { nombre: name }
         });
         return result;
     } catch (err) {
-        throw new Error('Error al obtener Ods: ' + err.message);
+        throw new Error(`Error al obtener Ods: ${err.message}`);
     }
 };
 
 const getUnidadMedidaById = async (id) => {
     try {
-        const result = await UnidadMedida.findOne({
-            where: { id: id }
+        const result = await CatalogoDetail.findOne({
+            where: { id }
         });
         return result;
     } catch (err) {
-        throw new Error('Error al obtener Unidad de Medida: ' + err.message);
+        throw new Error(`Error al obtener Unidad de Medida: ${err.message}`);
     }
 };
 
 const getUnidadMedidaByName = async (name) => {
     try {
-        const result = await UnidadMedida.findOne({
+        const result = await CatalogoDetail.findOne({
             where: { nombre: name }
         });
         return result;
     } catch (err) {
-        throw new Error('Error al obtener Unidad de Medida: ' + err.message);
+        throw new Error(`Error al obtener Unidad de Medida: ${err.message}`);
     }
 };
 
 const getCoberturaById = async (id) => {
     try {
-        const result = await CoberturaGeografica.findOne({
-            where: { id: id }
+        const result = await CatalogoDetail.findOne({
+            where: { id }
         });
         return result;
     } catch (err) {
-        throw new Error('Error al obtener Cobertura Geográfica: ' + err.message);
+        throw new Error(`Error al obtener Cobertura Geográfica: ${err.message}`);
     }
 };
 
 const getCoberturaByName = async (name) => {
     try {
-        const result = await CoberturaGeografica.findOne({
+        const result = await CatalogoDetail.findOne({
             where: { nombre: name }
         });
         return result;
     } catch (err) {
-        throw new Error('Error al obtener Cobertura Geográfica: ' + err.message);
+        throw new Error(`Error al obtener Cobertura Geográfica: ${err.message}`);
     }
 };
 
 /** WRITE  */
 const createOds = async (data) => {
     try {
-        const result = await Ods.create({nombre: data});
+        const result = await CatalogoDetail.create({ nombre: data });
         return result;
     } catch (err) {
-        throw new Error('Error al crear Ods: ' + err.message);
+        throw new Error(`Error al crear Ods: ${err.message}`);
     }
 };
 
 const createUnidadMedida = async (data) => {
     try {
-        const result = await UnidadMedida.create({nombre: data});
+        const result = await CatalogoDetail.create({ nombre: data });
         return result;
     } catch (err) {
-        throw new Error('Error al crear Unidad Medida: ' + err.message);
+        throw new Error(`Error al crear Unidad Medida: ${err.message}`);
     }
 };
 
 const createCobertura = async (data) => {
     try {
-        const result = await CoberturaGeografica.create({nombre: data});
+        const result = await CatalogoDetail.create({ nombre: data });
         return result;
     } catch (err) {
-        throw new Error('Error al crear Cobertura: ' + err.message);
+        throw new Error(`Error al crear Cobertura: ${err.message}`);
     }
 };
 
 /** UPDATE   */
 const updateOds = async (id, data) => {
     try {
-        const result = await Ods.update({nombre: data}, 
-            { 
-                where: { id: id } 
+        const result = await CatalogoDetail.update({ nombre: data, idCatalogo: 1 },
+            {
+                where: { id }
             });
         return result > 0;
     } catch (err) {
-        throw new Error('Error al actualizar Ods: ' + err.message);
+        throw new Error(`Error al actualizar Ods: ${err.message}`);
     }
 };
 
 const updateUnidadMedida = async (id, data) => {
     try {
-        const result = await UnidadMedida.update(data, 
-            { 
-                where: { id: id } 
+        const result = await CatalogoDetail.update({...data, idCatalogo: 1},
+            {
+                where: { id }
             });
         return result > 0;
     } catch (err) {
-        throw new Error('Error al actualizar Unidad Medida: ' + err.message);
+        throw new Error(`Error al actualizar Unidad Medida: ${err.message}`);
     }
 };
 
 const updateCobertura = async (id, data) => {
     try {
-        const result = await CoberturaGeografica.update(data, 
-            { 
-                where: { id: id } 
-            }); 
+        const result = await CatalogoDetail.update(data,
+            {
+                where: { id }
+            });
         return result > 0;
     } catch (err) {
-        throw new Error('Error al actualizar Cobertura: ' + err.message);
+        throw new Error(`Error al actualizar Cobertura: ${err.message}`);
     }
 };
 
 /** DELETE  */
 const deleteOds = async (id) => {
     try {
-        const result = await Ods.destroy({
-            where: { id: id }
+        const result = await CatalogoDetail.destroy({
+            where: { id }
         });
         return result > 0;
     } catch (err) {
-        throw new Error('Error al eliminar Ods: ' + err.message);
+        throw new Error(`Error al eliminar Ods: ${err.message}`);
     }
 };
 
 const deleteUnidadMedida = async (id) => {
     try {
-        const result = await UnidadMedida.destroy({
-            where: { id: id }
+        const result = await CatalogoDetail.destroy({
+            where: { id }
         });
         return result > 0;
     } catch (err) {
-        throw new Error('Error al eliminar Unidad Medida: ' + err.message);
+        throw new Error(`Error al eliminar Unidad Medida: ${err.message}`);
     }
 };
 
 const deleteCobertura = async (id) => {
     try {
-        const result = await CoberturaGeografica.destroy({
-            where: { id: id }
+        const result = await CatalogoDetail.destroy({
+            where: { id }
         });
         return result > 0;
     } catch (err) {
-        throw new Error('Error al eliminar Cobertura: ' + err.message);
+        throw new Error(`Error al eliminar Cobertura: ${err.message}`);
     }
 };
 

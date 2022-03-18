@@ -1,9 +1,6 @@
 const {
   Indicador,
-  Ods,
-  CoberturaGeografica,
   Fuente,
-  UnidadMedida,
   Modulo,
   Historico,
   Mapa,
@@ -19,10 +16,10 @@ const getIndicadores = async (page, perPage, matchedData, pathway) => {
   const {where, order, attributes, includes} = definitions(pathway, matchedData);
   try {
   const result = await Indicador.findAndCountAll({
-    where: where,
-    order: order,
+    where,
+    order,
     include: includes,
-    attributes: attributes,
+    attributes,
     limit: perPage,
     offset: (page - 1) * perPage,
   });
@@ -35,11 +32,10 @@ const getIndicadores = async (page, perPage, matchedData, pathway) => {
 const getIndicador = async (idIndicador, pathway) => {
   const includes = defineIncludes(pathway);
   const attributes = defineAttributes(pathway);
-  console.log(attributes);
   const indicador = await Indicador.findOne({
     where: { id: idIndicador, },
     include: includes,
-    attributes: attributes,
+    attributes,
   });
   
   if (typeof pathway !== 'file' || indicador === null) {
@@ -105,21 +101,6 @@ const getIndicadorIncludes = ({ idFuente }) => {
   const indicadorFilter = [];
 
   indicadorFilter.push(
-    {
-      model: Ods,
-      required: true,
-      attributes: []
-    },
-    {
-      model: CoberturaGeografica,
-      required: true,
-      attributes: []
-    },
-    {
-      model: UnidadMedida,
-      required: true,
-      attributes: []
-    },
   );
 
   if (idFuente) {
@@ -190,12 +171,9 @@ let attributes = [];
       "nombre",
       "definicion",
       "urlImagen",
-      [sequelize.literal('"ods"."nombre"'), "ods"],
       [sequelize.literal('"modulo"."temaIndicador"'), "modulo"],
       "ultimoValorDisponible",
-      [sequelize.literal('"unidadMedida"."nombre"'), "unidadMedida"],
       "anioUltimoValorDisponible",
-      [sequelize.literal('"coberturaGeografica"."nombre"'), "coberturaGeografica"],
       "tendenciaActual",
       "tendenciaDeseada",)
       return attributes;
@@ -210,11 +188,8 @@ let attributes = [];
           "tendenciaActual",
           "tendenciaDeseada",
           "idOds",
-          [sequelize.literal('"ods"."nombre"'), "ods"],
           "idCobertura",
-          [sequelize.literal('"coberturaGeografica"."nombre"'), "coberturaGeografica"],
           "idUnidadMedida",
-          [sequelize.literal('"unidadMedida"."nombre"'), "unidadMedida"],
           "createdAt",
           "updatedAt",
           "idModulo", )
@@ -224,12 +199,9 @@ let attributes = [];
         "nombre",
         "definicion",
         "urlImagen",
-        [sequelize.literal('"ods"."nombre"'), "ods"],
         [sequelize.literal('"modulo"."temaIndicador"'), "modulo"],
         "ultimoValorDisponible",
-        [sequelize.literal('"unidadMedida"."nombre"'), "unidadMedida"],
         "anioUltimoValorDisponible",
-        [sequelize.literal('"coberturaGeografica"."nombre"'), "coberturaGeografica"],
         "tendenciaActual",
         "tendenciaDeseada",)      
       }
@@ -252,9 +224,6 @@ let attributes = [];
       "createdBy",
       "updatedBy",
       "idModulo",
-      "idOds",
-      "idCobertura",
-      "idUnidadMedida",
       "createdAt",
       "updatedAt",
       "activo", )
@@ -266,22 +235,7 @@ let attributes = [];
 const defineIncludes = (pathway, matchedData) => {
   let includes = [
       {
-        model: UnidadMedida,
-        required: true,
-        attributes: [],
-      },
-      {
         model: Modulo,
-        required: true,
-        attributes: [],
-      },
-      {
-        model: Ods,
-        required: true,
-        attributes: [],
-      },
-      {
-        model: CoberturaGeografica,
         required: true,
         attributes: [],
       },
@@ -298,16 +252,11 @@ const defineIncludes = (pathway, matchedData) => {
           {
             model: Variable,
             required: true,
-            include: [{
-              model: UnidadMedida,
-              required: true,
-              attributes: []
-            }],
             attributes: [
               'nombre',
               'nombreAtributo',
               'dato',
-              [sequelize.literal('"formula->variables->unidadMedida"."nombre"'), "unidadMedida"],],
+            ],
           }
         ]
       },

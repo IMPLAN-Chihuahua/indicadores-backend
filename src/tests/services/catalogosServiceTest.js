@@ -1,12 +1,13 @@
+/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable no-unused-expressions */
+/* eslint-disable prefer-arrow-callback */
+/* eslint-disable func-names */
 const chai = require('chai');
-const expect = chai.expect;
-const {
-    Ods,
-    CoberturaGeografica,
-    UnidadMedida,
-    Sequelize
-} = require('../../models');
 const sinon = require('sinon');
+
+const { expect } = chai;
+const { CatalogoDetail } = require('../../models');
+
 const CatalogosService = require('../../services/catalogosService');
 const { server } = require('../../../app');
 const { anOds, anUnidadMedida, aCoberturaGeografica } = require('../../utils/factories');
@@ -32,7 +33,7 @@ describe('Catalogos service', function () {
                     rows: setOfOds,
                     count: setOfOds.length
                 });
-                sinon.replace(Ods, 'findAndCountAll', findAndCountAllFake);
+                sinon.replace(CatalogoDetail, 'findAndCountAll', findAndCountAllFake);
                 return CatalogosService.getOds()
                     .then(res => {
                         expect(findAndCountAllFake.calledOnce).to.be.true;
@@ -40,10 +41,10 @@ describe('Catalogos service', function () {
                         expect(res.total).to.equal(setOfOds.length);
                     })
             });
-            
+
             it('Returns a singular ODS by its ID', function () {
                 const findOneFake = sinon.fake.resolves({ ...anOds(1) });
-                sinon.replace(Ods, 'findOne', findOneFake);
+                sinon.replace(CatalogoDetail, 'findOne', findOneFake);
                 return CatalogosService.getOdsById(1)
                     .then(res => {
                         expect(findOneFake.args[0][0].where.id).to.be.equal(1);
@@ -54,7 +55,7 @@ describe('Catalogos service', function () {
 
             it('Rejects the returning of a list of ODS', function () {
                 const findAndCountAllFake = sinon.fake.rejects(new Error());
-                sinon.replace(Ods, 'findAndCountAll', findAndCountAllFake);
+                sinon.replace(CatalogoDetail, 'findAndCountAll', findAndCountAllFake);
                 return CatalogosService.getOds()
                     .then(res => {
                         expect(res).to.be.null;
@@ -69,7 +70,7 @@ describe('Catalogos service', function () {
         describe('Update operations', function () {
             it('Updates an ODS', function () {
                 const updateFake = sinon.fake.resolves(anOds(10));
-                sinon.replace(Ods, 'update', updateFake);
+                sinon.replace(CatalogoDetail, 'update', updateFake);
                 return CatalogosService.updateOds(1, { nombre: 'Nuevo nombre' })
                     .then(res => {
                         expect(updateFake.calledOnce).to.be.true;
@@ -79,7 +80,7 @@ describe('Catalogos service', function () {
 
             it('Should not update an non-existent ODS', function () {
                 const updateFake = sinon.fake.resolves(anOds(10));
-                sinon.replace(Ods, 'update', updateFake);
+                sinon.replace(CatalogoDetail, 'update', updateFake);
                 return CatalogosService.updateOds(1, { nombre: 'Nuevo nombre' })
                     .then(res => {
                         expect(updateFake.calledOnce).to.be.true;
@@ -91,7 +92,7 @@ describe('Catalogos service', function () {
         describe('Delete operations', function () {
             it('Deletes an ODS', function () {
                 const destroyFake = sinon.fake.resolves(1);
-                sinon.replace(Ods, 'destroy', destroyFake);
+                sinon.replace(CatalogoDetail, 'destroy', destroyFake);
                 return CatalogosService.deleteOds(1)
                     .then(res => {
                         expect(destroyFake.calledOnce).to.be.true;
@@ -101,7 +102,7 @@ describe('Catalogos service', function () {
 
             it('Should not delete an ODS (because of non-existence)', function () {
                 const destroyFake = sinon.fake.resolves(0);
-                sinon.replace(Ods, 'destroy', destroyFake);
+                sinon.replace(CatalogoDetail, 'destroy', destroyFake);
                 return CatalogosService.deleteOds(1)
                     .then(res => {
                         expect(destroyFake.calledOnce).to.be.true;
@@ -113,7 +114,7 @@ describe('Catalogos service', function () {
         describe('Create operations', function () {
             it('Creates an ODS', function () {
                 const createFake = sinon.fake.resolves(anOds(10));
-                sinon.replace(Ods, 'create', createFake);
+                sinon.replace(CatalogoDetail, 'create', createFake);
                 return CatalogosService.createOds({ nombre: 'Nuevo nombre' })
                     .then(res => {
                         expect(createFake.calledOnce).to.be.true;
@@ -123,7 +124,7 @@ describe('Catalogos service', function () {
 
             it('Rejects the creation of an ODS', function () {
                 const createFake = sinon.fake.rejects(new Error());
-                sinon.replace(Ods, 'create', createFake);
+                sinon.replace(CatalogoDetail, 'create', createFake);
                 return CatalogosService.createOds({ nombre: 'Nuevo nombre' })
                     .then(res => {
                         expect(createFake.calledOnce).to.be.true;
@@ -143,7 +144,7 @@ describe('Catalogos service', function () {
                     rows: setOfUnidades,
                     count: setOfUnidades.length
                 });
-                sinon.replace(UnidadMedida, 'findAndCountAll', findAndCountAllFake);
+                sinon.replace(CatalogoDetail, 'findAndCountAll', findAndCountAllFake);
                 return CatalogosService.getUnidades()
                     .then(res => {
                         expect(findAndCountAllFake.calledOnce).to.be.true;
@@ -151,10 +152,10 @@ describe('Catalogos service', function () {
                         expect(res.total).to.equal(setOfUnidades.length);
                     })
             });
-            
+
             it('Returns a singular Unidad by its ID', function () {
                 const findOneFake = sinon.fake.resolves({ ...anUnidadMedida(1) });
-                sinon.replace(UnidadMedida, 'findOne', findOneFake);
+                sinon.replace(CatalogoDetail, 'findOne', findOneFake);
                 return CatalogosService.getUnidadMedidaById(1)
                     .then(res => {
                         expect(findOneFake.args[0][0].where.id).to.be.equal(1);
@@ -165,7 +166,7 @@ describe('Catalogos service', function () {
 
             it('Rejects the returning of a list of Unidades', function () {
                 const findAndCountAllFake = sinon.fake.rejects(new Error());
-                sinon.replace(UnidadMedida, 'findAndCountAll', findAndCountAllFake);
+                sinon.replace(CatalogoDetail, 'findAndCountAll', findAndCountAllFake);
                 return CatalogosService.getUnidades()
                     .then(res => {
                         expect(res).to.be.null;
@@ -180,7 +181,7 @@ describe('Catalogos service', function () {
         describe('Update operations', function () {
             it('Updates an Unidad', function () {
                 const updateFake = sinon.fake.resolves(anUnidadMedida(10));
-                sinon.replace(UnidadMedida, 'update', updateFake);
+                sinon.replace(CatalogoDetail, 'update', updateFake);
                 return CatalogosService.updateUnidadMedida(1, { nombre: 'Nuevo nombre' })
                     .then(res => {
                         expect(updateFake.calledOnce).to.be.true;
@@ -190,7 +191,7 @@ describe('Catalogos service', function () {
 
             it('Should not update an non-existent Unidad', function () {
                 const updateFake = sinon.fake.resolves(anUnidadMedida(10));
-                sinon.replace(UnidadMedida, 'update', updateFake);
+                sinon.replace(CatalogoDetail, 'update', updateFake);
                 return CatalogosService.updateUnidadMedida(1, { nombre: 'Nuevo nombre' })
                     .then(res => {
                         expect(updateFake.calledOnce).to.be.true;
@@ -202,7 +203,7 @@ describe('Catalogos service', function () {
         describe('Delete operations', function () {
             it('Deletes an Unidad', function () {
                 const destroyFake = sinon.fake.resolves(1);
-                sinon.replace(UnidadMedida, 'destroy', destroyFake);
+                sinon.replace(CatalogoDetail, 'destroy', destroyFake);
                 return CatalogosService.deleteUnidadMedida(1)
                     .then(res => {
                         expect(destroyFake.calledOnce).to.be.true;
@@ -212,7 +213,7 @@ describe('Catalogos service', function () {
 
             it('Should not delete an Unidad (because of non-existence)', function () {
                 const destroyFake = sinon.fake.resolves(0);
-                sinon.replace(Ods, 'destroy', destroyFake);
+                sinon.replace(CatalogoDetail, 'destroy', destroyFake);
                 return CatalogosService.deleteOds(1)
                     .then(res => {
                         expect(destroyFake.calledOnce).to.be.true;
@@ -224,7 +225,7 @@ describe('Catalogos service', function () {
         describe('Create operations', function () {
             it('Creates an Unidad', function () {
                 const createFake = sinon.fake.resolves(anUnidadMedida(10));
-                sinon.replace(UnidadMedida, 'create', createFake);
+                sinon.replace(CatalogoDetail, 'create', createFake);
                 return CatalogosService.createUnidadMedida({ nombre: 'Nuevo nombre' })
                     .then(res => {
                         expect(createFake.calledOnce).to.be.true;
@@ -234,7 +235,7 @@ describe('Catalogos service', function () {
 
             it('Rejects the creation of an Unidad', function () {
                 const createFake = sinon.fake.rejects(new Error());
-                sinon.replace(UnidadMedida, 'create', createFake);
+                sinon.replace(CatalogoDetail, 'create', createFake);
                 return CatalogosService.createUnidadMedida({ nombre: 'Nuevo nombre' })
                     .then(res => {
                         expect(createFake.calledOnce).to.be.true;
@@ -254,7 +255,7 @@ describe('Catalogos service', function () {
                     rows: setOfCoberturas,
                     count: setOfCoberturas.length
                 });
-                sinon.replace(CoberturaGeografica, 'findAndCountAll', findAndCountAllFake);
+                sinon.replace(CatalogoDetail, 'findAndCountAll', findAndCountAllFake);
                 return CatalogosService.getCoberturas()
                     .then(res => {
                         expect(findAndCountAllFake.calledOnce).to.be.true;
@@ -262,10 +263,10 @@ describe('Catalogos service', function () {
                         expect(res.total).to.equal(setOfCoberturas.length);
                     })
             });
-            
+
             it('Returns a singular Cobertura by its ID', function () {
                 const findOneFake = sinon.fake.resolves({ ...aCoberturaGeografica(1) });
-                sinon.replace(CoberturaGeografica, 'findOne', findOneFake);
+                sinon.replace(CatalogoDetail, 'findOne', findOneFake);
                 return CatalogosService.getCoberturaById(1)
                     .then(res => {
                         expect(findOneFake.args[0][0].where.id).to.be.equal(1);
@@ -276,7 +277,7 @@ describe('Catalogos service', function () {
 
             it('Rejects the returning of a list of Coberturas', function () {
                 const findAndCountAllFake = sinon.fake.rejects(new Error());
-                sinon.replace(CoberturaGeografica, 'findAndCountAll', findAndCountAllFake);
+                sinon.replace(CatalogoDetail, 'findAndCountAll', findAndCountAllFake);
                 return CatalogosService.getCoberturas()
                     .then(res => {
                         expect(res).to.be.null;
@@ -291,7 +292,7 @@ describe('Catalogos service', function () {
         describe('Update operations', function () {
             it('Updates a Cobertura', function () {
                 const updateFake = sinon.fake.resolves(aCoberturaGeografica(10));
-                sinon.replace(CoberturaGeografica, 'update', updateFake);
+                sinon.replace(CatalogoDetail, 'update', updateFake);
                 return CatalogosService.updateCobertura(1, { nombre: 'Nuevo nombre' })
                     .then(res => {
                         expect(updateFake.calledOnce).to.be.true;
@@ -301,7 +302,7 @@ describe('Catalogos service', function () {
 
             it('Should not update an non-existent Cobertura', function () {
                 const updateFake = sinon.fake.resolves(anUnidadMedida(10));
-                sinon.replace(CoberturaGeografica, 'update', updateFake);
+                sinon.replace(CatalogoDetail, 'update', updateFake);
                 return CatalogosService.updateCobertura(1, { nombre: 'Nuevo nombre' })
                     .then(res => {
                         expect(updateFake.calledOnce).to.be.true;
@@ -313,7 +314,7 @@ describe('Catalogos service', function () {
         describe('Delete operations', function () {
             it('Deletes an Unidad', function () {
                 const destroyFake = sinon.fake.resolves(1);
-                sinon.replace(CoberturaGeografica, 'destroy', destroyFake);
+                sinon.replace(CatalogoDetail, 'destroy', destroyFake);
                 return CatalogosService.deleteCobertura(1)
                     .then(res => {
                         expect(destroyFake.calledOnce).to.be.true;
@@ -323,7 +324,7 @@ describe('Catalogos service', function () {
 
             it('Should not delete an Cobertura (because of non-existence)', function () {
                 const destroyFake = sinon.fake.resolves(0);
-                sinon.replace(CoberturaGeografica, 'destroy', destroyFake);
+                sinon.replace(CatalogoDetail, 'destroy', destroyFake);
                 return CatalogosService.deleteCobertura(1)
                     .then(res => {
                         expect(destroyFake.calledOnce).to.be.true;
@@ -335,7 +336,7 @@ describe('Catalogos service', function () {
         describe('Create operations', function () {
             it('Creates a Cobertura', function () {
                 const createFake = sinon.fake.resolves(aCoberturaGeografica(10));
-                sinon.replace(CoberturaGeografica, 'create', createFake);
+                sinon.replace(CatalogoDetail, 'create', createFake);
                 return CatalogosService.createCobertura({ nombre: 'Nuevo nombre' })
                     .then(res => {
                         expect(createFake.calledOnce).to.be.true;
@@ -345,7 +346,7 @@ describe('Catalogos service', function () {
 
             it('Rejects the creation of a Cobertura', function () {
                 const createFake = sinon.fake.rejects(new Error());
-                sinon.replace(CoberturaGeografica, 'create', createFake);
+                sinon.replace(CatalogoDetail, 'create', createFake);
                 return CatalogosService.createCobertura({ nombre: 'Nuevo nombre' })
                     .then(res => {
                         expect(createFake.calledOnce).to.be.true;

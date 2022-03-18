@@ -36,7 +36,11 @@ module.exports = {
 
       idUnidad: {
         allowNull: false,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'CatalogoDetails',
+          key: 'id'
+        }
       },
       
       idFormula: {
