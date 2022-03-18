@@ -11,36 +11,41 @@ const loginValidationRules = () => [
 ];
 
 const registerValidationRules = () => [
-    check('correo')
+    body('correo')
         .isEmail()
         .withMessage('El correo tiene un formato incorrecto'),
 
-    check('clave')
+    body('clave')
         .isLength({ min: 8 })
         .withMessage('La clave debe tener al menos 8 caracteres'),
 
-    check('nombres')
+    body('nombres')
         .exists()
         .withMessage('por favor agrega un nombre')
         .isAlpha('es-ES', { ignore: '\s' })
         .withMessage('nombre invalido'),
 
-    check('apellidoPaterno')
+    body('apellidoPaterno')
         .exists()
         .withMessage('por favor agrega apellido paterno')
         .isAlpha('es-ES', { ignore: '\s' })
         .withMessage('apellido paterno invalido'),
 
-    check('apellidoMaterno')
+    body('apellidoMaterno')
         .optional()
         .isAlpha('es-ES', { ignore: '\s' })
         .withMessage('apellido materno invalido'),
 
-    check('activo')
+    body('activo')
         .optional()
         .toUpperCase()
         .isIn(['SI', 'NO'])
-        .withMessage('estado invalido')
+        .withMessage('estado invalido'),
+
+    body('idRol')
+        .exists('El rol es un campo requerido')
+        .isInt('El rol debe ser entero')
+        .toInt()
 ];
 
 const updateValidationRules = () => [

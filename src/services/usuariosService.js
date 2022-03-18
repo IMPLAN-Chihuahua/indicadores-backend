@@ -89,7 +89,8 @@ const getUsuarios = async (limit, offset, searchQuery) => {
         const result = await Usuario.scope('withoutPassword').findAndCountAll({
             limit,
             offset,
-            where: { ...addSearchQueryIfPresent(searchQuery) }
+            where: { ...addSearchQueryIfPresent(searchQuery) },
+            order: [['updatedAt', 'DESC']]
         });
         const usuarios = result.rows;
         const total = result.count;

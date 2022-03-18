@@ -21,9 +21,9 @@ const getUsers = async (req, res) => {
 
         return res.status(200).json({
             page,
-            perPage: perPage,
+            perPage,
             total,
-            totalPages: totalPages,
+            totalPages,
             totalInactivos,
             data: [...usuarios]
         });
@@ -39,12 +39,13 @@ const createUser = async (req, res) => {
         nombres,
         apellidoPaterno,
         apellidoMaterno,
-        activo
+        activo,
+        idRol
     } = req.matchedData;
     const avatar = `images/${req.file ? req.file.originalName : 'avatar.jpg'}`;
     try {
         if (await isCorreoAlreadyInUse(correo)) {
-            return res.status(409).send('Correo no disponible')
+            return res.status(409).json({message: 'Correo no disponible'})
         }
         const hashedClave = await bcrypt.hash(clave, SALT_ROUNDS);
         const savedUser = await addUsuario({
@@ -54,9 +55,10 @@ const createUser = async (req, res) => {
             apellidoPaterno,
             apellidoMaterno,
             activo,
-            avatar
+            avatar,
+            idRol
         });
-        return res.status(201).json(savedUser);
+        return res.status(201).json({data: savedUser});
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
