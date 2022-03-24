@@ -59,11 +59,11 @@ const generateFile = async (format, res, data) => {
 
 const getIndicadores = async (req, res) => {
   const { pathway } = req;
-  const {page, perPage} = getPagination(req.matchedData);
+  const { page, perPage } = getPagination(req.matchedData);
   try {
-    const {indicadores, total} = await IndicadorService.getIndicadores(page, perPage, req.matchedData, pathway);
+    const { indicadores, total } = await IndicadorService.getIndicadores(page, perPage, req.matchedData, pathway);
     const totalPages = Math.ceil(total / perPage);
-    if(indicadores.length > 0) {
+    if (indicadores.length > 0) {
       return res.status(200).json({ page: page, perPage: perPage, total: total, totalPages: totalPages, data: indicadores });
     }
   } catch (err) {
@@ -117,7 +117,7 @@ const updateIndicador = async (req, res) => {
       return res.sendStatus(204);
     }
     return res.sendStatus(400);
-    
+
   } catch (err) {
     return res.status(500).send(err.message)
   }

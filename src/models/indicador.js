@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
             this.belongsTo(models.Ods, { foreignKey: 'idOds' });
             this.belongsTo(models.CoberturaGeografica, { foreignKey: 'idCobertura' });
             this.belongsTo(models.UnidadMedida, { foreignKey: 'idUnidadMedida' })
-            
+
             this.hasOne(models.Formula, { foreignKey: 'idIndicador' });
             this.hasMany(models.Historico, { foreignKey: 'idIndicador' });
             this.hasMany(models.Fuente, { foreignKey: 'idIndicador' });
@@ -99,8 +99,8 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.INTEGER,
                 allowNull: false
             },
-            
-            idCobertura: { 
+
+            idCobertura: {
                 type: DataTypes.INTEGER,
                 allowNull: false
             },

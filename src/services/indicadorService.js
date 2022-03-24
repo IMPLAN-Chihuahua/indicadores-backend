@@ -16,18 +16,18 @@ const {
 const { Op } = Sequelize;
 
 const getIndicadores = async (page, perPage, matchedData, pathway) => {
-  const {where, order, attributes, includes} = definitions(pathway, matchedData);
+  const { where, order, attributes, includes } = definitions(pathway, matchedData);
   try {
-  const result = await Indicador.findAndCountAll({
-    where: where,
-    order: order,
-    include: includes,
-    attributes: attributes,
-    limit: perPage,
-    offset: (page - 1) * perPage,
-  });
-  return {indicadores: result.rows, total: result.count};
-  } catch(err) {
+    const result = await Indicador.findAndCountAll({
+      where: where,
+      order: order,
+      include: includes,
+      attributes: attributes,
+      limit: perPage,
+      offset: (page - 1) * perPage,
+    });
+    return { indicadores: result.rows, total: result.count };
+  } catch (err) {
     throw new Error(`Error al obtener los indicadores: ${err.message}`);
   }
 };
@@ -35,13 +35,12 @@ const getIndicadores = async (page, perPage, matchedData, pathway) => {
 const getIndicador = async (idIndicador, pathway) => {
   const includes = defineIncludes(pathway);
   const attributes = defineAttributes(pathway);
-  console.log(attributes);
   const indicador = await Indicador.findOne({
     where: { id: idIndicador, },
     include: includes,
     attributes: attributes,
   });
-  
+
   if (typeof pathway !== 'file' || indicador === null) {
     return indicador;
   }
@@ -182,27 +181,27 @@ const updateIndicador = async (id, indicador) => {
 };
 
 const defineAttributes = (pathway, matchedData) => {
-let attributes = [];
-  switch(pathway) {
+  let attributes = [];
+  switch (pathway) {
     case 'file': {
       attributes.push(
-      "id",
-      "nombre",
-      "definicion",
-      "urlImagen",
-      [sequelize.literal('"ods"."nombre"'), "ods"],
-      [sequelize.literal('"modulo"."temaIndicador"'), "modulo"],
-      "ultimoValorDisponible",
-      [sequelize.literal('"unidadMedida"."nombre"'), "unidadMedida"],
-      "anioUltimoValorDisponible",
-      [sequelize.literal('"coberturaGeografica"."nombre"'), "coberturaGeografica"],
-      "tendenciaActual",
-      "tendenciaDeseada",)
+        "id",
+        "nombre",
+        "definicion",
+        "urlImagen",
+        [sequelize.literal('"ods"."nombre"'), "ods"],
+        [sequelize.literal('"modulo"."temaIndicador"'), "modulo"],
+        "ultimoValorDisponible",
+        [sequelize.literal('"unidadMedida"."nombre"'), "unidadMedida"],
+        "anioUltimoValorDisponible",
+        [sequelize.literal('"coberturaGeografica"."nombre"'), "coberturaGeografica"],
+        "tendenciaActual",
+        "tendenciaDeseada")
       return attributes;
     };
     case 'site': {
-      if(matchedData) {
-        attributes.push( 
+      if (matchedData) {
+        attributes.push(
           "id",
           "nombre",
           "ultimoValorDisponible",
@@ -217,47 +216,48 @@ let attributes = [];
           [sequelize.literal('"unidadMedida"."nombre"'), "unidadMedida"],
           "createdAt",
           "updatedAt",
-          "idModulo", )
+          "idModulo")
       } else {
         attributes.push(
-        "id",
-        "nombre",
-        "definicion",
-        "urlImagen",
-        [sequelize.literal('"ods"."nombre"'), "ods"],
-        [sequelize.literal('"modulo"."temaIndicador"'), "modulo"],
-        "ultimoValorDisponible",
-        [sequelize.literal('"unidadMedida"."nombre"'), "unidadMedida"],
-        "anioUltimoValorDisponible",
-        [sequelize.literal('"coberturaGeografica"."nombre"'), "coberturaGeografica"],
-        "tendenciaActual",
-        "tendenciaDeseada",)      
+          "id",
+          "nombre",
+          "definicion",
+          "urlImagen",
+          [sequelize.literal('"ods"."nombre"'), "ods"],
+          [sequelize.literal('"modulo"."temaIndicador"'), "modulo"],
+          "ultimoValorDisponible",
+          [sequelize.literal('"unidadMedida"."nombre"'), "unidadMedida"],
+          "anioUltimoValorDisponible",
+          [sequelize.literal('"coberturaGeografica"."nombre"'), "coberturaGeografica"],
+          "tendenciaActual",
+          "tendenciaDeseada")
       }
       return attributes;
     };
     case 'front': {
-    attributes.push( 
-      "id",
-      "nombre",
-      "urlImagen",
-      "definicion",
-      "codigo",
-      "codigoObjeto",
-      "ultimoValorDisponible",
-      "anioUltimoValorDisponible",
-      "tendenciaActual",
-      "tendenciaDeseada",
-      "mapa",
-      "observaciones",
-      "createdBy",
-      "updatedBy",
-      "idModulo",
-      "idOds",
-      "idCobertura",
-      "idUnidadMedida",
-      "createdAt",
-      "updatedAt",
-      "activo", )
+      attributes.push(
+        "id",
+        "nombre",
+        "urlImagen",
+        "definicion",
+        "codigo",
+        "codigoObjeto",
+        "ultimoValorDisponible",
+        "anioUltimoValorDisponible",
+        "tendenciaActual",
+        "tendenciaDeseada",
+        "idOds",
+        [sequelize.literal('"ods"."nombre"'), "ods"],
+        "idCobertura",
+        [sequelize.literal('"coberturaGeografica"."nombre"'), "coberturaGeografica"],
+        "idUnidadMedida",
+        [sequelize.literal('"unidadMedida"."nombre"'), "unidadMedida"],
+        "createdAt",
+        "updatedAt",
+        "createdBy",
+        "updatedBy",
+        "activo",
+        "idModulo")
       return attributes;
     };
   }
@@ -265,60 +265,64 @@ let attributes = [];
 
 const defineIncludes = (pathway, matchedData) => {
   let includes = [
-      {
-        model: UnidadMedida,
-        required: true,
-        attributes: [],
-      },
-      {
-        model: Modulo,
-        required: true,
-        attributes: [],
-      },
-      {
-        model: Ods,
-        required: true,
-        attributes: [],
-      },
-      {
-        model: CoberturaGeografica,
-        required: true,
-        attributes: [],
-      },
-      {
-        model: Mapa,
-        required: false,
-        attributes: ['id', 'ubicacion', 'url']
-      },
-      {
-        model: Formula,
-        required: false,
-        attributes: ['id', 'ecuacion', 'descripcion'],
-        include: [
-          {
-            model: Variable,
+    {
+      model: UnidadMedida,
+      required: true,
+      attributes: [],
+    },
+    {
+      model: Modulo,
+      required: true,
+      attributes: [],
+    },
+    {
+      model: Ods,
+      required: true,
+      attributes: [],
+    },
+    {
+      model: CoberturaGeografica,
+      required: true,
+      attributes: [],
+    },
+    {
+      model: Mapa,
+      required: false,
+      attributes: ['id', 'ubicacion', 'url']
+    },
+    {
+      model: Formula,
+      required: false,
+      attributes: ['id', 'ecuacion', 'descripcion'],
+      include: [
+        {
+          model: Variable,
+          required: true,
+          include: [{
+            model: UnidadMedida,
             required: true,
-            include: [{
-              model: UnidadMedida,
-              required: true,
-              attributes: []
-            }],
-            attributes: [
-              'nombre',
-              'nombreAtributo',
-              'dato',
-              [sequelize.literal('"formula->variables->unidadMedida"."nombre"'), "unidadMedida"],],
-          }
-        ]
-      },
-    ];
-  switch(pathway) {
+            attributes: []
+          }],
+          attributes: [
+            'nombre',
+            'nombreAtributo',
+            'dato',
+            [sequelize.literal('"formula->variables->unidadMedida"."nombre"'), "unidadMedida"],],
+        }
+      ]
+    },
+  ];
+  switch (pathway) {
     case 'front': {
-      includes = [];
+      includes.push({
+        model: Historico,
+        required: false,
+        attributes: ["anio", "valor", "fuente"],
+        order: [["anio", "DESC"]],
+      });
       return includes;
     };
     case 'file': {
-      console.log('ek');
       includes.push({
         model: Historico,
         required: false,
@@ -347,32 +351,32 @@ const defineIncludes = (pathway, matchedData) => {
 
 const defineOrder = (pathway, matchedData) => {
   let order = [];
-  switch(pathway) {
+  switch (pathway) {
     case 'site': {
       order.push(getIndicadoresSorting(matchedData))
     };
-    return order;
+      return order;
     case 'front': {
       order.push(getIndicadoresSorting(matchedData))
     };
-    return order;
+      return order;
   };
   return order;
 };
 
 const defineWhere = (pathway, matchedData) => {
   let where = {};
-  switch(pathway) {
+  switch (pathway) {
     case 'site': {
-        where = {
-          idModulo: matchedData.idModulo,
-          ...validateCatalog(matchedData),
-          ...getIndicadorFilters(matchedData),
-        };
-        return where;
+      where = {
+        idModulo: matchedData.idModulo,
+        ...validateCatalog(matchedData),
+        ...getIndicadorFilters(matchedData),
+      };
+      return where;
     }
     case 'front': {
-      where = { 
+      where = {
         ...getIndicadoresFilters(matchedData)
       }
       return where;
@@ -388,7 +392,7 @@ const definitions = (pathway, matchedData) => {
   const where = defineWhere(pathway, matchedData);
 
   const definitions = {
-    attributes, 
+    attributes,
     includes,
     order,
     where,
