@@ -314,12 +314,18 @@ const defineIncludes = (pathway, matchedData) => {
   ];
   switch (pathway) {
     case 'front': {
-      includes.push({
-        model: Historico,
-        required: false,
-        attributes: ["anio", "valor", "fuente"],
-        order: [["anio", "DESC"]],
-      });
+      if (typeof matchedData != 'undefined') {
+        includes = [];
+        includes = getIndicadorIncludes(matchedData);
+      } else {
+        includes.push({
+          model: Historico,
+          required: true,
+          attributes: ["anio", "valor", "fuente"],
+          limit: 5,
+          order: [["anio", "DESC"]],
+        });
+      };
       return includes;
     };
     case 'file': {
