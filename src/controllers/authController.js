@@ -6,6 +6,8 @@ require('dotenv').config();
 const { TOKEN_SECRET } = process.env;
 
 const { sendEmail } = require('../services/emailSenderService');
+const { generateToken, hashClave } = require('../middlewares/auth');
+
 const SALT_ROUNDS = 10;
 
 const login = async (req, res) => {
@@ -14,21 +16,14 @@ const login = async (req, res) => {
 
         const existingUser = await getUsuarioByCorreo(correo);
 
-        // compare existing user hashed clave against the hash of the clave in the request
         if (existingUser && await bcrypt.compare(clave, existingUser.clave)) {
-            // denied access if account is disabled (status code)
             if (existingUser.activo === 'NO') {
                 return res.status(403).json({
                     message: "La cuenta se encuentra deshabilitada"
                 });
             }
 
-            // create and sign token (valid up to 5hrs)
-            const token = jwt.sign(
-                { sub: existingUser.id },
-                TOKEN_SECRET,
-                { expiresIn: '5h' }
-            );
+            const token = generateToken({ sub: existingUser.id });
             return res.status(200).json({ token });
 
         }
@@ -44,10 +39,10 @@ const generatePasswordRecoveryToken = async (req, res) => {
         const { correo } = req.body;
         const existingUser = await getUsuarioByCorreo(correo);
         if (existingUser) {
-            const token = jwt.sign({ 
+            const token = jwt.sign({
                 sub: existingUser.id,
-                user: {nombres: existingUser.nombres, correo: existingUser.correo}
-             },
+                user: { nombres: existingUser.nombres, correo: existingUser.correo }
+            },
                 TOKEN_SECRET,
                 { expiresIn: '2h' }
             );
@@ -74,16 +69,16 @@ const handlePasswordRecoveryToken = async (req, res) => {
         const decoded = jwt.verify(token, TOKEN_SECRET);
         const user = await getUsuarioById(decoded.sub);
         if (clave && user && user.requestedPasswordChange === 'SI') {
-            const hashedPassword = await bcrypt.hash(clave, SALT_ROUNDS);
+            const hashedPassword = await hashClave(clave);
             const updatePassword = await updateUserPassword(user.id, hashedPassword);
             const changeStatus = await updateUserPasswordStatus(user.id);
-            if(updatePassword && changeStatus) {
+            if (updatePassword && changeStatus) {
                 return res.status(200).json({ message: "Contraseña actualizada" });
             }
             return res.status(400).json({ message: "Error al actualizar contraseña" });
         }
 
-        if(user.requestedPasswordChange === 'NO') {
+        if (user.requestedPasswordChange === 'NO') {
             return res.status(401).json({ message: "El usuario no ha solicitado un cambio de contraseña" });
         }
 
