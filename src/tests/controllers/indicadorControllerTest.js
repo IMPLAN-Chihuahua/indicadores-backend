@@ -261,7 +261,7 @@ describe('v1/indicadores', function () {
         let accessRolFake;
 
         this.beforeEach(function () {
-            accessRolFake = sinon.fake.resolves({ dataValues: adminRol });
+            accessRolFake = sinon.fake.resolves(adminRol);
             sinon.replace(Usuario, 'findOne', accessRolFake);
         });
 
@@ -281,7 +281,7 @@ describe('v1/indicadores', function () {
                 });
         });
 
-        it('Should create an indicador with formula and variables', function(done) {
+        it('Should create an indicador with formula and variables', function (done) {
             const toCreate = indicadorToCreate();
             const formula = aFormula(1);
             formula.variables = [aVariable(), aVariable()];
@@ -292,14 +292,14 @@ describe('v1/indicadores', function () {
                 .post('/api/v1/indicadores')
                 .set({ Authorization: `Bearer ${validToken}` })
                 .send(toCreate)
-                .end(function(err, res) {
+                .end(function (err, res) {
                     expect(err).to.be.null;
                     expect(res).to.have.status(201);
                     done()
                 });
         });
 
-        it('Should fail to create an indicador with formula and variables', function(done) {
+        it('Should fail to create an indicador with formula and variables', function (done) {
             const toCreate = indicadorToCreate();
             const formula = aFormula(1);
             const badVariable = aVariable();
@@ -310,7 +310,7 @@ describe('v1/indicadores', function () {
                 .post('/api/v1/indicadores')
                 .set({ Authorization: `Bearer ${validToken}` })
                 .send(toCreate)
-                .end(function(err, res) {
+                .end(function (err, res) {
                     expect(err).to.be.null;
                     expect(res).to.have.status(422);
                     expect(res.body.errors).to.be.an('array');
@@ -318,7 +318,7 @@ describe('v1/indicadores', function () {
                 });
         });
 
-        it('Should create an indicador with historicos', function(done) {
+        it('Should create an indicador with historicos', function (done) {
             const toCreate = indicadorToCreate();
             toCreate.historicos = [anHistorico()];
             const createFake = sinon.fake.resolves(anIndicador(1));
@@ -327,7 +327,7 @@ describe('v1/indicadores', function () {
                 .post('/api/v1/indicadores')
                 .set({ Authorization: `Bearer ${validToken}` })
                 .send(toCreate)
-                .end(function(err, res) {
+                .end(function (err, res) {
                     expect(err).to.be.null;
                     expect(res).to.have.status(201);
                     expect(createFake.calledOnce).to.be.true;
@@ -335,7 +335,7 @@ describe('v1/indicadores', function () {
                 });
         });
 
-        it('Should fail to create an indicador with bad formatted historicos', function(done) {
+        it('Should fail to create an indicador with bad formatted historicos', function (done) {
             const toCreate = indicadorToCreate();
             const badHistorico = anHistorico();
             badHistorico.anio = 'not a year';
@@ -345,7 +345,7 @@ describe('v1/indicadores', function () {
                 .post('/api/v1/indicadores')
                 .set({ Authorization: `Bearer ${validToken}` })
                 .send(toCreate)
-                .end(function(err, res) {
+                .end(function (err, res) {
                     expect(err).to.be.null;
                     expect(res).to.have.status(422);
                     expect(res.body.errors).to.be.an('array').with.lengthOf(2);
@@ -353,7 +353,7 @@ describe('v1/indicadores', function () {
                 });
         });
 
-        it('Should create an indicador with a mapa', function(done) {
+        it('Should create an indicador with a mapa', function (done) {
             const toCreate = indicadorToCreate();
             toCreate.mapa = aMapa();
             const createFake = sinon.fake.resolves(anIndicador(1));
@@ -362,7 +362,7 @@ describe('v1/indicadores', function () {
                 .post('/api/v1/indicadores')
                 .set({ Authorization: `Bearer ${validToken}` })
                 .send(toCreate)
-                .end(function(err, res) {
+                .end(function (err, res) {
                     expect(err).to.be.null;
                     expect(res).to.have.status(201);
                     expect(createFake.calledOnce).to.be.true;
@@ -370,7 +370,7 @@ describe('v1/indicadores', function () {
                 });
         });
 
-        it('Should fail to create an indicador with a bad formatted mapa', function(done) {
+        it('Should fail to create an indicador with a bad formatted mapa', function (done) {
             const toCreate = indicadorToCreate();
             const badMapa = aMapa();
             badMapa.url = 'not a url pattern';
@@ -379,7 +379,7 @@ describe('v1/indicadores', function () {
                 .post('/api/v1/indicadores')
                 .set({ Authorization: `Bearer ${validToken}` })
                 .send(toCreate)
-                .end(function(err, res) {
+                .end(function (err, res) {
                     expect(err).to.be.null;
                     expect(res).to.have.status(422);
                     expect(res.body.errors).to.be.an('array').with.lengthOf(1);
@@ -463,7 +463,7 @@ describe('v1/indicadores', function () {
         it('Should update indicador successfully (admin rol)', function (done) {
             const updateIndicadorFake = sinon.fake.resolves(1);
             sinon.replace(Indicador, 'update', updateIndicadorFake);
-            const findOneFake = sinon.fake.resolves({ dataValues: adminRol });
+            const findOneFake = sinon.fake.resolves(adminRol);
             sinon.replace(Usuario, 'findOne', findOneFake);
 
             chai.request(app)
