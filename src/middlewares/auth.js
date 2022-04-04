@@ -21,16 +21,14 @@ const verifyJWT = (req, res, next) => {
     }
 };
 
-const verifyRoles = (roles) => {
-    return async (req, res, next) => {
-        const rol = await getRol(req.sub);
-        const isAllowed = roles.includes(rol);
-        if (isAllowed) {
-            req.rol = rol;
-            next();
-        } else {
-            return res.status(403).json({message: 'Su rol no tiene permiso a este recurso'});
-        }
+const verifyRoles = (roles) => async (req, res, next) => {
+    const rol = await getRol(req.sub);
+    const isAllowed = roles.includes(rol);
+    if (isAllowed) {
+        req.rol = rol;
+        next();
+    } else {
+        return res.status(403).json({ message: 'Su rol no tiene permiso a este recurso' });
     }
 };
 
