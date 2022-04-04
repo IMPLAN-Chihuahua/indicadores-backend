@@ -25,7 +25,7 @@ describe('v1/indicadores', function () {
     const validToken = jwt.sign({ sub: 100 }, TOKEN_SECRET, { expiresIn: '5h' });
     const validIndicador = indicadorToCreate();
 
-    const adminRol = { roles: 'ADMIN' };
+    const adminRol = { rolValue: 'ADMIN' };
     const userRol = { roles: 'USER' };
 
     const indicadoresList = [

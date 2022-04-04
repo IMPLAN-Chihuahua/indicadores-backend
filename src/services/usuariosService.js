@@ -124,7 +124,7 @@ const updateUsuario = async (id, { nombres, apellidoPaterno, apellidoMaterno, ac
 
 const getRol = async (id) => {
     try {
-        const result = await Usuario.findOne({
+        const { rolValue: rol } = await Usuario.findOne({
             where: { id },
             include: [
                 {
@@ -133,11 +133,12 @@ const getRol = async (id) => {
                     attributes: []
                 }
             ],
-            attributes: [[Sequelize.literal('"rol"."rol"'), 'roles']],
+            attributes: [[Sequelize.literal('"rol"."rol"'), 'rolValue']],
+            raw: true
         });
-        return result?.roles;
+        return rol;
     } catch (err) {
-        throw new Error('Error al obtener rol de usuario: ' + err.message);
+        throw new Error(`Error al obtener rol de usuario: ${err.message}`);
     }
 };
 
@@ -182,7 +183,7 @@ const updateUserPassword = async (id, password) => {
     try {
         const affectedRows = await Usuario.update(
             { clave: password },
-            { where:{ id: id} });
+            { where: { id: id } });
         return affectedRows > 0;
     } catch (err) {
         throw new Error(`Error al actualizar contraseña: ${err.message}`);
