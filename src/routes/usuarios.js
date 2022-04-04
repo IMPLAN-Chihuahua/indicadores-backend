@@ -163,11 +163,11 @@ router.get(
  */
 router.post(
     '/',
+    verifyJWT,
+    verifyRoles(['ADMIN']),
     uploadImage('usuarios'),
     registerValidationRules(),
     validate,
-    verifyJWT,
-    verifyRoles(['ADMIN']),
     createUser
 );
 
@@ -245,6 +245,7 @@ router.patch(
     validate,
     verifyJWT,
     verifyRoles(['ADMIN']),
+    uploadImage('usuarios'),
     editUser
 );
 
