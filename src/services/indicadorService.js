@@ -50,13 +50,13 @@ const getIndicadoresFilters = (matchedData) => {
   if (searchQuery) {
     const filter = {
       [Op.or]: [
-        { nombre: { [Op.like]: `%${searchQuery}%` } },
-        { definicion: { [Op.like]: `%${searchQuery}%` } },
-        { codigo: { [Op.like]: `%${searchQuery}%` } },
-        { codigoObjeto: { [Op.like]: `%${searchQuery}%` } },
-        { tendenciaActual: { [Op.like]: `%${searchQuery}%` } },
-        { tendenciaDeseada: { [Op.like]: `%${searchQuery}%` } },
-        { observaciones: { [Op.like]: `%${searchQuery}%` } },
+        { nombre: { [Op.iLike]: `%${searchQuery}%` } },
+        { definicion: { [Op.iLike]: `%${searchQuery}%` } },
+        { codigo: { [Op.iLike]: `%${searchQuery}%` } },
+        { codigoObjeto: { [Op.iLike]: `%${searchQuery}%` } },
+        { tendenciaActual: { [Op.iLike]: `%${searchQuery}%` } },
+        { tendenciaDeseada: { [Op.iLike]: `%${searchQuery}%` } },
+        { observaciones: { [Op.iLike]: `%${searchQuery}%` } },
       ]
     };
     return filter;
