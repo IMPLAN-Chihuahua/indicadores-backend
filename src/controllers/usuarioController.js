@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const { hashClave } = require('../middlewares/auth');
 const { addUsuario,
     getUsuarios,
     isCorreoAlreadyInUse,
@@ -13,7 +14,7 @@ const getUsers = async (req, res) => {
     const page = req.matchedData.page || 1;
     const perPage = req.matchedData.perPage || 25;
     const { searchQuery } = req.matchedData;
-    
+
     try {
         const { usuarios, total } = await getUsuarios(perPage, (page - 1) * perPage, searchQuery);
         const totalInactivos = await countInactiveUsers();
@@ -45,9 +46,9 @@ const createUser = async (req, res) => {
     const avatar = `images/${req.file ? req.file.originalName : 'avatar.jpg'}`;
     try {
         if (await isCorreoAlreadyInUse(correo)) {
-            return res.status(409).json({message: 'Correo no disponible'})
+            return res.status(409).json({ message: 'Correo no disponible' })
         }
-        const hashedClave = await bcrypt.hash(clave, SALT_ROUNDS);
+        const hashedClave = await hashClave(clave);
         const savedUser = await addUsuario({
             correo,
             clave: hashedClave,
@@ -58,7 +59,7 @@ const createUser = async (req, res) => {
             avatar,
             idRol
         });
-        return res.status(201).json({data: savedUser});
+        return res.status(201).json({ data: savedUser });
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }

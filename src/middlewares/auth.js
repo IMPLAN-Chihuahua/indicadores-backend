@@ -1,7 +1,10 @@
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 const { getRol } = require('../services/usuariosService');
 require('dotenv').config();
 const { TOKEN_SECRET } = process.env;
+const SALT_ROUNDS = 10;
+const TOKEN_EXPIRATION_TIME = '5h';
 
 // verifica que peticion tenga un token valido
 const verifyJWT = (req, res, next) => {
@@ -32,5 +35,8 @@ const verifyRoles = (roles) => async (req, res, next) => {
     }
 };
 
+const hashClave = (clave) => bcrypt.hash(clave, SALT_ROUNDS);
 
-module.exports = { verifyJWT, verifyRoles };
+const generateToken = (payload) => jwt.sign(payload, TOKEN_SECRET, { expiresIn: TOKEN_EXPIRATION_TIME });
+
+module.exports = { verifyJWT, verifyRoles, hashClave, generateToken };
