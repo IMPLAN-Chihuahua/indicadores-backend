@@ -124,7 +124,7 @@ const updateUsuario = async (id, { nombres, apellidoPaterno, apellidoMaterno, ac
 
 const getRol = async (id) => {
     try {
-        const response = await Usuario.findOne({
+        const result = await Usuario.findOne({
             where: { id },
             include: [
                 {
@@ -135,7 +135,7 @@ const getRol = async (id) => {
             ],
             attributes: [[Sequelize.literal('"rol"."rol"'), 'roles']],
         });
-        return response.roles;
+        return result?.roles;
     } catch (err) {
         throw new Error('Error al obtener rol de usuario: ' + err.message);
     }
