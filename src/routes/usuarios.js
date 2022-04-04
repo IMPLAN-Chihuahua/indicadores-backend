@@ -1,4 +1,5 @@
 const express = require('express');
+const { query } = require('express-validator');
 
 const router = express.Router();
 const { getUsers, createUser, getUserFromId, editUser } = require('../controllers/usuarioController');
@@ -136,6 +137,7 @@ const {
 router.get(
     '/',
     paginationValidationRules(),
+    query('searchQuery'),
     validate,
     verifyJWT,
     verifyRoles(['ADMIN']),

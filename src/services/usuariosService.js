@@ -78,7 +78,7 @@ const addSearchQueryIfPresent = (searchQuery) => {
                 { nombres: { [Op.iLike]: `%${searchQuery}%` } },
                 { apellidoPaterno: { [Op.iLike]: `%${searchQuery}%` } },
                 { apellidoMaterno: { [Op.iLike]: `%${searchQuery}%` } },
-                { activo: { [Op.iLike]: `%${searchQuery}%` } },
+                { correo: { [Op.iLike]: `%${searchQuery}%` } },
             ]
         };
     }
