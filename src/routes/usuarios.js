@@ -34,7 +34,7 @@ const {
  *           clave:
  *             type: string
  *             description: password
- *             example: 2JE-WdnS
+ *             example: password
  *             writeOnly: true
  *           nombres:
  *             type: string

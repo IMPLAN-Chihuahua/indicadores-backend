@@ -29,8 +29,10 @@ const { loginValidationRules, validate, tokenValidationRules } = require('../mid
  *               properties:
  *                 correo:
  *                   type: string
+ *                   example: johndoe@email.com
  *                 clave:
  *                   type: string
+ *                   example: password
  *               required:
  *                 - correo
  *                 - clave
