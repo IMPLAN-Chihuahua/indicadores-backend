@@ -9,7 +9,7 @@ module.exports = {
       const idCatalogo = (i % 3) + 1;
       catalogoDetails.push({
         nombre: `${faker.random.word()}-${i}`,
-        idUnidad: idCatalogo,
+        idCatalogo,
         createdAt: new Date(),
         updatedAt: new Date()
       });

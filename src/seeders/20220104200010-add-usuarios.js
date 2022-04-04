@@ -10,14 +10,14 @@ module.exports = {
       usuarios.push({
         correo: faker.internet.email(firstName, lastName),
         clave: faker.internet.password(),
-        nombres: firstName + ' ' + lastName,
+        nombres: `${firstName} ${lastName}`,
         apellidoPaterno: firstName,
         apellidoMaterno: lastName,
         avatar: faker.internet.avatar(),
         activo: i % 2 == 0 ? 'SI' : 'NO',
         createdAt: new Date(),
         updatedAt: new Date(),
-        idRol: 1
+        idRol: (i % 2) + 1
       });
     }
     await queryInterface.bulkInsert('Usuarios', usuarios, {});

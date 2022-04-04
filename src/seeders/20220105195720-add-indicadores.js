@@ -1,6 +1,6 @@
 "use strict";
 const faker = require("faker");
-const { aCodigo } = require("../utils/factories");
+const { aCodigo, randomYear } = require("../utils/factories");
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -15,15 +15,15 @@ module.exports = {
         codigo,
         codigoObjeto: codigo,
         ultimoValorDisponible: faker.datatype.number(),
-        anioUltimoValorDisponible: i % 2 === 0 ? 2020 : 2019,
+        anioUltimoValorDisponible: randomYear(),
         createdBy: 1,
         updatedBy: 1,
         idModulo: 1,
         createdAt: date,
         updatedAt: date,
         tendenciaActual: i % 2 === 0 ? "ASCENDENTE" : "DESCENDENTE",
-        definicion: faker.lorem.sentence(),
         tendenciaDeseada: i % 2 === 0 ? "ASCENDENTE" : "DESCENDENTE",
+        definicion: faker.lorem.sentence(),
       });
     }
     await queryInterface.bulkInsert("Indicadores", indicadores, {});
