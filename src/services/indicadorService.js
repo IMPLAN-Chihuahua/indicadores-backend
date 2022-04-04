@@ -25,6 +25,7 @@ const getIndicadores = async (page, perPage, matchedData, pathway) => {
   });
   return {indicadores: result.rows, total: result.count};
   } catch(err) {
+    console.log(err)
     throw new Error(`Error al obtener los indicadores: ${err.message}`);
   }
 };
@@ -187,9 +188,6 @@ let attributes = [];
           "anioUltimoValorDisponible",
           "tendenciaActual",
           "tendenciaDeseada",
-          "idOds",
-          "idCobertura",
-          "idUnidadMedida",
           "createdAt",
           "updatedAt",
           "idModulo", )
