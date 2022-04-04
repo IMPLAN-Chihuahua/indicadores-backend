@@ -20,13 +20,19 @@
 
     button {
         background-color: #d4aa35;
-        color: white;
         padding: 14px 20px;
         margin: 8px 0;
         border: none;
         cursor: pointer;
         width: 100%;
         font-weight: bold;
+        border-radius: 5px;
+        max-width: 50%;
+        color: white;
+    }
+
+    button > a {
+        color: white;
     }
 
     .centered {
@@ -43,22 +49,35 @@
 
     a {
         text-decoration: none;
-        color: white;
+    }
+
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    img {
+        width: 20%;
     }
 </style>
 <body>
     <div class="card">
-        <div class="container">
+        <div class="">
+            <div class="container">
+                <img src="https://res.cloudinary.com/wofwof/image/upload/v1647640962/indicadores/logo_oo6yua.jpg"/>
+            </div>
             <p>Saludos, </p>
             <p>Se ha recibido una solicitud para reiniciar la contraseña de la cuenta de acceso asociada con el usuario <b>{{nombres}}</b>. No se han realizado cambios hasta el momento.</p>
             <p>
                 Es posible generar una nueva contraseña en el siguiente hipervínculo:
             </p>
-            <button>
-                <a href="{{recoverURL}}">
-                    Reiniciar contraseña
-                </a>
-            </button>
+            <div class="container">
+                <button>
+                    <a href="{{recoverURL}}">
+                        Reiniciar contraseña
+                    </a>
+                </button>
+            </div>
             <p>
                 Si usted no ha solicitado el cambio de contraseña, ignore este correo electrónico, el hipervínculo dejará de funcionar en 2 horas. También puede comentar sus inquietudes al administrador del sitio web en caso de que desee más información al respecto.
             </p>

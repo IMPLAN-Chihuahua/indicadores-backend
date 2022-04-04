@@ -13,19 +13,18 @@ const {
 const { Op } = Sequelize;
 
 const getIndicadores = async (page, perPage, matchedData, pathway) => {
-  const {where, order, attributes, includes} = definitions(pathway, matchedData);
+  const { where, order, attributes, includes } = definitions(pathway, matchedData);
   try {
-  const result = await Indicador.findAndCountAll({
-    where,
-    order,
-    include: includes,
-    attributes,
-    limit: perPage,
-    offset: (page - 1) * perPage,
-  });
-  return {indicadores: result.rows, total: result.count};
-  } catch(err) {
-    console.log(err)
+    const result = await Indicador.findAndCountAll({
+      where: where,
+      order: order,
+      include: includes,
+      attributes: attributes,
+      limit: perPage,
+      offset: (page - 1) * perPage,
+    });
+    return { indicadores: result.rows, total: result.count };
+  } catch (err) {
     throw new Error(`Error al obtener los indicadores: ${err.message}`);
   }
 };
@@ -38,7 +37,7 @@ const getIndicador = async (idIndicador, pathway) => {
     include: includes,
     attributes,
   });
-  
+
   if (typeof pathway !== 'file' || indicador === null) {
     return indicador;
   }
@@ -164,8 +163,8 @@ const updateIndicador = async (id, indicador) => {
 };
 
 const defineAttributes = (pathway, matchedData) => {
-let attributes = [];
-  switch(pathway) {
+  let attributes = [];
+  switch (pathway) {
     case 'file': {
       attributes.push(
       "id",
@@ -180,8 +179,8 @@ let attributes = [];
       return attributes;
     };
     case 'site': {
-      if(matchedData) {
-        attributes.push( 
+      if (matchedData) {
+        attributes.push(
           "id",
           "nombre",
           "ultimoValorDisponible",
@@ -190,7 +189,7 @@ let attributes = [];
           "tendenciaDeseada",
           "createdAt",
           "updatedAt",
-          "idModulo", )
+          "idModulo")
       } else {
         attributes.push(
         "id",
@@ -261,11 +260,21 @@ const defineIncludes = (pathway, matchedData) => {
     ];
   switch(pathway) {
     case 'front': {
-      includes = [];
+      if (typeof matchedData != 'undefined') {
+        includes = [];
+        includes = getIndicadorIncludes(matchedData);
+      } else {
+        includes.push({
+          model: Historico,
+          required: true,
+          attributes: ["anio", "valor", "fuente"],
+          limit: 5,
+          order: [["anio", "DESC"]],
+        });
+      };
       return includes;
     };
     case 'file': {
-      console.log('ek');
       includes.push({
         model: Historico,
         required: false,
@@ -294,32 +303,32 @@ const defineIncludes = (pathway, matchedData) => {
 
 const defineOrder = (pathway, matchedData) => {
   let order = [];
-  switch(pathway) {
+  switch (pathway) {
     case 'site': {
       order.push(getIndicadoresSorting(matchedData))
     };
-    return order;
+      return order;
     case 'front': {
       order.push(getIndicadoresSorting(matchedData))
     };
-    return order;
+      return order;
   };
   return order;
 };
 
 const defineWhere = (pathway, matchedData) => {
   let where = {};
-  switch(pathway) {
+  switch (pathway) {
     case 'site': {
-        where = {
-          idModulo: matchedData.idModulo,
-          ...validateCatalog(matchedData),
-          ...getIndicadorFilters(matchedData),
-        };
-        return where;
+      where = {
+        idModulo: matchedData.idModulo,
+        ...validateCatalog(matchedData),
+        ...getIndicadorFilters(matchedData),
+      };
+      return where;
     }
     case 'front': {
-      where = { 
+      where = {
         ...getIndicadoresFilters(matchedData)
       }
       return where;
@@ -335,7 +344,7 @@ const definitions = (pathway, matchedData) => {
   const where = defineWhere(pathway, matchedData);
 
   const definitions = {
-    attributes, 
+    attributes,
     includes,
     order,
     where,

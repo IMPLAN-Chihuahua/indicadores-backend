@@ -2,10 +2,12 @@ const express = require('express');
 const router = express.Router();
 const { getUserFromToken } = require('../controllers/usuarioController');
 const { verifyJWT } = require('../middlewares/auth');
-const { getIndicadoresFromUser } = require('../controllers/indicadorController');
+const { getIndicadoresFromUser, getIndicador } = require('../controllers/indicadorController');
 const { getAllModulos } = require('../controllers/moduloController');
 const { paramValidationRules, paginationValidationRules,
     validate, filterModulosValidationRules, sortModulosValidationRules } = require('../middlewares/validator');
+const { determinePathway } = require('../middlewares/determinePathway');
+
 /**
  * @swagger
  *  /me:
@@ -60,6 +62,15 @@ router.route('/').get(verifyJWT, getUserFromToken);
 /* TODO: Implementar VerifyRole */
 
 router.route('/indicadores').get(verifyJWT, getIndicadoresFromUser);
+
+
+router.route('/indicadores/:idIndicador')
+    .get(verifyJWT,
+        paramValidationRules(),
+        validate,
+        determinePathway('front'),
+        getIndicador,
+    );
 
 /**
  * @swagger
@@ -130,12 +141,12 @@ router.route('/indicadores').get(verifyJWT, getIndicadoresFromUser);
 
 router.route('/modulos')
     .get(
-        paginationValidationRules(), 
+        paginationValidationRules(),
         filterModulosValidationRules(),
         sortModulosValidationRules(),
-        validate, 
+        validate,
         verifyJWT,
         getAllModulos,
-        );
+    );
 
 module.exports = router;
