@@ -8,7 +8,7 @@ module.exports = {
       const date = new Date();
       historico.push({
         id: i + 1,
-        valor: faker.random.number(),
+        valor: faker.datatype.number(),
         anio: 2022 - i,
         fuente: faker.internet.url(),
         idIndicador: 1,

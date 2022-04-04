@@ -90,21 +90,6 @@ module.exports = {
             }
           },
 
-          idOds: {
-            type: Sequelize.INTEGER,
-            allowNull: false,
-          },
-
-          idCobertura: {
-            type: Sequelize.INTEGER,
-            allowNull: false,
-          },
-
-          idUnidadMedida: {
-            type: Sequelize.INTEGER,
-            allowNull: false,
-          },
-
           createdAt: {
             allowNull: false,
             type: Sequelize.DATE
@@ -117,10 +102,10 @@ module.exports = {
         }
       );
 
-      await queryInterface.addIndex('Indicadores', ['createdBy', 'updatedBy', 'idOds', 'idCobertura', 'idUnidadMedida'], { unique: false });
+      await queryInterface.addIndex('Indicadores', ['createdBy'], { unique: false });
+      await queryInterface.addIndex('Indicadores', ['updatedBy'], { unique: false });
       await transaction.commit();
     } catch (err) {
-      console.log(err);
       await transaction.rollback();
       throw err;
     }

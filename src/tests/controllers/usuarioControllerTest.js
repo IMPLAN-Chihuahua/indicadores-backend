@@ -18,7 +18,7 @@ const { TOKEN_SECRET } = process.env;
 
 describe('v1/usuarios', function () {
   const token = jwt.sign({ sub: 100 }, TOKEN_SECRET, { expiresIn: '5h' });;
-  const adminRol = { dataValues: { roles: 'ADMIN' } };
+  const adminRol = { rolValue: 'ADMIN' };
   const bigImage = Buffer.alloc(100200000, '.jpg')
   const allowedImage = Buffer.alloc(1000, '.jpg')
   const notAllowedFile = Buffer.alloc(10000, '.pdf')
@@ -179,6 +179,8 @@ describe('v1/usuarios', function () {
 
     it('Should fail to create a user because avatar image is too big', function (done) {
       const userFake = aUser(1);
+      const findOneFake = sinon.fake.resolves(adminRol);
+      sinon.replace(Usuario, 'findOne', findOneFake);
 
       chai.request(app)
         .post('/api/v1/usuarios')
@@ -202,6 +204,8 @@ describe('v1/usuarios', function () {
 
     it('Should fail to create a user because avatar has an incorrect format', function (done) {
       const userFake = aUser(1);
+      const findOneFake = sinon.fake.resolves(adminRol);
+      sinon.replace(Usuario, 'findOne', findOneFake);
       chai.request(app)
         .post('/api/v1/usuarios')
         .set({ Authorization: `Bearer ${token}` })
@@ -302,6 +306,8 @@ describe('v1/usuarios', function () {
         createReadStream: () => bigImage
       });
       sinon.replace(fileUpload, 'uploadImage', fileUploadFake);
+      const findOneFake = sinon.fake.resolves(adminRol);
+      sinon.replace(Usuario, 'findOne', findOneFake);
       const userFake = aUser(1);
 
       chai.request(app)
@@ -319,6 +325,7 @@ describe('v1/usuarios', function () {
         .end((err, res) => {
           expect(err).to.be.null;
           expect(res).have.status(413);
+          expect(findOneFake.calledOnce).to.be.true;
           expect(res.error.text).to.be.equal('LIMIT_FILE_SIZE')
           done();
         });
@@ -326,6 +333,8 @@ describe('v1/usuarios', function () {
 
     it('Should fail to update a user because avatar has an incorrect format', function (done) {
       const userFake = aUser(1);
+      const findOneFake = sinon.fake.resolves(adminRol);
+      sinon.replace(Usuario, 'findOne', findOneFake);
       chai.request(app)
         .patch('/api/v1/usuarios/1')
         .set({ Authorization: `Bearer ${token}` })

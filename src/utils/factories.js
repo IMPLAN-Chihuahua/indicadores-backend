@@ -166,5 +166,7 @@ module.exports = {
     aMapa,
     anOds,
     anUnidadMedida,
-    aCoberturaGeografica
+    aCoberturaGeografica,
+    aCodigo,
+    randomYear
 };

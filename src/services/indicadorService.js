@@ -1,9 +1,6 @@
 const {
   Indicador,
-  Ods,
-  CoberturaGeografica,
   Fuente,
-  UnidadMedida,
   Modulo,
   Historico,
   Mapa,
@@ -38,7 +35,7 @@ const getIndicador = async (idIndicador, pathway) => {
   const indicador = await Indicador.findOne({
     where: { id: idIndicador, },
     include: includes,
-    attributes: attributes,
+    attributes,
   });
 
   if (typeof pathway !== 'file' || indicador === null) {
@@ -52,13 +49,13 @@ const getIndicadoresFilters = (matchedData) => {
   if (searchQuery) {
     const filter = {
       [Op.or]: [
-        { nombre: { [Op.like]: `%${searchQuery}%` } },
-        { definicion: { [Op.like]: `%${searchQuery}%` } },
-        { codigo: { [Op.like]: `%${searchQuery}%` } },
-        { codigoObjeto: { [Op.like]: `%${searchQuery}%` } },
-        { tendenciaActual: { [Op.like]: `%${searchQuery}%` } },
-        { tendenciaDeseada: { [Op.like]: `%${searchQuery}%` } },
-        { observaciones: { [Op.like]: `%${searchQuery}%` } },
+        { nombre: { [Op.iLike]: `%${searchQuery}%` } },
+        { definicion: { [Op.iLike]: `%${searchQuery}%` } },
+        { codigo: { [Op.iLike]: `%${searchQuery}%` } },
+        { codigoObjeto: { [Op.iLike]: `%${searchQuery}%` } },
+        { tendenciaActual: { [Op.iLike]: `%${searchQuery}%` } },
+        { tendenciaDeseada: { [Op.iLike]: `%${searchQuery}%` } },
+        { observaciones: { [Op.iLike]: `%${searchQuery}%` } },
       ]
     };
     return filter;
@@ -104,21 +101,6 @@ const getIndicadorIncludes = ({ idFuente }) => {
   const indicadorFilter = [];
 
   indicadorFilter.push(
-    {
-      model: Ods,
-      required: true,
-      attributes: []
-    },
-    {
-      model: CoberturaGeografica,
-      required: true,
-      attributes: []
-    },
-    {
-      model: UnidadMedida,
-      required: true,
-      attributes: []
-    },
   );
 
   if (idFuente) {
@@ -185,18 +167,15 @@ const defineAttributes = (pathway, matchedData) => {
   switch (pathway) {
     case 'file': {
       attributes.push(
-        "id",
-        "nombre",
-        "definicion",
-        "urlImagen",
-        [sequelize.literal('"ods"."nombre"'), "ods"],
-        [sequelize.literal('"modulo"."temaIndicador"'), "modulo"],
-        "ultimoValorDisponible",
-        [sequelize.literal('"unidadMedida"."nombre"'), "unidadMedida"],
-        "anioUltimoValorDisponible",
-        [sequelize.literal('"coberturaGeografica"."nombre"'), "coberturaGeografica"],
-        "tendenciaActual",
-        "tendenciaDeseada")
+      "id",
+      "nombre",
+      "definicion",
+      "urlImagen",
+      [sequelize.literal('"modulo"."temaIndicador"'), "modulo"],
+      "ultimoValorDisponible",
+      "anioUltimoValorDisponible",
+      "tendenciaActual",
+      "tendenciaDeseada",)
       return attributes;
     };
     case 'site': {
@@ -208,56 +187,43 @@ const defineAttributes = (pathway, matchedData) => {
           "anioUltimoValorDisponible",
           "tendenciaActual",
           "tendenciaDeseada",
-          "idOds",
-          [sequelize.literal('"ods"."nombre"'), "ods"],
-          "idCobertura",
-          [sequelize.literal('"coberturaGeografica"."nombre"'), "coberturaGeografica"],
-          "idUnidadMedida",
-          [sequelize.literal('"unidadMedida"."nombre"'), "unidadMedida"],
           "createdAt",
           "updatedAt",
           "idModulo")
       } else {
         attributes.push(
-          "id",
-          "nombre",
-          "definicion",
-          "urlImagen",
-          [sequelize.literal('"ods"."nombre"'), "ods"],
-          [sequelize.literal('"modulo"."temaIndicador"'), "modulo"],
-          "ultimoValorDisponible",
-          [sequelize.literal('"unidadMedida"."nombre"'), "unidadMedida"],
-          "anioUltimoValorDisponible",
-          [sequelize.literal('"coberturaGeografica"."nombre"'), "coberturaGeografica"],
-          "tendenciaActual",
-          "tendenciaDeseada")
+        "id",
+        "nombre",
+        "definicion",
+        "urlImagen",
+        [sequelize.literal('"modulo"."temaIndicador"'), "modulo"],
+        "ultimoValorDisponible",
+        "anioUltimoValorDisponible",
+        "tendenciaActual",
+        "tendenciaDeseada",)      
       }
       return attributes;
     };
     case 'front': {
-      attributes.push(
-        "id",
-        "nombre",
-        "urlImagen",
-        "definicion",
-        "codigo",
-        "codigoObjeto",
-        "ultimoValorDisponible",
-        "anioUltimoValorDisponible",
-        "tendenciaActual",
-        "tendenciaDeseada",
-        "idOds",
-        [sequelize.literal('"ods"."nombre"'), "ods"],
-        "idCobertura",
-        [sequelize.literal('"coberturaGeografica"."nombre"'), "coberturaGeografica"],
-        "idUnidadMedida",
-        [sequelize.literal('"unidadMedida"."nombre"'), "unidadMedida"],
-        "createdAt",
-        "updatedAt",
-        "createdBy",
-        "updatedBy",
-        "activo",
-        "idModulo")
+    attributes.push( 
+      "id",
+      "nombre",
+      "urlImagen",
+      "definicion",
+      "codigo",
+      "codigoObjeto",
+      "ultimoValorDisponible",
+      "anioUltimoValorDisponible",
+      "tendenciaActual",
+      "tendenciaDeseada",
+      "mapa",
+      "observaciones",
+      "createdBy",
+      "updatedBy",
+      "idModulo",
+      "createdAt",
+      "updatedAt",
+      "activo", )
       return attributes;
     };
   }
@@ -265,54 +231,34 @@ const defineAttributes = (pathway, matchedData) => {
 
 const defineIncludes = (pathway, matchedData) => {
   let includes = [
-    {
-      model: UnidadMedida,
-      required: true,
-      attributes: [],
-    },
-    {
-      model: Modulo,
-      required: true,
-      attributes: [],
-    },
-    {
-      model: Ods,
-      required: true,
-      attributes: [],
-    },
-    {
-      model: CoberturaGeografica,
-      required: true,
-      attributes: [],
-    },
-    {
-      model: Mapa,
-      required: false,
-      attributes: ['id', 'ubicacion', 'url']
-    },
-    {
-      model: Formula,
-      required: false,
-      attributes: ['id', 'ecuacion', 'descripcion'],
-      include: [
-        {
-          model: Variable,
-          required: true,
-          include: [{
-            model: UnidadMedida,
+      {
+        model: Modulo,
+        required: true,
+        attributes: [],
+      },
+      {
+        model: Mapa,
+        required: false,
+        attributes: ['id', 'ubicacion', 'url']
+      },
+      {
+        model: Formula,
+        required: false,
+        attributes: ['id', 'ecuacion', 'descripcion'],
+        include: [
+          {
+            model: Variable,
             required: true,
-            attributes: []
-          }],
-          attributes: [
-            'nombre',
-            'nombreAtributo',
-            'dato',
-            [sequelize.literal('"formula->variables->unidadMedida"."nombre"'), "unidadMedida"],],
-        }
-      ]
-    },
-  ];
-  switch (pathway) {
+            attributes: [
+              'nombre',
+              'nombreAtributo',
+              'dato',
+            ],
+          }
+        ]
+      },
+    ];
+  switch(pathway) {
     case 'front': {
       if (typeof matchedData != 'undefined') {
         includes = [];

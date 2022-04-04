@@ -1,4 +1,5 @@
 const express = require('express');
+const { query } = require('express-validator');
 
 const router = express.Router();
 const { getUsers, createUser, getUserFromId, editUser } = require('../controllers/usuarioController');
@@ -34,7 +35,7 @@ const {
  *           clave:
  *             type: string
  *             description: password
- *             example: 2JE-WdnS
+ *             example: password
  *             writeOnly: true
  *           nombres:
  *             type: string
@@ -136,6 +137,7 @@ const {
 router.get(
     '/',
     paginationValidationRules(),
+    query('searchQuery'),
     validate,
     verifyJWT,
     verifyRoles(['ADMIN']),
@@ -163,11 +165,11 @@ router.get(
  */
 router.post(
     '/',
+    verifyJWT,
+    verifyRoles(['ADMIN']),
     uploadImage('usuarios'),
     registerValidationRules(),
     validate,
-    verifyJWT,
-    verifyRoles(['ADMIN']),
     createUser
 );
 
@@ -245,6 +247,7 @@ router.patch(
     validate,
     verifyJWT,
     verifyRoles(['ADMIN']),
+    uploadImage('usuarios'),
     editUser
 );
 
