@@ -121,7 +121,7 @@ const filterModulosValidationRules = () => [
 ];
 
 const paramValidationRules = () => [
-    param(['idModulo', 'idIndicador', 'idUser', 'idOds', 'idCobertura', 'idUnidadMedida'])
+    param(['idModulo', 'idIndicador', 'idUser', 'idOds', 'idCobertura', 'idUnidadMedida', 'idCatalogo'])
         .optional()
         .isInt().withMessage('Campo debe ser entero')
         .toInt()
