@@ -167,15 +167,15 @@ const defineAttributes = (pathway, matchedData) => {
   switch (pathway) {
     case 'file': {
       attributes.push(
-      "id",
-      "nombre",
-      "definicion",
-      "urlImagen",
-      [sequelize.literal('"modulo"."temaIndicador"'), "modulo"],
-      "ultimoValorDisponible",
-      "anioUltimoValorDisponible",
-      "tendenciaActual",
-      "tendenciaDeseada",)
+        "id",
+        "nombre",
+        "definicion",
+        "urlImagen",
+        [sequelize.literal('"modulo"."temaIndicador"'), "modulo"],
+        "ultimoValorDisponible",
+        "anioUltimoValorDisponible",
+        "tendenciaActual",
+        "tendenciaDeseada")
       return attributes;
     };
     case 'site': {
@@ -192,38 +192,37 @@ const defineAttributes = (pathway, matchedData) => {
           "idModulo")
       } else {
         attributes.push(
-        "id",
-        "nombre",
-        "definicion",
-        "urlImagen",
-        [sequelize.literal('"modulo"."temaIndicador"'), "modulo"],
-        "ultimoValorDisponible",
-        "anioUltimoValorDisponible",
-        "tendenciaActual",
-        "tendenciaDeseada",)      
+          "id",
+          "nombre",
+          "definicion",
+          "urlImagen",
+          [sequelize.literal('"modulo"."temaIndicador"'), "modulo"],
+          "ultimoValorDisponible",
+          "anioUltimoValorDisponible",
+          "tendenciaActual",
+          "tendenciaDeseada")
       }
       return attributes;
     };
     case 'front': {
-    attributes.push( 
-      "id",
-      "nombre",
-      "urlImagen",
-      "definicion",
-      "codigo",
-      "codigoObjeto",
-      "ultimoValorDisponible",
-      "anioUltimoValorDisponible",
-      "tendenciaActual",
-      "tendenciaDeseada",
-      "mapa",
-      "observaciones",
-      "createdBy",
-      "updatedBy",
-      "idModulo",
-      "createdAt",
-      "updatedAt",
-      "activo", )
+      attributes.push(
+        "id",
+        "nombre",
+        "urlImagen",
+        "definicion",
+        "codigo",
+        "codigoObjeto",
+        "ultimoValorDisponible",
+        "anioUltimoValorDisponible",
+        "tendenciaActual",
+        "tendenciaDeseada",
+        "observaciones",
+        "createdBy",
+        "updatedBy",
+        "idModulo",
+        "createdAt",
+        "updatedAt",
+        "activo")
       return attributes;
     };
   }
@@ -231,34 +230,34 @@ const defineAttributes = (pathway, matchedData) => {
 
 const defineIncludes = (pathway, matchedData) => {
   let includes = [
-      {
-        model: Modulo,
-        required: true,
-        attributes: [],
-      },
-      {
-        model: Mapa,
-        required: false,
-        attributes: ['id', 'ubicacion', 'url']
-      },
-      {
-        model: Formula,
-        required: false,
-        attributes: ['id', 'ecuacion', 'descripcion'],
-        include: [
-          {
-            model: Variable,
-            required: true,
-            attributes: [
-              'nombre',
-              'nombreAtributo',
-              'dato',
-            ],
-          }
-        ]
-      },
-    ];
-  switch(pathway) {
+    {
+      model: Modulo,
+      required: true,
+      attributes: [],
+    },
+    {
+      model: Mapa,
+      required: false,
+      attributes: ['id', 'ubicacion', 'url']
+    },
+    {
+      model: Formula,
+      required: false,
+      attributes: ['id', 'ecuacion', 'descripcion'],
+      include: [
+        {
+          model: Variable,
+          required: true,
+          attributes: [
+            'nombre',
+            'nombreAtributo',
+            'dato',
+          ],
+        }
+      ]
+    },
+  ];
+  switch (pathway) {
     case 'front': {
       if (typeof matchedData != 'undefined') {
         includes = [];
