@@ -7,7 +7,9 @@ const {
 
 const getCatalogos = async () => {
 	try {
-		const result = await Catalogo.findAndCountAll()
+		const result = await Catalogo.findAndCountAll({
+			attributes: ['id', 'nombre']
+		})
 		return {
 			catalogos: result.rows,
 			total: result.count

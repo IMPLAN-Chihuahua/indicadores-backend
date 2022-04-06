@@ -7,7 +7,9 @@ const {
   Formula,
   Variable,
   sequelize,
-  Sequelize
+  Sequelize,
+  CatalogoDetail,
+  CatalogoDetailIndicador
 } = require("../models");
 
 const { Op } = Sequelize;
@@ -32,16 +34,21 @@ const getIndicadores = async (page, perPage, matchedData, pathway) => {
 const getIndicador = async (idIndicador, pathway) => {
   const includes = defineIncludes(pathway);
   const attributes = defineAttributes(pathway);
-  const indicador = await Indicador.findOne({
-    where: { id: idIndicador, },
-    include: includes,
-    attributes,
-  });
+  try {
+    const indicador = await Indicador.findOne({
+      where: { id: idIndicador, },
+      include: includes,
+      attributes,
+    });
+    if (typeof pathway !== 'file' || indicador === null) {
+      return indicador;
+    }
+    return { ...indicador.dataValues };
+  } catch (err) {
 
-  if (typeof pathway !== 'file' || indicador === null) {
-    return indicador;
+    console.log(err);
+
   }
-  return { ...indicador.dataValues };
 };
 
 const getIndicadoresFilters = (matchedData) => {
@@ -247,7 +254,7 @@ const defineIncludes = (pathway, matchedData) => {
       include: [
         {
           model: Variable,
-          required: true,
+          required: false,
           attributes: [
             'nombre',
             'nombreAtributo',
@@ -255,7 +262,11 @@ const defineIncludes = (pathway, matchedData) => {
           ],
         }
       ]
-    },
+    }, {
+      model: CatalogoDetail,
+      required: false,
+      attributes: ['id', 'nombre', 'idCatalogo'],
+    }
   ];
   switch (pathway) {
     case 'front': {
