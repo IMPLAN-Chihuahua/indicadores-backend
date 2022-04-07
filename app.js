@@ -65,10 +65,12 @@ app.use('/api/v1/me', require('./src/routes/me'));
 
 app.use('/images', express.static(path.join(__dirname, 'uploads', 'images')))
 
+app.use('/images/indicador', express.static(path.join(__dirname, 'uploads', 'indicadores/images')))
+
 const PORT = 8080;
 
 const server = app.listen(PORT, () => {
   console.log(`App starting on port ${PORT}`);
 });
 
-module.exports = { server, app};
+module.exports = { server, app };

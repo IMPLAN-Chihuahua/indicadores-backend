@@ -98,13 +98,19 @@ const createIndicador = async (req, res) => {
 
 const updateIndicador = async (req, res) => {
   try {
+    let urlImagen = '';
+
+    urlImagen = req.file ? `/images/indicador/${req.file.filename}` : urlImagen;
+
     const { idIndicador, ...indicador } = req.matchedData;
     const idUsuario = req.sub;
     const rol = req.rol || await UsuarioService.getRol(idUsuario);
 
+    const fields = { ...indicador, urlImagen: urlImagen };
+    console.log(fields);
     let saved;
     if (rol === 'ADMIN') {
-      saved = await IndicadorService.updateIndicador(idIndicador, indicador);
+      saved = await IndicadorService.updateIndicador(idIndicador, fields);
     } else {
       const isAllowed = await areConnected(idUsuario, idIndicador);
       if (!isAllowed) {

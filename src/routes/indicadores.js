@@ -16,6 +16,7 @@ const {
     updateIndicador } = require('../controllers/indicadorController');
 const { verifyJWT, verifyRoles } = require('../middlewares/auth');
 const { determinePathway } = require('../middlewares/determinePathway');
+const { uploadImage } = require('../middlewares/fileUpload');
 
 /**
  * @swagger
@@ -311,6 +312,7 @@ router.route('/')
 router.route('/:idIndicador')
     .patch(
         paramValidationRules(),
+        uploadImage('indicadores'),
         updateIndicadorValidationRules(),
         validate,
         verifyJWT,

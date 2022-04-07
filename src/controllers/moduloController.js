@@ -67,6 +67,7 @@ const getAllModulos = async (req, res) => {
 
 const editModulo = async (req, res) => {
     const fields = req.body;
+    console.log(fields);
     const { idModulo } = req.matchedData;
     try {
         const updatedModulo = await moduloService.updateModulo(idModulo, fields);
