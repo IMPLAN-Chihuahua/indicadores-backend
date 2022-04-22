@@ -32,6 +32,7 @@ const getUsuarioById = async (id) => {
                 'nombres',
                 'apellidoPaterno',
                 'apellidoMaterno',
+                'descripcion',
                 'activo',
                 'avatar',
                 'requestedPasswordChange',
