@@ -134,12 +134,29 @@ const updateIndicador = async (req, res) => {
   } catch (err) {
     return res.status(500).send(err.message)
   }
-}
+};
+
+const updateIndicadorStatus = async (req, res) => {
+  const { idIndicador } = req.matchedData;
+
+  try {
+    const updatedIndicador = await IndicadorService.updateIndicadorStatus(idIndicador);
+    if (updatedIndicador) {
+      return res.sendStatus(204);
+    }
+    else {
+      return res.sendStatus(400);
+    }
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
 
 module.exports = {
   getIndicadores,
   getIndicador,
   getIndicadoresFromUser,
   createIndicador,
-  updateIndicador
+  updateIndicador,
+  updateIndicadorStatus,
 };

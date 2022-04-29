@@ -180,6 +180,24 @@ const getIndicadoresFromUser = async (id) => {
     }
 };
 
+const updateUserStatus = async (id) => {
+
+    try {
+        const usuario = await Usuario.findOne({
+            where: { id },
+            attributes: ['activo'],
+        });
+        const nuevoEstado = usuario.activo === 'SI' ? 'NO' : 'SI';
+
+        const updateUsuario = await Usuario.update(
+            { activo: nuevoEstado },
+            { where: { id: id } });
+        return updateUsuario > 0;
+    } catch (err) {
+        throw new Error('Error al actualizar estado de usuario: ' + err.message);
+    }
+};
+
 const updateUserPassword = async (id, password) => {
     try {
         const affectedRows = await Usuario.update(
@@ -214,6 +232,7 @@ module.exports = {
     getUsuarios,
     isCorreoAlreadyInUse,
     updateUsuario,
+    updateUserStatus,
     getRol,
     getIndicadoresFromUser,
     countInactiveUsers,

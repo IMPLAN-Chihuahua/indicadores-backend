@@ -13,7 +13,9 @@ const {
     getIndicador,
     getIndicadores,
     createIndicador,
-    updateIndicador } = require('../controllers/indicadorController');
+    updateIndicador,
+    updateIndicadorStatus,
+} = require('../controllers/indicadorController');
 const { verifyJWT, verifyRoles } = require('../middlewares/auth');
 const { determinePathway } = require('../middlewares/determinePathway');
 const { uploadImage } = require('../middlewares/fileUpload');
@@ -317,6 +319,14 @@ router.route('/:idIndicador')
         validate,
         verifyJWT,
         updateIndicador
+    );
+
+router.route('/:idIndicador/toggle-status')
+    .patch(
+        paramValidationRules(),
+        validate,
+        verifyJWT,
+        updateIndicadorStatus
     );
 
 module.exports = router;

@@ -2,15 +2,15 @@ const express = require('express');
 const { query } = require('express-validator');
 
 const router = express.Router();
-const { getUsers, createUser, getUserFromId, editUser } = require('../controllers/usuarioController');
+const { getUsers, createUser, getUserFromId, editUser, editUserStatus } = require('../controllers/usuarioController');
 const { verifyJWT, verifyRoles } = require('../middlewares/auth');
 const { uploadImage } = require('../middlewares/fileUpload');
 const {
     registerValidationRules,
     paginationValidationRules,
     validate,
-    paramValidationRules, 
-    updateValidationRules} = require('../middlewares/validator');
+    paramValidationRules,
+    updateValidationRules } = require('../middlewares/validator');
 /**
  * @swagger
  *   components:
@@ -251,4 +251,13 @@ router.patch(
     editUser
 );
 
+
+router.patch(
+    '/:idUser/toggle-status',
+    paramValidationRules(),
+    validate,
+    verifyJWT,
+    verifyRoles(['ADMIN']),
+    editUserStatus
+)
 module.exports = router;

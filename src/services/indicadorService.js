@@ -169,6 +169,27 @@ const updateIndicador = async (id, indicador) => {
   }
 };
 
+const updateIndicadorStatus = async (id) => {
+  try {
+    const indicador = await Indicador.findOne({ where: { id }, attributes: ["activo"] });
+
+    const nuevoEstado = indicador.dataValues.activo === 'SI' ? 'NO' : 'SI';
+
+    try {
+      const updateIndicador = await Indicador.update({ activo: nuevoEstado }, { where: { id } });
+      console.log(updateIndicador);
+      return updateIndicador > 0;
+    }
+    catch (err) {
+      console.log(err);
+      throw new Error(`Error al actualizar indicador: ${err.message}`);
+    }
+  } catch (err) {
+    console.log(err);
+    throw new Error(`Error al actualizar indicador: ${err.message}`);
+  }
+};
+
 const defineAttributes = (pathway, matchedData) => {
   let attributes = [];
   switch (pathway) {
@@ -368,4 +389,5 @@ module.exports = {
   getIndicador,
   createIndicador,
   updateIndicador,
+  updateIndicadorStatus
 };

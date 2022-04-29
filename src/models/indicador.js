@@ -7,8 +7,8 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             this.belongsTo(models.Modulo, { foreignKey: 'idModulo' });
             this.belongsToMany(models.Usuario, { through: models.UsuarioIndicador, foreignKey: 'idIndicador' });
-            this.belongsToMany(models.CatalogoDetail, {through: models.CatalogoDetailIndicador, foreignKey: 'idIndicador'} )
-            
+            this.belongsToMany(models.CatalogoDetail, { through: models.CatalogoDetailIndicador, foreignKey: 'idIndicador' })
+
             this.hasOne(models.Formula, { foreignKey: 'idIndicador' });
             this.hasMany(models.Historico, { foreignKey: 'idIndicador' });
             this.hasMany(models.Fuente, { foreignKey: 'idIndicador' });
@@ -87,6 +87,12 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.INTEGER,
                 allowNull: true
             },
+
+            activo: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                defaultValue: 'SI'
+            }
         },
         {
             sequelize,

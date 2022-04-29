@@ -92,7 +92,6 @@ const updateModuloStatus = async (req, res) => {
             return res.sendStatus(404);
         }
     } catch (err) {
-        console.log(err);
         return res.sendStatus(500).json({ message: err.message });
     }
 };

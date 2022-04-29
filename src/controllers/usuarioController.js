@@ -5,6 +5,7 @@ const { addUsuario,
     isCorreoAlreadyInUse,
     getUsuarioById,
     updateUsuario,
+    updateUserStatus,
     countInactiveUsers } = require('../services/usuariosService');
 require('dotenv').config();
 
@@ -78,6 +79,21 @@ const editUser = async (req, res) => {
     }
 }
 
+const editUserStatus = async (req, res) => {
+    const { idUser } = req.params;
+    try {
+        const updatedUser = await updateUserStatus(idUser);
+        if (updatedUser) {
+            return res.sendStatus(204);
+        }
+        else {
+            return res.sendStatus(400);
+        }
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+};
+
 const getUser = async (req, res, id) => {
     try {
         const usuario = await getUsuarioById(id);
@@ -105,6 +121,7 @@ module.exports = {
     createUser,
     getUser,
     editUser,
+    editUserStatus,
     getUserFromId,
     getUserFromToken
 };
