@@ -1,4 +1,5 @@
 const express = require('express');
+
 const router = express.Router();
 const { login, generatePasswordRecoveryToken, handlePasswordRecoveryToken } = require('../controllers/authController');
 const { loginValidationRules, validate, tokenValidationRules } = require('../middlewares/validator')
