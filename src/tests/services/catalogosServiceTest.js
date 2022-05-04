@@ -12,7 +12,7 @@ const CatalogosService = require('../../services/catalogosService');
 const { server } = require('../../../app');
 const { someCatalogos, someCatalogosDetails, someCatalogosFromIndicador } = require('../../utils/factories');
 
-describe.only('Catalogos service', function () {
+describe('Catalogos service', function () {
     const catalogos = someCatalogos(1);
     const catalogosWithDetails = [someCatalogosDetails(1, 1), someCatalogosDetails(2, 1), someCatalogosDetails(3, 1)];
     const catalogosFromIndicador = someCatalogosFromIndicador(1);
