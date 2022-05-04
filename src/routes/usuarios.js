@@ -50,7 +50,7 @@ const {
  *             nullable: true
  *             example: Smith
  *             description: user's second last name
- *           avatar:
+ *           urlImagen:
  *             type: string
  *             description: user's profile picture
  *           activo:

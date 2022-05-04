@@ -34,7 +34,7 @@ const getUsuarioById = async (id) => {
                 'apellidoMaterno',
                 'descripcion',
                 'activo',
-                'avatar',
+                'urlImagen',
                 'requestedPasswordChange',
                 [sequelize.literal('"rol"."id"'), "idRol"],
                 [sequelize.literal('"rol"."rol"'), "roles"],
@@ -111,17 +111,16 @@ const countInactiveUsers = async () => {
 }
 
 // returns true if usuario was updated
-const updateUsuario = async (id, { nombres, apellidoPaterno, apellidoMaterno, activo, avatar }) => {
+const updateUsuario = async (id, fieldsWithImage) => {
     try {
         const affectedRows = await Usuario.update(
-            { nombres, apellidoPaterno, apellidoMaterno, activo, avatar },
+            { ...fieldsWithImage },
             { where: { id: id } });
         return affectedRows > 0;
     } catch (err) {
         throw new Error(`Error al actualizar usuario: ${err.message}`);
     }
 };
-
 
 const getRol = async (id) => {
     try {

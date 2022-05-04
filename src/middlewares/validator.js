@@ -78,7 +78,13 @@ const updateValidationRules = () => [
         .optional()
         .toUpperCase()
         .isIn(['SI', 'NO'])
-        .withMessage('estado invalido')
+        .withMessage('estado invalido'),
+
+    check('descripcion')
+        .optional()
+        .isLength({ min: 1 })
+        .withMessage('descripcion debe tener al menos 1 caracter'),
+
 ]
 
 const paginationValidationRules = () => [

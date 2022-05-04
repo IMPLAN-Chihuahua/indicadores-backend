@@ -12,6 +12,7 @@ const moduleStorage = multer.diskStorage({
 });
 
 const userStorage = multer.diskStorage({
+
     destination: (req, file, cb) => {
         cb(null, isTestEnv ? 'uploads/tmp' : 'uploads/users/images/')
     },
