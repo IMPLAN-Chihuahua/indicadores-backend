@@ -16,7 +16,7 @@ chai.use(chaiHttp);
 const { expect } = chai;
 const { TOKEN_SECRET } = process.env;
 
-describe.only('v1/usuarios', function () {
+describe('v1/usuarios', function () {
   const SUB_ID = 100;
   const token = jwt.sign({ sub: SUB_ID }, TOKEN_SECRET, { expiresIn: '5h' });;
   const adminRol = { rolValue: 'ADMIN' };

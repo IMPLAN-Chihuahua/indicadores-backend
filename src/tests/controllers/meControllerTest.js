@@ -14,10 +14,9 @@ require('dotenv').config();
 chai.use(chaiHttp);
 const { expect } = chai;
 const { TOKEN_SECRET } = process.env;
-const { anIndicador } = require('../../utils/factories');
 
 
-describe.only('v1/me', function () {
+describe('v1/me', function () {
   const token = jwt.sign({ sub: 1 }, TOKEN_SECRET, { expiresIn: '5h' });
 
   this.afterEach(function () {
