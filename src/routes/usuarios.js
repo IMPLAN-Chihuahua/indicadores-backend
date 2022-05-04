@@ -15,6 +15,8 @@ const {
     validate,
     paramValidationRules,
     updateValidationRules } = require('../middlewares/validator');
+
+    
 /**
  * @swagger
  *   components:
@@ -154,6 +156,8 @@ router.get(
  *     post:
  *       summary: Register new user
  *       tags: [Usuarios]
+ *       security:
+ *         - bearer: []
  *       requestBody: 
  *         content:
  *           application/json:
