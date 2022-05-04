@@ -224,6 +224,19 @@ const updateUserPasswordStatus = async (id) => {
     }
 };
 
+const isUserActive = async (id) => {
+    try {
+        const status = await Usuario.findOne({
+            attributes: ['activo'],
+            where: { id },
+            raw: true
+        });
+        return status?.activo === 'SI';
+    } catch (err) {
+        throw new Error(`Error al obtener estado de usuario ${err.message}`);
+    }
+}
+
 module.exports = {
     addUsuario,
     getUsuarioById,
@@ -236,5 +249,6 @@ module.exports = {
     getIndicadoresFromUser,
     countInactiveUsers,
     updateUserPassword,
-    updateUserPasswordStatus
+    updateUserPasswordStatus,
+    isUserActive
 }

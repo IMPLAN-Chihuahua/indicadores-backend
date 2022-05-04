@@ -1,10 +1,11 @@
 const express = require('express');
+
 const router = express.Router();
 const {
     getUserFromToken,
     getUserFromId,
     editUser } = require('../controllers/usuarioController');
-const { verifyJWT } = require('../middlewares/auth');
+const { verifyJWT, verifyUserIsActive } = require('../middlewares/auth');
 
 const {
     getIndicadoresFromUser,
@@ -42,12 +43,16 @@ const { uploadImage } = require('../middlewares/fileUpload');
  *        401:
  *          description: Unauthorized request (not valid JWT in Authorization header)
  *        403:
- *          description: The request has an invalid or expired token
+ *          description: The request has an invalid or expired token. If the token has not expired and is valid, then the user might be inactive
  *        422:
  *          description: Unable to process request due to semantic errors in the body or param payload
  */
 
-router.route('/').get(verifyJWT, getUserFromToken);
+router.route('/').get(
+    verifyJWT,
+    verifyUserIsActive,
+    getUserFromToken
+);
 
 /**
  * @swagger
@@ -69,22 +74,23 @@ router.route('/').get(verifyJWT, getUserFromToken);
  *           description: Indicador or Modulo was not found
  *         422:
  *           description: Unable to process request due to semantic errors
- *         500:
- *           description: Internal server error
  */
 
-/* TODO: Implementar VerifyRole */
+router.route('/indicadores').get(
+    verifyJWT,
+    verifyUserIsActive,
+    getIndicadoresFromUser
+);
 
-router.route('/indicadores').get(verifyJWT, getIndicadoresFromUser);
 
-
-router.route('/indicadores/:idIndicador')
-    .get(verifyJWT,
-        paramValidationRules(),
-        validate,
-        determinePathway('front'),
-        getIndicador,
-    );
+router.route('/indicadores/:idIndicador').get(
+    verifyJWT,
+    verifyUserIsActive,
+    paramValidationRules(),
+    validate,
+    determinePathway('front'),
+    getIndicador,
+);
 
 /**
  * @swagger
@@ -149,19 +155,17 @@ router.route('/indicadores/:idIndicador')
  *           description: Indicador or Modulo was not found
  *         422:
  *           description: Unable to process request due to semantic errors
- *         500:
- *           description: Internal server error
  */
 
-router.route('/modulos')
-    .get(
-        paginationValidationRules(),
-        filterModulosValidationRules(),
-        sortModulosValidationRules(),
-        validate,
-        verifyJWT,
-        getAllModulos,
-    );
+router.route('/modulos').get(
+    verifyJWT,
+    verifyUserIsActive,
+    paginationValidationRules(),
+    filterModulosValidationRules(),
+    sortModulosValidationRules(),
+    validate,
+    getAllModulos,
+);
 
 
 router.patch(

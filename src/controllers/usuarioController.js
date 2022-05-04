@@ -30,7 +30,7 @@ const getUsers = async (req, res) => {
             data: [...usuarios]
         });
     } catch (err) {
-        return res.status(500).json({ message: err.message })
+        return res.status(500).json(err.message)
     }
 }
 
@@ -47,7 +47,7 @@ const createUser = async (req, res) => {
     const avatar = `images/${req.file ? req.file.originalName : 'avatar.jpg'}`;
     try {
         if (await isCorreoAlreadyInUse(correo)) {
-            return res.status(409).json({ message: 'Correo no disponible' })
+            return res.status(409).send('Correo no disponible')
         }
         const hashedClave = await hashClave(clave);
         const savedUser = await addUsuario({
@@ -62,7 +62,7 @@ const createUser = async (req, res) => {
         });
         return res.status(201).json({ data: savedUser });
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        return res.status(500).send(err.message);
     }
 }
 
@@ -126,11 +126,9 @@ const editUserStatus = async (req, res) => {
         if (updatedUser) {
             return res.sendStatus(204);
         }
-        else {
-            return res.sendStatus(400);
-        }
+        return res.sendStatus(400);
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        return res.status(500).send(err.message);
     }
 };
 
@@ -142,7 +140,7 @@ const getUser = async (req, res, id) => {
         }
         return res.status(200).json({ data: usuario });
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        return res.status(500).send(err.message);
     }
 }
 

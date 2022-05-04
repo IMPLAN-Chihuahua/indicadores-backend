@@ -222,14 +222,12 @@ const updateModuloValidationRules = () => [
 ]
 
 const createIndicadorValidationRules = () => [
-    body(['codigo', 'codigoObjeto'])
-        .exists('Este campo no puede estar vacio')
-        .isLength({ max: 3 })
-        .matches(/\d{3}$/),
-
     body('nombre')
         .exists()
         .trim().escape(),
+
+    body(['codigo'])
+        .exists('Este campo no puede estar vacio'),
 
     body(['definicion', 'ultimoValorDisponible', 'observaciones',
         'formula.ecuacion', 'formula.descripcion',
@@ -241,12 +239,7 @@ const createIndicadorValidationRules = () => [
     body('anioUltimoValorDisponible')
         .exists()
         .isInt().toInt(),
-
-    body(['tendenciaActual', 'tendenciaDeseada'])
-        .optional()
-        .toUpperCase()
-        .isIn(['ASCENDENTE', 'DESCENDENTE']),
-
+        
     body(['idOds', 'idCobertura', 'idUnidadMedida', 'idModulo'])
         .exists()
         .isInt().toInt(),

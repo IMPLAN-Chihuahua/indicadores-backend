@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const { getRol } = require('../services/usuariosService');
+const { getRol, isUserActive } = require('../services/usuariosService');
 require('dotenv').config();
+
 const { TOKEN_SECRET } = process.env;
 const SALT_ROUNDS = 10;
 const TOKEN_EXPIRATION_TIME = '5h';
@@ -35,8 +36,22 @@ const verifyRoles = (roles) => async (req, res, next) => {
     }
 };
 
+const verifyUserIsActive = async (req, res, next) => {
+    if (await isUserActive(req.sub)) {
+        next();
+    } else {
+        return res.status(403).send('Esta cuenta se encuentra deshabilitada');
+    }
+}
+
 const hashClave = (clave) => bcrypt.hash(clave, SALT_ROUNDS);
 
 const generateToken = (payload) => jwt.sign(payload, TOKEN_SECRET, { expiresIn: TOKEN_EXPIRATION_TIME });
 
-module.exports = { verifyJWT, verifyRoles, hashClave, generateToken };
+module.exports = {
+    verifyJWT,
+    verifyRoles,
+    hashClave,
+    generateToken,
+    verifyUserIsActive
+};
