@@ -2,7 +2,7 @@ const stream = require('stream');
 const IndicadorService = require("../services/indicadorService")
 const { generateCSV, generateXLSX, generatePDF } = require("../services/generadorArchivosService");
 const UsuarioService = require('../services/usuariosService');
-const { areConnected } = require("../services/usuarioIndicadorService");
+const { areConnected, assignUsuariosToIndicador } = require("../services/usuarioIndicadorService");
 const { getPagination } = require('../utils/pagination');
 
 const getIndicador = async (req, res) => {
@@ -144,13 +144,24 @@ const updateIndicadorStatus = async (req, res) => {
     if (updatedIndicador) {
       return res.sendStatus(204);
     }
-    else {
-      return res.sendStatus(400);
-    }
+    return res.sendStatus(400);
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
 };
+
+const updateUsuariosOfIndicador = async (req, res) => {
+  const { idIndicador, usuarios, desde, hasta } = req.matchedData;
+  const updatedBy = req.sub;
+  const createdBy = req.sub;
+
+  try {
+    await assignUsuariosToIndicador({ idIndicador, usuarios, desde, hasta, createdBy, updatedBy });
+    return res.sendStatus(201);
+  } catch (err) {
+    return res.status(500).send(err.message);
+  }
+}
 
 module.exports = {
   getIndicadores,
@@ -159,4 +170,5 @@ module.exports = {
   createIndicador,
   updateIndicador,
   updateIndicadorStatus,
+  updateUsuariosOfIndicador
 };

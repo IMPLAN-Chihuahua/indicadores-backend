@@ -155,14 +155,13 @@ const sortValidationRules = () => [
 
 ];
 
-const tokenValidationRules = () => {
-    return [
-        param(["token"])
-            .optional()
-            .isLength({ min: 1 })
-            .withMessage('token debe tener al menos 1 caracter'),
-    ];
-};
+const tokenValidationRules = () => [
+    param(["token"])
+        .optional()
+        .isLength({ min: 1 })
+        .withMessage('token debe tener al menos 1 caracter')
+        .isJWT('Token debe tener un formato valido'),
+];
 
 const sortModulosValidationRules = () => [
     query('sortBy')
@@ -239,7 +238,7 @@ const createIndicadorValidationRules = () => [
     body('anioUltimoValorDisponible')
         .exists()
         .isInt().toInt(),
-        
+
     body(['idOds', 'idCobertura', 'idUnidadMedida', 'idModulo'])
         .exists()
         .isInt().toInt(),
@@ -279,6 +278,17 @@ const updateIndicadorValidationRules = () => [
         .isInt().toInt()
 ];
 
+const indicadorAsignUserValidationRules = () => [
+    body('usuarios.*').isInt().toInt(),
+    body(['desde', 'hasta']).isISO8601().withMessage('is date error'),
+    check('hasta').custom((value, { req }) => {
+        if (new Date(value) <= new Date(req.body.desde)) {
+            throw new Error("Fecha 'hasta' debe ser mayor a fecha 'desde'")
+        }
+        return true;
+    }),
+];
+
 const errorFormatter = ({ location, msg, param: paramFormatter }) => `${location}[${paramFormatter}]: ${msg}`
 
 const validate = (req, res, next) => {
@@ -310,6 +320,7 @@ module.exports = {
     filterModulosValidationRules,
     sortModulosValidationRules,
     updateIndicadorValidationRules,
-    tokenValidationRules
+    tokenValidationRules,
+    indicadorAsignUserValidationRules
 };
 

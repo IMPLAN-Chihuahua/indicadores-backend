@@ -7,7 +7,8 @@ const { paramValidationRules,
     updateIndicadorValidationRules,
     paginationValidationRules,
     filterIndicadoresValidationRules,
-    sortValidationRules
+    sortValidationRules,
+    indicadorAsignUserValidationRules
 } = require('../middlewares/validator');
 const {
     getIndicador,
@@ -15,10 +16,13 @@ const {
     createIndicador,
     updateIndicador,
     updateIndicadorStatus,
+    updateUsuariosOfIndicador,
 } = require('../controllers/indicadorController');
-const { verifyJWT, verifyRoles } = require('../middlewares/auth');
+const { verifyJWT, verifyRoles, verifyUserIsActive } = require('../middlewares/auth');
 const { determinePathway } = require('../middlewares/determinePathway');
 const { uploadImage } = require('../middlewares/fileUpload');
+const { body, check } = require('express-validator');
+const { assignUsuariosToIndicador } = require('../services/usuarioIndicadorService');
 
 /**
  * @swagger
@@ -313,20 +317,101 @@ router.route('/')
  */
 router.route('/:idIndicador')
     .patch(
+        verifyJWT,
+        verifyUserIsActive,
         paramValidationRules(),
         uploadImage('indicadores'),
         updateIndicadorValidationRules(),
         validate,
-        verifyJWT,
         updateIndicador
     );
 
+/**
+ * @swagger
+ *  /indicadores/{idIndicador}/toggle-status:
+ *  patch:
+ *    summary: Update status of indicador (if it was active, changes to inactive)
+ *    tags: [Indicadores]
+ *    security:
+ *      - bearer: []
+ *    parameters:
+ *      - in: path
+ *        name: idIndicador
+ *        required: true
+ *        schema:
+ *          type: integer
+ *    responses:
+ *      204:
+ *        description: Indicador status change successfully
+ *      401:
+ *        description: Unauthorized request (not valid JWT in Authorization header)
+ *      403:
+ *        description: The request has an invalid token, rol, privileges or account is inactive
+ *      429:
+ *        description: The app has exceeded its rate limit
+ */
 router.route('/:idIndicador/toggle-status')
     .patch(
+        verifyJWT,
+        verifyRoles(['ADMIN']),
+        verifyUserIsActive,
         paramValidationRules(),
         validate,
-        verifyJWT,
         updateIndicadorStatus
+    );
+
+
+/**
+ * @swagger
+ *   /indicadores/{idIndicador}/usuarios:
+ *   post:
+ *     summary: Assigns users to an indicador
+ *     tags: [Indicadores]
+ *     security:
+ *       - bearer: []
+ *     parameters:
+ *       - in: path
+ *         name: idIndicador
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               usuarios:
+ *                 type: array
+ *                 items:
+ *                   type: integer
+ *                 example: [1, 2, 3, 4, 5]
+ *               desde:
+ *                 type: string
+ *                 example: 2022-05-05
+ *               hasta:
+ *                 type: string
+ *                 example: 2022-05-06
+ *     responses:
+ *       201:
+ *         description: Operation was successful (users are assigned to an indicador)
+ *       401:
+ *         description: Unauthorized request (not valid JWT in Authorization header)
+ *       403:   
+ *         description: The request has an invalid token, rol, privileges or account is inactive
+ *       429:
+ *         description: The app has exceeded its rate limit
+ */
+router.route('/:idIndicador/usuarios')
+    .post(
+        verifyJWT,
+        verifyRoles(['ADMIN']),
+        verifyUserIsActive,
+        paramValidationRules(),
+        indicadorAsignUserValidationRules(),
+        validate,
+        updateUsuariosOfIndicador
     );
 
 module.exports = router;

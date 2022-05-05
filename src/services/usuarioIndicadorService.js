@@ -1,11 +1,11 @@
 const { UsuarioIndicador, Sequelize } = require('../models');
 
-const areConnected = async (idUser, idIndicador) => {
+const areConnected = async (idUsuario, idIndicador) => {
   try {
     const resultset = await UsuarioIndicador.findOne({
       where: {
-        idUsuario: idUser,
-        idIndicador: idIndicador,
+        idUsuario,
+        idIndicador,
         activo: 'SI'
       },
       attributes: [
@@ -18,6 +18,25 @@ const areConnected = async (idUser, idIndicador) => {
   }
 };
 
+const assignUsuariosToIndicador = async (relation) => {
+  const { idIndicador, desde, hasta, createdBy, updatedBy, usuarios } = relation;
+  try {
+    const relations = usuarios.map(idUsuario => ({
+      idUsuario,
+      idIndicador,
+      fechaDesde: desde,
+      fechaHasta: hasta,
+      createdBy,
+      updatedBy
+    }));
+    await UsuarioIndicador.bulkCreate(relations, { ignoreDuplicates: true });
+    return;
+  } catch (err) {
+    throw new Error(`Error al asignar usuarios a indicador ${err.message}`);
+  }
+};
+
 module.exports = {
-  areConnected
+  areConnected,
+  assignUsuariosToIndicador
 }
