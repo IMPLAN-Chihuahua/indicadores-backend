@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             this.belongsTo(models.Rol, { foreignKey: 'idRol' });
-            this.belongsToMany(models.Indicador, {through: models.UsuarioIndicador, foreignKey: 'idUsuario'});
+            this.belongsToMany(models.Indicador, { through: models.UsuarioIndicador, foreignKey: 'idUsuario' });
         }
     };
     Usuario.init(
@@ -52,7 +52,12 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: true
             },
 
-            avatar: {
+            descripcion: {
+                type: DataTypes.STRING(255),
+                allowNull: true
+            },
+
+            urlImagen: {
                 type: DataTypes.STRING,
                 allowNull: true
             },

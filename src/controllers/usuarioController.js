@@ -67,15 +67,55 @@ const createUser = async (req, res) => {
 }
 
 const editUser = async (req, res) => {
+    let urlImagen = '';
+    const idFromToken = req.sub;
+
     const fields = req.body;
-    const { id } = req.params;
-    try {
-        if (await updateUsuario(id, fields)) {
-            return res.sendStatus(204);
+
+    const { idUser } = req.params;
+
+    console.log(req.file);
+
+    urlImagen = req.file ? `images/user/${req.file.filename}` : urlImagen;
+
+    let fieldsWithImage = {};
+
+    if (urlImagen) {
+        fieldsWithImage = {
+            ...fields,
+            urlImagen: urlImagen
+        };
+    } else {
+        fieldsWithImage = {
+            ...fields
+        };
+    }
+
+    console.log(fieldsWithImage);
+
+    if (idUser) {
+        try {
+            if (await updateUsuario(idUser, fieldsWithImage)) {
+                return res.sendStatus(204);
+            }
+            return res.sendStatus(400);
+        } catch (err) {
+            return res.status(500).json({ message: err.message });
         }
-        return res.sendStatus(400);
-    } catch (err) {
-        return res.status(500).send(err.message);
+    }
+    else {
+        try {
+            if (fields.id == idFromToken) {
+                if (await updateUsuario(fields.id, fieldsWithImage)) {
+                    return res.sendStatus(204);
+                }
+                return res.sendStatus(400);
+            } else {
+                return res.sendStatus(401);
+            }
+        } catch (err) {
+            return res.status(500).json({ message: err.message });
+        }
     }
 }
 

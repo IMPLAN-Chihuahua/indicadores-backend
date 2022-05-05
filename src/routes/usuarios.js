@@ -16,7 +16,7 @@ const {
     paramValidationRules,
     updateValidationRules } = require('../middlewares/validator');
 
-    
+
 /**
  * @swagger
  *   components:
@@ -55,8 +55,8 @@ const {
  *             type: string
  *             nullable: true
  *             example: Smith
- *             description: User's second last name
- *           avatar:
+ *             description: user's second last name
+ *           urlImagen:
  *             type: string
  *             description: User's profile picture
  *           activo:

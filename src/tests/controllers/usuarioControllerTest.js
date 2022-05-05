@@ -310,7 +310,7 @@ describe('v1/usuarios', function () {
         .field('nombres', userFake.nombres)
         .field('apellidoPaterno', userFake.nombres)
         .field('activo', userFake.activo)
-        .attach('avatar', allowedImage, 'avatar.jpg')
+        .attach('urlImagen', allowedImage, 'avatar.jpg')
         .end((err, res) => {
           expect(err).to.be.null;
           expect(editUserFake.calledOnce).to.be.true;

@@ -1,17 +1,28 @@
 const express = require('express');
 
 const router = express.Router();
-const { getUserFromToken } = require('../controllers/usuarioController');
+const {
+    getUserFromToken,
+    getUserFromId,
+    editUser } = require('../controllers/usuarioController');
 const { verifyJWT, verifyUserIsActive } = require('../middlewares/auth');
-const { getIndicadoresFromUser, getIndicador } = require('../controllers/indicadorController');
+
+const {
+    getIndicadoresFromUser,
+    getIndicador } = require('../controllers/indicadorController');
 const { getAllModulos } = require('../controllers/moduloController');
-const { paramValidationRules,
-    paginationValidationRules,
+
+const {
     validate,
+    paramValidationRules,
+    paginationValidationRules,
     filterModulosValidationRules,
-    sortModulosValidationRules } = require('../middlewares/validator');
+    sortModulosValidationRules,
+    updateValidationRules } = require('../middlewares/validator');
+
 const { determinePathway } = require('../middlewares/determinePathway');
 
+const { uploadImage } = require('../middlewares/fileUpload');
 /**
  * @swagger
  *  /me:
@@ -155,5 +166,15 @@ router.route('/modulos').get(
     validate,
     getAllModulos,
 );
+
+
+router.patch(
+    '/',
+    uploadImage('usuarios'),
+    updateValidationRules(),
+    validate,
+    verifyJWT,
+    editUser,
+)
 
 module.exports = router;

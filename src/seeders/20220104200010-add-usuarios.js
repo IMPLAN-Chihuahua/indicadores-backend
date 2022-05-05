@@ -25,7 +25,7 @@ module.exports = {
         nombres: `${firstName} ${lastName}`,
         apellidoPaterno: firstName,
         apellidoMaterno: lastName,
-        avatar: faker.internet.avatar(),
+        urlImagen: faker.internet.avatar(),
         activo: i % 2 === 0 ? 'SI' : 'NO',
         createdAt: new Date(),
         updatedAt: new Date(),

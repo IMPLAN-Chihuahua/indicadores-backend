@@ -67,6 +67,8 @@ app.use('/images', express.static(path.join(__dirname, 'uploads', 'images')))
 
 app.use('/images/indicador', express.static(path.join(__dirname, 'uploads', 'indicadores/images')))
 
+app.use('/images/user', express.static(path.join(__dirname, 'uploads', 'users/images')))
+
 const PORT = 8080;
 
 const server = app.listen(PORT, () => {
