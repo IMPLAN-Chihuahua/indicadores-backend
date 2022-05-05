@@ -11,9 +11,10 @@ require('dotenv').config();
 chai.use(chaiHttp);
 const { expect } = chai;
 const { Indicador, Modulo, Usuario, UsuarioIndicador } = require('../../models');
-const { anIndicador, aModulo, indicadorToCreate, aFormula, aVariable, anHistorico, aMapa } = require('../../utils/factories');
+const { anIndicador, aModulo, indicadorToCreate, aFormula, aVariable, anHistorico, aMapa, aUser } = require('../../utils/factories');
 const { app, server } = require('../../../app');
-
+const { addDays } = require('../../utils/dates');
+const statusActive = { activo: 'SI' };
 const { TOKEN_SECRET } = process.env;
 
 describe('v1/indicadores', function () {
@@ -275,7 +276,7 @@ describe('v1/indicadores', function () {
                 .end(function (err, res) {
                     expect(accessRolFake.calledOnce).to.be.true;
                     expect(createFake.calledOnce).to.be.true;
-                    expect(res.body.data, 'data not undefiend').to.not.be.undefined;
+                    expect(res.body.data).to.not.be.undefined;
                     expect(res).to.have.status(201);
                     done();
                 });
@@ -453,6 +454,94 @@ describe('v1/indicadores', function () {
                     expect(createFake.calledOnce).to.be.true;
                     expect(res).to.have.status(500);
                     expect(res.error.text).to.not.be.empty
+                    done();
+                })
+        });
+
+    });
+
+    //TODO: Add sinon to mock calls to DB
+    describe.only('POSTS /indicadores/:idIndicador/usuarios', function () {
+        const INDICADOR_ID = 1;
+
+        const reqPayload = {
+            usuarios: [4],
+            desde: '2022-05-06T21:19:32.205Z',
+            hasta: '2022-05-07T21:19:32.205Z'
+        };
+
+        const invalidIds = {
+            usuarios: ['not', 'valid'],
+            desde: new Date(),
+            hasta: addDays(new Date(), 10)
+        };
+
+        const invalidDates = {
+            usuarios: [1, 2, 3],
+            desde: addDays(new Date(), 1),
+            hasta: new Date()
+        }
+
+        let findOneFake;
+
+        this.beforeEach(function () {
+            findOneFake = sinon.stub(Usuario, 'findOne');
+            findOneFake.onFirstCall().resolves(adminRol);
+            findOneFake.onSecondCall().resolves(statusActive);
+        });
+
+        this.afterEach(function () {
+            sinon.restore();
+        });
+
+        it('Should assign usuarios to an indicador', function (done) {
+            chai.request(app)
+                .post(`/api/v1/indicadores/${INDICADOR_ID}/usuarios`)
+                .set({ Authorization: `Bearer ${validToken}` })
+                .send({ ...reqPayload })
+                .end(function (err, res) {
+                    expect(err).to.be.null;
+                    expect(res).to.have.status(201);
+                    done();
+                })
+        });
+
+        it('Should not assign usuarios due to invalid ids', function (done) {
+            chai.request(app)
+                .post(`/api/v1/indicadores/${INDICADOR_ID}/usuarios`)
+                .set({ Authorization: `Bearer ${validToken}` })
+                .send({ ...invalidIds })
+                .end(function (err, res) {
+                    expect(err).to.be.null;
+                    expect(res).to.have.status(422);
+                    expect(res.body.errors).to.be.an('array').with.lengthOf(2)
+                    done();
+                })
+        });
+
+        it('Should not assign usuarios due to invalid dates (start date greater than end date)', function (done) {
+            console.log(invalidDates);
+            chai.request(app)
+                .post(`/api/v1/indicadores/${INDICADOR_ID}/usuarios`)
+                .set({ Authorization: `Bearer ${validToken}` })
+                .send({ ...invalidDates })
+                .end(function (err, res) {
+                    expect(err).to.be.null;
+                    expect(res).to.have.status(422);
+                    expect(res.body.errors).to.be.an('array').with.lengthOf(1);
+                    done()
+                })
+        })
+
+        it('Should fail to assign usuarios because user does not have permissions', function (done) {
+            chai.request(app)
+                .post(`/api/v1/indicadores/${INDICADOR_ID}/usuarios`)
+                .set({ Authorization: `Bearer ${validToken}` })
+                .send({ usuarios: reqPayload })
+                .end(function (err, res) {
+                    expect(err).to.be.null;
+                    expect(res).to.have.status(403);
+                    expect(res.error.text).to.be.equals('No tiene permiso a realizar acciones en este recurso');
                     done();
                 })
         });
