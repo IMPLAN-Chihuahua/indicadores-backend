@@ -18,7 +18,7 @@ const {
     updateIndicadorStatus,
     updateUsuariosOfIndicador,
 } = require('../controllers/indicadorController');
-const { verifyJWT, verifyRoles, verifyUserIsActive } = require('../middlewares/auth');
+const { verifyJWT, verifyUserHasRoles, verifyUserIsActive } = require('../middlewares/auth');
 const { determinePathway } = require('../middlewares/determinePathway');
 const { uploadImage } = require('../middlewares/fileUpload');
 const { body, check } = require('express-validator');
@@ -280,7 +280,7 @@ router.route('/')
         createIndicadorValidationRules(),
         validate,
         verifyJWT,
-        verifyRoles(['ADMIN']),
+        verifyUserHasRoles(['ADMIN']),
         createIndicador
     );
 
@@ -353,7 +353,7 @@ router.route('/:idIndicador')
 router.route('/:idIndicador/toggle-status')
     .patch(
         verifyJWT,
-        verifyRoles(['ADMIN']),
+        verifyUserHasRoles(['ADMIN']),
         verifyUserIsActive,
         paramValidationRules(),
         validate,
@@ -406,7 +406,7 @@ router.route('/:idIndicador/toggle-status')
 router.route('/:idIndicador/usuarios')
     .post(
         verifyJWT,
-        verifyRoles(['ADMIN']),
+        verifyUserHasRoles(['ADMIN']),
         verifyUserIsActive,
         paramValidationRules(),
         indicadorAsignUserValidationRules(),

@@ -7,7 +7,7 @@ const { getUsers,
     getUserFromId,
     editUser,
     editUserStatus } = require('../controllers/usuarioController');
-const { verifyJWT, verifyRoles, verifyUserIsActive } = require('../middlewares/auth');
+const { verifyJWT, verifyUserHasRoles, verifyUserIsActive } = require('../middlewares/auth');
 const { uploadImage } = require('../middlewares/fileUpload');
 const {
     registerValidationRules,
@@ -143,7 +143,7 @@ router.get(
     '/',
     verifyJWT,
     verifyUserIsActive,
-    verifyRoles(['ADMIN']),
+    verifyUserHasRoles(['ADMIN']),
     paginationValidationRules(),
     query('searchQuery'),
     validate,
@@ -175,7 +175,7 @@ router.post(
     '/',
     verifyJWT,
     verifyUserIsActive,
-    verifyRoles(['ADMIN']),
+    verifyUserHasRoles(['ADMIN']),
     uploadImage('usuarios'),
     registerValidationRules(),
     validate,
@@ -214,7 +214,7 @@ router.get(
     '/:idUser',
     verifyJWT,
     verifyUserIsActive,
-    verifyRoles(['ADMIN']),
+    verifyUserHasRoles(['ADMIN']),
     paramValidationRules(),
     validate,
     getUserFromId
@@ -254,7 +254,7 @@ router.patch(
     '/:idUser',
     verifyJWT,
     verifyUserIsActive,
-    verifyRoles(['ADMIN']),
+    verifyUserHasRoles(['ADMIN']),
     paramValidationRules(),
     updateValidationRules(),
     validate,
@@ -289,7 +289,7 @@ router.patch(
     '/:idUser/toggle-status',
     verifyJWT,
     verifyUserIsActive,
-    verifyRoles(['ADMIN']),
+    verifyUserHasRoles(['ADMIN']),
     paramValidationRules(),
     validate,
     editUserStatus
