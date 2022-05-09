@@ -278,7 +278,7 @@ const updateIndicadorValidationRules = () => [
         .isInt().toInt()
 ];
 
-const indicadorAsignUserValidationRules = () => [
+const indicadorAssignUserValidationRules = () => [
     body('usuarios.*').isInt().toInt(),
     body(['desde', 'hasta']).isISO8601().withMessage('is date error'),
     check('hasta').custom((value, { req }) => {
@@ -321,6 +321,6 @@ module.exports = {
     sortModulosValidationRules,
     updateIndicadorValidationRules,
     tokenValidationRules,
-    indicadorAsignUserValidationRules
+    indicadorAssignUserValidationRules
 };
 

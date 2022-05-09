@@ -460,8 +460,7 @@ describe('v1/indicadores', function () {
 
     });
 
-    //TODO: Add sinon to mock calls to DB
-    describe.only('POSTS /indicadores/:idIndicador/usuarios', function () {
+    describe('POSTS /indicadores/:idIndicador/usuarios', function () {
         const INDICADOR_ID = 1;
 
         const reqPayload = {
@@ -495,6 +494,9 @@ describe('v1/indicadores', function () {
         });
 
         it('Should assign usuarios to an indicador', function (done) {
+            const bulkCreateFake = sinon.fake.resolves();
+            sinon.replace(UsuarioIndicador, 'bulkCreate', bulkCreateFake);
+
             chai.request(app)
                 .post(`/api/v1/indicadores/${INDICADOR_ID}/usuarios`)
                 .set({ Authorization: `Bearer ${validToken}` })
@@ -502,6 +504,8 @@ describe('v1/indicadores', function () {
                 .end(function (err, res) {
                     expect(err).to.be.null;
                     expect(res).to.have.status(201);
+                    expect(findOneFake.calledTwice).to.be.true;
+                    expect(bulkCreateFake.calledOnce).to.be.true;
                     done();
                 })
         });
@@ -514,13 +518,13 @@ describe('v1/indicadores', function () {
                 .end(function (err, res) {
                     expect(err).to.be.null;
                     expect(res).to.have.status(422);
+                    expect(findOneFake.calledTwice).to.be.true;
                     expect(res.body.errors).to.be.an('array').with.lengthOf(2)
                     done();
                 })
         });
 
         it('Should not assign usuarios due to invalid dates (start date greater than end date)', function (done) {
-            console.log(invalidDates);
             chai.request(app)
                 .post(`/api/v1/indicadores/${INDICADOR_ID}/usuarios`)
                 .set({ Authorization: `Bearer ${validToken}` })
@@ -528,12 +532,17 @@ describe('v1/indicadores', function () {
                 .end(function (err, res) {
                     expect(err).to.be.null;
                     expect(res).to.have.status(422);
+                    expect(findOneFake.calledTwice).to.be.true;
                     expect(res.body.errors).to.be.an('array').with.lengthOf(1);
                     done()
                 })
         })
 
-        it('Should fail to assign usuarios because user does not have permissions', function (done) {
+        it('Should fail to assign usuarios because user has no authorization', function (done) {
+            sinon.restore();
+            const findOneUsuarioFake = sinon.fake.resolves(userRol);
+            sinon.replace(Usuario, 'findOne', findOneUsuarioFake);
+
             chai.request(app)
                 .post(`/api/v1/indicadores/${INDICADOR_ID}/usuarios`)
                 .set({ Authorization: `Bearer ${validToken}` })
@@ -541,9 +550,10 @@ describe('v1/indicadores', function () {
                 .end(function (err, res) {
                     expect(err).to.be.null;
                     expect(res).to.have.status(403);
+                    expect(findOneUsuarioFake.calledOnce).to.be.true;
                     expect(res.error.text).to.be.equals('No tiene permiso a realizar acciones en este recurso');
                     done();
-                })
+                });
         });
     });
 

@@ -29,8 +29,7 @@ const assignUsuariosToIndicador = async (relation) => {
       createdBy,
       updatedBy
     }));
-    await UsuarioIndicador.bulkCreate(relations, { ignoreDuplicates: true });
-    return;
+    return UsuarioIndicador.bulkCreate(relations, { ignoreDuplicates: true, validate: true });
   } catch (err) {
     throw new Error(`Error al asignar usuarios a indicador ${err.message}`);
   }

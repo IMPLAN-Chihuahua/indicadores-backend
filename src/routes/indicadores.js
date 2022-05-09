@@ -8,7 +8,7 @@ const { paramValidationRules,
     paginationValidationRules,
     filterIndicadoresValidationRules,
     sortValidationRules,
-    indicadorAsignUserValidationRules
+    indicadorAssignUserValidationRules
 } = require('../middlewares/validator');
 const {
     getIndicador,
@@ -21,8 +21,6 @@ const {
 const { verifyJWT, verifyUserHasRoles, verifyUserIsActive } = require('../middlewares/auth');
 const { determinePathway } = require('../middlewares/determinePathway');
 const { uploadImage } = require('../middlewares/fileUpload');
-const { body, check } = require('express-validator');
-const { assignUsuariosToIndicador } = require('../services/usuarioIndicadorService');
 
 /**
  * @swagger
@@ -409,7 +407,7 @@ router.route('/:idIndicador/usuarios')
         verifyUserHasRoles(['ADMIN']),
         verifyUserIsActive,
         paramValidationRules(),
-        indicadorAsignUserValidationRules(),
+        indicadorAssignUserValidationRules(),
         validate,
         updateUsuariosOfIndicador
     );
