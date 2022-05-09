@@ -1,7 +1,10 @@
 const express = require('express');
 const catalogoRouter = express.Router();
 
-const { getCatalogos } = require('../controllers/catalogoController');
+const Catalogos = require('../controllers/catalogoController');
+const { paramValidationRules, validate } = require('../middlewares/validator');
+
+const { verifyJWT } = require('../middlewares/auth');
 
 /**
  * @swagger
@@ -83,8 +86,16 @@ const { getCatalogos } = require('../controllers/catalogoController');
  */
 
 catalogoRouter.route('/')
-    .get(getCatalogos);
+	.get(Catalogos.getCatalogos);
 
+catalogoRouter.route('/:idCatalogo')
+	.get(paramValidationRules(),
+		validate,
+		Catalogos.getCatalogosDetails);
 
+catalogoRouter.route('/indicador/:idIndicador')
+	.get(paramValidationRules(),
+		validate,
+		Catalogos.getCatalogosFromIndicador);
 
 module.exports = catalogoRouter;

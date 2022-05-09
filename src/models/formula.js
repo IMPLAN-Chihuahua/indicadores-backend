@@ -34,8 +34,12 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
+      name: {
+        singular: 'formula',
+        plural: 'formulas'
+      },
       modelName: 'Formula',
-      timestamps: false
+      timestamps: true
     }
   );
   return Formula;

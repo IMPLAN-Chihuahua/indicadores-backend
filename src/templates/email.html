@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+</head>
+<style>
+    * {
+        font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+        font-size: 18px;
+    }
+    
+    p {
+        padding: 5px 5px 5px 5px;
+    }
+
+    .card {
+        width: 600px;
+        padding: 2px 16px;
+        border: 3px solid hsla(246, 100%, 31%, 0.151);
+    }
+
+    button {
+        background-color: #d4aa35;
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        font-weight: bold;
+        border-radius: 5px;
+        max-width: 50%;
+        color: white;
+    }
+
+    button > a {
+        color: white;
+    }
+
+    .centered {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+    label {
+        font-size: 12px;
+        color: rgb(146, 146, 146);
+    }
+
+    a {
+        text-decoration: none;
+    }
+
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    img {
+        width: 20%;
+    }
+</style>
+<body>
+    <div class="card">
+        <div class="">
+            <div class="container">
+                <img src="https://res.cloudinary.com/wofwof/image/upload/v1647640962/indicadores/logo_oo6yua.jpg"/>
+            </div>
+            <p>Saludos, </p>
+            <p>Se ha recibido una solicitud para reiniciar la contraseña de la cuenta de acceso asociada con el usuario <b>{{nombres}}</b>. No se han realizado cambios hasta el momento.</p>
+            <p>
+                Es posible generar una nueva contraseña en el siguiente hipervínculo:
+            </p>
+            <div class="container">
+                <button>
+                    <a href="{{recoverURL}}">
+                        Reiniciar contraseña
+                    </a>
+                </button>
+            </div>
+            <p>
+                Si usted no ha solicitado el cambio de contraseña, ignore este correo electrónico, el hipervínculo dejará de funcionar en 2 horas. También puede comentar sus inquietudes al administrador del sitio web en caso de que desee más información al respecto.
+            </p>
+            <p>
+                En caso de que el hipervínculo haya dejado de funcionar y aún desee generar una nueva contraseña, puede hacerlo <a href="http://localhost:3500/recuperacion-de-cuenta/"><b>visitando este enlace</b></a>
+            </p>
+            <p>
+                Con atención, Instituto de Planeación Integral del Municipio de Chihuahua (IMPLAN)
+            </p>
+            <div class="centered">
+                <label>@ {{todaysDate}} C. Victoria No. 14, 6° Piso, Col. Centro. C.P. 31000 Chihuahua, Chih. México. Horario de 8:30 a 16:00 horas de lunes a viernes. (614) 2004820</label>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

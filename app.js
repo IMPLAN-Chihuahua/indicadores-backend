@@ -5,6 +5,8 @@ const cors = require('cors');
 const morgan = require('morgan');
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
+const path = require('path')
+
 const options = {
   definition: {
     openapi: "3.0.0",
@@ -50,13 +52,22 @@ app.use(express.urlencoded({ extended: true }));
 // API documentation
 app.use('/api/v1/documentation', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+
 // Define routes
-app.use('/api/v1', require('./src/routes/auth'));
+app.use('/api/v1/auth', require('./src/routes/auth'));
 app.use('/api/v1/usuarios', require('./src/routes/usuarios'));
 app.use('/api/v1/roles', require('./src/routes/roles'));
 app.use('/api/v1/modulos', require('./src/routes/modulos'));
 app.use('/api/v1/indicadores', require('./src/routes/indicadores'));
 app.use('/api/v1/catalogos', require('./src/routes/catalogos'));
+app.use('/api/v1/documentos', require('./src/routes/documentos'));
+app.use('/api/v1/me', require('./src/routes/me'));
+
+app.use('/images', express.static(path.join(__dirname, 'uploads', 'images')))
+
+app.use('/images/indicador', express.static(path.join(__dirname, 'uploads', 'indicadores/images')))
+
+app.use('/images/user', express.static(path.join(__dirname, 'uploads', 'users/images')))
 
 const PORT = 8080;
 
@@ -64,4 +75,4 @@ const server = app.listen(PORT, () => {
   console.log(`App starting on port ${PORT}`);
 });
 
-module.exports = { server, app};
+module.exports = { server, app };

@@ -10,26 +10,31 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      this.belongsTo(models.Indicador, { foreignKey: 'idIndicador' })
     }
   };
   Fuente.init({
     id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
     },
 
     bibliografia: {
-        type: DataTypes.STRING,
-        allowNull: true,
-        defaultValue: 'No aplica'
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: 'No aplica'
     },
-},
-{
-    sequelize,
-    modelName: 'Fuente',
-    timestamps: false
-});
+  },
+    {
+
+      sequelize,
+      name: {
+        singular: 'fuente',
+        plural: 'fuentes'
+      },
+      modelName: 'Fuente',
+      timestamps: false
+    });
   return Fuente;
 };

@@ -4,14 +4,8 @@ const {
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Variable extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
       this.belongsTo(models.Formula, { foreignKey: 'idFormula' });
-      this.belongsTo(models.UnidadMedida, { foreignKey: 'idUnidad' })
     }
   };
   Variable.init({
@@ -38,11 +32,6 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
 
-    formulaCalculo: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-
     dato: {
       type: DataTypes.STRING,
       allowNull: true,
@@ -51,7 +40,11 @@ module.exports = (sequelize, DataTypes) => {
 
     idUnidad: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: 'CatalogoDetails',
+        key: 'id'
+      }
     },
 
     anio: {
@@ -62,6 +55,10 @@ module.exports = (sequelize, DataTypes) => {
     
   }, {
     sequelize,
+    name: {
+      singular: 'variable',
+      plural: 'variables'
+    },
     modelName: 'Variable',
     timestamps: false,
     indexes : [

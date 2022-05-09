@@ -4,18 +4,11 @@ const {
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
     class Indicador extends Model {
-        /**
-         * Helper method for defining associations.
-         * This method is not a part of Sequelize lifecycle.
-         * The `models/index` file will call this method automatically.
-         */
         static associate(models) {
             this.belongsTo(models.Modulo, { foreignKey: 'idModulo' });
             this.belongsToMany(models.Usuario, { through: models.UsuarioIndicador, foreignKey: 'idIndicador' });
-            this.belongsTo(models.Ods, { foreignKey: 'idOds' });
-            this.belongsTo(models.CoberturaGeografica, { foreignKey: 'idCobertura' });
-            this.belongsTo(models.UnidadMedida, { foreignKey: 'idUnidadMedida' })
-            
+            this.belongsToMany(models.CatalogoDetail, { through: models.CatalogoDetailIndicador, foreignKey: 'idIndicador' })
+
             this.hasOne(models.Formula, { foreignKey: 'idIndicador' });
             this.hasMany(models.Historico, { foreignKey: 'idIndicador' });
             this.hasMany(models.Fuente, { foreignKey: 'idIndicador' });
@@ -35,6 +28,11 @@ module.exports = (sequelize, DataTypes) => {
             },
 
             codigo: {
+                allowNull: false,
+                type: DataTypes.STRING
+            },
+
+            codigoObjeto: {
                 allowNull: false,
                 type: DataTypes.STRING
             },
@@ -74,12 +72,6 @@ module.exports = (sequelize, DataTypes) => {
                 defaultValue: 'No aplica'
             },
 
-            mapa: {
-                type: DataTypes.SMALLINT,
-                allowNull: false,
-                defaultValue: 0
-            },
-
             observaciones: {
                 type: DataTypes.TEXT,
                 allowNull: false,
@@ -96,31 +88,25 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: true
             },
 
-            // Id catálogos
-
-            idOds: {
-                type: DataTypes.INTEGER,
-                allowNull: false
-            },
-            
-            idCobertura: { 
-                type: DataTypes.INTEGER,
-                allowNull: false
-            },
-
-            idUnidadMedida: {
-                type: DataTypes.INTEGER,
-                allowNull: false
+            activo: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                defaultValue: 'SI'
             }
         },
         {
             sequelize,
+            name: {
+                singular: 'indicador',
+                plural: 'indicadores'
+            },
             indexes: [
                 {
                     unique: false,
-                    fields: ['createdBy', 'updatedBy', 'idOds', 'idCobertura', 'idUnidadMedida']
+                    fields: ['createdBy', 'updatedBy']
                 }
             ],
+            modelName: 'Indicador',
             tableName: 'Indicadores',
             timestamps: true
         }

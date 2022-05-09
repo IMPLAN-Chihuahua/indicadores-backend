@@ -1,250 +1,162 @@
-const {
-  Indicador,
-  Ods,
-  CoberturaGeografica,
-  Fuente,
-  UnidadMedida,
-  Modulo,
-  Historico,
-  Mapa,
-  Formula,
-  Variable,
-} = require("../models");
-const { Op } = require("sequelize");
-const { getPagination } = require("../utils/pagination");
-
-const sequelize = require("sequelize");
-const { generateCSV, generateJSON, generateXLSX, generatePDF } = require("../services/generadorArchivosService");
-
-const getIndicadores = async (req, res) => {
-  const { page, per_page } = getPagination(req.matchedData);
-  try {
-    const result = await Indicador.findAndCountAll({
-      where: {
-        idModulo: req.matchedData.idModulo,
-        ...validateCatalog(req.matchedData),
-        ...getIndicadorFilters(req.matchedData),
-      },
-      limit: per_page,
-      offset: per_page * (page - 1),
-      order: [getIndicadoresSorting(req.matchedData)],
-      include: getIndicadorIncludes(req.matchedData),
-      attributes: [
-        "id",
-        "nombre",
-        "ultimoValorDisponible",
-        "anioUltimoValorDisponible",
-        "tendenciaActual",
-        "tendenciaDeseada",
-        "idOds",
-        [sequelize.literal('"Od"."nombre"'), "Ods"],
-        "idCobertura",
-        [sequelize.literal('"CoberturaGeografica"."nombre"'), "Cobertura"],
-        "idUnidadMedida",
-        [sequelize.literal('"UnidadMedida"."nombre"'), "Unidad"],
-        "createdAt",
-        "updatedAt",
-        "idModulo",
-      ],
-    });
-
-    const indicadores = result.rows;
-    const total = result.count;
-    const total_pages = Math.ceil(total / per_page);
-
-    return res.status(200).json({
-      page,
-      per_page,
-      total,
-      total_pages,
-      data: indicadores,
-    });
-  } catch (err) {
-    console.log(err);
-    return res.status(500);
-  }
-};
+const stream = require('stream');
+const IndicadorService = require("../services/indicadorService")
+const { generateCSV, generateXLSX, generatePDF } = require("../services/generadorArchivosService");
+const UsuarioService = require('../services/usuariosService');
+const { areConnected } = require("../services/usuarioIndicadorService");
+const { getPagination } = require('../utils/pagination');
 
 const getIndicador = async (req, res) => {
   try {
-    const idIndicador = req.matchedData.idIndicador;
-    const format = req.matchedData.format;
-    const indicador = await Indicador.findOne({
-      where: {
-        id: idIndicador,
-      },
-      include: [
-        {
-          model: UnidadMedida,
-          required: true,
-          attributes: [],
-        },
-        {
-          model: Modulo,
-          required: true,
-          attributes: ["id", "temaIndicador", "color"],
-        },
-        {
-          model: CoberturaGeografica,
-          required: true,
-          attributes: ["nombre"],
-        },
-        {
-          model: Historico,
-          required: true,
-          attributes: ["anio", "valor", "fuente"],
-          limit: 5,
-          order: [["anio", "DESC"]],
-        },
-        {
-          model: Mapa,
-          required: false
-        },
-        {
-          model: Formula,
-          required: false,
-          include: [
-            {
-              model: Variable,
-              required: true,
-              include: [{
-                model: UnidadMedida,
-                required: true,
-              }],
-              attributes: ['nombre', 'nombreAtributo', 'dato', 'idUnidad', [sequelize.literal('"Formula->Variables->UnidadMedida"'), "Unidad"],],
-            }
-          ]
-        }
-      ],
-      attributes: [
-        "id",
-        "urlImagen",
-        "nombre",
-        "definicion",
-        "ultimoValorDisponible",
-        "anioUltimoValorDisponible",
-        "tendenciaActual",
-        "tendenciaDeseada",
-        "mapa",
-        [sequelize.literal('"UnidadMedida"."nombre"'), "Unidad"],
-      ],
-    });
-    
+    const { pathway } = req;
+    const { idIndicador, format } = req.matchedData;
+    const indicador = await IndicadorService.getIndicador(idIndicador, pathway);
     if (indicador === null) {
       return res.sendStatus(404);
     }
 
-    if (typeof format != 'undefined'){
+    if (typeof format !== 'undefined') {
       return generateFile(format, res, indicador)
     }
 
-    return (res.status(200).json({data: indicador,}))
-
+    return (res.status(200).json({ data: indicador }))
   } catch (err) {
-    console.log(err);
-    return res.sendStatus(500);
+    return res.status(500).send(err.message);
   }
 };
 
-// Includes for inner join to filter list 
-const getIndicadorIncludes = ({ idFuente }) => {
-  const indicadorFilter = [];
-
-  indicadorFilter.push({
-    model: Ods,
-    required: true,
-    attributes: []
-  });
-
-  indicadorFilter.push({
-    model: CoberturaGeografica,
-    required: true,
-    attributes: []
-  });
-
-  indicadorFilter.push({
-    model: UnidadMedida,
-    required: true,
-    attributes: []
-  });
-
-  if (idFuente) {
-    indicadorFilter.push({
-      model: Fuente,
-      where: {
-        id: {
-          [Op.eq]: idFuente,
-        },
-      },
-    });
-  }
-
-  return indicadorFilter;
-};
-
-// Validation for catalogs
-const validateCatalog = ({ idOds, idCobertura, idUnidadMedida }) => {
-  const catalogFilters = {};
-  if (idOds) {
-    catalogFilters.idOds = idOds;
-  } else if (idCobertura) {
-    catalogFilters.idCobertura = idCobertura;
-  } else if (idUnidadMedida) {
-    catalogFilters.idUnidadMedida = idUnidadMedida;
-  }
-  return catalogFilters;
-};
-
-// Validation for filters
-const getIndicadorFilters = (matchedData) => {
-  const { anioUltimoValorDisponible, tendenciaActual } = matchedData;
-  const filters = {};
-  if (anioUltimoValorDisponible) {
-    filters.anioUltimoValorDisponible = anioUltimoValorDisponible;
-  }
-  if (tendenciaActual) {
-    filters.tendenciaActual = tendenciaActual;
-  }
-  return filters;
-};
-
-// Sorting logic for list5
-const getIndicadoresSorting = ({ sort_by, order }) => {
-  const arrangement = [];
-  arrangement.push([sort_by || "id", order || "ASC"]);
-  return arrangement;
-};
-
-const generateFile = (format, res, data) => {
-  switch(format) {
+const generateFile = async (format, res, data) => {
+  switch (format) {
     case 'json':
-      const jsonFile = generateJSON(data);
       return (
-            res.header('Content-disposition', 'attachment'),
-            res.header('Content-Type', 'application/json'),
-            res.attachment(`${data.nombre}.csv`),
-            res.send(jsonFile));
+        res.header('Content-disposition', 'attachment'),
+        res.header('Content-Type', 'application/json'),
+        res.attachment(`${data.nombre}.json`),
+        res.send(data));
     case 'csv':
       const csvData = generateCSV(data);
       return (
-            res.header('Content-disposition', 'attachment'),
-            res.header('Content-Type', 'application/json'),
-            res.attachment(`${data.nombre}.json`),
-            res.send(csvData));
+        res.header('Content-disposition', 'attachment'),
+        res.header('Content-Type', 'application/csv'),
+        res.attachment(`${data.nombre}.csv`),
+        res.send(csvData));
     case 'xlsx':
-      const x = generateXLSX(res, data);
+      const content = await generateXLSX(data);
+      const readStream = new stream.PassThrough();
+      readStream.end(content);
       return (
-            res.header('Content-disposition', 'attachment'),
-            res.header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
-            res.attachment(x)
-            );
+        res.header('Content-disposition', 'attachment'),
+        res.header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
+        readStream.pipe(res)
+      );
     case 'pdf':
-      return generatePDF(res, data);
+      const doc = await generatePDF(data);
+      return (
+        res.header('Content-disposition', 'attachment'),
+        res.header('Content-Type', 'application/pdf'),
+        res.send(doc));
   }
 }
 
+const getIndicadores = async (req, res) => {
+  const { pathway } = req;
+  const { page, perPage } = getPagination(req.matchedData);
+  try {
+    const { indicadores, total } = await IndicadorService.getIndicadores(page, perPage, req.matchedData, pathway);
+    const totalPages = Math.ceil(total / perPage);
+    if (indicadores.length > 0) {
+      return res.status(200).json({ page: page, perPage: perPage, total: total, totalPages: totalPages, data: indicadores });
+    }
+  } catch (err) {
+    return res.status(500).json(err.message);
+  }
+}
+
+const getIndicadoresFromUser = async (req, res) => {
+  try {
+    const idUsuario = req.sub;
+    const { indicadores, total } = await UsuarioService.getIndicadoresFromUser(idUsuario);
+    return res.status(200).json({
+      total,
+      data: indicadores,
+    });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+}
+
+const createIndicador = async (req, res) => {
+  try {
+    const indicador = req.matchedData;
+    indicador.createdBy = req.sub;
+    indicador.updatedBy = req.sub;
+    const savedIndicador = await IndicadorService.createIndicador(indicador);
+    return res.status(201).json({ data: savedIndicador });
+  } catch (err) {
+    return res.status(500).send(err.message);
+  }
+};
+
+const updateIndicador = async (req, res) => {
+  try {
+    let urlImagen = '';
+    const { idIndicador, ...indicador } = req.matchedData;
+    const idUsuario = req.sub;
+    const rol = req.rol || await UsuarioService.getRol(idUsuario);
+
+    urlImagen = req.file ? `/images/indicador/${req.file.filename}` : urlImagen;
+
+    let fields = {};
+    if (urlImagen) {
+      fields = { ...indicador, urlImagen: urlImagen };
+      console.log('tiene imagen');
+    }
+    else {
+      fields = { ...indicador };
+      console.log('no tiene imagen');
+    }
+
+    let saved;
+    if (rol === 'ADMIN') {
+      saved = await IndicadorService.updateIndicador(idIndicador, fields);
+    } else {
+      const isAllowed = await areConnected(idUsuario, idIndicador);
+      if (!isAllowed) {
+        return res.status(403).send('No tiene permiso para actualizar este indicador');
+      }
+      saved = await IndicadorService.updateIndicador(idIndicador, indicador);
+    }
+
+    if (saved) {
+      return res.sendStatus(204);
+    }
+    return res.sendStatus(400);
+
+  } catch (err) {
+    return res.status(500).send(err.message)
+  }
+};
+
+const updateIndicadorStatus = async (req, res) => {
+  const { idIndicador } = req.matchedData;
+
+  try {
+    const updatedIndicador = await IndicadorService.updateIndicadorStatus(idIndicador);
+    if (updatedIndicador) {
+      return res.sendStatus(204);
+    }
+    else {
+      return res.sendStatus(400);
+    }
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
 
 module.exports = {
   getIndicadores,
   getIndicador,
+  getIndicadoresFromUser,
+  createIndicador,
+  updateIndicador,
+  updateIndicadorStatus,
 };

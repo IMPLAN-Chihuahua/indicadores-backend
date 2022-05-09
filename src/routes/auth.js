@@ -1,7 +1,8 @@
 const express = require('express');
+
 const router = express.Router();
-const { login } = require('../controllers/authController');
-const { loginValidationRules, validate } = require('../middlewares/validator')
+const { login, generatePasswordRecoveryToken, handlePasswordRecoveryToken } = require('../controllers/authController');
+const { loginValidationRules, validate, tokenValidationRules } = require('../middlewares/validator')
 /**
  * @swagger
  *   components:
@@ -15,7 +16,7 @@ const { loginValidationRules, validate } = require('../middlewares/validator')
 
 /**
  * @swagger
- *   /login:
+ *   /auth/login:
  *     post:
  *       summary: Let a client log into the app
  *       description: If a request has valid credentials, this endpoint returns a JWT to use in every subsequent request
@@ -29,8 +30,10 @@ const { loginValidationRules, validate } = require('../middlewares/validator')
  *               properties:
  *                 correo:
  *                   type: string
+ *                   example: johndoe@email.com
  *                 clave:
  *                   type: string
+ *                   example: password
  *               required:
  *                 - correo
  *                 - clave
@@ -42,5 +45,9 @@ const { loginValidationRules, validate } = require('../middlewares/validator')
  *           description: Unable to process request due to semantic errors in the body or param payload
  */
 router.post('/login', loginValidationRules(), validate, login);
+
+router.post('/password-reset', generatePasswordRecoveryToken)
+
+router.patch('/password-reset/:token?', tokenValidationRules(), validate, handlePasswordRecoveryToken)
 
 module.exports = router;

@@ -1,11 +1,14 @@
 const express = require('express');
 const moduloRouter = express.Router();
 const indicadorRouter = express.Router({ mergeParams: true });
-const { getModulos } = require('../controllers/moduloController');
+const { getModulos, createModulo, editModulo, updateModuloStatus } = require('../controllers/moduloController');
 const { getIndicadores, getIndicador } = require('../controllers/indicadorController');
 const { paramValidationRules, paginationValidationRules,
-    validate, filterIndicadoresValidationRules, sortValidationRules } = require('../middlewares/validator');
+    validate, filterIndicadoresValidationRules, sortValidationRules, createModuloValidationRules, updateModuloValidationRules } = require('../middlewares/validator');
 const { moduloExists } = require('../middlewares/verifyIdModulo');
+const { verifyJWT } = require('../middlewares/auth');
+const { uploadImage } = require('../middlewares/fileUpload');
+const { determinePathway } = require('../middlewares/determinePathway');
 
 /**
  * @swagger
@@ -26,7 +29,7 @@ const { moduloExists } = require('../middlewares/verifyIdModulo');
  *           codigo:
  *             type: string
  *             description: Code of a module
- *             example: 001 
+ *             example: '666'
  *           observaciones:
  *             type: string
  *             description: Commentaries of a module
@@ -34,90 +37,20 @@ const { moduloExists } = require('../middlewares/verifyIdModulo');
  *           activo:
  *             type: string
  *             description: Active state of a module
- *             example: SI
- *             readOnly: true
+ *             example: 'SI'
  *           urlImagen:
  *             type: string
  *             description: URL to the image of a module
  *             example: http://example.com/image.png
- *             readOnly: true
  *           color:
  *             type: string
  *             description: Color of a module
- *             example: #FF0000
- *             readOnly: true     
+ *             example: 'green'
  *           createdAt:
  *             type: string 
  *             description: Date of creation of a module
  *             example: 2020-01-01T00:00:00.000Z
  *             readOnly: true
- *       Indicador:
- *         type: object
- *         properties:
- *           id:
- *             type: intger
- *             description: Identifier of an indicador
- *             example: 1
- *             readOnly: true
- *           urlImagen:   
- *             type: string 
- *             description: Base url to display a map
- *             example: http://example.com/map
- *           codigo:    
- *             type: string
- *             description: Code for Indicator
- *             example: '001'
- *           nombre:
- *             type: string
- *             description: Name of the Indicator
- *             example: Almacen de Carbono
- *           definicion:
- *             type: string
- *             description: Detailed information of an Indicador
- *             example: Lorem ipsum at dolor
- *           ultimoValorDisponible:
- *             type: string
- *             description: Last value available for the Indicator
- *           anioUltimoValorDisponible:
- *             type: string
- *             description: Year of the late information of an Indicador
- *             example: 2019
- *           tendenciaActual:
- *             type: string
- *             description: TODO
- *             example: Ascendente
- *             readOnly: true
- *           tendenciaDeseada:  
- *             type: string
- *             description: TODO
- *             example: Ascendente
- *           mapa:
- *             type: integer
- *             description: Reference to a map
- *             example: 1
- *           observaciones:
- *             type: string
- *             description: Notes about an Indicador
- *           createdBy:
- *             type: integer
- *             description: Identifier of the user who created an Indicador
- *             example: 1
- *           updatedBy:
- *             type: integer
- *             description: Identifier of the user who updated an Indicador
- *             example: 1
- *           idOds:
- *             type: integer
- *             description: Identifier of the ODS
- *             example: 1
- *           idCobertura:
- *             type: integer
- *             description: Identifier of the coverage
- *             example: 1
- *           idUnidadMedida:
- *             type: integer
- *             description: Identifier of the unit of measure
- *             example: 1
  */
 moduloRouter.use('/:idModulo/indicadores', indicadorRouter);
 
@@ -173,7 +106,7 @@ moduloRouter.route('/')
  *             format: int64
  *             minimum: 1
  *             description: Page number
- *         - name: per_page
+ *         - name: perPage
  *           in: query
  *           required: false
  *           schema:
@@ -240,9 +173,130 @@ indicadorRouter.route('/')
         sortValidationRules(),
         validate,
         moduloExists,
+        determinePathway('site'),
         getIndicadores
     );
 
+/** Administrative section */
 
+/**
+ * @swagger
+ * /modulos:
+ *   post:
+ *     summary: Creates a new module
+ *     tags: [Modulos]
+ *     security:
+ *       - bearer: []
+ *     requestBody:
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               temaIndicador:
+ *                 type: string
+ *               codigo:
+ *                 type: string
+ *               activo:
+ *                 type: string
+ *               color:
+ *                 type: string
+ *               observaciones:
+ *                 type: string
+ *               urlImagen:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       201:
+ *         description: Module created successfully
+ *       400:
+ *         description: Unable to create new modulo (temaIndicador is already on use)
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal server error
+ */
+
+moduloRouter.route('/')
+    .post(
+        verifyJWT,
+        uploadImage('modulos'),
+        createModuloValidationRules(),
+        validate,
+        createModulo
+    );
+/** 
+ * @swagger
+ *   /modulos/{idModulo}:
+ *     put:
+ *      summary: Updates a module with given parameters
+ *      tags: [Modulos]
+ *      parameters:
+ *        - name: idModulo
+ *          in: path
+ *          required: true
+ *          schema:
+ *            type: integer
+ *            format: int64
+ *            minimum: 1
+ *            description: Identifier of a module
+ *      security:
+ *        - bearer: []
+ *      requestBody:
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Modulo'
+ *      responses:
+ *        204:
+ *          description: Module updated successfully
+ *        404:
+ *          description: Bad request
+ *        500:
+ *          description: Internal server error
+ * 
+ */
+
+moduloRouter.route('/:idModulo')
+    .put(
+        verifyJWT,
+        updateModuloValidationRules(),
+        validate,
+        editModulo
+    );
+
+/**
+ * @swagger
+ *   /modulos/{idModulo}:
+ *     patch:
+ *       summary: Updates a modulo status (active/inactive)
+ *       tags: [Modulos]
+ *       parameters:
+ *         - name: idModulo
+ *           in: path
+ *           required: true
+ *           schema:
+ *             type: integer
+ *             format: int64
+ *             minimum: 1
+ *             description: Identifier of a module
+ *       security:
+ *         - bearer: []
+ *       responses:
+ *         204:
+ *           description: Module status updated successfully
+ *         404:
+ *           description: Bad request
+ *         500:
+ *           description: Internal server error
+ */
+
+moduloRouter.route('/:idModulo')
+    .patch(
+        verifyJWT,
+        updateModuloValidationRules(),
+        validate,
+        updateModuloStatus
+    );
 
 module.exports = moduloRouter;
