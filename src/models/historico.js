@@ -37,6 +37,18 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
         defaultValue: 'No aplica'
+      },
+
+      ecuacion: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: 'No aplica'
+      },
+
+      descripcionEcuacion: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: 'No aplica'
       }
     },
     {

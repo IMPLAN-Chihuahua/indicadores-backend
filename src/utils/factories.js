@@ -193,6 +193,39 @@ const someCatalogosFromIndicador = (idIndicador) => ([
 	},
 ]);
 
+const someHistoricos = (idIndicador) => ([
+	{
+		id: 1,
+		valor: faker.datatype.number(),
+		anio: 2022,
+		fuente: faker.random.word(),
+		idIndicador: idIndicador,
+		createdAt: new Date(),
+		ecuacion: 'No aplica',
+		descripcionEcuacion: 'No aplica',
+	},
+	{
+		id: 2,
+		valor: faker.datatype.number(),
+		anio: 2021,
+		fuente: faker.random.word(),
+		idIndicador: idIndicador,
+		createdAt: new Date(),
+		ecuacion: 'No aplica',
+		descripcionEcuacion: 'No aplica',
+	},
+	{
+		id: 3,
+		valor: faker.datatype.number(),
+		anio: 2020,
+		fuente: faker.random.word(),
+		idIndicador: idIndicador,
+		createdAt: new Date(),
+		ecuacion: 'No aplica',
+		descripcionEcuacion: 'No aplica',
+	},
+]);
+
 module.exports = {
 	anIndicador,
 	aUser,
@@ -209,5 +242,6 @@ module.exports = {
 	someCatalogosDetails,
 	someCatalogosFromIndicador,
 	aCodigo,
-	randomYear
+	randomYear,
+	someHistoricos
 };

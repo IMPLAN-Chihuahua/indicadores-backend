@@ -146,7 +146,7 @@ const paramValidationRules = () => [
 const sortValidationRules = () => [
     query('sortBy')
         .optional()
-        .isIn(['nombre'])
+        .isIn(['id', 'nombre', 'anio', 'fuente', 'valor', 'periodicidad'])
         .withMessage('orden debe ser ascendente o descendente'),
     query('order')
         .optional()
@@ -239,7 +239,7 @@ const createIndicadorValidationRules = () => [
     body('anioUltimoValorDisponible')
         .exists()
         .isInt().toInt(),
-        
+
     body(['idOds', 'idCobertura', 'idUnidadMedida', 'idModulo'])
         .exists()
         .isInt().toInt(),
