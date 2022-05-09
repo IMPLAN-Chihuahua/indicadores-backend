@@ -9,7 +9,7 @@ const HistoricoService = require('../../services/historicoService');
 const { server } = require('../../../app');
 const { someHistoricos } = require('../../utils/factories');
 
-describe('Historicos service', function () {
+describe.only('Historicos service', function () {
     const historicos = someHistoricos(1);
 
     this.afterEach(function () {
@@ -21,14 +21,25 @@ describe('Historicos service', function () {
     });
 
     it('Should return a list of historicos with an INNER JOIN from indicadores', function () {
-        const findAllFake = sinon.fake.resolves(historicos);
-        sinon.replace(Historico, 'findAll', findAllFake);
-        return HistoricoService.getHistoricos()
+        const findAndCountALlFake = sinon.fake.resolves({ rows: historicos, count: historicos.length });
+        sinon.replace(Historico, 'findAndCountAll', findAndCountALlFake);
+        return HistoricoService.getHistoricos(1, 1, 1, { temaIndicador: 'lorem' })
             .then(res => {
-                expect(res).to.deep.equal(historicos);
-                expect(res).to.be.an('array');
-                expect(res).to.not.be.empty;
-            }
-            );
+                expect(findAndCountALlFake.calledOnce).to.be.true;
+                expect(res.historicos).to.be.an('array').that.is.not.empty;
+                expect(res.total).to.equal(historicos.length);
+            });
+    });
+
+    it('Should not return any historicos at all', function () {
+        const findAndCountALlFake = sinon.fake.resolves({ rows: [], count: 0 });
+        sinon.replace(Historico, 'findAndCountAll', findAndCountALlFake);
+        return HistoricoService.getHistoricos(1, 1, 1, { temaIndicador: 'lorem' })
+            .then(res => {
+                expect(findAndCountALlFake.calledOnce).to.be.true;
+                expect(res.historicos).to.be.an('array').that.is.empty;
+                expect(res.total).to.equal(0);
+            });
+
     })
 })
