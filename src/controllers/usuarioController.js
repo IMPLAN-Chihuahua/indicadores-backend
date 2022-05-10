@@ -1,5 +1,5 @@
-const bcrypt = require('bcrypt');
 const { hashClave } = require('../middlewares/auth');
+const { createRelation } = require('../services/usuarioIndicadorService');
 const { addUsuario,
     getUsuarios,
     isCorreoAlreadyInUse,
@@ -8,8 +8,6 @@ const { addUsuario,
     updateUserStatus,
     countInactiveUsers } = require('../services/usuariosService');
 require('dotenv').config();
-
-const SALT_ROUNDS = 10;
 
 const getUsers = async (req, res) => {
     const page = req.matchedData.page || 1;
@@ -83,15 +81,13 @@ const editUser = async (req, res) => {
     if (urlImagen) {
         fieldsWithImage = {
             ...fields,
-            urlImagen: urlImagen
+            urlImagen
         };
     } else {
         fieldsWithImage = {
             ...fields
         };
     }
-
-    console.log(fieldsWithImage);
 
     if (idUser) {
         try {
@@ -105,14 +101,14 @@ const editUser = async (req, res) => {
     }
     else {
         try {
-            if (fields.id == idFromToken) {
+            if (fields.id === idFromToken) {
                 if (await updateUsuario(fields.id, fieldsWithImage)) {
                     return res.sendStatus(204);
                 }
                 return res.sendStatus(400);
-            } else {
-                return res.sendStatus(401);
             }
+            return res.sendStatus(401);
+
         } catch (err) {
             return res.status(500).json({ message: err.message });
         }
@@ -154,6 +150,26 @@ const getUserFromToken = async (req, res) => {
     return getUser(req, res, id);
 };
 
+const setIndicadoresToUsuario = async (req, res) => {
+    const { idUser: idUsuario, indicadores, desde, hasta } = req.matchedData;
+    const updatedBy = req.sub;
+    const createdBy = req.sub;
+    try {
+        await createRelation(
+            [idUsuario],
+            [...indicadores],
+            {
+                fechaDesde: desde,
+                fechaHasta: hasta,
+                createdBy,
+                updatedBy
+            });
+        return res.sendStatus(201);
+    } catch (err) {
+        return res.status(500).send(err.message);
+    }
+};
+
 module.exports = {
     getUsers,
     createUser,
@@ -161,5 +177,6 @@ module.exports = {
     editUser,
     editUserStatus,
     getUserFromId,
-    getUserFromToken
+    getUserFromToken,
+    setIndicadoresToUsuario
 };

@@ -48,20 +48,21 @@ module.exports = {
         },
 
         activo: {
-          allowNull: true,
+          allowNull: false,
           defaultValue: 'SI',
-
           type: Sequelize.STRING
         },
 
         createdAt: {
           allowNull: false,
-          type: Sequelize.DATE
+          type: Sequelize.DATE,
+          defaultValue: Sequelize.fn('NOW')
         },
 
         updatedAt: {
           allowNull: false,
-          type: Sequelize.DATE
+          type: Sequelize.DATE,
+          defaultValue: Sequelize.fn('NOW')
         }
       });
 

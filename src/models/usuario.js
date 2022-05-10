@@ -70,6 +70,7 @@ module.exports = (sequelize, DataTypes) => {
                     isIn: [['SI', 'NO']]
                 }
             },
+            
             requestedPasswordChange: {
                 type: DataTypes.STRING(2),
                 allowNull: true,
