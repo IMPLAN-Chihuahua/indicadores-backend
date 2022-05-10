@@ -5,21 +5,24 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const sinon = require('sinon');
-const jwt = require('jsonwebtoken');
+
 const { app, server } = require('../../../app');
 const { Usuario } = require('../../models');
 const { aUser } = require('../../utils/factories');
 const fileUpload = require('../../middlewares/fileUpload');
+const { addDays } = require('../../utils/dates');
+const { generateToken } = require('../../middlewares/auth');
 require('dotenv').config();
 
 chai.use(chaiHttp);
 const { expect } = chai;
-const { TOKEN_SECRET } = process.env;
 
 describe('v1/usuarios', function () {
   const SUB_ID = 100;
-  const token = jwt.sign({ sub: SUB_ID }, TOKEN_SECRET, { expiresIn: '5h' });;
+  const token = generateToken({ sub: SUB_ID });
   const adminRol = { rolValue: 'ADMIN' };
+  const userRol = { rolValue: 'USER' };
+
   const bigImage = Buffer.alloc(100200000, '.jpg')
   const allowedImage = Buffer.alloc(1000, '.jpg')
   const notAllowedFile = Buffer.alloc(10000, '.pdf')
@@ -286,6 +289,101 @@ describe('v1/usuarios', function () {
     });
   });
 
+  describe.only('POST /usuarios/:idUsuario/indicadores', function () {
+    const USUARIO_ID = 1;
+    const DESDE = new Date();
+    const HASTA = addDays(new Date(), 2);
+    const validPayload = {
+      indicadores: [1, 2, 3, 4],
+      desde: DESDE,
+      hasta: HASTA
+    };
+
+    const invalidIds = {
+      indicadores: ['not', 'valid'],
+      desde: DESDE,
+      hasta: HASTA
+    };
+
+    // desde (start date) is greater than hasta (end date) 
+    const invalidDates = {
+      indicadores: [1, 2, 3],
+      desde: HASTA,
+      hasta: DESDE
+    }
+
+    let findOneFake;
+
+    this.beforeEach(function () {
+      findOneFake = sinon.stub(Usuario, 'findOne');
+      findOneFake.onFirstCall().resolves(statusActive);
+      findOneFake.onSecondCall().resolves(adminRol);
+    });
+
+    this.afterEach(function () {
+      sinon.restore();
+    });
+
+    it('Should assign indicadores to an usuario', function (done) {
+      chai.request(app)
+        .post(`/api/v1/usuarios/${USUARIO_ID}/indicadores`)
+        .set({ Authorization: `Bearer ${token}` })
+        .send({ ...validPayload })
+        .end((err, res) => {
+          expect(findOneFake.calledTwice).to.be.true;
+          expect(res).to.have.status(201);
+          done();
+        });
+    });
+
+    it('Should not assign indicadores due to invalid indicadores id', function (done) {
+      chai.request(app)
+        .post(`/api/v1/usuarios/${USUARIO_ID}/indicadores`)
+        .set({ Authorization: `Bearer ${token}` })
+        .send({ ...invalidIds })
+        .end((err, res) => {
+          expect(findOneFake.calledTwice).to.be.true;
+          expect(res).to.have.status(422);
+          expect(res.body.errors).to.have.lengthOf(2)
+          done();
+        })
+
+    });
+
+    it('Should not assign indicadores due to invalid dates', function (done) {
+      chai.request(app)
+        .post(`/api/v1/usuarios/${USUARIO_ID}/indicadores`)
+        .set({ Authorization: `Bearer ${token}` })
+        .send({ ...invalidDates })
+        .end((err, res) => {
+          expect(res).to.have.status(422);
+          expect(res.body.errors).to.have.lengthOf(1);
+          expect(findOneFake.calledTwice).to.be.true;
+          done();
+        });
+
+    });
+
+    it('Should fail due to lack of authorization (user rol)', function (done) {
+      sinon.restore();
+      const findOneUsuarioFake = sinon.stub(Usuario, 'findOne');
+      findOneUsuarioFake.onFirstCall().resolves(statusActive);
+      findOneUsuarioFake.onSecondCall().resolves(userRol);
+
+      chai.request(app)
+        .post(`/api/v1/usuarios/${USUARIO_ID}/indicadores`)
+        .set({ Authorization: `Bearer ${token}` })
+        .send({ ...validPayload })
+        .end((err, res) => {
+          expect(findOneUsuarioFake.calledTwice).to.be.true;
+          expect(res).to.have.status(403);
+          expect(res.error.text).to.be.equals('No tiene permiso a realizar acciones en este recurso');
+          done();
+        })
+    });
+
+  });
+
   describe('PATCH /usuarios/:idUsuario', function () {
     it('Should edit a user', function (done) {
       const fileUploadFake = sinon.fake.resolves({
@@ -325,7 +423,7 @@ describe('v1/usuarios', function () {
 
       findOneFake.onFirstCall().resolves(statusActive);
       findOneFake.onSecondCall().resolves(adminRol);
-      
+
       const userFake = aUser(1);
 
       chai.request(app)

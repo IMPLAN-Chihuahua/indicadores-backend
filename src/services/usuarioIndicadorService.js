@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 const { UsuarioIndicador, Sequelize } = require('../models');
 
 const areConnected = async (idUsuario, idIndicador) => {
@@ -18,24 +19,25 @@ const areConnected = async (idUsuario, idIndicador) => {
   }
 };
 
-const assignUsuariosToIndicador = async (relation) => {
-  const { idIndicador, desde, hasta, createdBy, updatedBy, usuarios } = relation;
+const createRelation = async (usuarios, indicadores, options) => {
+  const relations = [];
+  for (const u of usuarios) {
+    for (const i of indicadores) {
+      relations.push({
+        idUsuario: u,
+        idIndicador: i,
+        ...options
+      })
+    }
+  }
   try {
-    const relations = usuarios.map(idUsuario => ({
-      idUsuario,
-      idIndicador,
-      fechaDesde: desde,
-      fechaHasta: hasta,
-      createdBy,
-      updatedBy
-    }));
-    return UsuarioIndicador.bulkCreate(relations, { ignoreDuplicates: true, validate: true });
+    return UsuarioIndicador.bulkCreate(relations, { ignoreDuplicates: true });
   } catch (err) {
-    throw new Error(`Error al asignar usuarios a indicador ${err.message}`);
+    throw new Error(`Error al otorgar permisos ${err.message}`);
   }
 };
 
 module.exports = {
   areConnected,
-  assignUsuariosToIndicador
+  createRelation
 }

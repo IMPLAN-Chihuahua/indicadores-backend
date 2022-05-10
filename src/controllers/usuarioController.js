@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const { hashClave } = require('../middlewares/auth');
+const { assignIndicadoresToUsuario } = require('../services/usuarioIndicadorService');
 const { addUsuario,
     getUsuarios,
     isCorreoAlreadyInUse,
@@ -154,6 +155,25 @@ const getUserFromToken = async (req, res) => {
     return getUser(req, res, id);
 };
 
+const setIndicadoresToUsuario = async (req, res) => {
+    const { idUsuario, indicadores, desde, hasta } = req.matchedData;
+    const updatedBy = req.sub;
+    const createdBy = req.sub;
+    try {
+        await assignIndicadoresToUsuario({
+            idUsuario,
+            indicadores,
+            desde,
+            hasta,
+            createdBy,
+            updatedBy
+        });
+        return res.sendStatus(201);
+    } catch (err) {
+        return res.status(500).send(err.message);
+    }
+};
+
 module.exports = {
     getUsers,
     createUser,
@@ -161,5 +181,6 @@ module.exports = {
     editUser,
     editUserStatus,
     getUserFromId,
-    getUserFromToken
+    getUserFromToken,
+    setIndicadoresToUsuario
 };

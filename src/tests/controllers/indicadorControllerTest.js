@@ -11,11 +11,13 @@ require('dotenv').config();
 chai.use(chaiHttp);
 const { expect } = chai;
 const { Indicador, Modulo, Usuario, UsuarioIndicador } = require('../../models');
-const { anIndicador, aModulo, indicadorToCreate, aFormula, aVariable, anHistorico, aMapa, aUser } = require('../../utils/factories');
+const { anIndicador, aModulo,
+    indicadorToCreate, aFormula,
+    aVariable, anHistorico, aMapa } = require('../../utils/factories');
 const { app, server } = require('../../../app');
 const { addDays } = require('../../utils/dates');
-const statusActive = { activo: 'SI' };
-const { TOKEN_SECRET } = process.env;
+const { generateToken } = require('../../middlewares/auth');
+
 
 describe('v1/indicadores', function () {
 
@@ -23,8 +25,10 @@ describe('v1/indicadores', function () {
         anioUltimoValorDisponible: 2019
     };
 
-    const validToken = jwt.sign({ sub: 100 }, TOKEN_SECRET, { expiresIn: '5h' });
+    const SUB_ID = 100;
+    const validToken = generateToken({ sub: SUB_ID });
     const validIndicador = indicadorToCreate();
+    const statusActive = { activo: 'SI' };
 
     const adminRol = { rolValue: 'ADMIN' };
     const userRol = { roles: 'USER' };
@@ -485,8 +489,8 @@ describe('v1/indicadores', function () {
 
         this.beforeEach(function () {
             findOneFake = sinon.stub(Usuario, 'findOne');
-            findOneFake.onFirstCall().resolves(adminRol);
-            findOneFake.onSecondCall().resolves(statusActive);
+            findOneFake.onFirstCall().resolves(statusActive);
+            findOneFake.onSecondCall().resolves(adminRol);
         });
 
         this.afterEach(function () {

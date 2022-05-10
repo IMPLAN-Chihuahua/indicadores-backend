@@ -278,9 +278,17 @@ const updateIndicadorValidationRules = () => [
         .isInt().toInt()
 ];
 
-const indicadorAssignUserValidationRules = () => [
+const indicadorAssignUsuarioValidationRules = () => [
     body('usuarios.*').isInt().toInt(),
-    body(['desde', 'hasta']).isISO8601().withMessage('is date error'),
+    body(['desde', 'hasta']).isISO8601()
+];
+
+const usuarioAssignIndicadorValidationRules = () => [
+    body('indicadores.*').isInt().toInt(),
+    body(['desde', 'hasta']).isISO8601()
+]
+
+const desdeHastaDateRangeValidationRules = () => [
     check('hasta').custom((value, { req }) => {
         if (new Date(value) <= new Date(req.body.desde)) {
             throw new Error("Fecha 'hasta' debe ser mayor a fecha 'desde'")
@@ -321,6 +329,8 @@ module.exports = {
     sortModulosValidationRules,
     updateIndicadorValidationRules,
     tokenValidationRules,
-    indicadorAssignUserValidationRules
+    indicadorAssignUsuarioValidationRules,
+    usuarioAssignIndicadorValidationRules,
+    desdeHastaDateRangeValidationRules,
 };
 

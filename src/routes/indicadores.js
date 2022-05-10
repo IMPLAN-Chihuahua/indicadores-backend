@@ -8,7 +8,8 @@ const { paramValidationRules,
     paginationValidationRules,
     filterIndicadoresValidationRules,
     sortValidationRules,
-    indicadorAssignUserValidationRules
+    indicadorAssignUsuarioValidationRules,
+    desdeHastaDateRangeValidationRules
 } = require('../middlewares/validator');
 const {
     getIndicador,
@@ -16,7 +17,7 @@ const {
     createIndicador,
     updateIndicador,
     updateIndicadorStatus,
-    updateUsuariosOfIndicador,
+    setUsuariosToIndicador,
 } = require('../controllers/indicadorController');
 const { verifyJWT, verifyUserHasRoles, verifyUserIsActive } = require('../middlewares/auth');
 const { determinePathway } = require('../middlewares/determinePathway');
@@ -275,10 +276,11 @@ router.route('/')
  */
 router.route('/')
     .post(
+        verifyJWT,
+        verifyUserIsActive,
+        verifyUserHasRoles(['ADMIN']),
         createIndicadorValidationRules(),
         validate,
-        verifyJWT,
-        verifyUserHasRoles(['ADMIN']),
         createIndicador
     );
 
@@ -351,8 +353,8 @@ router.route('/:idIndicador')
 router.route('/:idIndicador/toggle-status')
     .patch(
         verifyJWT,
-        verifyUserHasRoles(['ADMIN']),
         verifyUserIsActive,
+        verifyUserHasRoles(['ADMIN']),
         paramValidationRules(),
         validate,
         updateIndicadorStatus
@@ -404,12 +406,13 @@ router.route('/:idIndicador/toggle-status')
 router.route('/:idIndicador/usuarios')
     .post(
         verifyJWT,
-        verifyUserHasRoles(['ADMIN']),
         verifyUserIsActive,
+        verifyUserHasRoles(['ADMIN']),
         paramValidationRules(),
-        indicadorAssignUserValidationRules(),
+        indicadorAssignUsuarioValidationRules(),
+        desdeHastaDateRangeValidationRules(),
         validate,
-        updateUsuariosOfIndicador
+        setUsuariosToIndicador
     );
 
 module.exports = router;
