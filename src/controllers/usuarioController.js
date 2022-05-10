@@ -1,6 +1,5 @@
-const bcrypt = require('bcrypt');
 const { hashClave } = require('../middlewares/auth');
-const { assignIndicadoresToUsuario } = require('../services/usuarioIndicadorService');
+const { createRelation } = require('../services/usuarioIndicadorService');
 const { addUsuario,
     getUsuarios,
     isCorreoAlreadyInUse,
@@ -9,8 +8,6 @@ const { addUsuario,
     updateUserStatus,
     countInactiveUsers } = require('../services/usuariosService');
 require('dotenv').config();
-
-const SALT_ROUNDS = 10;
 
 const getUsers = async (req, res) => {
     const page = req.matchedData.page || 1;
@@ -84,15 +81,13 @@ const editUser = async (req, res) => {
     if (urlImagen) {
         fieldsWithImage = {
             ...fields,
-            urlImagen: urlImagen
+            urlImagen
         };
     } else {
         fieldsWithImage = {
             ...fields
         };
     }
-
-    console.log(fieldsWithImage);
 
     if (idUser) {
         try {
@@ -106,14 +101,14 @@ const editUser = async (req, res) => {
     }
     else {
         try {
-            if (fields.id == idFromToken) {
+            if (fields.id === idFromToken) {
                 if (await updateUsuario(fields.id, fieldsWithImage)) {
                     return res.sendStatus(204);
                 }
                 return res.sendStatus(400);
-            } else {
-                return res.sendStatus(401);
             }
+            return res.sendStatus(401);
+
         } catch (err) {
             return res.status(500).json({ message: err.message });
         }
@@ -156,18 +151,19 @@ const getUserFromToken = async (req, res) => {
 };
 
 const setIndicadoresToUsuario = async (req, res) => {
-    const { idUsuario, indicadores, desde, hasta } = req.matchedData;
+    const { idUser: idUsuario, indicadores, desde, hasta } = req.matchedData;
     const updatedBy = req.sub;
     const createdBy = req.sub;
     try {
-        await assignIndicadoresToUsuario({
-            idUsuario,
-            indicadores,
-            desde,
-            hasta,
-            createdBy,
-            updatedBy
-        });
+        await createRelation(
+            [idUsuario],
+            [...indicadores],
+            {
+                fechaDesde: desde,
+                fechaHasta: hasta,
+                createdBy,
+                updatedBy
+            });
         return res.sendStatus(201);
     } catch (err) {
         return res.status(500).send(err.message);

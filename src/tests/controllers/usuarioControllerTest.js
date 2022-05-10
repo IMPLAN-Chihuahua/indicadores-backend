@@ -7,7 +7,7 @@ const chaiHttp = require('chai-http');
 const sinon = require('sinon');
 
 const { app, server } = require('../../../app');
-const { Usuario } = require('../../models');
+const { Usuario, UsuarioIndicador } = require('../../models');
 const { aUser } = require('../../utils/factories');
 const fileUpload = require('../../middlewares/fileUpload');
 const { addDays } = require('../../utils/dates');
@@ -289,7 +289,7 @@ describe('v1/usuarios', function () {
     });
   });
 
-  describe.only('POST /usuarios/:idUsuario/indicadores', function () {
+  describe('POST /usuarios/:idUsuario/indicadores', function () {
     const USUARIO_ID = 1;
     const DESDE = new Date();
     const HASTA = addDays(new Date(), 2);
@@ -325,12 +325,15 @@ describe('v1/usuarios', function () {
     });
 
     it('Should assign indicadores to an usuario', function (done) {
+      const bulkCreateFake = sinon.fake.resolves();
+      sinon.replace(UsuarioIndicador, 'bulkCreate', bulkCreateFake);
       chai.request(app)
         .post(`/api/v1/usuarios/${USUARIO_ID}/indicadores`)
         .set({ Authorization: `Bearer ${token}` })
         .send({ ...validPayload })
         .end((err, res) => {
           expect(findOneFake.calledTwice).to.be.true;
+          expect(bulkCreateFake.cal)
           expect(res).to.have.status(201);
           done();
         });

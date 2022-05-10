@@ -31,7 +31,8 @@ const createRelation = async (usuarios, indicadores, options) => {
     }
   }
   try {
-    return UsuarioIndicador.bulkCreate(relations, { ignoreDuplicates: true });
+    await UsuarioIndicador.bulkCreate(relations, { ignoreDuplicates: true, validate: true });
+    return;
   } catch (err) {
     throw new Error(`Error al otorgar permisos ${err.message}`);
   }
