@@ -1,5 +1,7 @@
 /* eslint-disable no-restricted-syntax */
-const { UsuarioIndicador, Sequelize } = require('../models');
+const { UsuarioIndicador, Usuario, Indicador, Sequelize } = require('../models');
+
+const { Op } = Sequelize;
 
 const areConnected = async (idUsuario, idIndicador) => {
   try {
@@ -7,13 +9,33 @@ const areConnected = async (idUsuario, idIndicador) => {
       where: {
         idUsuario,
         idIndicador,
-        activo: 'SI'
+        activo: 'SI',
+        fechaHasta: {
+          [Op.gte]: Sequelize.literal('CURRENT_DATE')
+        }
       },
       attributes: [
         [Sequelize.fn('COUNT', 'id'), 'count']
-      ]
+      ],
+      include: [
+        {
+          model: Usuario,
+          where: {
+            activo: 'SI',
+          },
+          attributes: []
+        },
+        {
+          model: Indicador,
+          where: {
+            activo: 'SI',
+          },
+          attributes: []
+        }
+      ],
+      raw: true
     });
-    return resultset.dataValues.count > 0;
+    return resultset.count > 0;
   } catch (err) {
     throw new Error(err.message);
   }

@@ -290,7 +290,7 @@ const usuarioAssignIndicadorValidationRules = () => [
 
 const desdeHastaDateRangeValidationRules = () => [
     check('hasta').custom((value, { req }) => {
-        if (new Date(value) <= new Date(req.body.desde)) {
+        if (new Date(value) < new Date(req.body.desde)) {
             throw new Error("Fecha 'hasta' debe ser mayor a fecha 'desde'")
         }
         return true;
