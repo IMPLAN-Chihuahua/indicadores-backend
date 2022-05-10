@@ -92,6 +92,11 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.STRING,
                 allowNull: false,
                 defaultValue: 'SI'
+            },
+            periodicidad: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                defaultValue: 1
             }
         },
         {

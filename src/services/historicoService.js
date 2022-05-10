@@ -24,7 +24,6 @@ const getHistoricos = async (idIndicador, page, perPage, order, sortBy) => {
                 'ecuacion',
                 'descripcionEcuacion',
                 'createdAt',
-                [sequelize.literal('indicador.periodicidad'), "periodicidad"]
             ]
         });
         return { historicos: result.rows, total: result.count };

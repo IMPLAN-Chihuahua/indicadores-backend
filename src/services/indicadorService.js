@@ -204,7 +204,8 @@ const defineAttributes = (pathway, matchedData) => {
         "ultimoValorDisponible",
         "anioUltimoValorDisponible",
         "tendenciaActual",
-        "tendenciaDeseada")
+        "tendenciaDeseada",
+        "periodicidad")
       return attributes;
     };
     case 'site': {
@@ -218,7 +219,8 @@ const defineAttributes = (pathway, matchedData) => {
           "tendenciaDeseada",
           "createdAt",
           "updatedAt",
-          "idModulo")
+          "idModulo",
+          "periodicidad")
       } else {
         attributes.push(
           "id",
@@ -229,7 +231,8 @@ const defineAttributes = (pathway, matchedData) => {
           "ultimoValorDisponible",
           "anioUltimoValorDisponible",
           "tendenciaActual",
-          "tendenciaDeseada")
+          "tendenciaDeseada",
+          "periodicidad")
       }
       return attributes;
     };
@@ -251,7 +254,8 @@ const defineAttributes = (pathway, matchedData) => {
         "idModulo",
         "createdAt",
         "updatedAt",
-        "activo")
+        "activo",
+        "periodicidad")
       return attributes;
     };
   }

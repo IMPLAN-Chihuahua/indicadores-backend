@@ -27,12 +27,6 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: 'No aplica'
       },
 
-      anio: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 0
-      },
-
       fuente: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -59,7 +53,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       modelName: 'Historico',
       timestamps: true,
-      updatedAt: false
+      updatedAt: 'date'
     }
   );
   return Historico;
