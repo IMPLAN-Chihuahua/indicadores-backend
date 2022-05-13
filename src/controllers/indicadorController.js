@@ -11,7 +11,7 @@ const getIndicador = async (req, res) => {
     const { idIndicador, format } = req.matchedData;
     const indicador = await IndicadorService.getIndicador(idIndicador, pathway);
     if (indicador === null) {
-      return res.sendStatus(404);
+      return res.status(404).send(`Indicador con id ${idIndicador} no encontrado`);
     }
 
     if (typeof format !== 'undefined') {
@@ -63,9 +63,7 @@ const getIndicadores = async (req, res) => {
   try {
     const { indicadores, total } = await IndicadorService.getIndicadores(page, perPage, req.matchedData, pathway);
     const totalPages = Math.ceil(total / perPage);
-    if (indicadores.length > 0) {
-      return res.status(200).json({ page: page, perPage: perPage, total: total, totalPages: totalPages, data: indicadores });
-    }
+    return res.status(200).json({ page, perPage, total, totalPages, data: indicadores });
   } catch (err) {
     return res.status(500).json(err.message);
   }
@@ -107,7 +105,7 @@ const updateIndicador = async (req, res) => {
 
     let fields = {};
     if (urlImagen) {
-      fields = { ...indicador, urlImagen: urlImagen };
+      fields = { ...indicador, urlImagen };
       console.log('tiene imagen');
     }
     else {
