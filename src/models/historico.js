@@ -43,7 +43,13 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true,
         defaultValue: 'No aplica'
-      }
+      },
+
+      fechaIngreso: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW
+      },
     },
     {
       sequelize,

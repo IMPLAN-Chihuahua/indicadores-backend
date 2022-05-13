@@ -6,7 +6,8 @@ const { paramValidationRules,
     sortValidationRules,
 } = require('../middlewares/validator');
 const {
-    getHistoricos
+    getHistoricos,
+    deleteHistorico,
 } = require('../controllers/historicoController');
 const { verifyJWT, verifyRoles, verifyUserIsActive } = require('../middlewares/auth');
 
@@ -21,6 +22,16 @@ router.route('/:idIndicador')
         paramValidationRules(),
         validate,
         getHistoricos
+    );
+
+router.route('/:idHistorico')
+    .delete(
+        verifyJWT,
+        verifyUserIsActive,
+        verifyRoles(['ADMIN', 'USER']),
+        paramValidationRules(),
+        validate,
+        deleteHistorico
     );
 
 module.exports = router;

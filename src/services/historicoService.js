@@ -2,7 +2,6 @@ const { Historico, Sequelize, Indicador, sequelize } = require('../models');
 const { Op } = Sequelize
 
 const getHistoricos = async (idIndicador, page, perPage, order, sortBy) => {
-
     const orderBy = getHistoricosSorting({ sortBy, order });
     try {
         const result = await Historico.findAndCountAll({
@@ -24,6 +23,7 @@ const getHistoricos = async (idIndicador, page, perPage, order, sortBy) => {
                 'ecuacion',
                 'descripcionEcuacion',
                 'createdAt',
+                'fechaIngreso'
             ]
         });
         return { historicos: result.rows, total: result.count };
@@ -34,13 +34,22 @@ const getHistoricos = async (idIndicador, page, perPage, order, sortBy) => {
 
 const getHistoricosSorting = ({ sortBy, order }) => {
     const arrangement = [];
-
     arrangement.push([sortBy || 'id', order || 'ASC']);
-
     return arrangement;
 }
 
+const deleteHistorico = async (idHistorico) => {
+    try {
+        const response = Historico.destroy({
+            where: { id: idHistorico }
+        });
+        return response;
+    } catch (err) {
+        throw new Error(`Error al eliminar el historico: ${err.message}`);
+    }
+}
 
 module.exports = {
-    getHistoricos
+    getHistoricos,
+    deleteHistorico
 }
