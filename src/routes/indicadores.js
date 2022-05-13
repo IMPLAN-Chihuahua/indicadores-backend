@@ -209,10 +209,13 @@ const { uploadImage } = require('../middlewares/fileUpload');
  *           description: Indicador or Modulo was not found
  *         422:
  *           description: Unable to process request due to semantic errors
+ *         429:
+ *           description: The app has exceeded its rate limit
  * 
  */
 router.route('/:idIndicador')
     .get(paramValidationRules(),
+        filterIndicadoresValidationRules(),
         validate,
         determinePathway('site'),
         getIndicador);

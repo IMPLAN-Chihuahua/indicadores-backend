@@ -1,17 +1,14 @@
-const { Modulo, Indicador, Sequelize } = require('../models');
 const moduloService = require('../services/moduloService');
-const { getPaginationModulos } = require("../utils/pagination");
 
 const getModulos = async (req, res) => {
     try {
         const modulos = await moduloService.getModulos();
-        return res.status(200).json({ data: modulos });
+        return res.status(200).json({ data: [...modulos] });
     } catch (err) {
         return res.sendStatus(500);
     }
 };
 
-/** Admin section */
 
 const createModulo = async (req, res) => {
     const {
@@ -46,6 +43,7 @@ const createModulo = async (req, res) => {
     }
 };
 
+
 const getAllModulos = async (req, res) => {
     const page = req.matchedData.page || 1;
     const perPage = req.matchedData.perPage || 15;
@@ -54,10 +52,10 @@ const getAllModulos = async (req, res) => {
         const totalPages = Math.ceil(total / perPage);
         return res.status(200).json({
             page,
-            perPage: perPage,
-            totalPages: totalPages,
+            perPage,
+            totalPages,
             total,
-            totalInactivos: totalInactivos,
+            totalInactivos,
             data: modulos
         });
     } catch (err) {
@@ -65,22 +63,22 @@ const getAllModulos = async (req, res) => {
     }
 };
 
+
 const editModulo = async (req, res) => {
     const fields = req.body;
-    console.log(fields);
     const { idModulo } = req.matchedData;
     try {
         const updatedModulo = await moduloService.updateModulo(idModulo, fields);
         if (updatedModulo) {
             return res.sendStatus(204);
-        } else {
-            return res.sendStatus(404);
         }
+        return res.sendStatus(400);
     } catch (err) {
         console.log(err);
         return res.sendStatus(500);
     }
 }
+
 
 const updateModuloStatus = async (req, res) => {
     const { idModulo } = req.matchedData;
@@ -88,9 +86,8 @@ const updateModuloStatus = async (req, res) => {
         const updatedEstado = await moduloService.updateModuloStatus(idModulo);
         if (updatedEstado) {
             return res.sendStatus(204);
-        } else {
-            return res.sendStatus(404);
         }
+        return res.sendStatus(400)
     } catch (err) {
         return res.sendStatus(500).json({ message: err.message });
     }
