@@ -1,27 +1,33 @@
 const { Modulo, Sequelize, Indicador } = require('../models');
+
 const { Op } = Sequelize;
 
 const getModulos = async () => {
-    const modulos = await Modulo.findAll({
-        where: {
-            activo: 'SI'
-        },
-        attributes: [
-            'id',
-            'temaIndicador',
-            'codigo',
-            'urlImagen',
-            'color',
-            [Sequelize.fn('COUNT', Sequelize.col('indicadores.id')), 'indicadoresCount']
-        ],
-        include: [{
-            model: Indicador,
-            attributes: []
-        }],
-        group: ['Modulo.id'],
-        order: [['id']],
-    });
-    return modulos;
+    try {
+        const modulos = await Modulo.findAll({
+            where: {
+                activo: 'SI'
+            },
+            attributes: [
+                'id',
+                'temaIndicador',
+                'codigo',
+                'urlImagen',
+                'color',
+                [Sequelize.fn('COUNT', Sequelize.col('indicadores.id')), 'indicadoresCount']
+            ],
+            include: [{
+                model: Indicador,
+                attributes: []
+            }],
+            group: ['Modulo.id'],
+            order: [['id']],
+            raw: true
+        });
+        return modulos;
+    } catch (err) {
+        throw new Error(`Error al obtener modulos ${err.message}`);
+    }
 };
 
 const addModulo = async (modulo) => {

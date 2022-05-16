@@ -7,7 +7,9 @@ const { paramValidationRules,
     updateIndicadorValidationRules,
     paginationValidationRules,
     filterIndicadoresValidationRules,
-    sortValidationRules
+    sortValidationRules,
+    indicadorAssignUsuarioValidationRules,
+    desdeHastaDateRangeValidationRules
 } = require('../middlewares/validator');
 const {
     getIndicador,
@@ -15,8 +17,9 @@ const {
     createIndicador,
     updateIndicador,
     updateIndicadorStatus,
+    setUsuariosToIndicador,
 } = require('../controllers/indicadorController');
-const { verifyJWT, verifyRoles } = require('../middlewares/auth');
+const { verifyJWT, verifyUserHasRoles, verifyUserIsActive } = require('../middlewares/auth');
 const { determinePathway } = require('../middlewares/determinePathway');
 const { uploadImage } = require('../middlewares/fileUpload');
 
@@ -206,10 +209,13 @@ const { uploadImage } = require('../middlewares/fileUpload');
  *           description: Indicador or Modulo was not found
  *         422:
  *           description: Unable to process request due to semantic errors
+ *         429:
+ *           description: The app has exceeded its rate limit
  * 
  */
 router.route('/:idIndicador')
     .get(paramValidationRules(),
+        filterIndicadoresValidationRules(),
         validate,
         determinePathway('site'),
         getIndicador);
@@ -273,10 +279,11 @@ router.route('/')
  */
 router.route('/')
     .post(
+        verifyJWT,
+        verifyUserIsActive,
+        verifyUserHasRoles(['ADMIN']),
         createIndicadorValidationRules(),
         validate,
-        verifyJWT,
-        verifyRoles(['ADMIN']),
         createIndicador
     );
 
@@ -313,20 +320,102 @@ router.route('/')
  */
 router.route('/:idIndicador')
     .patch(
+        verifyJWT,
+        verifyUserIsActive,
         paramValidationRules(),
         uploadImage('indicadores'),
         updateIndicadorValidationRules(),
         validate,
-        verifyJWT,
         updateIndicador
     );
 
+/**
+ * @swagger
+ *  /indicadores/{idIndicador}/toggle-status:
+ *  patch:
+ *    summary: Update status of indicador (if it was active, changes to inactive)
+ *    tags: [Indicadores]
+ *    security:
+ *      - bearer: []
+ *    parameters:
+ *      - in: path
+ *        name: idIndicador
+ *        required: true
+ *        schema:
+ *          type: integer
+ *    responses:
+ *      204:
+ *        description: Indicador status change successfully
+ *      401:
+ *        description: Unauthorized request (not valid JWT in Authorization header)
+ *      403:
+ *        description: The request has an invalid token, rol, privileges or account is inactive
+ *      429:
+ *        description: The app has exceeded its rate limit
+ */
 router.route('/:idIndicador/toggle-status')
     .patch(
+        verifyJWT,
+        verifyUserIsActive,
+        verifyUserHasRoles(['ADMIN']),
         paramValidationRules(),
         validate,
-        verifyJWT,
         updateIndicadorStatus
+    );
+
+
+/**
+ * @swagger
+ *   /indicadores/{idIndicador}/usuarios:
+ *   post:
+ *     summary: Assigns users to an indicador
+ *     tags: [Indicadores]
+ *     security:
+ *       - bearer: []
+ *     parameters:
+ *       - in: path
+ *         name: idIndicador
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               usuarios:
+ *                 type: array
+ *                 items:
+ *                   type: integer
+ *                 example: [1, 2, 3, 4, 5]
+ *               desde:
+ *                 type: string
+ *                 example: 2022-05-05
+ *               hasta:
+ *                 type: string
+ *                 example: 2022-05-06
+ *     responses:
+ *       201:
+ *         description: Operation was successful (users are assigned to an indicador)
+ *       401:
+ *         description: Unauthorized request (not valid JWT in Authorization header)
+ *       403:   
+ *         description: The request has an invalid token, rol, privileges or account is inactive
+ *       429:
+ *         description: The app has exceeded its rate limit
+ */
+router.route('/:idIndicador/usuarios')
+    .post(
+        verifyJWT,
+        verifyUserIsActive,
+        verifyUserHasRoles(['ADMIN']),
+        paramValidationRules(),
+        indicadorAssignUsuarioValidationRules(),
+        desdeHastaDateRangeValidationRules(),
+        validate,
+        setUsuariosToIndicador
     );
 
 module.exports = router;
