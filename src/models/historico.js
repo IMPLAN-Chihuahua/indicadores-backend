@@ -59,7 +59,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       modelName: 'Historico',
       timestamps: true,
-      updatedAt: 'date'
+      updatedAt: false
     }
   );
   return Historico;

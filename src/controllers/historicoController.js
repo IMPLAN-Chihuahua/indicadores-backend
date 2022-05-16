@@ -18,16 +18,33 @@ const getHistoricos = async (req, res) => {
 };
 
 const deleteHistorico = async (req, res) => {
-    const { idHistorico } = req.matchedData;
+    const { idHistorico, ...historico } = req.matchedData;
     try {
         await HistoricoService.deleteHistorico(idHistorico);
         return res.status(200).json({ message: 'Historico eliminado' });
     } catch (err) {
         return res.status(500).json(err.message);
     }
-}
+};
+
+const updateHistorico = async (req, res) => {
+    const { idHistorico, ...historico } = req.matchedData;
+
+    try {
+        const response = await HistoricoService.updateHistorico(idHistorico, historico);
+
+        if (response) {
+            return res.sendStatus(204);
+        }
+
+        return res.sendStatus(400);
+    } catch (err) {
+        return res.status(500).json(err.message);
+    };
+};
 
 module.exports = {
     getHistoricos,
     deleteHistorico,
+    updateHistorico,
 }

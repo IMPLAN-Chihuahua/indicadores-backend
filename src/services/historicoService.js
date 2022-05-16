@@ -49,7 +49,20 @@ const deleteHistorico = async (idHistorico) => {
     }
 }
 
+const updateHistorico = async (idHistorico, historico) => {
+    try {
+        const affectedRows = await Historico.update(
+            { ...historico }, {
+            where: { id: idHistorico }
+        });
+        return affectedRows > 0;
+    } catch (err) {
+        throw new Error(`Error al actualizar el historico: ${err.message}`);
+    };
+};
+
 module.exports = {
     getHistoricos,
-    deleteHistorico
+    deleteHistorico,
+    updateHistorico
 }

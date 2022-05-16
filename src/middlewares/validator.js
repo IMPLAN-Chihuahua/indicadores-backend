@@ -221,6 +221,26 @@ const updateModuloValidationRules = () => [
         .withMessage('El tema no puede estar vacio'),
 ]
 
+const updateHistoricoValidationRules = () => [
+    param(['idHistorico'])
+        .exists()
+        .withMessage('por favor agrega un id de historico')
+        .isInt()
+        .withMessage('campo debe ser entero')
+        .toInt(),
+
+    check('valor')
+        .optional(),
+
+    check('fuente')
+        .optional(),
+
+    check('fechaIngreso')
+        .optional()
+        .isDate()
+        .withMessage('Fecha de ingreso debe ser una fecha valida'),
+]
+
 const createIndicadorValidationRules = () => [
     body('nombre')
         .exists()
@@ -310,6 +330,7 @@ module.exports = {
     filterModulosValidationRules,
     sortModulosValidationRules,
     updateIndicadorValidationRules,
+    updateHistoricoValidationRules,
     tokenValidationRules
 };
 

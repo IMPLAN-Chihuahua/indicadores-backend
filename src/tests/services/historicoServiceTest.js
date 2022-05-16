@@ -67,5 +67,27 @@ describe('Historicos service', function () {
         });
     });
 
+    describe('Update operations', function () {
+        it('Should update an historico', function () {
+            const updateFake = sinon.fake.resolves(true);
+            sinon.replace(Historico, 'update', updateFake);
+            return HistoricoService.updateHistorico(1, { valor: 'lorem' })
+                .then(res => {
+                    expect(updateFake.calledOnce).to.be.true;
+                    expect(res).to.be.true;
+                });
+        });
+
+        it('Should not update an historico', function () {
+            const updateFake = sinon.fake.resolves(false);
+            sinon.replace(Historico, 'update', updateFake);
+            return HistoricoService.updateHistorico(1, { valor: 'lorem' })
+                .then(res => {
+                    expect(updateFake.calledOnce).to.be.true;
+                    expect(res).to.be.false;
+                });
+        });
+
+    });
 
 })

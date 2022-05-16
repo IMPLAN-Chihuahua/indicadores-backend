@@ -7,13 +7,16 @@ chai.use(chaiHttp);
 const { expect } = chai;
 const { app, server } = require('../../../app');
 
-const { Historico } = require('../../models');
+const { Historico, Usuario } = require('../../models');
 const { someHistoricos } = require('../../utils/factories');
 const { TOKEN_SECRET } = process.env;
 
-describe('v1/historicos', function () {
+describe.only('v1/historicos', function () {
     const historicos = someHistoricos(1);
-    const validToken = jwt.sign({ sub: 100 }, TOKEN_SECRET, { expiresIn: '5h' });
+    const validToken = jwt.sign({ sub: 1 }, TOKEN_SECRET, { expiresIn: '5h' });
+
+    const adminRol = { rolValue: 'ADMIN' };
+    const userRol = { roles: 'USER' };
 
     this.afterAll(function () {
         server.close();
@@ -39,4 +42,50 @@ describe('v1/historicos', function () {
         });
     });
 
+    describe('DELETE /historicos/:id', function () {
+        it('Should delete an historico', function () {
+            const destroyFake = sinon.fake.resolves(true);
+            sinon.replace(Historico, 'destroy', destroyFake);
+            chai.request(app)
+                .delete('/api/v1/historicos/1')
+                .set('Authorization', `Bearer ${validToken}`)
+                .then(res => {
+                    expect(destroyFake.calledOnce).to.be.true;
+                    expect(res.body).to.be.true;
+                });
+        });
+
+        it('Should not delete an historico due to invalid token', function () {
+            const destroyFake = sinon.fake.resolves(true);
+            sinon.replace(Historico, 'destroy', destroyFake);
+            chai.request(app)
+                .delete('/api/v1/historicos/1')
+                .then(res => {
+                    expect(destroyFake.calledOnce).to.be.false;
+                    expect(res.body).to.be.false;
+                });
+        });
+
+    });
+
+    describe('UPDATE /historicos/:id', function () {
+        it('Should update an existing historico', function (done) {
+            const updateFake = sinon.fake.resolves(1);
+            sinon.replace(Historico, 'update', updateFake);
+
+            chai.request(app)
+                .patch('/api/v1/historicos/1')
+                .set('Authorization', `Bearer ${validToken}`)
+                .send({
+                    valor: '1.5',
+                    fuente: 'Fuente',
+                })
+                .end(function (err, res) {
+                    console.log(res);
+                    expect(res).to.have.status(204);
+                    expect(updateFake.calledOnce).to.be.true;
+                    done();
+                });
+        });
+    });
 });
