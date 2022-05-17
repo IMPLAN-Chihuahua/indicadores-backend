@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 const {
   Indicador,
   Fuente,
@@ -8,9 +9,9 @@ const {
   Variable,
   sequelize,
   Sequelize,
-  CatalogoDetail,
-  CatalogoDetailIndicador
+  CatalogoDetail
 } = require("../models");
+const { toggleStatus, isUndefined } = require("../utils/objectUtils");
 
 const { Op } = Sequelize;
 
@@ -18,10 +19,10 @@ const getIndicadores = async (page, perPage, matchedData, pathway) => {
   const { where, order, attributes, includes } = definitions(pathway, matchedData);
   try {
     const result = await Indicador.findAndCountAll({
-      where: where,
-      order: order,
+      where,
+      order,
       include: includes,
-      attributes: attributes,
+      attributes,
       limit: perPage,
       offset: (page - 1) * perPage,
     });
@@ -40,14 +41,12 @@ const getIndicador = async (idIndicador, pathway) => {
       include: includes,
       attributes,
     });
-    if (typeof pathway !== 'file' || indicador === null) {
+    if (pathway !== 'file' || indicador === null) {
       return indicador;
     }
     return { ...indicador.dataValues };
   } catch (err) {
-
-    console.log(err);
-
+    throw new Error(`Error al obtener indicador ${idIndicador}\n${err.message}`)
   }
 };
 
@@ -61,7 +60,6 @@ const getIndicadoresFilters = (matchedData) => {
         { codigo: { [Op.iLike]: `%${searchQuery}%` } },
         { codigoObjeto: { [Op.iLike]: `%${searchQuery}%` } },
         { tendenciaActual: { [Op.iLike]: `%${searchQuery}%` } },
-        { tendenciaDeseada: { [Op.iLike]: `%${searchQuery}%` } },
         { observaciones: { [Op.iLike]: `%${searchQuery}%` } },
       ]
     };
@@ -83,7 +81,6 @@ const validateCatalog = ({ idOds, idCobertura, idUnidadMedida }) => {
   return catalogFilters;
 };
 
-// Validation for filters
 const getIndicadorFilters = (matchedData) => {
   const { anioUltimoValorDisponible, tendenciaActual } = matchedData;
   const filters = {};
@@ -96,7 +93,7 @@ const getIndicadorFilters = (matchedData) => {
   return filters;
 };
 
-// Sorting logic for list5
+// Sorting logic for list
 const getIndicadoresSorting = ({ sortBy, order }) => {
   const arrangement = [];
   arrangement.push([sortBy || "id", order || "ASC"]);
@@ -107,16 +104,11 @@ const getIndicadoresSorting = ({ sortBy, order }) => {
 const getIndicadorIncludes = ({ idFuente }) => {
   const indicadorFilter = [];
 
-  indicadorFilter.push(
-  );
-
   if (idFuente) {
     indicadorFilter.push({
       model: Fuente,
       where: {
-        id: {
-          [Op.eq]: idFuente,
-        },
+        idFuente,
       },
     });
   }
@@ -124,7 +116,7 @@ const getIndicadorIncludes = ({ idFuente }) => {
   return indicadorFilter;
 };
 
-const getCreateIndicadorIncludes = (indicador) => {
+const getIncludesToCreateIndicador = (indicador) => {
   const includes = [];
   if (indicador.formula) {
     includes.push({
@@ -148,7 +140,7 @@ const createIndicador = async (indicador) => {
   const t = await sequelize.transaction();
   try {
     const createdIndicador = await Indicador.create(indicador, {
-      ...getCreateIndicadorIncludes(indicador), transaction: t
+      ...getIncludesToCreateIndicador(indicador), transaction: t
     });
 
     await t.commit();
@@ -160,6 +152,22 @@ const createIndicador = async (indicador) => {
   }
 };
 
+
+const updateIndicadorStatus = async (id) => {
+  try {
+    const nuevoEstado = toggleStatus(await getIndicadorStatus(id));
+    const affectedRows = await Indicador.update({ activo: nuevoEstado }, { where: { id } });
+    return affectedRows > 0;
+  } catch (err) {
+    throw new Error(`Error al actualizar indicador: ${err.message}`);
+  }
+};
+
+const getIndicadorStatus = async (id) => {
+  const { activo } = await Indicador.findOne({ where: { id }, attributes: ["activo"], raw: true });
+  return activo;
+}
+
 const updateIndicador = async (id, indicador) => {
   try {
     const affectedRows = await Indicador.update({ ...indicador }, { where: { id } });
@@ -168,82 +176,36 @@ const updateIndicador = async (id, indicador) => {
     throw new Error(`Error al actualizar indicador: ${err.message}`);
   }
 };
-
-const updateIndicadorStatus = async (id) => {
-  try {
-    const indicador = await Indicador.findOne({ where: { id }, attributes: ["activo"] });
-
-    const nuevoEstado = indicador.dataValues.activo === 'SI' ? 'NO' : 'SI';
-
-    try {
-      const updateIndicador = await Indicador.update({ activo: nuevoEstado }, { where: { id } });
-      console.log(updateIndicador);
-      return updateIndicador > 0;
-    }
-    catch (err) {
-      console.log(err);
-      throw new Error(`Error al actualizar indicador: ${err.message}`);
-    }
-  } catch (err) {
-    console.log(err);
-    throw new Error(`Error al actualizar indicador: ${err.message}`);
-  }
-};
-
 const defineAttributes = (pathway, matchedData) => {
-  let attributes = [];
+  const attributes = ["id", "nombre", "ultimoValorDisponible",
+    "anioUltimoValorDisponible", "tendenciaActual"];
+
   switch (pathway) {
-    case 'file': {
+    case 'file':
       attributes.push(
-        "id",
-        "nombre",
         "definicion",
         "urlImagen",
-        [sequelize.literal('"modulo"."temaIndicador"'), "modulo"],
-        "ultimoValorDisponible",
-        "anioUltimoValorDisponible",
-        "tendenciaActual",
-        "tendenciaDeseada")
+        [sequelize.literal('"modulo"."temaIndicador"'), "modulo"])
       return attributes;
-    };
-    case 'site': {
+    case 'site':
       if (matchedData) {
         attributes.push(
-          "id",
-          "nombre",
-          "ultimoValorDisponible",
-          "anioUltimoValorDisponible",
-          "tendenciaActual",
-          "tendenciaDeseada",
           "createdAt",
           "updatedAt",
           "idModulo")
       } else {
         attributes.push(
-          "id",
-          "nombre",
           "definicion",
           "urlImagen",
-          [sequelize.literal('"modulo"."temaIndicador"'), "modulo"],
-          "ultimoValorDisponible",
-          "anioUltimoValorDisponible",
-          "tendenciaActual",
-          "tendenciaDeseada")
+          [sequelize.literal('"modulo"."temaIndicador"'), "modulo"])
       }
       return attributes;
-    };
-    case 'front': {
+    case 'front':
       attributes.push(
-        "id",
-        "nombre",
         "urlImagen",
         "definicion",
         "codigo",
         "codigoObjeto",
-        "ultimoValorDisponible",
-        "anioUltimoValorDisponible",
-        "tendenciaActual",
-        "tendenciaDeseada",
         "observaciones",
         "createdBy",
         "updatedBy",
@@ -252,7 +214,8 @@ const defineAttributes = (pathway, matchedData) => {
         "updatedAt",
         "activo")
       return attributes;
-    };
+    default:
+      throw new Error('Invalid pathway');
   }
 };
 
@@ -266,12 +229,12 @@ const defineIncludes = (pathway, matchedData) => {
     {
       model: Mapa,
       required: false,
-      attributes: ['id', 'ubicacion', 'url']
+      attributes: ['ubicacion', 'url']
     },
     {
       model: Formula,
       required: false,
-      attributes: ['id', 'ecuacion', 'descripcion'],
+      attributes: ['ecuacion', 'descripcion'],
       include: [
         {
           model: Variable,
@@ -283,17 +246,20 @@ const defineIncludes = (pathway, matchedData) => {
           ],
         }
       ]
-    }, {
+    },
+    {
       model: CatalogoDetail,
-      required: false,
+      required: true,
       attributes: ['id', 'nombre', 'idCatalogo'],
+      through: {
+        attributes: []
+      },
     }
   ];
   switch (pathway) {
-    case 'front': {
-      if (typeof matchedData != 'undefined') {
-        includes = [];
-        includes = getIndicadorIncludes(matchedData);
+    case 'front':
+      if (!isUndefined(matchedData)) {
+        includes.push(...getIndicadorIncludes(matchedData));
       } else {
         includes.push({
           model: Historico,
@@ -304,8 +270,7 @@ const defineIncludes = (pathway, matchedData) => {
         });
       };
       return includes;
-    };
-    case 'file': {
+    case 'file':
       includes.push({
         model: Historico,
         required: false,
@@ -313,11 +278,9 @@ const defineIncludes = (pathway, matchedData) => {
         order: [["anio", "DESC"]],
       });
       return includes;
-    };
-    case 'site': {
-      if (typeof matchedData != 'undefined') {
-        includes = [];
-        includes = getIndicadorIncludes(matchedData);
+    case 'site':
+      if (!isUndefined(matchedData)) {
+        includes.push(...getIndicadorIncludes(matchedData));
       } else {
         includes.push({
           model: Historico,
@@ -328,21 +291,22 @@ const defineIncludes = (pathway, matchedData) => {
         });
       }
       return includes;
-    };
+    default:
+      throw new Error('Invalid pathway')
   };
 };
 
 const defineOrder = (pathway, matchedData) => {
-  let order = [];
+  const order = [];
   switch (pathway) {
-    case 'site': {
+    case 'site':
       order.push(getIndicadoresSorting(matchedData))
-    };
-      return order;
-    case 'front': {
+      break;
+    case 'front':
       order.push(getIndicadoresSorting(matchedData))
-    };
-      return order;
+      break;
+    default:
+      throw new Error('Invalid pathway')
   };
   return order;
 };
@@ -350,20 +314,19 @@ const defineOrder = (pathway, matchedData) => {
 const defineWhere = (pathway, matchedData) => {
   let where = {};
   switch (pathway) {
-    case 'site': {
+    case 'site':
       where = {
         idModulo: matchedData.idModulo,
-        ...validateCatalog(matchedData),
         ...getIndicadorFilters(matchedData),
       };
-      return where;
-    }
-    case 'front': {
+      break;
+    case 'front':
       where = {
         ...getIndicadoresFilters(matchedData)
       }
-      return where;
-    };
+      break;
+    default:
+      throw new Error('Invalid pathway')
   }
   return where;
 };
@@ -374,14 +337,12 @@ const definitions = (pathway, matchedData) => {
   const order = defineOrder(pathway, matchedData);
   const where = defineWhere(pathway, matchedData);
 
-  const definitions = {
+  return {
     attributes,
     includes,
     order,
     where,
   };
-
-  return definitions;
 };
 
 module.exports = {
@@ -389,5 +350,5 @@ module.exports = {
   getIndicador,
   createIndicador,
   updateIndicador,
-  updateIndicadorStatus
+  updateIndicadorStatus,
 };

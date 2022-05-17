@@ -6,15 +6,18 @@ const { getUsers,
     createUser,
     getUserFromId,
     editUser,
-    editUserStatus } = require('../controllers/usuarioController');
-const { verifyJWT, verifyRoles, verifyUserIsActive } = require('../middlewares/auth');
+    editUserStatus, 
+    setIndicadoresToUsuario} = require('../controllers/usuarioController');
+const { verifyJWT, verifyUserHasRoles, verifyUserIsActive } = require('../middlewares/auth');
 const { uploadImage } = require('../middlewares/fileUpload');
 const {
     registerValidationRules,
     paginationValidationRules,
     validate,
     paramValidationRules,
-    updateValidationRules } = require('../middlewares/validator');
+    updateValidationRules, 
+    usuarioAssignIndicadorValidationRules,
+    desdeHastaDateRangeValidationRules} = require('../middlewares/validator');
 
 
 /**
@@ -143,7 +146,7 @@ router.get(
     '/',
     verifyJWT,
     verifyUserIsActive,
-    verifyRoles(['ADMIN']),
+    verifyUserHasRoles(['ADMIN']),
     paginationValidationRules(),
     query('searchQuery'),
     validate,
@@ -175,7 +178,7 @@ router.post(
     '/',
     verifyJWT,
     verifyUserIsActive,
-    verifyRoles(['ADMIN']),
+    verifyUserHasRoles(['ADMIN']),
     uploadImage('usuarios'),
     registerValidationRules(),
     validate,
@@ -214,7 +217,7 @@ router.get(
     '/:idUser',
     verifyJWT,
     verifyUserIsActive,
-    verifyRoles(['ADMIN']),
+    verifyUserHasRoles(['ADMIN']),
     paramValidationRules(),
     validate,
     getUserFromId
@@ -254,7 +257,7 @@ router.patch(
     '/:idUser',
     verifyJWT,
     verifyUserIsActive,
-    verifyRoles(['ADMIN']),
+    verifyUserHasRoles(['ADMIN']),
     paramValidationRules(),
     updateValidationRules(),
     validate,
@@ -289,11 +292,65 @@ router.patch(
     '/:idUser/toggle-status',
     verifyJWT,
     verifyUserIsActive,
-    verifyRoles(['ADMIN']),
+    verifyUserHasRoles(['ADMIN']),
     paramValidationRules(),
     validate,
     editUserStatus
-)
+);
+
+
+/**
+ * @swagger
+ *   /usuarios/{idUser}/indicadores:
+ *     post:
+ *       summary: Assign indicadores to a user
+ *       tags: [Usuarios]
+ *       security:
+ *         - bearer: []
+ *       parameters:
+ *         - in: path
+ *           name: idIndicador
+ *           required: true
+ *           schema: 
+ *             type: integer
+ *       requestBody:
+ *         required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:    
+ *                 indicadores:
+ *                   type: array
+ *                   items:
+ *                     type: integer
+ *                   example: [1, 2, 3, 4, 5]
+ *                 desde:
+ *                   type: string   
+ *                   example: 2022-05-09
+ *                 hasta:
+ *                   type: string
+ *                   example: 2022-05-10
+ *       responses:
+ *         201:
+ *           description: Operations was successful (indicadores are assigned to an usuario)
+ *         401:
+ *           description: Unauthorized request (not valid JWT in Authorization header)
+ *         403:   
+ *           description: The request has an invalid token, rol, privileges or account is inactive
+ *         429:
+ *           description: The app has exceeded its rate limit
+ */
+router.post('/:idUser/indicadores',
+    verifyJWT,
+    verifyUserIsActive,
+    verifyUserHasRoles(['ADMIN']),
+    usuarioAssignIndicadorValidationRules(),
+    desdeHastaDateRangeValidationRules(),
+    paramValidationRules(),
+    validate,
+    setIndicadoresToUsuario,
+);
 
 
 module.exports = router;

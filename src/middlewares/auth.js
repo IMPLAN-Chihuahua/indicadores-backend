@@ -25,14 +25,14 @@ const verifyJWT = (req, res, next) => {
     }
 };
 
-const verifyRoles = (roles) => async (req, res, next) => {
+const verifyUserHasRoles = (roles) => async (req, res, next) => {
     const rol = await getRol(req.sub);
     const isAllowed = roles.includes(rol);
     if (isAllowed) {
         req.rol = rol;
         next();
     } else {
-        return res.status(403).json({ message: 'Su rol no tiene permiso a este recurso' });
+        return res.status(403).send('No tiene permiso a realizar acciones en este recurso');
     }
 };
 
@@ -46,11 +46,11 @@ const verifyUserIsActive = async (req, res, next) => {
 
 const hashClave = (clave) => bcrypt.hash(clave, SALT_ROUNDS);
 
-const generateToken = (payload) => jwt.sign(payload, TOKEN_SECRET, { expiresIn: TOKEN_EXPIRATION_TIME });
+const generateToken = (payload) => jwt.sign({ ...payload }, TOKEN_SECRET, { expiresIn: TOKEN_EXPIRATION_TIME });
 
 module.exports = {
     verifyJWT,
-    verifyRoles,
+    verifyUserHasRoles,
     hashClave,
     generateToken,
     verifyUserIsActive

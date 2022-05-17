@@ -31,7 +31,7 @@ const app = express();
 
 // Enable when behind a reverse proxy (Heroku, Bluemix, AWS ELB or API Gateway, Nginx, etc)
 // See https://expressjs.com/en/guide/behind-proxies.html
-// app.set('trust proxy', 1);
+app.set('trust proxy', 1);
 
 // API rate limiter (prevent DoS attacks)
 app.use(require('./src/middlewares/limiter'));

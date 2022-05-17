@@ -5,21 +5,19 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http')
 const sinon = require('sinon');
-const jwt = require('jsonwebtoken')
 require('dotenv').config();
 
 chai.use(chaiHttp);
 const { expect } = chai;
 const { app, server } = require('../../../app');
-const { Modulo } = require('../../models');
-const { aModulo } = require('../../utils/factories');
-const { TOKEN_SECRET } = process.env;
-
+const { Modulo, Usuario } = require('../../models');
+const { aModulo, aUser } = require('../../utils/factories');
 const fileUpload = require('../../middlewares/fileUpload');
+const { generateToken } = require('../../middlewares/auth');
 
 
 describe('/modulos', function () {
-    const token = jwt.sign({ sub: 1 }, TOKEN_SECRET, { expiresIn: '5h' });
+    const token = generateToken({ sub: 1 });
 
     describe('GET', function () {
         const modulosFake = [aModulo(1), aModulo(2), aModulo(3)];
@@ -35,21 +33,25 @@ describe('/modulos', function () {
         it('Should return a list of Modulos', function (done) {
             const findAllFake = sinon.fake.resolves(modulosFake);
             const countFake = sinon.fake.resolves(modulosFake.length);
+
             sinon.replace(Modulo, 'count', countFake);
             sinon.replace(Modulo, 'findAll', findAllFake);
             chai.request(app)
                 .get('/api/v1/modulos')
                 .end(function (err, res) {
-                    expect(findAllFake.calledOnce).to.be.true;
                     expect(res).to.have.status(200);
+                    expect(findAllFake.calledOnce).to.be.true;
                     expect(res.body.data).to.have.lengthOf(modulosFake.length);
                     done();
                 })
         });
 
-        it('Should return a list of Modulos with pagination and requiring authorization', function (done) {
+        it('Should return a list of Modulos with pagination', function (done) {
             const findAndCountAllFake = sinon.fake.resolves({ rows: modulosFake, count: modulosFake.length });
             const countFake = sinon.fake.resolves(modulosFake.length);
+            const findOneFake = sinon.fake.resolves(aUser(1));
+
+            sinon.replace(Usuario, 'findOne', findOneFake);
             sinon.replace(Modulo, 'count', countFake);
             sinon.replace(Modulo, 'findAndCountAll', findAndCountAllFake);
             chai.request(app)
@@ -57,20 +59,27 @@ describe('/modulos', function () {
                 .set('Authorization', `Bearer ${token}`)
                 .end(function (err, res) {
                     expect(findAndCountAllFake.calledOnce).to.be.true;
+                    expect(countFake.calledOnce).to.be.true;
+                    expect(findOneFake.calledOnce).to.be.true;
                     expect(res).to.have.status(200);
                     done();
                 })
         })
 
         it('Should return an error if getAllModulos fails to retrieve data', function (done) {
-            const findAndCountAllFake = sinon.fake.throws('error');
+            const findAndCountAllFake = sinon.fake.throws('Fail to fetch modulos');
+            const findOneFake = sinon.fake.resolves(aUser(1));
+
+            sinon.replace(Usuario, 'findOne', findOneFake);
             sinon.replace(Modulo, 'findAndCountAll', findAndCountAllFake);
             chai.request(app)
                 .get('/api/v1/me/modulos')
                 .set('Authorization', `Bearer ${token}`)
                 .end(function (err, res) {
                     expect(findAndCountAllFake.calledOnce).to.be.true;
+                    expect(findOneFake.calledOnce).to.be.true;
                     expect(res).to.have.status(500);
+                    expect(res.error.text).to.be.equals('Error al obtener todos los modulos Fail to fetch modulos')
                     done();
                 });
         });

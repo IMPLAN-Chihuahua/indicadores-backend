@@ -2,7 +2,7 @@ const stream = require('stream');
 const IndicadorService = require("../services/indicadorService")
 const { generateCSV, generateXLSX, generatePDF } = require("../services/generadorArchivosService");
 const UsuarioService = require('../services/usuariosService');
-const { areConnected } = require("../services/usuarioIndicadorService");
+const { areConnected, createRelation } = require("../services/usuarioIndicadorService");
 const { getPagination } = require('../utils/pagination');
 
 const getIndicador = async (req, res) => {
@@ -11,7 +11,7 @@ const getIndicador = async (req, res) => {
     const { idIndicador, format } = req.matchedData;
     const indicador = await IndicadorService.getIndicador(idIndicador, pathway);
     if (indicador === null) {
-      return res.sendStatus(404);
+      return res.status(404).send(`Indicador con id ${idIndicador} no encontrado`);
     }
 
     if (typeof format !== 'undefined') {
@@ -63,9 +63,7 @@ const getIndicadores = async (req, res) => {
   try {
     const { indicadores, total } = await IndicadorService.getIndicadores(page, perPage, req.matchedData, pathway);
     const totalPages = Math.ceil(total / perPage);
-    if (indicadores.length > 0) {
-      return res.status(200).json({ page: page, perPage: perPage, total: total, totalPages: totalPages, data: indicadores });
-    }
+    return res.status(200).json({ page, perPage, total, totalPages, data: indicadores });
   } catch (err) {
     return res.status(500).json(err.message);
   }
@@ -107,7 +105,7 @@ const updateIndicador = async (req, res) => {
 
     let fields = {};
     if (urlImagen) {
-      fields = { ...indicador, urlImagen: urlImagen };
+      fields = { ...indicador, urlImagen };
       console.log('tiene imagen');
     }
     else {
@@ -144,13 +142,34 @@ const updateIndicadorStatus = async (req, res) => {
     if (updatedIndicador) {
       return res.sendStatus(204);
     }
-    else {
-      return res.sendStatus(400);
-    }
+    return res.sendStatus(400);
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
 };
+
+const setUsuariosToIndicador = async (req, res) => {
+  const { idIndicador, usuarios, desde, hasta } = req.matchedData;
+  const updatedBy = req.sub;
+  const createdBy = req.sub;
+
+  try {
+    await createRelation(
+      [...usuarios],
+      [idIndicador],
+      {
+        fechaDesde: desde,
+        fechaHasta: hasta,
+        updatedBy,
+        createdBy
+      }
+    )
+    return res.sendStatus(201);
+  } catch (err) {
+    console.log(err, err.message)
+    return res.status(500).send(err.message);
+  }
+}
 
 module.exports = {
   getIndicadores,
@@ -159,4 +178,5 @@ module.exports = {
   createIndicador,
   updateIndicador,
   updateIndicadorStatus,
+  setUsuariosToIndicador
 };
