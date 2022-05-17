@@ -1,4 +1,7 @@
 const faker = require('faker');
+const {
+	Modulo
+} = require('../models')
 
 const aDummyWithName = (id) => ({
 	id,
@@ -115,15 +118,19 @@ const aUser = (id) => ({
 	requestedPasswordChange: id % 2 === 0 ? 'SI' : 'NO',
 });
 
-const aModulo = (id) => ({
-	id,
-	temaIndicador: 'New value',
-	codigo: '666',
-	observaciones: faker.lorem.words(20),
-	activo: faker.datatype.boolean() ? 'SI' : 'NO',
-	urlImagen: faker.image.imageUrl(),
-	color: faker.commerce.color()
-});
+const aModulo = (id) => {
+	const modulo = Modulo.build({
+		id,
+		codigo: aCodigo(),
+		temaIndicador: faker.commerce.department(),
+		observaciones: faker.lorem.words(20),
+		activo: faker.datatype.boolean() ? 'SI' : 'NO',
+		urlImagen: faker.image.imageUrl(),
+		color: faker.commerce.color()
+	});
+	modulo.validate();
+	return modulo;
+}
 
 const aRol = (id) => ({
 	id,
