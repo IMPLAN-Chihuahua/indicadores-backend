@@ -38,8 +38,12 @@ app.use(require('./src/middlewares/limiter'));
 
 // Enable CORS for all requests
 // Prevent common vulnerabilities
-app.use(helmet());
+const cspDefaults = helmet.contentSecurityPolicy.getDefaultDirectives();
+delete cspDefaults['upgrade-insecure-requests'];
 
+app.use(helmet({
+  contentSecurityPolicy: { directives: cspDefaults }
+}));
 // Log HTTP requests 
 app.use(morgan('dev'));
 
