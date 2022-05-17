@@ -11,14 +11,13 @@ const {
     deleteHistorico,
     updateHistorico,
 } = require('../controllers/historicoController');
-const { verifyJWT, verifyRoles, verifyUserIsActive } = require('../middlewares/auth');
+const { verifyJWT, verifyUserHasRoles, verifyUserIsActive } = require('../middlewares/auth');
 
 
 router.route('/:idIndicador')
     .get(
         verifyJWT,
         verifyUserIsActive,
-        verifyRoles(['ADMIN', 'USER']),
         paginationValidationRules(),
         sortValidationRules(),
         paramValidationRules(),
@@ -30,7 +29,6 @@ router.route('/:idHistorico')
     .delete(
         verifyJWT,
         verifyUserIsActive,
-        verifyRoles(['ADMIN', 'USER']),
         paramValidationRules(),
         validate,
         deleteHistorico
@@ -40,7 +38,6 @@ router.route('/:idHistorico')
     .patch(
         verifyJWT,
         verifyUserIsActive,
-        verifyRoles(['ADMIN', 'USER']),
         paramValidationRules(),
         updateHistoricoValidationRules(),
         validate,

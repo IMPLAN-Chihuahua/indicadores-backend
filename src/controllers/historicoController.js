@@ -7,6 +7,7 @@ const getHistoricos = async (req, res) => {
     const { page, perPage } = getPaginationHistoricos(req.matchedData);
     try {
         const { ultimoValorDisponible, updatedAt, periodicidad } = await IndicadorService.getIndicador(idIndicador, 'front');
+
         const { historicos, total } = await HistoricoService.getHistoricos(idIndicador, page, perPage, order, sortBy);
         if (historicos.length > 0) {
             const totalPages = Math.ceil(total / perPage);

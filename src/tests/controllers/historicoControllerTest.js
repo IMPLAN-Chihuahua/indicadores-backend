@@ -7,19 +7,28 @@ chai.use(chaiHttp);
 const { expect } = chai;
 const { app, server } = require('../../../app');
 
-const { Historico, Usuario } = require('../../models');
-const { someHistoricos } = require('../../utils/factories');
+const { Historico, Usuario, Indicador } = require('../../models');
+const { someHistoricos, anIndicador } = require('../../utils/factories');
 const { TOKEN_SECRET } = process.env;
 
 describe.only('v1/historicos', function () {
     const historicos = someHistoricos(1);
+    const indicador = anIndicador(11111111111111111);
+
     const validToken = jwt.sign({ sub: 1 }, TOKEN_SECRET, { expiresIn: '5h' });
 
     const adminRol = { rolValue: 'ADMIN' };
     const userRol = { roles: 'USER' };
+    const statusActive = { activo: 'SI' };
 
     this.afterAll(function () {
         server.close();
+    });
+
+    this.beforeEach(function () {
+        findOneFake = sinon.stub(Usuario, 'findOne');
+        findOneFake.onFirstCall().resolves(statusActive);
+        findOneFake.onSecondCall().resolves(adminRol);
     });
 
     this.afterEach(function () {
@@ -30,15 +39,16 @@ describe.only('v1/historicos', function () {
         it('Should return a list of historicos with an INNER JOIN from indicadores', function () {
             const findAndCountALlFake = sinon.fake.resolves({ rows: historicos, count: historicos.length });
             sinon.replace(Historico, 'findAndCountAll', findAndCountALlFake);
+
             chai.request(app)
                 .get('/api/v1/historicos/1')
                 .set('Authorization', `Bearer ${validToken}`)
                 .then(res => {
+                    expect(findOneFake.calledOnce).to.be.true;
                     expect(findAndCountALlFake.calledOnce).to.be.true;
                     expect(res.body.historicos).to.be.an('array').that.is.not.empty;
                     expect(res.body.total).to.equal(historicos.length);
                 });
-
         });
     });
 
@@ -68,24 +78,24 @@ describe.only('v1/historicos', function () {
 
     });
 
-    describe('UPDATE /historicos/:id', function () {
-        it('Should update an existing historico', function (done) {
-            const updateFake = sinon.fake.resolves(1);
-            sinon.replace(Historico, 'update', updateFake);
+    // describe('UPDATE /historicos/:id', function () {
+    //     it('Should update an existing historico', function (done) {
+    //         const updateFake = sinon.fake.resolves(1);
+    //         sinon.replace(Historico, 'update', updateFake);
 
-            chai.request(app)
-                .patch('/api/v1/historicos/1')
-                .set('Authorization', `Bearer ${validToken}`)
-                .send({
-                    valor: '1.5',
-                    fuente: 'Fuente',
-                })
-                .end(function (err, res) {
-                    console.log(res);
-                    expect(res).to.have.status(204);
-                    expect(updateFake.calledOnce).to.be.true;
-                    done();
-                });
-        });
-    });
+    //         chai.request(app)
+    //             .patch('/api/v1/historicos/1')
+    //             .set('Authorization', `Bearer ${validToken}`)
+    //             .send({
+    //                 valor: '1.5',
+    //                 fuente: 'Fuente',
+    //             })
+    //             .end(function (err, res) {
+    //                 console.log(res);
+    //                 expect(res).to.have.status(204);
+    //                 expect(updateFake.calledOnce).to.be.true;
+    //                 done();
+    //             });
+    //     });
+    // });
 });
