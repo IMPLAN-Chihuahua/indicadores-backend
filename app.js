@@ -17,7 +17,7 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:8080/api/v1"
+        url: "http://http://ec2-13-57-204-239.us-west-1.compute.amazonaws.com:8080/api/v1"
       }
     ],
 
@@ -37,8 +37,6 @@ app.set('trust proxy', 1);
 app.use(require('./src/middlewares/limiter'));
 
 // Enable CORS for all requests
-app.use(cors());
-
 // Prevent common vulnerabilities
 app.use(helmet());
 
