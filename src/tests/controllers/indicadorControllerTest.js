@@ -61,10 +61,13 @@ describe('v1/indicadores', function () {
             chai.request(app)
                 .get('/api/v1/modulos/1/indicadores')
                 .end(function (err, res) {
+                    expect(err).to.be.null;
                     expect(findOneFake.calledOnce).to.be.true;
                     expect(findAndCountAllFake.calledOnce).to.be.true;
                     expect(res).to.have.status(200);
                     expect(res.body.data).to.be.an('array').that.is.not.empty;
+                    expect(res.body.data[0].ods).to.not.be.null;
+                    expect(res.body.data[0].ods).to.not.be.undefined;
                     done();
                 });
         });
