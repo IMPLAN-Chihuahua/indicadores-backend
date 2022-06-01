@@ -11,7 +11,7 @@ const {
   Sequelize,
   CatalogoDetail
 } = require("../models");
-const { toggleStatus, isUndefined } = require("../utils/objectUtils");
+const { toggleStatus, isUndefined, isObjEmpty } = require("../utils/objectUtils");
 
 const { Op } = Sequelize;
 
@@ -66,19 +66,6 @@ const getIndicadoresFilters = (matchedData) => {
     return filter;
   }
   return {};
-};
-
-// Validation for catalogs
-const validateCatalog = ({ idOds, idCobertura, idUnidadMedida }) => {
-  const catalogFilters = {};
-  if (idOds) {
-    catalogFilters.idOds = idOds;
-  } else if (idCobertura) {
-    catalogFilters.idCobertura = idCobertura;
-  } else if (idUnidadMedida) {
-    catalogFilters.idUnidadMedida = idUnidadMedida;
-  }
-  return catalogFilters;
 };
 
 const getIndicadorFilters = (matchedData) => {
@@ -220,7 +207,7 @@ const defineAttributes = (pathway, matchedData) => {
 };
 
 const defineIncludes = (pathway, matchedData) => {
-  let includes = [
+  const includes = [
     {
       model: Modulo,
       required: true,
@@ -246,16 +233,22 @@ const defineIncludes = (pathway, matchedData) => {
           ],
         }
       ]
-    },
-    {
+    }, {
       model: CatalogoDetail,
-      required: true,
+      required: false,
+      as: 'catalogos',
       attributes: ['id', 'nombre', 'idCatalogo'],
       through: {
-        attributes: []
+        attributes: [],
       },
-    }
+    },
   ];
+
+  const catalogosFilters = getCatalogoFilters(matchedData);
+  if (!isObjEmpty(catalogosFilters)) {
+    includes.push(getCatalogoFilters(matchedData))
+  }
+
   switch (pathway) {
     case 'front':
       if (!isUndefined(matchedData)) {
@@ -296,19 +289,46 @@ const defineIncludes = (pathway, matchedData) => {
   };
 };
 
+const getCatalogoFilters = ({ idOds, idCobertura, idUnidadMedida }) => {
+  const inIds = [];
+  if (idOds) {
+    inIds.push(idOds);
+  }
+  if (idCobertura) {
+    inIds.push(idCobertura);
+  }
+  if (idUnidadMedida) {
+    inIds.push(idUnidadMedida);
+  }
+
+  if (inIds.length === 0) {
+    return {};
+  }
+
+  return {
+    model: CatalogoDetail,
+    required: true,
+    as: 'catalogosFilters',
+    attributes: ['id', 'nombre', 'idCatalogo'],
+    through: {
+      attributes: [],
+      where: { idCatalogoDetail: [...inIds] },
+    }
+  };
+}
+
 const defineOrder = (pathway, matchedData) => {
   const order = [];
   switch (pathway) {
     case 'site':
       order.push(getIndicadoresSorting(matchedData))
-      break;
+      return order;
     case 'front':
       order.push(getIndicadoresSorting(matchedData))
-      break;
+      return order;
     default:
       throw new Error('Invalid pathway')
   };
-  return order;
 };
 
 const defineWhere = (pathway, matchedData) => {

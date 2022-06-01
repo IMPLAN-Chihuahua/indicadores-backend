@@ -1,4 +1,5 @@
 const moduloService = require('../services/moduloService');
+const { Modulo } = require('../models');
 
 const getModulos = async (req, res) => {
     try {
@@ -94,4 +95,21 @@ const updateModuloStatus = async (req, res) => {
 };
 
 
-module.exports = { getModulos, createModulo, editModulo, getAllModulos, updateModuloStatus }
+const getModulo = async (req, res) => {
+    const { idModulo } = req.matchedData;
+    try {
+        const modulo = await Modulo.findByPk(idModulo);
+        if (modulo === null) {
+            return res.sendStatus(404);
+        }
+        if (modulo.activo === 'NO') {
+            return res.sendStatus(204)
+        }
+        return res.status(200).json({ data: { ...modulo.dataValues } });
+    } catch (err) {
+        return res.status(500).send(err.message)
+    }
+}
+
+
+module.exports = { getModulos, createModulo, editModulo, getAllModulos, updateModuloStatus, getModulo }

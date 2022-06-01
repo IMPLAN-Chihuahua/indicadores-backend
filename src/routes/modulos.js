@@ -1,10 +1,12 @@
 const express = require('express');
+
 const moduloRouter = express.Router();
 const indicadorRouter = express.Router({ mergeParams: true });
-const { getModulos, createModulo, editModulo, updateModuloStatus } = require('../controllers/moduloController');
+const { getModulos, createModulo, editModulo, updateModuloStatus, getModulo } = require('../controllers/moduloController');
 const { getIndicadores } = require('../controllers/indicadorController');
 const { paramValidationRules, paginationValidationRules,
-    validate, filterIndicadoresValidationRules, sortValidationRules, createModuloValidationRules, updateModuloValidationRules } = require('../middlewares/validator');
+    validate, filterIndicadoresValidationRules, sortValidationRules,
+    createModuloValidationRules, updateModuloValidationRules } = require('../middlewares/validator');
 const { moduloExists } = require('../middlewares/verifyIdModulo');
 const { verifyJWT } = require('../middlewares/auth');
 const { uploadImage } = require('../middlewares/fileUpload');
@@ -177,7 +179,6 @@ indicadorRouter.route('/')
         getIndicadores
     );
 
-/** Administrative section */
 
 /**
  * @swagger
@@ -225,6 +226,8 @@ moduloRouter.route('/')
         validate,
         createModulo
     );
+
+
 /** 
  * @swagger
  *   /modulos/{idModulo}:
@@ -265,6 +268,7 @@ moduloRouter.route('/:idModulo')
         editModulo
     );
 
+
 /**
  * @swagger
  *   /modulos/{idModulo}:
@@ -297,6 +301,13 @@ moduloRouter.route('/:idModulo')
         updateModuloValidationRules(),
         validate,
         updateModuloStatus
+    );
+
+moduloRouter.route('/:idModulo')
+    .get(
+        paramValidationRules(),
+        validate,
+        getModulo
     );
 
 module.exports = moduloRouter;
