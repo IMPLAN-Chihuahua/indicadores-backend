@@ -228,6 +228,15 @@ router.route('/:idIndicador')
  *       tags: [Indicadores]
  *       security:
  *         - bearer: []
+ *       parameters:
+ *         - in: query
+ *           name: page
+ *           schema:
+ *             type: integer
+ *         - in: query
+ *           name: perPage
+ *           schema:
+ *             type: integer
  *       responses:
  *         200:
  *           description: A very friendly list of indicadores

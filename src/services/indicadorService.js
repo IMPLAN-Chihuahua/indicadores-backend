@@ -19,17 +19,116 @@ const getIndicadores = async (page, perPage, matchedData, pathway) => {
   const { where, order, attributes, includes } = definitions(pathway, matchedData);
   try {
     const result = await Indicador.findAndCountAll({
-      where,
-      order,
-      include: includes,
-      attributes,
       limit: perPage,
       offset: (page - 1) * perPage,
+      where: { ...where },
+      order: [...order],
+      include: [...includes],
+      attributes: [...attributes],
+      distinct: true
     });
     return { indicadores: result.rows, total: result.count };
   } catch (err) {
     throw new Error(`Error al obtener los indicadores: ${err.message}`);
   }
+};
+
+const definitions = (pathway, matchedData) => {
+  const attributes = defineAttributes(pathway, matchedData);
+  const includes = defineIncludes(pathway, matchedData);
+  const order = defineOrder(pathway, matchedData);
+  const where = defineWhere(pathway, matchedData);
+
+  return {
+    attributes,
+    includes,
+    order,
+    where,
+  };
+};
+
+const defineAttributes = (pathway, matchedData) => {
+  const attributes = ["id", "nombre", "ultimoValorDisponible",
+    "anioUltimoValorDisponible", "tendenciaActual"];
+
+  switch (pathway) {
+    case 'file':
+      attributes.push(
+        "definicion",
+        "urlImagen",
+        [sequelize.literal('"modulo"."temaIndicador"'), "modulo"])
+      return attributes;
+    case 'site':
+      if (matchedData) {
+        attributes.push(
+          "createdAt",
+          "updatedAt",
+          "idModulo")
+      } else {
+        attributes.push(
+          "definicion",
+          "urlImagen",
+          [sequelize.literal('"modulo"."temaIndicador"'), "modulo"])
+      }
+      return attributes;
+    case 'front':
+      attributes.push(
+        "urlImagen",
+        "definicion",
+        "codigo",
+        "codigoObjeto",
+        "observaciones",
+        "createdBy",
+        "updatedBy",
+        "idModulo",
+        "createdAt",
+        "updatedAt",
+        "activo")
+      return attributes;
+    default:
+      throw new Error('Invalid pathway');
+  }
+};
+
+const defineOrder = (pathway, matchedData) => {
+  const order = [];
+  switch (pathway) {
+    case 'site':
+      order.push(getIndicadoresSorting(matchedData))
+      return order;
+    case 'front':
+      order.push(getIndicadoresSorting(matchedData))
+      return order;
+    default:
+      throw new Error('Invalid pathway')
+  };
+};
+
+// Sorting logic for list
+const getIndicadoresSorting = ({ sortBy, order }) => {
+  const arrangement = [];
+  arrangement.push([sortBy || "id", order || "ASC"]);
+  return arrangement;
+};
+
+const defineWhere = (pathway, matchedData) => {
+  let where = {};
+  switch (pathway) {
+    case 'site':
+      where = {
+        idModulo: matchedData.idModulo,
+        ...getIndicadorFilters(matchedData),
+      };
+      break;
+    case 'front':
+      where = {
+        ...getIndicadoresFilters(matchedData)
+      }
+      break;
+    default:
+      throw new Error('Invalid pathway')
+  }
+  return where;
 };
 
 const getIndicador = async (idIndicador, pathway) => {
@@ -78,13 +177,6 @@ const getIndicadorFilters = (matchedData) => {
     filters.tendenciaActual = tendenciaActual;
   }
   return filters;
-};
-
-// Sorting logic for list
-const getIndicadoresSorting = ({ sortBy, order }) => {
-  const arrangement = [];
-  arrangement.push([sortBy || "id", order || "ASC"]);
-  return arrangement;
 };
 
 // Includes for inner join to filter list 
@@ -163,48 +255,6 @@ const updateIndicador = async (id, indicador) => {
     throw new Error(`Error al actualizar indicador: ${err.message}`);
   }
 };
-const defineAttributes = (pathway, matchedData) => {
-  const attributes = ["id", "nombre", "ultimoValorDisponible",
-    "anioUltimoValorDisponible", "tendenciaActual"];
-
-  switch (pathway) {
-    case 'file':
-      attributes.push(
-        "definicion",
-        "urlImagen",
-        [sequelize.literal('"modulo"."temaIndicador"'), "modulo"])
-      return attributes;
-    case 'site':
-      if (matchedData) {
-        attributes.push(
-          "createdAt",
-          "updatedAt",
-          "idModulo")
-      } else {
-        attributes.push(
-          "definicion",
-          "urlImagen",
-          [sequelize.literal('"modulo"."temaIndicador"'), "modulo"])
-      }
-      return attributes;
-    case 'front':
-      attributes.push(
-        "urlImagen",
-        "definicion",
-        "codigo",
-        "codigoObjeto",
-        "observaciones",
-        "createdBy",
-        "updatedBy",
-        "idModulo",
-        "createdAt",
-        "updatedAt",
-        "activo")
-      return attributes;
-    default:
-      throw new Error('Invalid pathway');
-  }
-};
 
 const defineIncludes = (pathway, matchedData) => {
   const includes = [
@@ -233,7 +283,8 @@ const defineIncludes = (pathway, matchedData) => {
           ],
         }
       ]
-    }, {
+    },
+    {
       model: CatalogoDetail,
       required: false,
       as: 'catalogos',
@@ -316,54 +367,6 @@ const getCatalogoFilters = ({ idOds, idCobertura, idUnidadMedida }) => {
     }
   };
 }
-
-const defineOrder = (pathway, matchedData) => {
-  const order = [];
-  switch (pathway) {
-    case 'site':
-      order.push(getIndicadoresSorting(matchedData))
-      return order;
-    case 'front':
-      order.push(getIndicadoresSorting(matchedData))
-      return order;
-    default:
-      throw new Error('Invalid pathway')
-  };
-};
-
-const defineWhere = (pathway, matchedData) => {
-  let where = {};
-  switch (pathway) {
-    case 'site':
-      where = {
-        idModulo: matchedData.idModulo,
-        ...getIndicadorFilters(matchedData),
-      };
-      break;
-    case 'front':
-      where = {
-        ...getIndicadoresFilters(matchedData)
-      }
-      break;
-    default:
-      throw new Error('Invalid pathway')
-  }
-  return where;
-};
-
-const definitions = (pathway, matchedData) => {
-  const attributes = defineAttributes(pathway, matchedData);
-  const includes = defineIncludes(pathway, matchedData);
-  const order = defineOrder(pathway, matchedData);
-  const where = defineWhere(pathway, matchedData);
-
-  return {
-    attributes,
-    includes,
-    order,
-    where,
-  };
-};
 
 module.exports = {
   getIndicadores,
