@@ -340,8 +340,9 @@ const defineIncludes = (pathway, matchedData) => {
   };
 };
 
-const getCatalogoFilters = ({ idOds, idCobertura, idUnidadMedida }) => {
+const getCatalogoFilters = (queryParams) => {
   const inIds = [];
+  const { idOds, idCobertura, idUnidadMedida } = queryParams || {};
   if (idOds) {
     inIds.push(idOds);
   }
