@@ -303,6 +303,32 @@ moduloRouter.route('/:idModulo')
         updateModuloStatus
     );
 
+
+/**
+ * @swagger
+ *   /modulos/{idModulo}:
+ *     get:
+ *       summary: Retrieves information about a tema (modulo)
+ *       tags: [Modulos]
+ *       parameters: 
+ *         - name: idModulo
+ *           in: path
+ *           required: true
+ *           schema:
+ *             type: integer
+ *             format: int64
+ *             minimum: 1
+ *             description: Identifier of a modulo
+ *       responses:
+ *         200:
+ *           description: A modulo object with public fields
+ *         404:
+ *           description: Modulo with given id does not exist
+ *         422:
+ *           description: Unable to process request due to semantic errors
+ *         429:
+ *           description: The app has exceeded its rate limit
+ */
 moduloRouter.route('/:idModulo')
     .get(
         paramValidationRules(),
