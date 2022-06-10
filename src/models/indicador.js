@@ -19,7 +19,6 @@ module.exports = (sequelize, DataTypes) => {
             })
             this.hasOne(models.Formula, { foreignKey: 'idIndicador' });
             this.hasMany(models.Historico, { foreignKey: 'idIndicador' });
-            this.hasMany(models.Fuente, { foreignKey: 'idIndicador' });
             this.hasOne(models.Mapa, { foreignKey: 'idIndicador' });
         }
     };
@@ -100,6 +99,11 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.STRING,
                 allowNull: false,
                 defaultValue: 'SI'
+            },
+            fuente: {
+                type: DataTypes.STRING,
+                allowNull: true,
+                defaultValue: null
             }
         },
         {

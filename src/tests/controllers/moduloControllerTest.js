@@ -97,7 +97,7 @@ describe('/modulos', function () {
     });
   });
 
-  describe.only('GET /:idModulo', function () {
+  describe('GET /:idModulo', function () {
     afterEach(function () {
       sinon.restore();
     });

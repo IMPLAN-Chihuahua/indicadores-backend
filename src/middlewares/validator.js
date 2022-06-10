@@ -101,7 +101,7 @@ const paginationValidationRules = () => [
 ];
 
 const filterIndicadoresValidationRules = () => [
-    query(['anioUltimoValorDisponible', 'idOds', 'idCobertura', 'idFuente', 'idUnidadMedida'])
+    query(['anioUltimoValorDisponible', 'idOds', 'idCobertura', 'idUnidadMedida'])
         .optional()
         .isInt().withMessage('campo debe ser entero')
         .toInt()

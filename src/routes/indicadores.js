@@ -96,18 +96,6 @@ const { uploadImage } = require('../middlewares/fileUpload');
  *             type: integer
  *             description: Module in which the indicador is part of
  *             example: 1
- *           idOds:
- *             type: integer
- *             description: Identifier of the ODS (Objectivo de Desarrollo Sostenible)
- *             example: 1
- *           idCobertura:
- *             type: integer
- *             description: Identifier of the coverage
- *             example: 1
- *           idUnidadMedida:
- *             type: integer
- *             description: Identifier of the unit of measure
- *             example: 1
  *       Formula:
  *         type: object
  *         properties:
@@ -158,15 +146,7 @@ const { uploadImage } = require('../middlewares/fileUpload');
  *             type: integer
  *             example: 2022
  *           fuente:
- *             type: string     
- *       Fuente:
- *         type: object
- *         properties:
- *           id:
- *             type: integer
- *             readOnly: true
- *           bibliografia:
- *             type: string  
+ *             type: string
  *       Mapa:
  *         type: object
  *         properties:

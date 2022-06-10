@@ -1,7 +1,5 @@
 const faker = require('faker');
-const {
-	Modulo
-} = require('../models')
+const { Modulo } = require('../models')
 
 const aDummyWithName = (id) => ({
 	id,
@@ -97,10 +95,6 @@ const anHistorico = () => ({
 	fuente: faker.random.word()
 });
 
-const aFuente = () => ({
-	bibliografia: faker.random.word()
-});
-
 const aMapa = () => ({
 	ubicacion: faker.random.word(),
 	url: faker.internet.url()
@@ -147,7 +141,7 @@ const aRol = (id) => ({
 
 const someCatalogos = (id) => ([
 	{
-		id: id,
+		id,
 		nombre: 'ODS',
 		createdAt: new Date(),
 		updatedAt: new Date()
@@ -168,9 +162,9 @@ const someCatalogos = (id) => ([
 
 const someCatalogosDetails = (id, idCatalogo) => ([
 	{
-		id: id,
+		id,
 		nombre: faker.random.word(),
-		idCatalogo: idCatalogo,
+		idCatalogo,
 		createdAt: new Date(),
 		updatedAt: new Date()
 	}
@@ -179,21 +173,21 @@ const someCatalogosDetails = (id, idCatalogo) => ([
 const someCatalogosFromIndicador = (idIndicador) => ([
 	{
 		id: 1,
-		idIndicador: idIndicador,
+		idIndicador,
 		idCatalogoDetail: 1,
 		createdAt: new Date(),
 		updatedAt: new Date()
 	},
 	{
 		id: 2,
-		idIndicador: idIndicador,
+		idIndicador,
 		idCatalogoDetail: 2,
 		createdAt: new Date(),
 		updatedAt: new Date()
 	},
 	{
 		id: 3,
-		idIndicador: idIndicador,
+		idIndicador,
 		idCatalogoDetail: 3,
 		createdAt: new Date(),
 		updatedAt: new Date()
@@ -209,7 +203,6 @@ module.exports = {
 	indicadorToCreate,
 	aFormula,
 	aVariable,
-	aFuente,
 	anHistorico,
 	aMapa,
 	someCatalogos,
