@@ -236,8 +236,8 @@ const updateHistoricoValidationRules = () => [
 
     check('fechaIngreso')
         .optional()
-        .isDate()
-        .withMessage('Fecha de ingreso debe ser una fecha valida'),
+        .isISO8601()
+        .withMessage('fecha debe tener formato ISO8601'),
 ]
 
 const createIndicadorValidationRules = () => [

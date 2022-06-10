@@ -9,10 +9,13 @@ const getHistoricos = async (req, res) => {
         const { ultimoValorDisponible, updatedAt, periodicidad } = await IndicadorService.getIndicador(idIndicador, 'front');
 
         const { historicos, total } = await HistoricoService.getHistoricos(idIndicador, page, perPage, order, sortBy);
+        console.log('asdkfga');
+        console.log(historicos);
         if (historicos.length > 0) {
             const totalPages = Math.ceil(total / perPage);
             return res.status(200).json({ idIndicador: idIndicador, indicadorLastValue: ultimoValorDisponible, indicadorLastUpdateDate: updatedAt, indicadorPeriodicidad: periodicidad, page: page, perPage: perPage, total: total, totalPages: totalPages, data: historicos });
         }
+
     } catch (err) {
         return res.status(500).json(err.message);
     }
@@ -29,7 +32,10 @@ const deleteHistorico = async (req, res) => {
 };
 
 const updateHistorico = async (req, res) => {
+    console.log('eteasd;');
     const { idHistorico, ...historico } = req.matchedData;
+    console.log(idHistorico);
+    console.log(historico);
 
     try {
         const response = await HistoricoService.updateHistorico(idHistorico, historico);

@@ -38,8 +38,8 @@ router.route('/:idHistorico')
     .patch(
         verifyJWT,
         verifyUserIsActive,
-        paramValidationRules(),
         updateHistoricoValidationRules(),
+        paramValidationRules(),
         validate,
         updateHistorico
     );
