@@ -8,7 +8,7 @@ const sinon = require('sinon');
 const { expect } = chai;
 const { Indicador } = require('../../models');
 const { server } = require('../../../app');
-const { anIndicador, indicadorToCreate, aFormula, aVariable, anHistorico, aFuente, aMapa } = require('../../utils/factories');
+const { anIndicador, indicadorToCreate, aFormula, aVariable, anHistorico, aMapa } = require('../../utils/factories');
 const IndicadorService = require('../../services/indicadorService');
 
 describe('Indicador service', function () {
@@ -153,18 +153,6 @@ describe('Indicador service', function () {
                 });
         });
 
-        it('Should create indicador with fuentes', function () {
-            const toCreate = indicadorToCreate();
-            toCreate.fuentes = [aFuente(), aFuente()];
-            const createFake = sinon.fake.resolves(anIndicador(1));
-            sinon.replace(Indicador, 'create', createFake);
-            return IndicadorService.createIndicador(toCreate)
-                .then(res => {
-                    expect(res).to.not.be.undefined;
-                    expect(createFake.calledOnce).to.be.true;
-                });
-        });
-
         it('Should create indicador with mapa', function () {
             const toCreate = indicadorToCreate();
             toCreate.mapa = aMapa();
@@ -184,7 +172,6 @@ describe('Indicador service', function () {
             formula.variables = [aVariable(), aVariable()];
             toCreate.formula = formula;
             toCreate.historicos = [anHistorico(), anHistorico()];
-            toCreate.fuentes = [aFuente(), aFuente()];
             toCreate.mapa = aMapa();
             const createFake = sinon.fake.resolves(anIndicador(1));
             sinon.replace(Indicador, 'create', createFake);

@@ -1,7 +1,6 @@
 /* eslint-disable no-use-before-define */
 const {
   Indicador,
-  Fuente,
   Modulo,
   Historico,
   Mapa,
@@ -11,7 +10,7 @@ const {
   Sequelize,
   CatalogoDetail
 } = require("../models");
-const { toggleStatus, isUndefined, isObjEmpty } = require("../utils/objectUtils");
+const { toggleStatus, isObjEmpty } = require("../utils/objectUtils");
 
 const { Op } = Sequelize;
 
@@ -29,7 +28,7 @@ const getIndicadores = async (page, perPage, matchedData, pathway) => {
     });
     return { indicadores: result.rows, total: result.count };
   } catch (err) {
-    throw new Error(`Error al obtener los indicadores: ${err.message}`);
+    throw new Error(`Error al obtener indicadores: ${err.message}`);
   }
 };
 
@@ -49,7 +48,7 @@ const definitions = (pathway, matchedData) => {
 
 const defineAttributes = (pathway, matchedData) => {
   const attributes = ["id", "nombre", "ultimoValorDisponible",
-    "anioUltimoValorDisponible", "tendenciaActual"];
+    "anioUltimoValorDisponible", "tendenciaActual", "fuente"];
 
   switch (pathway) {
     case 'file':
@@ -117,7 +116,7 @@ const defineWhere = (pathway, matchedData) => {
     case 'site':
       where = {
         idModulo: matchedData.idModulo,
-        ...getIndicadorFilters(matchedData),
+        ...filterIndicadorBy(matchedData),
       };
       break;
     case 'front':
@@ -167,7 +166,7 @@ const getIndicadoresFilters = (matchedData) => {
   return {};
 };
 
-const getIndicadorFilters = (matchedData) => {
+const filterIndicadorBy = (matchedData) => {
   const { anioUltimoValorDisponible, tendenciaActual } = matchedData;
   const filters = {};
   if (anioUltimoValorDisponible) {
@@ -177,22 +176,6 @@ const getIndicadorFilters = (matchedData) => {
     filters.tendenciaActual = tendenciaActual;
   }
   return filters;
-};
-
-// Includes for inner join to filter list 
-const getIndicadorIncludes = ({ idFuente }) => {
-  const indicadorFilter = [];
-
-  if (idFuente) {
-    indicadorFilter.push({
-      model: Fuente,
-      where: {
-        idFuente,
-      },
-    });
-  }
-
-  return indicadorFilter;
 };
 
 const getIncludesToCreateIndicador = (indicador) => {
@@ -205,9 +188,6 @@ const getIncludesToCreateIndicador = (indicador) => {
   }
   if (indicador.historicos) {
     includes.push(Indicador.associations.historicos);
-  }
-  if (indicador.fuentes) {
-    includes.push(Indicador.associations.fuentes);
   }
   if (indicador.mapa) {
     includes.push(Indicador.associations.mapa);
@@ -302,17 +282,13 @@ const defineIncludes = (pathway, matchedData) => {
 
   switch (pathway) {
     case 'front':
-      if (!isUndefined(matchedData)) {
-        includes.push(...getIndicadorIncludes(matchedData));
-      } else {
-        includes.push({
-          model: Historico,
-          required: true,
-          attributes: ["anio", "valor", "fuente"],
-          limit: 5,
-          order: [["anio", "DESC"]],
-        });
-      };
+      includes.push({
+        model: Historico,
+        required: true,
+        attributes: ["anio", "valor", "fuente"],
+        limit: 5,
+        order: [["anio", "DESC"]],
+      });
       return includes;
     case 'file':
       includes.push({
@@ -323,17 +299,13 @@ const defineIncludes = (pathway, matchedData) => {
       });
       return includes;
     case 'site':
-      if (!isUndefined(matchedData)) {
-        includes.push(...getIndicadorIncludes(matchedData));
-      } else {
-        includes.push({
-          model: Historico,
-          required: true,
-          attributes: ["anio", "valor", "fuente"],
-          limit: 5,
-          order: [["anio", "DESC"]],
-        });
-      }
+      includes.push({
+        model: Historico,
+        required: true,
+        attributes: ["anio", "valor", "fuente"],
+        limit: 5,
+        order: [["anio", "DESC"]],
+      });
       return includes;
     default:
       throw new Error('Invalid pathway')

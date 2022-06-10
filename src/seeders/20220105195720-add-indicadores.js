@@ -24,6 +24,7 @@ module.exports = {
         tendenciaActual: i % 2 === 0 ? "ASCENDENTE" : "DESCENDENTE",
         tendenciaDeseada: i % 2 === 0 ? "ASCENDENTE" : "DESCENDENTE",
         definicion: faker.lorem.sentence(),
+        fuente: faker.random.word(5)
       });
     }
     await queryInterface.bulkInsert("Indicadores", indicadores, {});
