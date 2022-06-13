@@ -214,8 +214,8 @@ const createIndicador = async (indicador) => {
 
 const updateIndicadorStatus = async (id) => {
   try {
-    const nuevoEstado = toggleStatus(await getIndicadorStatus(id));
-    const affectedRows = await Indicador.update({ activo: nuevoEstado }, { where: { id } });
+    const isActivo = toggleStatus(await getIndicadorStatus(id));
+    const affectedRows = await Indicador.update({ activo: isActivo }, { where: { id } });
     return affectedRows > 0;
   } catch (err) {
     throw new Error(`Error al actualizar indicador: ${err.message}`);

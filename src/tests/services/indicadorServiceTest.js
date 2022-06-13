@@ -10,6 +10,7 @@ const { Indicador } = require('../../models');
 const { server } = require('../../../app');
 const { anIndicador, indicadorToCreate, aFormula, aVariable, anHistorico, aMapa } = require('../../utils/factories');
 const IndicadorService = require('../../services/indicadorService');
+const { FRONT_PATH, SITE_PATH } = require('../../middlewares/determinePathway');
 
 describe('Indicador service', function () {
 
@@ -27,7 +28,7 @@ describe('Indicador service', function () {
         it('Should return a list of indicadores and the total number of them', function () {
             const findAndCountAllFake = sinon.fake.resolves({ rows: indicadores, count: indicadores.length });
             sinon.replace(Indicador, 'findAndCountAll', findAndCountAllFake);
-            return IndicadorService.getIndicadores(1, 15, { idModulo: 15 })
+            return IndicadorService.getIndicadores(1, 15, { idModulo: 15 }, SITE_PATH)
                 .then(res => {
                     expect(findAndCountAllFake.calledOnce).to.be.true;
                     expect(res.indicadores).to.be.an('array').that.is.not.empty;
@@ -38,7 +39,7 @@ describe('Indicador service', function () {
         it('Should return an indicador', function () {
             const findOneFake = sinon.fake.resolves({ ...anIndicador(1) });
             sinon.replace(Indicador, 'findOne', findOneFake);
-            return IndicadorService.getIndicador(1)
+            return IndicadorService.getIndicador(1, SITE_PATH)
                 .then(res => {
                     expect(findOneFake.args[0][0].where.id).to.be.equal(1);
                     expect(findOneFake.calledOnce).to.be.true;
@@ -49,10 +50,7 @@ describe('Indicador service', function () {
         it('Should reject promise if an error occurs', function () {
             const findAndCountAllFake = sinon.fake.rejects(new Error());
             sinon.replace(Indicador, 'findAndCountAll', findAndCountAllFake);
-            return IndicadorService.getIndicadores(1, 15, { idModulo: 15 })
-                .then(res => {
-                    expect(res).to.be.null;
-                })
+            return IndicadorService.getIndicadores(1, 15, { idModulo: 15 }, SITE_PATH)
                 .catch(err => {
                     expect(findAndCountAllFake.calledOnce).to.be.true;
                     expect(err).to.not.be.null;
@@ -62,7 +60,7 @@ describe('Indicador service', function () {
         it('Returns null if no indicador is found', function () {
             const findOneFake = sinon.fake.resolves(null);
             sinon.replace(Indicador, 'findOne', findOneFake);
-            return IndicadorService.getIndicador(1)
+            return IndicadorService.getIndicador(1, FRONT_PATH)
                 .then(res => {
                     expect(res).to.be.null;
                     expect(findOneFake.calledOnce).to.be.true;

@@ -18,6 +18,10 @@ const { generateToken } = require('../../middlewares/auth');
 
 describe('/modulos', function () {
   const token = generateToken({ sub: 1 });
+  const statusActive = { activo: 'SI' };
+
+  const adminRol = { rolValue: 'ADMIN' };
+  const userRol = { roles: 'USER' };
 
   describe('GET', function () {
     const modulosFake = [aModulo(1), aModulo(2), aModulo(3)];
@@ -107,11 +111,13 @@ describe('/modulos', function () {
     });
 
     it('Should return a modulo', function (done) {
-      const findByPkFake = sinon.fake.resolves(aModulo(1))
+      const dummyModulo = aModulo(1);
+      dummyModulo.activo = 'SI'
+      const findByPkFake = sinon.fake.resolves(dummyModulo)
       sinon.replace(Modulo, 'findByPk', findByPkFake);
       chai.request(app)
         .get('/api/v1/modulos/1')
-        .end(function(err, res) {
+        .end(function (err, res) {
           expect(err).to.be.null;
           expect(res).to.have.status(200);
           expect(res.body.data).to.exist;
@@ -126,10 +132,10 @@ describe('/modulos', function () {
         });
     })
 
-    it('Should fail to return a modulo due to an invalid id', function(done) {
+    it('Should fail to return a modulo due to an invalid id', function (done) {
       chai.request(app)
         .get('/api/v1/modulos/notvalid')
-        .end(function(err, res) {
+        .end(function (err, res) {
           expect(err).to.be.null;
           expect(res).to.have.status(422);
           expect(res.body.errors).to.be.an('array').that.is.not.empty;
@@ -137,27 +143,27 @@ describe('/modulos', function () {
         })
     })
 
-    it('Should return not found if modulo does not exist', function(done) {
+    it('Should return not found if modulo does not exist', function (done) {
       const findByPkFake = sinon.fake.resolves(null);
       sinon.replace(Modulo, 'findByPk', findByPkFake);
       chai.request(app)
         .get('/api/v1/modulos/1000')
-        .end(function(err, res) {
+        .end(function (err, res) {
           expect(err).to.be.null;
           expect(res).to.have.status(404);
           expect(findByPkFake.calledOnce).to.be.true;
           done();
         });
-    }); 
+    });
 
     it('Should return no content if modulo is not active', function (done) {
       const inactiveModulo = aModulo(20);
-      inactiveModulo.status = 'NO';
+      inactiveModulo.activo = 'NO';
       const findByPkFake = sinon.fake.resolves(inactiveModulo);
       sinon.replace(Modulo, 'findByPk', findByPkFake);
       chai.request(app)
         .get('/api/v1/modulos/20')
-        .end(function(err, res) {
+        .end(function (err, res) {
           expect(err).to.be.null;
           expect(res).to.have.status(204);
           done();
@@ -171,8 +177,12 @@ describe('/modulos', function () {
       sinon.restore();
     });
 
-    this.afterAll(function () {
-      server.close();
+    let usuarioStub;
+
+    this.beforeEach(function () {
+      usuarioStub = sinon.stub(Usuario, 'findOne');
+      usuarioStub.onFirstCall().resolves(statusActive);
+      usuarioStub.onSecondCall().resolves(adminRol);
     });
 
     const bigImage = Buffer.alloc(100200000, '.jpg')
@@ -235,9 +245,12 @@ describe('/modulos', function () {
     });
 
     it('Should create a new modulo with an image', function (done) {
-      const moduloFake = aModulo(5);
+      const moduloFake = aModulo(5).dataValues;
       const createModuloFake = sinon.fake.resolves(moduloFake);
+      sinon.replace(Modulo, 'create', createModuloFake);
+
       const findOneFake = sinon.fake.resolves(null);
+      sinon.replace(Modulo, 'findOne', findOneFake);
 
       const fileUploadFake = sinon.fake.resolves({
         filename: 'allowedImage.jpg',
@@ -245,78 +258,85 @@ describe('/modulos', function () {
         encoding: '7bit',
         createReadStream: () => allowedImage
       });
-
       sinon.replace(fileUpload, 'uploadImage', fileUploadFake);
-      sinon.replace(Modulo, 'create', createModuloFake);
-      sinon.replace(Modulo, 'findOne', findOneFake);
+
       chai.request(app)
         .post('/api/v1/modulos')
         .set('Authorization', `Bearer ${token}`)
         .type('form')
         .field('temaIndicador', moduloFake.temaIndicador)
-        .field('id', moduloFake.id)
         .field('codigo', moduloFake.codigo)
         .field('activo', moduloFake.activo)
         .field('observaciones', moduloFake.observaciones)
         .field('color', moduloFake.color)
+        .field('descripcion', moduloFake.descripcion)
         .attach('urlImagen', allowedImage, 'avatar.jpg')
         .end(function (err, res) {
-          expect(createModuloFake.calledOnce).to.be.true;
+          expect(err).to.be.null
+          expect(createModuloFake.calledOnce, 'called create fake').to.be.true;
+          expect(usuarioStub.calledTwice).to.be.true;
           expect(res).to.have.status(201);
           expect(res.body.data).to.have.property('temaIndicador');
           expect(res.body.data).to.have.property('codigo');
           expect(res.body.data).to.have.property('activo');
           expect(res.body.data).to.have.property('observaciones');
           expect(res.body.data).to.have.property('color');
+          expect(res.body.data).to.have.property('descripcion');
           expect(res.body.data).to.have.property('urlImagen');
           done();
         });
     });
 
     it('Should create a new modulo', function (done) {
-      const moduloFake = aModulo(2);
+      const moduloFake = aModulo(1).dataValues;
       const createModuloFake = sinon.fake.resolves(moduloFake);
-      const findOneFake = sinon.fake.resolves(null);
       sinon.replace(Modulo, 'create', createModuloFake);
+
+      const findOneFake = sinon.fake.resolves(null);
       sinon.replace(Modulo, 'findOne', findOneFake);
+
       chai.request(app)
         .post('/api/v1/modulos')
         .set({ Authorization: `Bearer ${token}` })
-        .send(moduloFake)
+        .send({ ...moduloFake })
         .end((err, res) => {
+          expect(err).to.be.null;
           expect(res).to.have.status(201);
-          expect(res.body.data).to.have.property('temaIndicador', 'New value');
+          expect(usuarioStub.calledTwice).to.be.true;
+          expect(createModuloFake.calledOnce).to.be.true;
+          expect(findOneFake.calledOnce).to.be.true;
           done();
         });
     });
 
     it('Should not create a new modulo due to repeated temaIndicador', function (done) {
-      const moduloFake = aModulo(1);
-      const createModuloFake = sinon.fake.resolves(moduloFake);
+      const moduloFake = aModulo(1).dataValues;
       const findOneFake = sinon.fake.resolves(false);
-      sinon.replace(Modulo, 'create', createModuloFake);
       sinon.replace(Modulo, 'findOne', findOneFake);
       chai.request(app)
         .post('/api/v1/modulos')
         .set({ Authorization: `Bearer ${token}` })
-        .send(moduloFake)
+        .send({ ...moduloFake })
         .end((err, res) => {
+          expect(err).to.be.null;
+          expect(usuarioStub.calledTwice).to.be.true;
+          expect(findOneFake.calledOnce).to.be.true;
           expect(res).to.have.status(400);
+          expect(res.body.message).to.be.equal(`El tema indicador ${moduloFake.temaIndicador} ya está en uso`)
           done();
         });
     });
 
     it('Should not create a new modulo due to wrong temaIndicador attribute', function (done) {
-      const moduloFake = { ...aModulo(1), temaIndicador: '' };
-      const createModuloFake = sinon.fake.resolves(moduloFake);
-      const findOneFake = sinon.fake.resolves(true);
-      sinon.replace(Modulo, 'create', createModuloFake);
-      sinon.replace(Modulo, 'findOne', findOneFake);
+      const invalidModulo = aModulo(1).dataValues;
+      invalidModulo.temaIndicador = '';
       chai.request(app)
         .post('/api/v1/modulos')
         .set({ Authorization: `Bearer ${token}` })
-        .send(moduloFake)
+        .send(invalidModulo)
         .end((err, res) => {
+          expect(err).to.be.null;
+          expect(usuarioStub.calledTwice).to.be.true;
           expect(res).to.have.status(422);
           done();
         });
@@ -339,16 +359,18 @@ describe('/modulos', function () {
     })
 
     it('Should not create a new modulo due to internal error', function (done) {
-      const moduloFake = aModulo(1);
+      const moduloFake = aModulo(1).dataValues;
       const createModuloFake = sinon.fake.throws('Error');
-      const findOneFake = sinon.fake.rejects(null);
       sinon.replace(Modulo, 'create', createModuloFake);
+      const findOneFake = sinon.fake.rejects(null);
       sinon.replace(Modulo, 'findOne', findOneFake);
+
       chai.request(app)
         .post('/api/v1/modulos')
         .set({ Authorization: `Bearer ${token}` })
         .send(moduloFake)
         .end((err, res) => {
+          expect(usuarioStub.calledTwice, 'usuario stub').to.be.true;
           expect(res).to.have.status(500);
           done();
         });
@@ -403,20 +425,21 @@ describe('/modulos', function () {
         .send(moduloFake)
         .set({ Authorization: `Bearer ${token}` })
         .end((err, res) => {
-          expect(res).to.have.status(404);
+          expect(res).to.have.status(400);
           done();
         });
     });
 
     it('Should not edit a modulo due to internal errors', function (done) {
-      const moduloFake = aModulo(1);
-      const editModuloFake = sinon.fake.throws('Error');
+      const moduloFake = aModulo(1).dataValues;
+      const editModuloFake = sinon.fake.rejects(new Error('Error'));
       sinon.replace(Modulo, 'update', editModuloFake);
       chai.request(app)
         .put('/api/v1/modulos/1')
         .set({ Authorization: `Bearer ${token}` })
-        .send(moduloFake)
+        .send({ ...moduloFake })
         .end((err, res) => {
+          expect(editModuloFake.calledOnce, 'update modulo').to.be.true;
           expect(res).to.have.status(500);
           done();
         });
@@ -458,7 +481,7 @@ describe('/modulos', function () {
         .patch('/api/v1/modulos/1')
         .set({ Authorization: `Bearer ${token}` })
         .end((err, res) => {
-          expect(res).to.have.status(404);
+          expect(res).to.have.status(400);
           done();
         });
     });

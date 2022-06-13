@@ -8,9 +8,9 @@ const { paramValidationRules, paginationValidationRules,
     validate, filterIndicadoresValidationRules, sortValidationRules,
     createModuloValidationRules, updateModuloValidationRules } = require('../middlewares/validator');
 const { moduloExists } = require('../middlewares/verifyIdModulo');
-const { verifyJWT } = require('../middlewares/auth');
+const { verifyJWT, verifyUserIsActive, verifyUserHasRoles } = require('../middlewares/auth');
 const { uploadImage } = require('../middlewares/fileUpload');
-const { determinePathway } = require('../middlewares/determinePathway');
+const { determinePathway, SITE_PATH } = require('../middlewares/determinePathway');
 
 /**
  * @swagger
@@ -175,7 +175,7 @@ indicadorRouter.route('/')
         sortValidationRules(),
         validate,
         moduloExists,
-        determinePathway('site'),
+        determinePathway(SITE_PATH),
         getIndicadores
     );
 
@@ -204,6 +204,8 @@ indicadorRouter.route('/')
  *                 type: string
  *               observaciones:
  *                 type: string
+ *               descripcion:
+ *                 type: string
  *               urlImagen:
  *                 type: string
  *                 format: binary
@@ -221,6 +223,8 @@ indicadorRouter.route('/')
 moduloRouter.route('/')
     .post(
         verifyJWT,
+        verifyUserIsActive,
+        verifyUserHasRoles(['ADMIN']),
         uploadImage('modulos'),
         createModuloValidationRules(),
         validate,
@@ -263,6 +267,8 @@ moduloRouter.route('/')
 moduloRouter.route('/:idModulo')
     .put(
         verifyJWT,
+        verifyUserIsActive,
+        verifyUserHasRoles(['ADMIN']),
         updateModuloValidationRules(),
         validate,
         editModulo
@@ -298,6 +304,8 @@ moduloRouter.route('/:idModulo')
 moduloRouter.route('/:idModulo')
     .patch(
         verifyJWT,
+        verifyUserIsActive,
+        verifyUserHasRoles(['ADMIN']),
         updateModuloValidationRules(),
         validate,
         updateModuloStatus

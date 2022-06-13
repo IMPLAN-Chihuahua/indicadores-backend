@@ -17,15 +17,15 @@ const generateXLSX = (data) => {
     indicador.nombre,
     indicador.modulo,
     indicador.tendenciaActual,
-    indicador.tendenciaDeseada,
     indicador.ultimoValorDisponible,
     indicador.unidadMedida,
     indicador.anioUltimoValorDisponible,
     indicador.coberturaGeografica,
+    indicador.fuente,
     indicador.formula?.ecuacion ?? "NA",
     indicador.formula?.descripcion ?? "NA",
-    indicador.formula?.Variables ?? "NA",
-    indicador.Historicos ?? "NA",
+    indicador.formula?.variables ?? "NA",
+    indicador.historicos ?? "NA",
   ];
   
   let baseFile = "./src/templates/boop.xlsx";
@@ -82,10 +82,8 @@ const generatePDF = async (data) => {
   
   const page = await browser.newPage();
   await page.setViewport({ width: 800, height: 800, deviceScaleFactor: 3 });
-  const templateHtml = fs.readFileSync("./src/templates/test.html", "utf8");
-  handlebars.registerHelper('isAscending', function (str) {
-    return str === 'ASCENDENTE';
-  });
+  const templateHtml = fs.readFileSync("./src/templates/indicador-template.html", "utf8");
+  handlebars.registerHelper('isAscending', (str) => str === 'ASCENDENTE');
   handlebars.registerHelper('numberWithCommas', numberWithCommas);
   const template = handlebars.compile(templateHtml);
   
@@ -93,8 +91,8 @@ const generatePDF = async (data) => {
   await page.setContent(html, {
     waitUntil: "networkidle0",
   });
-  const years = indicador.Historicos.map((elem) => elem.anio);
-  const values = indicador.Historicos.map((elem) => elem.valor);
+  const years = indicador?.historicos.map((elem) => elem.anio);
+  const values = indicador?.historicos.map((elem) => elem.valor);
 
   await page.evaluate(
     (years, values, unidadMedida) => {

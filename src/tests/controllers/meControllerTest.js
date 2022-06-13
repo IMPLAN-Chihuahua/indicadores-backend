@@ -36,7 +36,6 @@ describe('v1/me', function () {
         .get('/api/v1/me')
         .set({ Authorization: `Bearer ${token}` })
         .end((err, res) => {
-          console.log('PROFILE', res.error.text)
           expect(res).to.have.status(200);
           expect(findOneFake.calledTwice).to.be.true;
           expect(res.body.data).to.not.be.empty;
