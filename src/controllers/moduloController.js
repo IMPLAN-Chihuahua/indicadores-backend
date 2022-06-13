@@ -17,8 +17,9 @@ const createModulo = async (req, res) => {
         observaciones,
         activo,
         codigo,
+        descripcion,
         color,
-    } = req.body;
+    } = req.matchedData;
     let urlImagen = 'images/avatar.jpg';
 
     urlImagen = req.file ? `images/${req.file.filename}` : urlImagen;
@@ -35,6 +36,7 @@ const createModulo = async (req, res) => {
             activo,
             codigo,
             urlImagen,
+            descripcion,
             color,
         });
         return res.status(201).json({ data: savedModulo });
@@ -66,7 +68,7 @@ const getAllModulos = async (req, res) => {
 
 
 const editModulo = async (req, res) => {
-    const fields = req.body;
+    const fields = req.matchedData;
     const { idModulo } = req.matchedData;
     try {
         const updatedModulo = await moduloService.updateModulo(idModulo, fields);
