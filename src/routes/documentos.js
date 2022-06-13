@@ -3,6 +3,7 @@ const router = express.Router();
 const { paramValidationRules,
     validate } = require('../middlewares/validator');
 const { getIndicador } = require('../controllers/indicadorController');
+const { determinePathway, FILE_PATH } = require('../middlewares/determinePathway');
 
 /**
  * @swagger
@@ -166,6 +167,7 @@ const { getIndicador } = require('../controllers/indicadorController');
 router.route('/:idIndicador/:format?')
     .get(paramValidationRules(),
         validate,
+        determinePathway(FILE_PATH),
         getIndicador);
 
 module.exports = router;

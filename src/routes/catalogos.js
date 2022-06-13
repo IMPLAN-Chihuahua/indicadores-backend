@@ -1,7 +1,7 @@
 const express = require('express');
 const catalogoRouter = express.Router();
 
-const Catalogos = require('../controllers/catalogoController');
+const { getCatalogos, getCatalogosDetails, getCatalogosFromIndicador } = require('../controllers/catalogoController');
 const { paramValidationRules, validate } = require('../middlewares/validator');
 
 const { verifyJWT } = require('../middlewares/auth');
@@ -86,16 +86,12 @@ const { verifyJWT } = require('../middlewares/auth');
  */
 
 catalogoRouter.route('/')
-	.get(Catalogos.getCatalogos);
+	.get(getCatalogos);
 
+// TODO: PAGINATE THIS ENDPOINT
 catalogoRouter.route('/:idCatalogo')
 	.get(paramValidationRules(),
 		validate,
-		Catalogos.getCatalogosDetails);
-
-catalogoRouter.route('/indicador/:idIndicador')
-	.get(paramValidationRules(),
-		validate,
-		Catalogos.getCatalogosFromIndicador);
+		getCatalogosDetails);
 
 module.exports = catalogoRouter;

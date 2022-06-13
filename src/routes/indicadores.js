@@ -20,8 +20,9 @@ const {
     setUsuariosToIndicador,
 } = require('../controllers/indicadorController');
 const { verifyJWT, verifyUserHasRoles, verifyUserIsActive } = require('../middlewares/auth');
-const { determinePathway } = require('../middlewares/determinePathway');
+const { determinePathway, SITE_PATH, FRONT_PATH } = require('../middlewares/determinePathway');
 const { uploadImage } = require('../middlewares/fileUpload');
+const { getCatalogosFromIndicador } = require('../controllers/catalogoController');
 
 /**
  * @swagger
@@ -197,7 +198,7 @@ router.route('/:idIndicador')
     .get(paramValidationRules(),
         filterIndicadoresValidationRules(),
         validate,
-        determinePathway('site'),
+        determinePathway(SITE_PATH),
         getIndicador);
 
 /**
@@ -234,7 +235,7 @@ router.route('/')
         sortValidationRules(),
         filterIndicadoresValidationRules(),
         validate,
-        determinePathway('front'),
+        determinePathway(FRONT_PATH),
         getIndicadores);
 
 
@@ -406,5 +407,36 @@ router.route('/:idIndicador/usuarios')
         validate,
         setUsuariosToIndicador
     );
+
+/**
+ * @swagger
+ *   /indicadores/{idIndicador}/catalogos:
+ *     get:
+ *       summary: Retrieve the catalogos associated to an indicador
+ *       tags: [Indicadores]
+ *       security: 
+ *         - bearer: []
+ *       parameters:
+ *         - in: path
+ *           name: idIndicador
+ *           required: true
+ *           schema:
+ *             type: integer
+ *       responses:
+ *         201:
+ *           description: Retrieves a list of catalogos associated to an indicador
+ *         401:
+ *           description: Unauthorized request (not valid JWT in Authorization header)
+ *         403:   
+ *           description: The request has an invalid token, rol, privileges or account is inactive
+ *         429:
+ *           description: The app has exceeded its rate limit
+ */
+router.route('/:idIndicador/catalogos')
+    .get(
+        paramValidationRules(),
+        validate,
+        getCatalogosFromIndicador
+    )
 
 module.exports = router;

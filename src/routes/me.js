@@ -20,7 +20,7 @@ const {
     sortModulosValidationRules,
     updateValidationRules } = require('../middlewares/validator');
 
-const { determinePathway } = require('../middlewares/determinePathway');
+const { determinePathway, FRONT_PATH } = require('../middlewares/determinePathway');
 
 const { uploadImage } = require('../middlewares/fileUpload');
 /**
@@ -88,7 +88,7 @@ router.route('/indicadores/:idIndicador').get(
     verifyUserIsActive,
     paramValidationRules(),
     validate,
-    determinePathway('front'),
+    determinePathway(FRONT_PATH),
     getIndicador,
 );
 
