@@ -116,11 +116,12 @@ const aModulo = (id) => {
 	const modulo = Modulo.build({
 		id,
 		codigo: aCodigo(),
-		temaIndicador: faker.commerce.department(),
+		temaIndicador: faker.company.bsNoun(),
 		observaciones: faker.lorem.words(20),
 		activo: faker.datatype.boolean() ? 'SI' : 'NO',
 		urlImagen: faker.image.imageUrl(),
-		color: faker.commerce.color()
+		color: faker.commerce.color(),
+		descripcion: faker.lorem.paragraph(),
 	});
 	modulo.validate();
 	return modulo;
