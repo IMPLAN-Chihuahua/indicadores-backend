@@ -1,4 +1,5 @@
 /* eslint-disable no-use-before-define */
+const { SITE_PATH, FRONT_PATH, FILE_PATH } = require("../middlewares/determinePathway");
 const {
   Indicador,
   Modulo,
@@ -20,10 +21,10 @@ const getIndicadores = async (page, perPage, matchedData, pathway) => {
     const result = await Indicador.findAndCountAll({
       limit: perPage,
       offset: (page - 1) * perPage,
-      where: { ...where },
-      order: [...order],
-      include: [...includes],
-      attributes: [...attributes],
+      where,
+      order,
+      include: includes,
+      attributes: attributes,
       distinct: true
     });
     return { indicadores: result.rows, total: result.count };
@@ -51,13 +52,13 @@ const defineAttributes = (pathway, matchedData) => {
     "anioUltimoValorDisponible", "tendenciaActual", "fuente"];
 
   switch (pathway) {
-    case 'file':
+    case FILE_PATH:
       attributes.push(
         "definicion",
         "urlImagen",
         [sequelize.literal('"modulo"."temaIndicador"'), "modulo"])
       return attributes;
-    case 'site':
+    case SITE_PATH:
       if (matchedData) {
         attributes.push(
           "createdAt",
@@ -70,7 +71,7 @@ const defineAttributes = (pathway, matchedData) => {
           [sequelize.literal('"modulo"."temaIndicador"'), "modulo"])
       }
       return attributes;
-    case 'front':
+    case FRONT_PATH:
       attributes.push(
         "urlImagen",
         "definicion",
@@ -92,10 +93,10 @@ const defineAttributes = (pathway, matchedData) => {
 const defineOrder = (pathway, matchedData) => {
   const order = [];
   switch (pathway) {
-    case 'site':
+    case SITE_PATH:
       order.push(getIndicadoresSorting(matchedData))
       return order;
-    case 'front':
+    case FRONT_PATH:
       order.push(getIndicadoresSorting(matchedData))
       return order;
     default:
@@ -113,13 +114,13 @@ const getIndicadoresSorting = ({ sortBy, order }) => {
 const defineWhere = (pathway, matchedData) => {
   let where = {};
   switch (pathway) {
-    case 'site':
+    case SITE_PATH:
       where = {
         idModulo: matchedData.idModulo,
         ...filterIndicadorBy(matchedData),
       };
       break;
-    case 'front':
+    case FRONT_PATH:
       where = {
         ...getIndicadoresFilters(matchedData)
       }
@@ -139,7 +140,7 @@ const getIndicador = async (idIndicador, pathway) => {
       include: includes,
       attributes,
     });
-    if (pathway !== 'file' || indicador === null) {
+    if (pathway !== FILE_PATH || indicador === null) {
       return indicador;
     }
     return { ...indicador.dataValues };
@@ -281,7 +282,7 @@ const defineIncludes = (pathway, matchedData) => {
   }
 
   switch (pathway) {
-    case 'front':
+    case FRONT_PATH:
       includes.push({
         model: Historico,
         required: true,
@@ -290,7 +291,7 @@ const defineIncludes = (pathway, matchedData) => {
         order: [["anio", "DESC"]],
       });
       return includes;
-    case 'file':
+    case FILE_PATH:
       includes.push({
         model: Historico,
         required: false,
@@ -298,7 +299,7 @@ const defineIncludes = (pathway, matchedData) => {
         order: [["anio", "DESC"]],
       });
       return includes;
-    case 'site':
+    case SITE_PATH:
       includes.push({
         model: Historico,
         required: true,

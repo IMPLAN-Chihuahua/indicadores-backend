@@ -9,11 +9,11 @@ const determinePathway = (route) => (req, res, next) => {
       next();
       break;
     case SITE_PATH:
-      req.pathway = FRONT_PATH;
+      req.pathway = SITE_PATH;
       next();
       break;
     case FILE_PATH:
-      req.pathway = FRONT_PATH;
+      req.pathway = FILE_PATH;
       next();
       break;
     default:
