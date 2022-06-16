@@ -14,6 +14,7 @@ const getModulos = async () => {
                 'codigo',
                 'urlImagen',
                 'color',
+                'descripcion',
                 [Sequelize.fn('COUNT', Sequelize.col('indicadores.id')), 'indicadoresCount']
             ],
             include: [{
@@ -41,7 +42,7 @@ const addModulo = async (modulo) => {
 
 const updateModulo = async (id, values) => {
     try {
-        const affectedRows = await Modulo.update({...values},
+        const affectedRows = await Modulo.update({ ...values },
             { where: { id } }
         );
         return affectedRows > 0;
@@ -69,7 +70,18 @@ const getAllModulos = async (page, perPage, matchedData) => {
             order: getModulosSorting(matchedData),
             limit: perPage,
             offset: (page - 1) * perPage,
-            attributes: ['id', 'codigo', 'temaIndicador', 'createdAt', 'updatedAt', 'urlImagen', 'color', 'observaciones', 'activo'],
+            attributes: [
+                'id',
+                'codigo',
+                'temaIndicador',
+                'createdAt',
+                'updatedAt',
+                'urlImagen',
+                'color',
+                'observaciones',
+                'activo',
+                'descripcion'
+            ],
         });
         const inactiveModulos = await countModulos();
         return { modulos: result.rows, total: result.count, totalInactivos: inactiveModulos };

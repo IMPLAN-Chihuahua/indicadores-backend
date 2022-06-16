@@ -54,22 +54,13 @@ const defineAttributes = (pathway, matchedData) => {
 
   switch (pathway) {
     case FILE_PATH:
-      attributes.push(
-        "definicion",
-        "urlImagen",
-        [sequelize.literal('"modulo"."temaIndicador"'), "modulo"])
+      attributes.push("definicion", "urlImagen")
       return attributes;
     case SITE_PATH:
       if (matchedData) {
-        attributes.push(
-          "createdAt",
-          "updatedAt",
-          "idModulo")
+        attributes.push("createdAt", "updatedAt", "idModulo")
       } else {
-        attributes.push(
-          "definicion",
-          "urlImagen",
-          [sequelize.literal('"modulo"."temaIndicador"'), "modulo"])
+        attributes.push("definicion", "urlImagen")
       }
       return attributes;
     case FRONT_PATH:
@@ -314,7 +305,7 @@ const defineIncludes = (pathway, matchedData) => {
     {
       model: Modulo,
       required: true,
-      attributes: [],
+      attributes: ['temaIndicador', 'descripcion', 'color'],
     },
     {
       model: Mapa,
