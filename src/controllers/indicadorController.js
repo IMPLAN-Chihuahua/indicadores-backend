@@ -6,9 +6,9 @@ const { areConnected, createRelation } = require("../services/usuarioIndicadorSe
 const { getPagination } = require('../utils/pagination');
 
 const getIndicador = async (req, res) => {
+  const { pathway } = req;
+  const { idIndicador, format } = req.matchedData;
   try {
-    const { pathway } = req;
-    const { idIndicador, format } = req.matchedData;
     const indicador = await IndicadorService.getIndicador(idIndicador, pathway);
     if (indicador === null) {
       return res.status(404).send(`Indicador con id ${idIndicador} no encontrado`);
@@ -92,6 +92,7 @@ const createIndicador = async (req, res) => {
     const savedIndicador = await IndicadorService.createIndicador(indicador);
     return res.status(201).json({ data: savedIndicador });
   } catch (err) {
+    console.log(err)
     return res.status(500).send(err.message);
   }
 };
@@ -132,6 +133,7 @@ const updateIndicador = async (req, res) => {
     return res.sendStatus(400);
 
   } catch (err) {
+    console.log(err)
     return res.status(500).send(err.message)
   }
 };

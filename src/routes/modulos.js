@@ -1,14 +1,16 @@
 const express = require('express');
+
 const moduloRouter = express.Router();
 const indicadorRouter = express.Router({ mergeParams: true });
-const { getModulos, createModulo, editModulo, updateModuloStatus } = require('../controllers/moduloController');
+const { getModulos, createModulo, editModulo, updateModuloStatus, getModulo } = require('../controllers/moduloController');
 const { getIndicadores } = require('../controllers/indicadorController');
 const { paramValidationRules, paginationValidationRules,
-    validate, filterIndicadoresValidationRules, sortValidationRules, createModuloValidationRules, updateModuloValidationRules } = require('../middlewares/validator');
+    validate, filterIndicadoresValidationRules, sortValidationRules,
+    createModuloValidationRules, updateModuloValidationRules } = require('../middlewares/validator');
 const { moduloExists } = require('../middlewares/verifyIdModulo');
-const { verifyJWT } = require('../middlewares/auth');
+const { verifyJWT, verifyUserIsActive, verifyUserHasRoles } = require('../middlewares/auth');
 const { uploadImage } = require('../middlewares/fileUpload');
-const { determinePathway } = require('../middlewares/determinePathway');
+const { determinePathway, SITE_PATH } = require('../middlewares/determinePathway');
 
 /**
  * @swagger
@@ -173,11 +175,10 @@ indicadorRouter.route('/')
         sortValidationRules(),
         validate,
         moduloExists,
-        determinePathway('site'),
+        determinePathway(SITE_PATH),
         getIndicadores
     );
 
-/** Administrative section */
 
 /**
  * @swagger
@@ -203,6 +204,8 @@ indicadorRouter.route('/')
  *                 type: string
  *               observaciones:
  *                 type: string
+ *               descripcion:
+ *                 type: string
  *               urlImagen:
  *                 type: string
  *                 format: binary
@@ -220,11 +223,15 @@ indicadorRouter.route('/')
 moduloRouter.route('/')
     .post(
         verifyJWT,
+        verifyUserIsActive,
+        verifyUserHasRoles(['ADMIN']),
         uploadImage('modulos'),
         createModuloValidationRules(),
         validate,
         createModulo
     );
+
+
 /** 
  * @swagger
  *   /modulos/{idModulo}:
@@ -260,10 +267,13 @@ moduloRouter.route('/')
 moduloRouter.route('/:idModulo')
     .put(
         verifyJWT,
+        verifyUserIsActive,
+        verifyUserHasRoles(['ADMIN']),
         updateModuloValidationRules(),
         validate,
         editModulo
     );
+
 
 /**
  * @swagger
@@ -294,9 +304,44 @@ moduloRouter.route('/:idModulo')
 moduloRouter.route('/:idModulo')
     .patch(
         verifyJWT,
+        verifyUserIsActive,
+        verifyUserHasRoles(['ADMIN']),
         updateModuloValidationRules(),
         validate,
         updateModuloStatus
+    );
+
+
+/**
+ * @swagger
+ *   /modulos/{idModulo}:
+ *     get:
+ *       summary: Retrieves information about a tema (modulo)
+ *       tags: [Modulos]
+ *       parameters: 
+ *         - name: idModulo
+ *           in: path
+ *           required: true
+ *           schema:
+ *             type: integer
+ *             format: int64
+ *             minimum: 1
+ *             description: Identifier of a modulo
+ *       responses:
+ *         200:
+ *           description: A modulo object with public fields
+ *         404:
+ *           description: Modulo with given id does not exist
+ *         422:
+ *           description: Unable to process request due to semantic errors
+ *         429:
+ *           description: The app has exceeded its rate limit
+ */
+moduloRouter.route('/:idModulo')
+    .get(
+        paramValidationRules(),
+        validate,
+        getModulo
     );
 
 module.exports = moduloRouter;

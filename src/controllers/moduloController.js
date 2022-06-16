@@ -1,4 +1,5 @@
 const moduloService = require('../services/moduloService');
+const { Modulo } = require('../models');
 
 const getModulos = async (req, res) => {
     try {
@@ -16,8 +17,9 @@ const createModulo = async (req, res) => {
         observaciones,
         activo,
         codigo,
+        descripcion,
         color,
-    } = req.body;
+    } = req.matchedData;
     let urlImagen = 'images/avatar.jpg';
 
     urlImagen = req.file ? `images/${req.file.filename}` : urlImagen;
@@ -34,6 +36,7 @@ const createModulo = async (req, res) => {
             activo,
             codigo,
             urlImagen,
+            descripcion,
             color,
         });
         return res.status(201).json({ data: savedModulo });
@@ -59,13 +62,13 @@ const getAllModulos = async (req, res) => {
             data: modulos
         });
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        return res.status(500).send(err.message);
     }
 };
 
 
 const editModulo = async (req, res) => {
-    const fields = req.body;
+    const fields = req.matchedData;
     const { idModulo } = req.matchedData;
     try {
         const updatedModulo = await moduloService.updateModulo(idModulo, fields);
@@ -94,4 +97,21 @@ const updateModuloStatus = async (req, res) => {
 };
 
 
-module.exports = { getModulos, createModulo, editModulo, getAllModulos, updateModuloStatus }
+const getModulo = async (req, res) => {
+    const { idModulo } = req.matchedData;
+    try {
+        const modulo = await Modulo.findByPk(idModulo);
+        if (modulo === null) {
+            return res.sendStatus(404);
+        }
+        if (modulo.activo === 'NO') {
+            return res.sendStatus(204)
+        }
+        return res.status(200).json({ data: { ...modulo.dataValues } });
+    } catch (err) {
+        return res.status(500).send(err.message)
+    }
+}
+
+
+module.exports = { getModulos, createModulo, editModulo, getAllModulos, updateModuloStatus, getModulo }

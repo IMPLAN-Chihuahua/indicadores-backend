@@ -41,16 +41,22 @@ const validateFileType = (file, cb) => {
     return cb(null, true);
 }
 
+const getStorage = (route) => {
+    switch (route) {
+        case 'modulos':
+            return moduleStorage;
+        case 'indicadores':
+            return indicatorStorage;
+        case 'usuarios':
+            return userStorage;
+        default:
+            throw new Error('Invalid route')
+    }
+}
+
 const uploadImage = (route) => (req, res, next) => {
     const upload = multer({
-        storage:
-            route === 'modulos'
-                ? moduleStorage
-                :
-                route === 'indicadores'
-                    ? indicatorStorage
-                    :
-                    userStorage,
+        storage: getStorage(route),
         limits: {
             fileSize: 1000000,
             files: 1
@@ -64,8 +70,7 @@ const uploadImage = (route) => (req, res, next) => {
         if (err) {
             if (err.message === 'FILE_TYPE_NOT_ALLOWED') {
                 return res.status(422).send(err.message);
-            }
-            if (err.code === 'LIMIT_FILE_SIZE') {
+            } if (err.code === 'LIMIT_FILE_SIZE') {
                 return res.status(413).send(err.code);
             }
         }

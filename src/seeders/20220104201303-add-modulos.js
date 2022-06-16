@@ -12,6 +12,7 @@ module.exports = {
           observaciones: faker.random.words(5),
           activo: i % 2 === 0 ? 'SI' : 'NO',
           codigo: aCodigo(),
+          descripcion: faker.random.words(10),
           createdAt: new Date(),
           updatedAt: new Date(),
           urlImagen: faker.image.imageUrl(),
@@ -19,7 +20,7 @@ module.exports = {
         }
       );
     }
-
+    
     await queryInterface.bulkInsert('Modulos', modulos, {});
   },
 

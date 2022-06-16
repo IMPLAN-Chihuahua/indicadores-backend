@@ -1,4 +1,5 @@
 const faker = require('faker');
+const { Modulo } = require('../models')
 
 const aDummyWithName = (id) => ({
 	id,
@@ -94,10 +95,6 @@ const anHistorico = () => ({
 	fuente: faker.random.word()
 });
 
-const aFuente = () => ({
-	bibliografia: faker.random.word()
-});
-
 const aMapa = () => ({
 	ubicacion: faker.random.word(),
 	url: faker.internet.url()
@@ -115,15 +112,20 @@ const aUser = (id) => ({
 	requestedPasswordChange: id % 2 === 0 ? 'SI' : 'NO',
 });
 
-const aModulo = (id) => ({
-	id,
-	temaIndicador: 'New value',
-	codigo: '666',
-	observaciones: faker.lorem.words(20),
-	activo: faker.datatype.boolean() ? 'SI' : 'NO',
-	urlImagen: faker.image.imageUrl(),
-	color: faker.commerce.color()
-});
+const aModulo = (id) => {
+	const modulo = Modulo.build({
+		id,
+		codigo: aCodigo(),
+		temaIndicador: faker.company.bsNoun(),
+		observaciones: faker.lorem.words(20),
+		activo: faker.datatype.boolean() ? 'SI' : 'NO',
+		urlImagen: faker.image.imageUrl(),
+		color: faker.commerce.color(),
+		descripcion: faker.lorem.paragraph(),
+	});
+	modulo.validate();
+	return modulo;
+}
 
 const aRol = (id) => ({
 	id,
@@ -140,7 +142,7 @@ const aRol = (id) => ({
 
 const someCatalogos = (id) => ([
 	{
-		id: id,
+		id,
 		nombre: 'ODS',
 		createdAt: new Date(),
 		updatedAt: new Date()
@@ -161,9 +163,9 @@ const someCatalogos = (id) => ([
 
 const someCatalogosDetails = (id, idCatalogo) => ([
 	{
-		id: id,
+		id,
 		nombre: faker.random.word(),
-		idCatalogo: idCatalogo,
+		idCatalogo,
 		createdAt: new Date(),
 		updatedAt: new Date()
 	}
@@ -172,21 +174,21 @@ const someCatalogosDetails = (id, idCatalogo) => ([
 const someCatalogosFromIndicador = (idIndicador) => ([
 	{
 		id: 1,
-		idIndicador: idIndicador,
+		idIndicador,
 		idCatalogoDetail: 1,
 		createdAt: new Date(),
 		updatedAt: new Date()
 	},
 	{
 		id: 2,
-		idIndicador: idIndicador,
+		idIndicador,
 		idCatalogoDetail: 2,
 		createdAt: new Date(),
 		updatedAt: new Date()
 	},
 	{
 		id: 3,
-		idIndicador: idIndicador,
+		idIndicador,
 		idCatalogoDetail: 3,
 		createdAt: new Date(),
 		updatedAt: new Date()
@@ -235,7 +237,6 @@ module.exports = {
 	indicadorToCreate,
 	aFormula,
 	aVariable,
-	aFuente,
 	anHistorico,
 	aMapa,
 	someCatalogos,

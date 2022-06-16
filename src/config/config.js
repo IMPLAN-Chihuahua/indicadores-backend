@@ -1,4 +1,5 @@
 require('dotenv').config();
+
 module.exports = {
   development: {
     username: process.env.POSTGRE_DEV_USER,

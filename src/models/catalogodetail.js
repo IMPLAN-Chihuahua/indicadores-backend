@@ -7,7 +7,6 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       this.belongsToMany(models.Indicador, { through: models.CatalogoDetailIndicador, foreignKey: 'idCatalogoDetail' });
       this.belongsTo(models.Catalogo, { foreignKey: 'idCatalogo' });
-      this.hasMany(models.CatalogoDetailIndicador, { foreignKey: 'idCatalogoDetail' });
     }
   };
   CatalogoDetail.init({

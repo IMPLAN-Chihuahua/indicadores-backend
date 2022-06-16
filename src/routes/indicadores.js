@@ -20,8 +20,9 @@ const {
     setUsuariosToIndicador,
 } = require('../controllers/indicadorController');
 const { verifyJWT, verifyUserHasRoles, verifyUserIsActive } = require('../middlewares/auth');
-const { determinePathway } = require('../middlewares/determinePathway');
+const { determinePathway, SITE_PATH, FRONT_PATH } = require('../middlewares/determinePathway');
 const { uploadImage } = require('../middlewares/fileUpload');
+const { getCatalogosFromIndicador } = require('../controllers/catalogoController');
 
 /**
  * @swagger
@@ -96,18 +97,6 @@ const { uploadImage } = require('../middlewares/fileUpload');
  *             type: integer
  *             description: Module in which the indicador is part of
  *             example: 1
- *           idOds:
- *             type: integer
- *             description: Identifier of the ODS (Objectivo de Desarrollo Sostenible)
- *             example: 1
- *           idCobertura:
- *             type: integer
- *             description: Identifier of the coverage
- *             example: 1
- *           idUnidadMedida:
- *             type: integer
- *             description: Identifier of the unit of measure
- *             example: 1
  *       Formula:
  *         type: object
  *         properties:
@@ -158,15 +147,7 @@ const { uploadImage } = require('../middlewares/fileUpload');
  *             type: integer
  *             example: 2022
  *           fuente:
- *             type: string     
- *       Fuente:
- *         type: object
- *         properties:
- *           id:
- *             type: integer
- *             readOnly: true
- *           bibliografia:
- *             type: string  
+ *             type: string
  *       Mapa:
  *         type: object
  *         properties:
@@ -217,7 +198,7 @@ router.route('/:idIndicador')
     .get(paramValidationRules(),
         filterIndicadoresValidationRules(),
         validate,
-        determinePathway('site'),
+        determinePathway(SITE_PATH),
         getIndicador);
 
 /**
@@ -228,6 +209,15 @@ router.route('/:idIndicador')
  *       tags: [Indicadores]
  *       security:
  *         - bearer: []
+ *       parameters:
+ *         - in: query
+ *           name: page
+ *           schema:
+ *             type: integer
+ *         - in: query
+ *           name: perPage
+ *           schema:
+ *             type: integer
  *       responses:
  *         200:
  *           description: A very friendly list of indicadores
@@ -245,7 +235,7 @@ router.route('/')
         sortValidationRules(),
         filterIndicadoresValidationRules(),
         validate,
-        determinePathway('front'),
+        determinePathway(SITE_PATH),
         getIndicadores);
 
 
@@ -417,5 +407,36 @@ router.route('/:idIndicador/usuarios')
         validate,
         setUsuariosToIndicador
     );
+
+/**
+ * @swagger
+ *   /indicadores/{idIndicador}/catalogos:
+ *     get:
+ *       summary: Retrieve the catalogos associated to an indicador
+ *       tags: [Indicadores]
+ *       security: 
+ *         - bearer: []
+ *       parameters:
+ *         - in: path
+ *           name: idIndicador
+ *           required: true
+ *           schema:
+ *             type: integer
+ *       responses:
+ *         201:
+ *           description: Retrieves a list of catalogos associated to an indicador
+ *         401:
+ *           description: Unauthorized request (not valid JWT in Authorization header)
+ *         403:   
+ *           description: The request has an invalid token, rol, privileges or account is inactive
+ *         429:
+ *           description: The app has exceeded its rate limit
+ */
+router.route('/:idIndicador/catalogos')
+    .get(
+        paramValidationRules(),
+        validate,
+        getCatalogosFromIndicador
+    )
 
 module.exports = router;

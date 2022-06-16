@@ -101,7 +101,7 @@ const paginationValidationRules = () => [
 ];
 
 const filterIndicadoresValidationRules = () => [
-    query(['anioUltimoValorDisponible', 'idOds', 'idCobertura', 'idFuente', 'idUnidadMedida'])
+    query(['anioUltimoValorDisponible', 'idOds', 'idCobertura', 'idUnidadMedida'])
         .optional()
         .isInt().withMessage('campo debe ser entero')
         .toInt()
@@ -193,6 +193,10 @@ const createModuloValidationRules = () => [
         .withMessage('por favor agrega un tema')
         .isLength({ min: 5 })
         .withMessage('El tema no puede estar vacio'),
+
+    check('descripcion')
+        .exists()
+        .withMessage('Por favor agrega la descripcion')
 ];
 
 const updateModuloValidationRules = () => [
@@ -245,7 +249,7 @@ const createIndicadorValidationRules = () => [
         .exists()
         .trim().escape(),
 
-    body(['codigo'])
+    body(['codigo', 'codigoObjeto'])
         .exists('Este campo no puede estar vacio'),
 
     body(['definicion', 'ultimoValorDisponible', 'observaciones',
