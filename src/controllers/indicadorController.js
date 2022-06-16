@@ -59,7 +59,9 @@ const generateFile = async (format, res, data) => {
 
 const getIndicadores = async (req, res) => {
   const { pathway } = req;
-  const { page, perPage } = getPagination(req.matchedData);
+  const { page, perPage, order } = getPagination(req.matchedData);
+  console.log('ekeke');
+  console.log(req.matchedData);
   try {
     const { indicadores, total } = await IndicadorService.getIndicadores(page, perPage, req.matchedData, pathway);
     const totalPages = Math.ceil(total / perPage);

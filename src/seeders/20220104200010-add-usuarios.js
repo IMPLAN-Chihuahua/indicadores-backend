@@ -6,7 +6,7 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     const usuarios = [];
     usuarios.push({
-      correo: 'johndoe@email.com',
+      correo: 'johnssdoe@email.com',
       clave: await hashClave('password'),
       nombres: 'John',
       apellidoPaterno: 'Doe',

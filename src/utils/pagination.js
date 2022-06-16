@@ -6,4 +6,10 @@ const getPaginationModulos = (queryParams) => {
     return { page, perPage };
 }
 
-module.exports = { getPagination, getPaginationModulos };
+const getPaginationHistoricos = (queryParams) => {
+    const page = queryParams.page || 1;
+    const perPage = queryParams.perPage || 5;
+    return { page, perPage };
+}
+
+module.exports = { getPagination, getPaginationModulos, getPaginationHistoricos };

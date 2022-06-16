@@ -26,5 +26,8 @@ module.exports = {
     host: process.env.POSTGRE_PRO_HOST,
     dialect: 'postgres',
     logging: console.log
+  },
+  dialectOptions: {
+    ssl: true
   }
 }

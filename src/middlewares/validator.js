@@ -127,7 +127,7 @@ const filterModulosValidationRules = () => [
 ];
 
 const paramValidationRules = () => [
-    param(['idModulo', 'idIndicador', 'idUser', 'idOds', 'idCobertura', 'idUnidadMedida', 'idCatalogo'])
+    param(['idModulo', 'idIndicador', 'idUser', 'idOds', 'idCobertura', 'idUnidadMedida', 'idCatalogo', 'idHistorico'])
         .optional()
         .isInt().withMessage('Campo debe ser entero')
         .toInt()
@@ -146,7 +146,7 @@ const paramValidationRules = () => [
 const sortValidationRules = () => [
     query('sortBy')
         .optional()
-        .isIn(['nombre'])
+        .isIn(['id', 'nombre', 'anio', 'fuente', 'valor', 'periodicidad'])
         .withMessage('orden debe ser ascendente o descendente'),
     query('order')
         .optional()
@@ -222,6 +222,26 @@ const updateModuloValidationRules = () => [
         .optional()
         .isLength({ min: 5 })
         .withMessage('El tema no puede estar vacio'),
+]
+
+const updateHistoricoValidationRules = () => [
+    param(['idHistorico'])
+        .exists()
+        .withMessage('por favor agrega un id de historico')
+        .isInt()
+        .withMessage('campo debe ser entero')
+        .toInt(),
+
+    check('valor')
+        .optional(),
+
+    check('fuente')
+        .optional(),
+
+    check('fechaIngreso')
+        .optional()
+        .isISO8601()
+        .withMessage('fecha debe tener formato ISO8601'),
 ]
 
 const createIndicadorValidationRules = () => [
@@ -332,6 +352,7 @@ module.exports = {
     filterModulosValidationRules,
     sortModulosValidationRules,
     updateIndicadorValidationRules,
+    updateHistoricoValidationRules,
     tokenValidationRules,
     indicadorAssignUsuarioValidationRules,
     usuarioAssignIndicadorValidationRules,

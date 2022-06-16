@@ -17,6 +17,7 @@ const { Op } = Sequelize;
 
 const getIndicadores = async (page, perPage, matchedData, pathway) => {
   const { where, order, attributes, includes } = definitions(pathway, matchedData);
+  console.log(order);
   try {
     const result = await Indicador.findAndCountAll({
       limit: perPage,
@@ -236,6 +237,77 @@ const updateIndicador = async (id, indicador) => {
     throw new Error(`Error al actualizar indicador: ${err.message}`);
   }
 };
+
+/** If admin page commits suicide, check this  */
+// const defineAttributes = (pathway, matchedData) => {
+//   let attributes = [];
+//   switch (pathway) {
+//     case 'file': {
+//       attributes.push(
+//         "id",
+//         "nombre",
+//         "definicion",
+//         "urlImagen",
+//         [sequelize.literal('"modulo"."temaIndicador"'), "modulo"],
+//         "ultimoValorDisponible",
+//         "anioUltimoValorDisponible",
+//         "tendenciaActual",
+//         "tendenciaDeseada",
+//         "periodicidad")
+//       return attributes;
+//     };
+//     case 'site': {
+//       if (matchedData) {
+//         attributes.push(
+//           "id",
+//           "nombre",
+//           "ultimoValorDisponible",
+//           "anioUltimoValorDisponible",
+//           "tendenciaActual",
+//           "tendenciaDeseada",
+//           "createdAt",
+//           "updatedAt",
+//           "idModulo",
+//           "periodicidad")
+//       } else {
+//         attributes.push(
+//           "id",
+//           "nombre",
+//           "definicion",
+//           "urlImagen",
+//           [sequelize.literal('"modulo"."temaIndicador"'), "modulo"],
+//           "ultimoValorDisponible",
+//           "anioUltimoValorDisponible",
+//           "tendenciaActual",
+//           "tendenciaDeseada",
+//           "periodicidad")
+//       }
+//       return attributes;
+//     };
+//     case 'front': {
+//       attributes.push(
+//         "id",
+//         "nombre",
+//         "urlImagen",
+//         "definicion",
+//         "codigo",
+//         "codigoObjeto",
+//         "ultimoValorDisponible",
+//         "anioUltimoValorDisponible",
+//         "tendenciaActual",
+//         "tendenciaDeseada",
+//         "observaciones",
+//         "createdBy",
+//         "updatedBy",
+//         "idModulo",
+//         "createdAt",
+//         "updatedAt",
+//         "activo",
+//         "periodicidad")
+//       return attributes;
+//     };
+//   }
+// };
 
 const defineIncludes = (pathway, matchedData) => {
   const includes = [
