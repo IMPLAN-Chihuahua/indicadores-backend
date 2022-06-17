@@ -305,7 +305,7 @@ const defineIncludes = (pathway, matchedData) => {
     {
       model: Modulo,
       required: true,
-      attributes: ['temaIndicador', 'descripcion', 'color'],
+      attributes: ['id', 'temaIndicador', 'descripcion', 'color'],
     },
     {
       model: Mapa,
