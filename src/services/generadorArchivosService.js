@@ -121,7 +121,6 @@ const generatePDF = async (data) => {
     values,
     indicador.unidadMedida
   ).catch((err) => {
-    console.log(err);
     throw err;
   });
   

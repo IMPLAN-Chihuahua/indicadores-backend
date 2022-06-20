@@ -17,15 +17,6 @@ const { Op } = Sequelize;
 
 const getIndicadores = async (page, perPage, matchedData, pathway) => {
   const { where, order, attributes, includes } = definitions(pathway, matchedData);
-  console.log('######################### WHERE ##############################')
-  console.log(where)
-  console.log('######################### ORDER ##############################')
-  console.log(order)
-  console.log('######################### ATTRIBUTES ##############################')
-  console.log(attributes)
-  console.log('######################### INCLUDES ##############################')
-  console.log(includes)
-
   try {
     const result = await Indicador.findAndCountAll({
       limit: perPage,
@@ -314,7 +305,7 @@ const defineIncludes = (pathway, matchedData) => {
     {
       model: Modulo,
       required: true,
-      attributes: ['temaIndicador', 'descripcion', 'color'],
+      attributes: ['id', 'temaIndicador', 'descripcion', 'color'],
     },
     {
       model: Mapa,
