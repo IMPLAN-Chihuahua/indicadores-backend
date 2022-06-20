@@ -1,3 +1,5 @@
+const logger = require('./logger');
+
 require('dotenv').config();
 
 module.exports = {
@@ -8,7 +10,7 @@ module.exports = {
     host: process.env.POSTGRE_DEV_HOST,
     port: process.env.POSTGRE_DEV_PORT,
     dialect: 'postgres',
-    logging: console.log
+    logging: logger.info.bind(logger)
   },
   test: {
     username: process.env.POSTGRE_TEST_USER,
@@ -17,7 +19,7 @@ module.exports = {
     host: process.env.POSTGRE_TEST_HOST,
     port: process.env.POSTGRE_TEST_PORT,
     dialect: 'postgres',
-    logging: console.log
+    logging: logger.info.bind(logger)
   },
   production: {
     username: process.env.POSTGRE_PRO_USER,
@@ -25,7 +27,7 @@ module.exports = {
     database: process.env.POSTGRE_PRO_DB_NAME,
     host: process.env.POSTGRE_PRO_HOST,
     dialect: 'postgres',
-    logging: console.log
+    logging: logger.info.bind(logger)
   },
   dialectOptions: {
     ssl: true

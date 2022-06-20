@@ -11,7 +11,7 @@ const { Historico, Usuario, Indicador } = require('../../models');
 const { someHistoricos, anIndicador } = require('../../utils/factories');
 const { TOKEN_SECRET } = process.env;
 
-describe.only('v1/historicos', function () {
+describe('v1/historicos', function () {
     const historicos = someHistoricos(1);
     const indicador = anIndicador(11111111111111111);
 
@@ -91,7 +91,6 @@ describe.only('v1/historicos', function () {
     //                 fuente: 'Fuente',
     //             })
     //             .end(function (err, res) {
-    //                 console.log(res);
     //                 expect(res).to.have.status(204);
     //                 expect(updateFake.calledOnce).to.be.true;
     //                 done();

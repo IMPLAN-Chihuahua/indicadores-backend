@@ -1,3 +1,4 @@
+const logger = require('../config/logger');
 const { Usuario, Rol, Indicador, Sequelize, sequelize } = require('../models');
 
 const { Op } = Sequelize;
