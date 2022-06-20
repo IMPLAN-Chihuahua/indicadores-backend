@@ -6,6 +6,8 @@ const morgan = require('morgan');
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const path = require('path')
+const logger = require('./src/config/logger');
+const logErrors = require('./src/middlewares/log');
 
 const PORT = 8080;
 const options = {
@@ -43,8 +45,10 @@ app.use(cors());
 // Prevent common vulnerabilities
 app.use(helmet());
 
-// Log HTTP requests 
-app.use(morgan('dev'));
+// Log HTTP requests with Morgan and Winston
+app.use(morgan(':method :url :status :response-time ms - :res[content-length]', {
+  stream: { write: message => logger.info(message.trim()) }
+}));
 
 // Parse data from requests
 app.use(express.json());
@@ -65,13 +69,11 @@ app.use('/api/v1/me', require('./src/routes/me'));
 app.use('/api/v1/historicos', require('./src/routes/historicos'));
 
 app.use('/images', express.static(path.join(__dirname, 'uploads', 'images')));
-
 app.use('/images/indicador', express.static(path.join(__dirname, 'uploads', 'indicadores/images')));
-
 app.use('/images/temaInteres', express.static(path.join(__dirname, 'uploads', 'modules/images')));
-
 app.use('/images/user', express.static(path.join(__dirname, 'uploads', 'users/images')));
+app.use(logErrors)
 
-const server = app.listen(PORT, () => console.log(`App starting on port ${PORT}`));
+const server = app.listen(PORT, () => logger.info(`App starting on port ${PORT}`));
 
 module.exports = { server, app };

@@ -10,8 +10,7 @@ const moduloExists = async (req, res, next) => {
             return res.status(404).json({ message: `Modulo con ${idModulo} no existe` });
         }
     } catch (err) {
-        console.log(err);
-        return res.sendStatus(500);
+        next(err);
     }
 };
 

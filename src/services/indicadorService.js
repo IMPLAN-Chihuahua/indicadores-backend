@@ -17,7 +17,6 @@ const { Op } = Sequelize;
 
 const getIndicadores = async (page, perPage, matchedData, pathway) => {
   const { where, order, attributes, includes } = definitions(pathway, matchedData);
-  console.log(order);
   try {
     const result = await Indicador.findAndCountAll({
       limit: perPage,
