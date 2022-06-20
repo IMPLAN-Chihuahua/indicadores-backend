@@ -17,7 +17,15 @@ const { Op } = Sequelize;
 
 const getIndicadores = async (page, perPage, matchedData, pathway) => {
   const { where, order, attributes, includes } = definitions(pathway, matchedData);
-  console.log(order);
+  console.log('######################### WHERE ##############################')
+  console.log(where)
+  console.log('######################### ORDER ##############################')
+  console.log(order)
+  console.log('######################### ATTRIBUTES ##############################')
+  console.log(attributes)
+  console.log('######################### INCLUDES ##############################')
+  console.log(includes)
+
   try {
     const result = await Indicador.findAndCountAll({
       limit: perPage,
@@ -28,6 +36,7 @@ const getIndicadores = async (page, perPage, matchedData, pathway) => {
       attributes: attributes,
       distinct: true
     });
+
     return { indicadores: result.rows, total: result.count };
   } catch (err) {
     throw new Error(`Error al obtener indicadores: ${err.message}`);
@@ -348,7 +357,7 @@ const defineIncludes = (pathway, matchedData) => {
     case FRONT_PATH:
       includes.push({
         model: Historico,
-        required: true,
+        required: false,
         attributes: ["anio", "valor", "fuente"],
         limit: 5,
         order: [["anio", "DESC"]],
@@ -365,7 +374,7 @@ const defineIncludes = (pathway, matchedData) => {
     case SITE_PATH:
       includes.push({
         model: Historico,
-        required: true,
+        required: false,
         attributes: ["anio", "valor", "fuente"],
         limit: 5,
         order: [["anio", "DESC"]],
