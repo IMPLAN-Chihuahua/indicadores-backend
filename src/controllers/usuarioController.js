@@ -137,6 +137,7 @@ const getUser = async (req, res, id) => {
 }
 
 const getUserFromId = async (req, res, next) => {
+  console.log('ekekekeke');
   const id = req.matchedData.idUser;
   try {
     return await getUser(req, res, id)

@@ -50,7 +50,7 @@ const definitions = (pathway, matchedData) => {
 
 const defineAttributes = (pathway, matchedData) => {
   const attributes = ["id", "nombre", "ultimoValorDisponible",
-    "anioUltimoValorDisponible", "tendenciaActual", "fuente"];
+    "anioUltimoValorDisponible", "tendenciaActual", "fuente", "createdBy", "updatedAt"];
 
   switch (pathway) {
     case FILE_PATH:
