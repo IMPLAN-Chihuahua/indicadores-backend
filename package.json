@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "cross-env NODE_ENV=test mocha --require src/config/fixtures.cjs src/tests/**/*.js",
+    "test": "cross-env NODE_ENV=test mocha --require src/config/fixtures.cjs src/tests/controllers/*.js",
     "dev": "cross-env NODE_ENV=development nodemon app.js"
   },
   "keywords": [],
@@ -45,7 +45,7 @@
     "eslint-plugin-import": "^2.25.4",
     "faker": "^5.5.3",
     "mocha": "^9.2.0",
-    "nodemon": "^2.0.14",
+    "nodemon": "^2.0.18",
     "nyc": "^15.1.0",
     "sequelize-cli": "^6.3.0",
     "sinon": "^12.0.1"
