@@ -41,7 +41,7 @@
         margin-bottom: 10px;
         align-items: center;
         justify-content: center;
-        background-color: #263044;
+        background-color: rgb(27, 26, 26);
         color: white;
         font-size: small;
         font-family: Arial, Helvetica, sans-serif;
@@ -51,7 +51,7 @@
         display: flex;
         flex-direction: row;
         align-items: center;
-        justify-content: space-between;
+        justify-content: center;
       }
 
       .table-cluster {
@@ -107,7 +107,7 @@
       .card {
         width: 300px;
         height: 320px;
-        background-color: #204c5a;
+        background-color: #0f252c;
         color: white;
         font-family: Arial, Helvetica, sans-serif;
         margin-right: 20px;
@@ -162,7 +162,7 @@
       <img
         class="header__img"
         alt="OUT"
-        src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644525630/small-logo_ebzjya.png"
+        src="https://indicadores-bucket-chihuahua.s3.us-east-2.amazonaws.com/uploads/logo_chihuahua_metrica.webp"
       />
       <h1>Monitoreo de indicadores de la ciudad de Chihuahua</h1>
       <img
@@ -172,13 +172,8 @@
       />
     </div>
     <div class="table-cluster">
-      <div class="desc" style="width: 100%">
-        <img
-          width="200px"
-          height="200px"
-          alt="..."
-          src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644526329/productivity-icon-png-29_rfrtji.png"
-        />
+
+      <div class="desc" style="width: 100% !important">
         <div>
           <table>
             <thead>
@@ -194,6 +189,7 @@
           </table>
         </div>
       </div>
+
       <table>
         <tr>
           <th>Tematica</th>
@@ -201,9 +197,17 @@
           <th>Cobertura Geográfica</th>
         </tr>
         <tr>
-          <td>{{modulo}}</td>
-          <td>{{ods}}</td>
-          <td>{{coberturaGeografica}}</td>
+          <td>{{modulo.temaIndicador}}</td>
+          {{#each catalogos}}
+            {{#if (isOds this.idCatalogo) }}
+              <td>{{this.nombre}}</td>
+            {{/if }}
+            {{#if (isCobertura this.idCatalogo) }}
+              <td>{{this.nombre}}</td>
+            {{/if }}
+          {{/each}}
+          <!-- <td>{{catalogos}}</td> -->
+          <!-- <td>{{catalogos}}</td> -->
         </tr>
       </table>
 
@@ -216,11 +220,15 @@
         <tbody>
           <tr>
             <td>
+              {{#if (valueIsNull formula.ecuacion) }}
+              <p>Consultar fuente</p>
+              {{else}}
               <p>$${{formula.ecuacion}}$$</p>
+              {{/if }}
             </td>
           </tr>
           <tr>
-            <td>{{formula.descripcion}}</td>
+            <td>{{fuente}}</td>
           </tr>
         </tbody>
       </table>
@@ -293,7 +301,11 @@
         <div class="card">
           <div class="card-header">
             <div class="card-circle">
-              <b>{{coberturaGeografica}}</b>
+          {{#each catalogos}}
+            {{#if (isCobertura this.idCatalogo) }}
+              <b>{{this.nombre}}</b>
+            {{/if }}
+          {{/each}}
             </div>
           </div>
           <div class="container">
@@ -302,8 +314,22 @@
           </div>
         </div>
       </div>
-      <h1 class="text">Valores historicos</h1>
+      {{#if (hasHistoricos historicos) }}
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
 
+      <h1 class="text">Valores historicos</h1>
       <table>
         <caption style="caption-side: bottom; font-size: small; padding: 10px">
           Tabla con la evolución de los datos registrados.
@@ -318,7 +344,7 @@
         <tbody>
           {{#each historicos}}
           <tr>
-            <td style="text-align: right !important;">{{this.anio}}</td>
+            <td style="text-align: right !important;">{{toString this.anio}}</td>
             <td style="text-align: right !important;">{{numberWithCommas this.valor}}</td>
             <td><a href="{{this.fuente}}">{{this.fuente}}</a></td>
           </tr>
@@ -337,7 +363,9 @@
         </caption>
       </table>
     </div>
-    <h1 class="text">Mapa</h1>
+
+    {{/if }}
+    <!-- <h1 class="text">Mapa</h1>
     <div style="display: flex; justify-content: center">
       {{#if mapa}}
       <img
@@ -345,6 +373,6 @@
         src="https://res.cloudinary.com/davzo6qf4/image/upload/v1644535117/mapa_mwlhkq.png"
       />
       {{/if}}
-    </div>
+    </div> -->
   </body>
 </html>
