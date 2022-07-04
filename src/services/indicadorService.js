@@ -16,7 +16,7 @@ const { toggleStatus, isObjEmpty } = require("../utils/objectUtils");
 const { Op } = Sequelize;
 
 const getIndicadores = async (page, perPage, matchedData, pathway) => {
-  const { where, order, attributes, includes } = definitions(pathway, matchedData);
+  const { where, order, attributes, includes } = getDefinitionsForIndicadores(pathway, matchedData);
   try {
     const result = await Indicador.findAndCountAll({
       limit: perPage,
@@ -34,11 +34,11 @@ const getIndicadores = async (page, perPage, matchedData, pathway) => {
   }
 };
 
-const definitions = (pathway, matchedData) => {
-  const attributes = defineAttributes(pathway, matchedData);
-  const includes = defineIncludes(pathway, matchedData);
-  const order = defineOrder(pathway, matchedData);
-  const where = defineWhere(pathway, matchedData);
+const getDefinitionsForIndicadores = (pathway, queryParams) => {
+  const attributes = defineAttributes(pathway, queryParams);
+  const includes = defineIncludesForIndicadores(queryParams);
+  const order = defineOrder(pathway, queryParams);
+  const where = defineWhere(pathway, queryParams);
 
   return {
     attributes,
@@ -124,7 +124,7 @@ const defineWhere = (pathway, matchedData) => {
 };
 
 const getIndicador = async (idIndicador, pathway) => {
-  const includes = defineIncludes(pathway);
+  const includes = defineIncludesForAnIndicador(pathway);
   const attributes = defineAttributes(pathway);
   try {
     const indicador = await Indicador.findOne({
@@ -179,9 +179,6 @@ const getIncludesToCreateIndicador = (indicador) => {
       include: [Formula.associations.variables]
     });
   }
-  if (indicador.historicos) {
-    includes.push(Indicador.associations.historicos);
-  }
   if (indicador.mapa) {
     includes.push(Indicador.associations.mapa);
   }
@@ -229,79 +226,23 @@ const updateIndicador = async (id, indicador) => {
   }
 };
 
-/** If admin page commits suicide, check this  */
-// const defineAttributes = (pathway, matchedData) => {
-//   let attributes = [];
-//   switch (pathway) {
-//     case 'file': {
-//       attributes.push(
-//         "id",
-//         "nombre",
-//         "definicion",
-//         "urlImagen",
-//         [sequelize.literal('"modulo"."temaIndicador"'), "modulo"],
-//         "ultimoValorDisponible",
-//         "anioUltimoValorDisponible",
-//         "tendenciaActual",
-//         "tendenciaDeseada",
-//         "periodicidad")
-//       return attributes;
-//     };
-//     case 'site': {
-//       if (matchedData) {
-//         attributes.push(
-//           "id",
-//           "nombre",
-//           "ultimoValorDisponible",
-//           "anioUltimoValorDisponible",
-//           "tendenciaActual",
-//           "tendenciaDeseada",
-//           "createdAt",
-//           "updatedAt",
-//           "idModulo",
-//           "periodicidad")
-//       } else {
-//         attributes.push(
-//           "id",
-//           "nombre",
-//           "definicion",
-//           "urlImagen",
-//           [sequelize.literal('"modulo"."temaIndicador"'), "modulo"],
-//           "ultimoValorDisponible",
-//           "anioUltimoValorDisponible",
-//           "tendenciaActual",
-//           "tendenciaDeseada",
-//           "periodicidad")
-//       }
-//       return attributes;
-//     };
-//     case 'front': {
-//       attributes.push(
-//         "id",
-//         "nombre",
-//         "urlImagen",
-//         "definicion",
-//         "codigo",
-//         "codigoObjeto",
-//         "ultimoValorDisponible",
-//         "anioUltimoValorDisponible",
-//         "tendenciaActual",
-//         "tendenciaDeseada",
-//         "observaciones",
-//         "createdBy",
-//         "updatedBy",
-//         "idModulo",
-//         "createdAt",
-//         "updatedAt",
-//         "activo",
-//         "periodicidad")
-//       return attributes;
-//     };
-//   }
-// };
+const defineIncludesForIndicadores = (queryParams) => {
+  return [
+    ...includeBasicModels(),
+    ...includeCatalogoFilters(queryParams),
+  ];
+};
 
-const defineIncludes = (pathway, matchedData) => {
-  const includes = [
+const defineIncludesForAnIndicador = (pathway, queryParams) => {
+  return [
+    ...includeBasicModels(),
+    ...includeCatalogoFilters(queryParams),
+    ...includeHistorico(pathway)
+  ];
+}
+
+const includeBasicModels = () => {
+  return [
     {
       model: Modulo,
       required: true,
@@ -337,46 +278,33 @@ const defineIncludes = (pathway, matchedData) => {
         attributes: [],
       },
     },
-  ];
+  ]
+};
 
-  const catalogosFilters = getCatalogoFilters(matchedData);
-  if (!isObjEmpty(catalogosFilters)) {
-    includes.push(getCatalogoFilters(matchedData))
-  }
-
+const includeHistorico = (pathway) => {
   switch (pathway) {
     case FRONT_PATH:
-      includes.push({
-        model: Historico,
-        required: false,
-        attributes: ["anio", "valor", "fuente"],
-        limit: 5,
-        order: [["anio", "DESC"]],
-      });
-      return includes;
-    case FILE_PATH:
-      includes.push({
-        model: Historico,
-        required: false,
-        attributes: ["anio", "valor", "fuente"],
-        order: [["anio", "DESC"]],
-      });
-      return includes;
     case SITE_PATH:
-      includes.push({
+      return [{
         model: Historico,
         required: false,
         attributes: ["anio", "valor", "fuente"],
         limit: 5,
         order: [["anio", "DESC"]],
-      });
-      return includes;
+      }];
+    case FILE_PATH:
+      return [{
+        model: Historico,
+        required: false,
+        attributes: ["anio", "valor", "fuente"],
+        order: [["anio", "DESC"]],
+      }];
     default:
       throw new Error('Invalid pathway')
   };
-};
+}
 
-const getCatalogoFilters = (queryParams) => {
+const includeCatalogoFilters = (queryParams) => {
   const inIds = [];
   const { idOds, idCobertura, idUnidadMedida } = queryParams || {};
   if (idOds) {
@@ -388,9 +316,8 @@ const getCatalogoFilters = (queryParams) => {
   if (idUnidadMedida) {
     inIds.push(idUnidadMedida);
   }
-
   if (inIds.length === 0) {
-    return {};
+    return [];
   }
 
   return {
