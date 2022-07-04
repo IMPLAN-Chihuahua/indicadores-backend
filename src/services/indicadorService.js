@@ -320,7 +320,7 @@ const includeCatalogoFilters = (queryParams) => {
     return [];
   }
 
-  return {
+  return [{
     model: CatalogoDetail,
     required: true,
     as: 'catalogosFilters',
@@ -329,7 +329,7 @@ const includeCatalogoFilters = (queryParams) => {
       attributes: [],
       where: { idCatalogoDetail: [...inIds] },
     }
-  };
+  }];
 }
 
 module.exports = {
