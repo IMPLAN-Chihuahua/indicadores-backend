@@ -178,25 +178,32 @@ const sortModulosValidationRules = () => [
 const createModuloValidationRules = () => [
     check('codigo')
         .exists()
-        .withMessage('por favor agrega un codigo')
-        .isLength({ min: 3 })
-        .withMessage('El codigo debe tener 3 caracteres'),
+        .withMessage('El codigo es obligatorio'),
 
     check('activo')
         .optional()
         .toUpperCase()
         .isIn(['SI', 'NO'])
-        .withMessage('estado invalido'),
+        .withMessage('Estado invalido'),
 
     check('temaIndicador')
         .exists()
-        .withMessage('por favor agrega un tema')
-        .isLength({ min: 5 })
-        .withMessage('El tema no puede estar vacio'),
+        .withMessage('El tema es obligatorio'),
 
     check('descripcion')
         .exists()
-        .withMessage('Por favor agrega la descripcion')
+        .withMessage('Descripcion es obligatoria'),
+
+    check('observaciones')
+        .optional()
+        .trim()
+        .notEmpty()
+        .withMessage('Observaciones debe tener un valor'),
+
+    check('color')
+        .optional()
+        .isHexColor()
+        .withMessage('Solo colores en hexadecimal')
 ];
 
 const updateModuloValidationRules = () => [

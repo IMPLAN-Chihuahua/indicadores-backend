@@ -31,9 +31,6 @@ module.exports = (sequelize, DataTypes) => {
       codigo: {
         type: DataTypes.STRING,
         allowNull: false,
-        validate: {
-          is: /[\d]{3,}/g
-        }
       },
 
       observaciones: {
