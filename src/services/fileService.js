@@ -11,14 +11,25 @@ const generateCSV = (data) => {
   return csv;
 };
 
-const UNIDAD_MEDIDA_ID = 2;
-const COBERTURA_GEOGRAFICA_ID = 3;
-const getCatalogo = (catalogos, id) => {
-  return catalogos?.find(catalogo => catalogo?.dataValues.idCatalogo == id);
-}
 
-const generateXLSX = (indicador) => {
-  let baseFile = "./src/templates/indicador.xlsx";
+const generateXLSX = (data) => {
+  const indicador = data;
+  const indicadorInfo = [
+    indicador.nombre,
+    indicador.modulo,
+    indicador.tendenciaActual,
+    indicador.tendenciaDeseada,
+    indicador.ultimoValorDisponible,
+    indicador.unidadMedida,
+    indicador.anioUltimoValorDisponible,
+    indicador.coberturaGeografica,
+    indicador.formula?.ecuacion ?? "NA",
+    indicador.formula?.descripcion ?? "NA",
+    indicador.formula?.Variables ?? "NA",
+    indicador.Historicos ?? "NA",
+  ];
+  
+  let baseFile = "./src/templates/boop.xlsx";
   let wb = new Excel.Workbook();
   return wb.xlsx
     .readFile(baseFile)
@@ -26,11 +37,36 @@ const generateXLSX = (indicador) => {
       let initialRow = 2;
       let ws = wb.getWorksheet(1);
       let row = ws.getRow(initialRow);
-      let i = 1;
-      for (const key of Object.keys(indicador)) {
-        row.getCell(i).value = key;
-        i++;
-        row.commit();
+      for (let i = 0; i < indicadorInfo.length; i++) {
+        initialRow = 2;
+        let actualCell = i + 1;
+        if (typeof indicadorInfo[i] === "object") {
+          indicadorInfo[i].map((item, index) => {
+            if (item.dataValues.hasOwnProperty("unidadMedida")) {
+              [item.dataValues].map((singularItem, index) => {
+                let row = ws.getRow(initialRow);
+                row.getCell(actualCell).value = singularItem.nombre ?? "NA";
+                row.getCell(actualCell + 1).value =
+                  singularItem.nombreAtributo ?? "NA";
+                row.getCell(actualCell + 2).value = singularItem.dato ?? "NA";
+                row.commit();
+              });
+              initialRow = initialRow + 1;
+            } else if (item.dataValues.hasOwnProperty("anio")) {
+              [item.dataValues].map((singularItem, index) => {
+                let row = ws.getRow(initialRow);
+                row.getCell(actualCell + 2).value = singularItem.valor ?? "NA";
+                row.getCell(actualCell + 3).value = singularItem.anio ?? "NA";
+                row.getCell(actualCell + 4).value = singularItem.fuente ?? "NA";
+                row.commit();
+              });
+              initialRow = initialRow + 1;
+            }
+          });
+        } else {
+          row.getCell(actualCell).value = indicadorInfo[i];
+          row.commit();
+        }
       }
       return await wb.xlsx.writeBuffer();;
     })
