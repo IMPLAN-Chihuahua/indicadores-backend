@@ -11,23 +11,24 @@ const generateCSV = (data) => {
   return csv;
 };
 
+
 const generateXLSX = (data) => {
   const indicador = data;
   const indicadorInfo = [
     indicador.nombre,
     indicador.modulo,
     indicador.tendenciaActual,
+    indicador.tendenciaDeseada,
     indicador.ultimoValorDisponible,
     indicador.unidadMedida,
     indicador.anioUltimoValorDisponible,
     indicador.coberturaGeografica,
-    indicador.fuente,
     indicador.formula?.ecuacion ?? "NA",
     indicador.formula?.descripcion ?? "NA",
-    indicador.formula?.variables ?? "NA",
-    indicador.historicos ?? "NA",
+    indicador.formula?.Variables ?? "NA",
+    indicador.Historicos ?? "NA",
   ];
-
+  
   let baseFile = "./src/templates/boop.xlsx";
   let wb = new Excel.Workbook();
   return wb.xlsx
@@ -82,23 +83,16 @@ const generatePDF = async (data) => {
 
   const page = await browser.newPage();
   await page.setViewport({ width: 800, height: 800, deviceScaleFactor: 3 });
-  const templateHtml = fs.readFileSync("./src/templates/indicador-template.html", "utf8");
+  const templateHtml = fs.readFileSync("./src/templates/indicador.html", "utf8");
   handlebars.registerHelper('isAscending', (str) => str === 'ASCENDENTE');
   handlebars.registerHelper('numberWithCommas', numberWithCommas);
   handlebars.registerHelper('isOds', (int) => int === 1);
   handlebars.registerHelper('isCobertura', (int) => int === 3);
   handlebars.registerHelper('isUnidad', (int) => int === 2);
-  handlebars.registerHelper('toString', (int) => String(int));
-  handlebars.registerHelper('containsNA', (str) => str.includes("NA") ? "NA" : str);
-  handlebars.registerHelper('valueIsNull', (str) => str === null ? true : false);
-
-  handlebars.registerHelper('hasHistoricos', (historicos) => {
-    if (historicos.length > 0) {
-      return true;
-    }
-    return false;
-  }
-  );
+  handlebars.registerHelper('toString', (int) => int?.toString());
+  handlebars.registerHelper('containsNA', (str) => str?.includes("NA") ? "NA" : str);
+  handlebars.registerHelper('valueIsNull', (str) => str === null);
+  handlebars.registerHelper('hasHistoricos', (historicos) => historicos.length > 0);
 
   const template = handlebars.compile(templateHtml);
 
@@ -106,8 +100,6 @@ const generatePDF = async (data) => {
   await page.setContent(html, {
     waitUntil: "networkidle0",
   });
-
-  console.log(indicador.formula)
 
   if (indicador.historicos.length > 0) {
     const years = indicador?.historicos.map((elem) => elem.anio);
