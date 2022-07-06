@@ -11,24 +11,14 @@ const generateCSV = (data) => {
   return csv;
 };
 
-const generateXLSX = (data) => {
-  const indicador = data;
-  const indicadorInfo = [
-    indicador.nombre,
-    indicador.modulo,
-    indicador.tendenciaActual,
-    indicador.ultimoValorDisponible,
-    indicador.unidadMedida,
-    indicador.anioUltimoValorDisponible,
-    indicador.coberturaGeografica,
-    indicador.fuente,
-    indicador.formula?.ecuacion ?? "NA",
-    indicador.formula?.descripcion ?? "NA",
-    indicador.formula?.variables ?? "NA",
-    indicador.historicos ?? "NA",
-  ];
+const UNIDAD_MEDIDA_ID = 2;
+const COBERTURA_GEOGRAFICA_ID = 3;
+const getCatalogo = (catalogos, id) => {
+  return catalogos?.find(catalogo => catalogo?.dataValues.idCatalogo == id);
+}
 
-  let baseFile = "./src/templates/boop.xlsx";
+const generateXLSX = (indicador) => {
+  let baseFile = "./src/templates/indicador.xlsx";
   let wb = new Excel.Workbook();
   return wb.xlsx
     .readFile(baseFile)
@@ -36,36 +26,11 @@ const generateXLSX = (data) => {
       let initialRow = 2;
       let ws = wb.getWorksheet(1);
       let row = ws.getRow(initialRow);
-      for (let i = 0; i < indicadorInfo.length; i++) {
-        initialRow = 2;
-        let actualCell = i + 1;
-        if (typeof indicadorInfo[i] === "object") {
-          indicadorInfo[i].map((item, index) => {
-            if (item.dataValues.hasOwnProperty("unidadMedida")) {
-              [item.dataValues].map((singularItem, index) => {
-                let row = ws.getRow(initialRow);
-                row.getCell(actualCell).value = singularItem.nombre ?? "NA";
-                row.getCell(actualCell + 1).value =
-                  singularItem.nombreAtributo ?? "NA";
-                row.getCell(actualCell + 2).value = singularItem.dato ?? "NA";
-                row.commit();
-              });
-              initialRow = initialRow + 1;
-            } else if (item.dataValues.hasOwnProperty("anio")) {
-              [item.dataValues].map((singularItem, index) => {
-                let row = ws.getRow(initialRow);
-                row.getCell(actualCell + 2).value = singularItem.valor ?? "NA";
-                row.getCell(actualCell + 3).value = singularItem.anio ?? "NA";
-                row.getCell(actualCell + 4).value = singularItem.fuente ?? "NA";
-                row.commit();
-              });
-              initialRow = initialRow + 1;
-            }
-          });
-        } else {
-          row.getCell(actualCell).value = indicadorInfo[i];
-          row.commit();
-        }
+      let i = 1;
+      for (const key of Object.keys(indicador)) {
+        row.getCell(i).value = key;
+        i++;
+        row.commit();
       }
       return await wb.xlsx.writeBuffer();;
     })
@@ -82,23 +47,16 @@ const generatePDF = async (data) => {
 
   const page = await browser.newPage();
   await page.setViewport({ width: 800, height: 800, deviceScaleFactor: 3 });
-  const templateHtml = fs.readFileSync("./src/templates/indicador-template.html", "utf8");
+  const templateHtml = fs.readFileSync("./src/templates/indicador.html", "utf8");
   handlebars.registerHelper('isAscending', (str) => str === 'ASCENDENTE');
   handlebars.registerHelper('numberWithCommas', numberWithCommas);
   handlebars.registerHelper('isOds', (int) => int === 1);
   handlebars.registerHelper('isCobertura', (int) => int === 3);
   handlebars.registerHelper('isUnidad', (int) => int === 2);
-  handlebars.registerHelper('toString', (int) => String(int));
-  handlebars.registerHelper('containsNA', (str) => str.includes("NA") ? "NA" : str);
-  handlebars.registerHelper('valueIsNull', (str) => str === null ? true : false);
-
-  handlebars.registerHelper('hasHistoricos', (historicos) => {
-    if (historicos.length > 0) {
-      return true;
-    }
-    return false;
-  }
-  );
+  handlebars.registerHelper('toString', (int) => int?.toString());
+  handlebars.registerHelper('containsNA', (str) => str?.includes("NA") ? "NA" : str);
+  handlebars.registerHelper('valueIsNull', (str) => str === null);
+  handlebars.registerHelper('hasHistoricos', (historicos) => historicos.length > 0);
 
   const template = handlebars.compile(templateHtml);
 
@@ -106,8 +64,6 @@ const generatePDF = async (data) => {
   await page.setContent(html, {
     waitUntil: "networkidle0",
   });
-
-  console.log(indicador.formula)
 
   if (indicador.historicos.length > 0) {
     const years = indicador?.historicos.map((elem) => elem.anio);
