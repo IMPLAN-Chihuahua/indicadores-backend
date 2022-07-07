@@ -11,64 +11,67 @@ const generateCSV = (data) => {
   return csv;
 };
 
+const UNIDAD_ID = 2;
+const COBERTURA_ID = 3;
 
-const generateXLSX = (data) => {
-  const indicador = data;
-  const indicadorInfo = [
-    indicador.nombre,
-    indicador.modulo,
-    indicador.tendenciaActual,
-    indicador.tendenciaDeseada,
-    indicador.ultimoValorDisponible,
-    indicador.unidadMedida,
-    indicador.anioUltimoValorDisponible,
-    indicador.coberturaGeografica,
-    indicador.formula?.ecuacion ?? "NA",
-    indicador.formula?.descripcion ?? "NA",
-    indicador.formula?.Variables ?? "NA",
-    indicador.Historicos ?? "NA",
-  ];
-  
-  let baseFile = "./src/templates/boop.xlsx";
-  let wb = new Excel.Workbook();
-  return wb.xlsx
+const getFromCatalogos = (catalogos = [], id) => {
+  return catalogos.find(catalogo => catalogo?.dataValues?.idCatalogo === id)
+}
+
+const generateXLSX = (indicador) => {
+  let baseFile = "./src/templates/indicador.xlsx";
+  let workBook = new Excel.Workbook();
+  const fields = ['nombre', 'modulo', 'tendenciaActual', 'ultimoValorDisponible',
+    'medida', 'anioUltimoValorDisponible', 'cobertura', 'ecuacion', 'variables', 'historicos']
+  return workBook.xlsx
     .readFile(baseFile)
     .then(async () => {
-      let initialRow = 2;
-      let ws = wb.getWorksheet(1);
-      let row = ws.getRow(initialRow);
-      for (let i = 0; i < indicadorInfo.length; i++) {
-        initialRow = 2;
-        let actualCell = i + 1;
-        if (typeof indicadorInfo[i] === "object") {
-          indicadorInfo[i].map((item, index) => {
-            if (item.dataValues.hasOwnProperty("unidadMedida")) {
-              [item.dataValues].map((singularItem, index) => {
-                let row = ws.getRow(initialRow);
-                row.getCell(actualCell).value = singularItem.nombre ?? "NA";
-                row.getCell(actualCell + 1).value =
-                  singularItem.nombreAtributo ?? "NA";
-                row.getCell(actualCell + 2).value = singularItem.dato ?? "NA";
-                row.commit();
-              });
-              initialRow = initialRow + 1;
-            } else if (item.dataValues.hasOwnProperty("anio")) {
-              [item.dataValues].map((singularItem, index) => {
-                let row = ws.getRow(initialRow);
-                row.getCell(actualCell + 2).value = singularItem.valor ?? "NA";
-                row.getCell(actualCell + 3).value = singularItem.anio ?? "NA";
-                row.getCell(actualCell + 4).value = singularItem.fuente ?? "NA";
-                row.commit();
-              });
-              initialRow = initialRow + 1;
-            }
-          });
-        } else {
-          row.getCell(actualCell).value = indicadorInfo[i];
-          row.commit();
+      let workSheet = workBook.getWorksheet();
+      let col = 1;
+      let row = workSheet.getRow(2);
+      for (const field of fields) {
+        let initialRow = 2;
+        let value = indicador[field];
+        if (field === 'modulo') {
+          value = indicador[field].dataValues.temaIndicador;
+        } else if (field === 'medida') {
+          value = getFromCatalogos(indicador['catalogos'], UNIDAD_ID).dataValues.nombre;
+        } else if (field === 'cobertura') {
+          value = getFromCatalogos(indicador['catalogos'], COBERTURA_ID).dataValues.nombre;
+        } else if (field === 'ecuacion') {
+          const formula = indicador?.formula?.dataValues;
+          row.getCell(col++).value = formula?.ecuacion || 'NA';
+          row.getCell(col++).value = formula?.descripcion || 'NA';
+          continue;
+        } else if (field === 'variables') {
+          const variables = indicador?.formula?.dataValues.variables || [{}];
+          for (const v of variables) {
+            let innerRow = workSheet.getRow(initialRow++);
+            let innerCol = col;
+            innerRow.getCell(innerCol++).value = v?.nombre || 'NA';
+            innerRow.getCell(innerCol++).value = v?.nombreAtributo || 'NA';
+            innerRow.getCell(innerCol++).value = v?.dato || 'NA';
+            innerRow.commit()
+          }
+          col += 3;
+          continue;
+        } else if (field === 'historicos') {
+          const historicos = indicador?.historicos || [{}];
+          for (const h of historicos) {
+            let innerRow = workSheet.getRow(initialRow++);
+            let innerCol = col;
+            innerRow.getCell(innerCol++).value = h?.valor || 'NA';
+            innerRow.getCell(innerCol++).value = h?.anio || 'NA';
+            innerRow.getCell(innerCol++).value = h?.fuente || 'NA';
+            innerRow.commit()
+          }
+          col +=3;
+          continue;
         }
+        row.getCell(col).value = value || 'NA';
+        col++;
       }
-      return await wb.xlsx.writeBuffer();;
+      return await workBook.xlsx.writeBuffer();;
     })
     .catch(err => {
       throw err;
