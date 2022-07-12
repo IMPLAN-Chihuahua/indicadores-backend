@@ -40,10 +40,12 @@ app.set('trust proxy', 1);
 app.use(require('./src/middlewares/limiter'));
 
 // Enable CORS for all requests
-app.use(cors());
-
 // Prevent common vulnerabilities
-app.use(helmet());
+const cspDefaults = helmet.contentSecurityPolicy.getDefaultDirectives();
+delete cspDefaults['upgrade-insecure-requests'];
+app.use(helmet({
+  contentSecurityPolicy: { directives: cspDefaults }
+}));
 
 // Log HTTP requests with Morgan and Winston
 app.use(morgan(':method :url :status :response-time ms - :res[content-length]', {
