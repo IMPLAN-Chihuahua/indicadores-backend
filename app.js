@@ -40,6 +40,7 @@ app.set('trust proxy', 1);
 app.use(require('./src/middlewares/limiter'));
 
 // Enable CORS for all requests
+app.use(cors());
 // Prevent common vulnerabilities
 const cspDefaults = helmet.contentSecurityPolicy.getDefaultDirectives();
 delete cspDefaults['upgrade-insecure-requests'];
