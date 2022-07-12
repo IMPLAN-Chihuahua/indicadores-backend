@@ -6,8 +6,8 @@ const { getUsers,
     createUser,
     getUserFromId,
     editUser,
-    editUserStatus, 
-    setIndicadoresToUsuario} = require('../controllers/usuarioController');
+    editUserStatus,
+    setIndicadoresToUsuario } = require('../controllers/usuarioController');
 const { verifyJWT, verifyUserHasRoles, verifyUserIsActive } = require('../middlewares/auth');
 const { uploadImage } = require('../middlewares/fileUpload');
 const {
@@ -15,9 +15,9 @@ const {
     paginationValidationRules,
     validate,
     paramValidationRules,
-    updateValidationRules, 
+    updateValidationRules,
     usuarioAssignIndicadorValidationRules,
-    desdeHastaDateRangeValidationRules} = require('../middlewares/validator');
+    desdeHastaDateRangeValidationRules } = require('../middlewares/validator');
 
 
 /**
@@ -351,6 +351,12 @@ router.post('/:idUser/indicadores',
     validate,
     setIndicadoresToUsuario,
 );
+
+router.get('/:idUser/profile',
+    paramValidationRules(),
+    validate,
+    getUserFromId
+)
 
 
 module.exports = router;

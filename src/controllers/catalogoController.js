@@ -1,36 +1,31 @@
 const catalogosService = require('../services/catalogosService');
-const { CatalogoDetail } = require('../models');
 
-/** PUBLIC WEBSITE QUESTION  */
-
-const getCatalogos = async (req, res) => {
+const getCatalogos = async (req, res, next) => {
 	try {
 		const { catalogos, total } = await catalogosService.getCatalogos();
-		return res.status(200).json({ total: total, data: catalogos });
+		return res.status(200).json({ total, data: catalogos });
 	} catch (err) {
-		return res.status(500).json({ error: err });
+		next(err)
 	}
 };
 
-const getCatalogosDetails = async (req, res) => {
-	const idCatalogo = req.params.idCatalogo;
+const getCatalogosDetails = async (req, res, next) => {
+	const { idCatalogo } = req.params || {};
 	try {
 		const { catalogos, total } = await catalogosService.getCatalogosDetails(idCatalogo);
-		return res.status(200).json({ total: total, data: catalogos });
+		return res.status(200).json({ total, data: catalogos });
 	} catch (err) {
-		console.log(err);
-		return res.status(500).json({ error: err });
+		next(err)
 	}
 };
 
-const getCatalogosFromIndicador = async (req, res) => {
+const getCatalogosFromIndicador = async (req, res, next) => {
 	try {
-		const idIndicador = req.params.idIndicador;
+		const { idIndicador } = req.matchedData || {};
 		const data = await catalogosService.getCatalogosFromIndicador(idIndicador);
-		return res.status(200).json({ data: data });
+		return res.status(200).json({ data });
 	} catch (err) {
-		console.log(err);
-		return res.status(500).json({ error: err });
+		next(err)
 	}
 };
 

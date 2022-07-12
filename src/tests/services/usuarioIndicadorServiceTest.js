@@ -19,10 +19,8 @@ describe('Usuario-Indicador service', function () {
   });
 
   describe('Read operations', () => {
-    // it fails due to constraint errors
-
     it('Returns true if user has a relation with an indicador', () => {
-      const findOneFake = sinon.fake.resolves({ dataValues: { count: 1 } });
+      const findOneFake = sinon.fake.resolves({ count: 1 });
       sinon.replace(UsuarioIndicador, 'findOne', findOneFake)
       return UsuarioIndicadorService.areConnected(1, 1)
         .then(res => {
@@ -36,6 +34,7 @@ describe('Usuario-Indicador service', function () {
       sinon.replace(UsuarioIndicador, 'findOne', findOneFake);
       return UsuarioIndicadorService.areConnected(1, 1)
         .catch(err => {
+          expect(findOneFake.calledOnce).to.be.true;
           expect(err).to.not.be.undefined;
         });
     });

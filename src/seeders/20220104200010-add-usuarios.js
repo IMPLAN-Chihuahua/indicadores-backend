@@ -14,7 +14,9 @@ module.exports = {
       activo: 'SI',
       createdAt: new Date(),
       updatedAt: new Date(),
-      idRol: 1
+      idRol: 1,
+      requestedPasswordChange: 'NO',
+      descripcion: 'Lorem ipsum dolor at eit',
     });
 
     for (let i = 0; i < 10; i++) {

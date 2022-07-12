@@ -7,11 +7,18 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             this.belongsTo(models.Modulo, { foreignKey: 'idModulo' });
             this.belongsToMany(models.Usuario, { through: models.UsuarioIndicador, foreignKey: 'idIndicador' });
-            this.belongsToMany(models.CatalogoDetail, { through: models.CatalogoDetailIndicador, foreignKey: 'idIndicador' })
-
+            this.belongsToMany(models.CatalogoDetail, {
+                through: models.CatalogoDetailIndicador,
+                foreignKey: 'idIndicador',
+                as: 'catalogos'
+            })
+            this.belongsToMany(models.CatalogoDetail, {
+                through: models.CatalogoDetailIndicador,
+                foreignKey: 'idIndicador',
+                as: 'catalogosFilters'
+            })
             this.hasOne(models.Formula, { foreignKey: 'idIndicador' });
             this.hasMany(models.Historico, { foreignKey: 'idIndicador' });
-            this.hasMany(models.Fuente, { foreignKey: 'idIndicador' });
             this.hasOne(models.Mapa, { foreignKey: 'idIndicador' });
         }
     };
@@ -92,6 +99,16 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.STRING,
                 allowNull: false,
                 defaultValue: 'SI'
+            },
+            fuente: {
+                type: DataTypes.STRING(1000),
+                allowNull: true,
+                defaultValue: null
+            },
+            periodicidad: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+                defaultValue: null
             }
         },
         {

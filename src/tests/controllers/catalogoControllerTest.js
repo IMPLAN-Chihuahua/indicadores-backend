@@ -31,12 +31,12 @@ describe('/catalogos', function () {
 	});
 
 	it('Should return a list of Catalogos', function (done) {
+		
 		sinon.replace(CatalogoDetail, 'findAll', sinon.fake.resolves(setOfItems));
-
 		chai.request(app)
 			.get('/api/v1/catalogos')
 			.end(function (err, res) {
-				console.log(res.body)
+				
 				expect(err).to.be.null;
 				expect(res).to.have.status(200);
 				expect(res.body.data).to.be.an('array');

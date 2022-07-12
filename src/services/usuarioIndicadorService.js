@@ -5,7 +5,7 @@ const { Op } = Sequelize;
 
 const areConnected = async (idUsuario, idIndicador) => {
   try {
-    const resultset = await UsuarioIndicador.findOne({
+    const res = await UsuarioIndicador.findOne({
       where: {
         idUsuario,
         idIndicador,
@@ -35,7 +35,7 @@ const areConnected = async (idUsuario, idIndicador) => {
       ],
       raw: true
     });
-    return resultset.count > 0;
+    return res.count > 0;
   } catch (err) {
     throw new Error(err.message);
   }

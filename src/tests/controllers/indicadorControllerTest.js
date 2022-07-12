@@ -5,7 +5,7 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const sinon = require('sinon');
-const jwt = require('jsonwebtoken');
+
 require('dotenv').config();
 
 chai.use(chaiHttp);
@@ -20,10 +20,6 @@ const { generateToken } = require('../../middlewares/auth');
 
 
 describe('v1/indicadores', function () {
-
-    const activeFilter = {
-        anioUltimoValorDisponible: 2019
-    };
 
     const SUB_ID = 100;
     const validToken = generateToken({ sub: SUB_ID });
@@ -129,7 +125,6 @@ describe('v1/indicadores', function () {
                 .end(function (err, res) {
                     expect(findAndCountAllFake.calledOnce).to.be.true;
                     expect(findOneFake.calledOnce).to.be.true;
-                    expect(activeFilter).is.not.empty;
                     expect(res).to.have.status(200);
                     expect(res.body.totalPages).to.be.at.least(1);
                     expect(res.body.data).to.have.length.within(0, 2);
@@ -266,11 +261,12 @@ describe('v1/indicadores', function () {
     });
 
     describe('POST /indicadores', function () {
-        let accessRolFake;
+        let findOneFake;
 
         this.beforeEach(function () {
-            accessRolFake = sinon.fake.resolves(adminRol);
-            sinon.replace(Usuario, 'findOne', accessRolFake);
+            findOneFake = sinon.stub(Usuario, 'findOne')
+            findOneFake.onFirstCall().resolves(statusActive);
+            findOneFake.onSecondCall().resolves(adminRol);
         });
 
         it('Should create an indicador successfully', function (done) {
@@ -281,7 +277,7 @@ describe('v1/indicadores', function () {
                 .set({ Authorization: `Bearer ${validToken}` })
                 .send(validIndicador)
                 .end(function (err, res) {
-                    expect(accessRolFake.calledOnce).to.be.true;
+                    expect(findOneFake.calledTwice).to.be.true;
                     expect(createFake.calledOnce).to.be.true;
                     expect(res.body.data).to.not.be.undefined;
                     expect(res).to.have.status(201);
@@ -301,6 +297,7 @@ describe('v1/indicadores', function () {
                 .set({ Authorization: `Bearer ${validToken}` })
                 .send(toCreate)
                 .end(function (err, res) {
+                    expect(findOneFake.calledTwice).to.be.true;
                     expect(err).to.be.null;
                     expect(res).to.have.status(201);
                     done()
@@ -308,16 +305,16 @@ describe('v1/indicadores', function () {
         });
 
         it('Should fail to create an indicador with formula and variables', function (done) {
-            const toCreate = indicadorToCreate();
+            const indicador = indicadorToCreate();
             const formula = aFormula(1);
             const badVariable = aVariable();
             badVariable.codigoAtributo = 'incorrect';
             formula.variables = [badVariable];
-            toCreate.formula = formula;
+            indicador.formula = formula;
             chai.request(app)
                 .post('/api/v1/indicadores')
                 .set({ Authorization: `Bearer ${validToken}` })
-                .send(toCreate)
+                .send(indicador)
                 .end(function (err, res) {
                     expect(err).to.be.null;
                     expect(res).to.have.status(422);
@@ -336,6 +333,7 @@ describe('v1/indicadores', function () {
                 .set({ Authorization: `Bearer ${validToken}` })
                 .send(toCreate)
                 .end(function (err, res) {
+                    expect(findOneFake.calledTwice).to.be.true;
                     expect(err).to.be.null;
                     expect(res).to.have.status(201);
                     expect(createFake.calledOnce).to.be.true;
@@ -371,6 +369,7 @@ describe('v1/indicadores', function () {
                 .set({ Authorization: `Bearer ${validToken}` })
                 .send(toCreate)
                 .end(function (err, res) {
+                    expect(findOneFake.calledTwice).to.be.true;
                     expect(err).to.be.null;
                     expect(res).to.have.status(201);
                     expect(createFake.calledOnce).to.be.true;
@@ -397,26 +396,28 @@ describe('v1/indicadores', function () {
 
         it('Should fail to create indicador due to semantic errors', function (done) {
             const invalidIndicador = indicadorToCreate();
-            invalidIndicador.codigo = 'not valid'
+            delete invalidIndicador.codigo;
             chai.request(app)
                 .post('/api/v1/indicadores')
                 .set({ Authorization: `Bearer ${validToken}` })
                 .send(invalidIndicador)
                 .end(function (err, res) {
+                    expect(err).to.be.null;
                     expect(res).to.have.status(422);
-                    expect(accessRolFake.calledOnce).to.be.false;
+                    expect(findOneFake.calledOnce).to.be.false;
+                    expect(res.body.errors).to.be.an('Array').that.is.not.empty;
                     done();
                 });
 
         });
 
-        it('Should not create indicador because req does not have the token', function (done) {
+        it('Should not create indicador because req does not have JWT', function (done) {
             chai.request(app)
                 .post('/api/v1/indicadores')
                 .send(validIndicador)
                 .end(function (err, res) {
                     expect(res).to.have.status(401);
-                    expect(accessRolFake.calledOnce).to.be.false;
+                    expect(findOneFake.calledTwice).to.be.false;
                     done();
                 });
         });
@@ -427,7 +428,7 @@ describe('v1/indicadores', function () {
                 .set({ Authorization: 'Bearer valid' })
                 .send(validIndicador)
                 .end(function (err, res) {
-                    expect(accessRolFake.calledOnce).to.be.false;
+                    expect(findOneFake.calledOnce).to.be.false;
                     expect(res).to.have.status(403)
                     done()
                 });
@@ -443,7 +444,7 @@ describe('v1/indicadores', function () {
                 .send(validIndicador)
                 .end(function (err, res) {
                     expect(accessRolUserFake.calledOnce).to.be.true;
-                    expect(accessRolFake.calledOnce).to.be.false;
+                    expect(findOneFake.calledOnce).to.be.false;
                     expect(res).to.have.status(403);
                     done();
                 });
@@ -457,7 +458,7 @@ describe('v1/indicadores', function () {
                 .set({ Authorization: `Bearer ${validToken}` })
                 .send(validIndicador)
                 .end(function (err, res) {
-                    expect(accessRolFake.calledOnce).to.be.true;
+                    expect(findOneFake.calledTwice).to.be.true;
                     expect(createFake.calledOnce).to.be.true;
                     expect(res).to.have.status(500);
                     expect(res.error.text).to.not.be.empty
@@ -547,8 +548,9 @@ describe('v1/indicadores', function () {
 
         it('Should fail to assign usuarios because user has no authorization', function (done) {
             sinon.restore();
-            const findOneUsuarioFake = sinon.fake.resolves(userRol);
-            sinon.replace(Usuario, 'findOne', findOneUsuarioFake);
+            const findOneUsuarioFake = sinon.stub(Usuario, 'findOne');
+            findOneUsuarioFake.onFirstCall().resolves(statusActive);
+            findOneUsuarioFake.onSecondCall().resolves(userRol);
 
             chai.request(app)
                 .post(`/api/v1/indicadores/${INDICADOR_ID}/usuarios`)
@@ -557,7 +559,7 @@ describe('v1/indicadores', function () {
                 .end(function (err, res) {
                     expect(err).to.be.null;
                     expect(res).to.have.status(403);
-                    expect(findOneUsuarioFake.calledOnce).to.be.true;
+                    expect(findOneUsuarioFake.calledTwice).to.be.true;
                     expect(res.error.text).to.be.equals('No tiene permiso a realizar acciones en este recurso');
                     done();
                 });
@@ -566,19 +568,30 @@ describe('v1/indicadores', function () {
 
     describe('PATCH /indicadores/:idIndicador', function () {
 
+        let findOneFake;
+
+        this.beforeEach(function () {
+            findOneFake = sinon.stub(Usuario, 'findOne');
+            findOneFake.onFirstCall().resolves(statusActive);
+            findOneFake.onSecondCall().resolves(adminRol);
+        });
+
+        this.afterEach(function () {
+            sinon.restore();
+        });
+
         it('Should update indicador successfully (admin rol)', function (done) {
             const updateIndicadorFake = sinon.fake.resolves(1);
             sinon.replace(Indicador, 'update', updateIndicadorFake);
-            const findOneFake = sinon.fake.resolves(adminRol);
-            sinon.replace(Usuario, 'findOne', findOneFake);
-
             chai.request(app)
                 .patch('/api/v1/indicadores/1')
                 .set({ Authorization: `Bearer ${validToken}` })
                 .send(validIndicador)
                 .end(function (err, res) {
+                    expect(err).to.be.null;
                     expect(res).to.have.status(204);
                     expect(updateIndicadorFake.calledOnce).to.be.true;
+                    expect(findOneFake.calledTwice).to.be.true;
                     done();
                 })
         });
@@ -587,26 +600,17 @@ describe('v1/indicadores', function () {
             const updateIndicadorFake = sinon.fake.resolves(1);
             sinon.replace(Indicador, 'update', updateIndicadorFake);
 
-            const accessRolUserFake = sinon.fake.resolves({ dataValues: userRol });
-            sinon.replace(Usuario, 'findOne', accessRolUserFake);
-
-            const findOneFake = sinon.fake.resolves({ dataValues: { count: 1 } })
-            sinon.replace(UsuarioIndicador, 'findOne', findOneFake);
-
             chai.request(app)
                 .patch('/api/v1/indicadores/1')
                 .set({ Authorization: `Bearer ${validToken}` })
                 .send(validIndicador)
                 .end(function (err, res) {
                     expect(res).to.have.status(204);
-                    expect(accessRolUserFake.calledOnce).to.be.true;
                     expect(updateIndicadorFake.calledOnce).to.be.true;
-                    expect(findOneFake.calledOnce).to.be.true;
+                    expect(findOneFake.calledTwice).to.be.true;
                     done();
                 });
         });
-
-        it('Should update indicador and have a side effect with the historicos of an indicador');
 
         it('Should not update indicador due to semantic errors', function (done) {
             const invalidIndicador = indicadorToCreate();
@@ -645,32 +649,27 @@ describe('v1/indicadores', function () {
         });
 
         it('Should not update indicador because user rol has no permission over other indicadores', function (done) {
-            const findOneFake = sinon.fake.resolves({ dataValues: { count: 0 } });
-            sinon.replace(UsuarioIndicador, 'findOne', findOneFake);
-
-            const accessRolUserFake = sinon.fake.resolves({ dataValues: userRol });
-            sinon.replace(Usuario, 'findOne', accessRolUserFake);
-
+            sinon.restore();
+            const findOneUsuarioFake = sinon.stub(Usuario, 'findOne');
+            findOneUsuarioFake.onFirstCall().resolves(statusActive);
+            findOneUsuarioFake.onSecondCall().resolves(userRol)
+            const findOneUsuarioIndicadorFake = sinon.fake.resolves(0);
+            sinon.replace(UsuarioIndicador, 'findOne', findOneUsuarioIndicadorFake);
             chai.request(app)
                 .patch('/api/v1/indicadores/2')
                 .set({ Authorization: `Bearer ${validToken}` })
                 .send(validIndicador)
                 .end(function (err, res) {
+                    expect(err).to.be.null;
                     expect(res).to.have.status(403);
+                    expect(findOneUsuarioFake.calledTwice).to.be.true;
+                    expect(findOneUsuarioIndicadorFake.calledOnce).to.be.true;
                     expect(res.error.text).to.be.equal('No tiene permiso para actualizar este indicador');
-                    expect(findOneFake.calledOnce).to.be.true;
-                    expect(accessRolUserFake.calledOnce).to.be.true;
                     done();
                 });
         });
 
         it('Should not update because connection to DB fails', function (done) {
-            const accessRolUserFake = sinon.fake.resolves({ dataValues: userRol });
-            sinon.replace(Usuario, 'findOne', accessRolUserFake);
-
-            const findOneFake = sinon.fake.resolves({ dataValues: { count: 1 } })
-            sinon.replace(UsuarioIndicador, 'findOne', findOneFake);
-
             const updateIndicadorFake = sinon.fake.rejects(new Error('Connection to DB failed'));
             sinon.replace(Indicador, 'update', updateIndicadorFake);
 
@@ -681,8 +680,7 @@ describe('v1/indicadores', function () {
                 .end(function (err, res) {
                     expect(res).to.have.status(500);
                     expect(updateIndicadorFake.calledOnce).to.be.true;
-                    expect(accessRolUserFake.calledOnce).to.be.true;
-                    expect(findOneFake.calledOnce).to.be.true;
+                    expect(findOneFake.calledTwice).to.be.true;
                     done();
                 });
         });

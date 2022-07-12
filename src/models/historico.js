@@ -27,16 +27,34 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: 'No aplica'
       },
 
-      anio: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 0
-      },
-
       fuente: {
         type: DataTypes.STRING,
         allowNull: false,
         defaultValue: 'No aplica'
+      },
+
+      ecuacion: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: 'No aplica'
+      },
+
+      descripcionEcuacion: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: 'No aplica'
+      },
+
+      fechaIngreso: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW
+      },
+
+      anio: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
       }
     },
     {

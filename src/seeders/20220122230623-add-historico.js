@@ -4,15 +4,15 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     const historico = [];
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 50; i++) {
       const date = new Date();
       historico.push({
-        id: i + 1,
+        id: i + 16,
         valor: faker.datatype.number(),
         anio: 2022 - i,
         fechaIngreso: date,
         fuente: faker.internet.url(),
-        idIndicador: 1,
+        idIndicador: Math.random() * (5 - 1) + 1,
         createdAt: date,
       });
     }

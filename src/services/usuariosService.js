@@ -1,3 +1,4 @@
+const logger = require('../config/logger');
 const { Usuario, Rol, Indicador, Sequelize, sequelize } = require('../models');
 
 const { Op } = Sequelize;
@@ -115,7 +116,7 @@ const updateUsuario = async (id, fieldsWithImage) => {
     try {
         const affectedRows = await Usuario.update(
             { ...fieldsWithImage },
-            { where: { id: id } });
+            { where: { id } });
         return affectedRows > 0;
     } catch (err) {
         throw new Error(`Error al actualizar usuario: ${err.message}`);
@@ -148,7 +149,7 @@ const getIndicadoresFromUser = async (id) => {
         const result = await Usuario.findOne({
             attributes: [],
             where: {
-                id: id,
+                id,
                 activo: 'SI'
             },
             include: {
@@ -175,7 +176,7 @@ const getIndicadoresFromUser = async (id) => {
             total: result.dataValues.indicadores.length,
         }
     } catch (err) {
-        throw new Error('Error al obtener indicadores de un usuario: ' + err.message);
+        throw new Error(`Error al obtener indicadores de un usuario: ${err.message}`);
     }
 };
 
@@ -212,13 +213,13 @@ const updateUserPasswordStatus = async (id) => {
     try {
         const actualStatus = await Usuario.findOne({
             attributes: ['requestedPasswordChange'],
-            where: { id: id }
+            where: { id }
         });
         const newStatus = actualStatus.requestedPasswordChange === 'SI' ? 'NO' : 'SI';
         const affectedRows = await Usuario.update(
             { requestedPasswordChange: newStatus },
-            { where: { id: id } });
-        return affectedRows ? true : false;
+            { where: { id } });
+        return affectedRows > 0;
     } catch (err) {
         throw new Error(`Error al actualizar contraseña: ${err.message}`);
     }

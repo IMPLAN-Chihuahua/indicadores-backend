@@ -14,35 +14,35 @@ module.exports = {
 
           urlImagen: {
             allowNull: true,
-            type: Sequelize.STRING
+            type: Sequelize.STRING(1000)
           },
-          
+
           nombre: {
             allowNull: false,
-            type: Sequelize.STRING
+            type: Sequelize.STRING(1000)
           },
 
           definicion: {
             allowNull: false,
             defaultValue: 'No aplica',
-            type: Sequelize.STRING
+            type: Sequelize.STRING(1000)
           },
 
           codigo: {
             allowNull: false,
-            type: Sequelize.STRING
+            type: Sequelize.STRING(1000)
           },
 
           codigoObjeto: {
             allowNull: false,
-            type: Sequelize.STRING
+            type: Sequelize.STRING(1000)
           },
 
           ultimoValorDisponible: {
             allowNull: false,
-            type: Sequelize.STRING
+            type: Sequelize.STRING(1000)
           },
-          
+
           anioUltimoValorDisponible: {
             allowNull: false,
             type: Sequelize.INTEGER
@@ -51,13 +51,13 @@ module.exports = {
           tendenciaActual: {
             allowNull: false,
             defaultValue: 'No aplica',
-            type: Sequelize.STRING
+            type: Sequelize.STRING(1000)
           },
 
           tendenciaDeseada: {
             allowNull: false,
             defaultValue: 'No aplica',
-            type: Sequelize.STRING
+            type: Sequelize.STRING(1000)
           },
 
           mapa: {
@@ -69,7 +69,7 @@ module.exports = {
           observaciones: {
             allowNull: false,
             defaultValue: 'No existen observaciones',
-            type: Sequelize.TEXT
+            type: Sequelize.STRING(1000)
           },
 
           createdBy: {
