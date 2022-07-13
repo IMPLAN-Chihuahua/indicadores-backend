@@ -107,9 +107,11 @@ const generatePDF = async (data) => {
   if (indicador.historicos.length > 0) {
     const years = indicador?.historicos.map((elem) => elem.anio);
     const values = indicador?.historicos.map((elem) => elem.valor);
+    years.push(indicador.anioUltimoValorDisponible)
+    values.push(indicador.ultimoValorDisponible);
 
     await page.evaluate(
-      (years, values, unidadMedida) => {
+      (years, values) => {
         const ctx = document.getElementById("myChart").getContext("2d");
         new Chart(ctx, {
           type: "bar",
@@ -133,7 +135,6 @@ const generatePDF = async (data) => {
       },
       years,
       values,
-      indicador.unidadMedida
     ).catch((err) => {
       throw err;
     });
