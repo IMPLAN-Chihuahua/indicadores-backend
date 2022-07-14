@@ -1,4 +1,9 @@
-FROM node:16.13-alpine
+FROM node:16.16-alpine3.15
+
+# Install chromium for puppeter
+RUN apk update && apk upgrade && \
+  apk add --no-cache \
+  chromium
 
 # Create app directory
 WORKDIR /usr/src/app
