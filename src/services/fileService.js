@@ -78,12 +78,12 @@ const generateXLSX = (indicador) => {
     });
 };
 
-const generatePDF = async (data) => {
-  let indicador = data;
+const generatePDF = async (indicador) => {
+  console.log(indicador)
   const browser = await puppeteer.launch({
     headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    executablePath: '/usr/bin/chromium-browser'
+    // executablePath: '/usr/bin/chromium-browser'
   });
 
   const page = await browser.newPage();
@@ -123,7 +123,7 @@ const generatePDF = async (data) => {
               {
                 label: 'Valores históricos',
                 data: values,
-                backgroundColor: "#204c5a",
+                backgroundColor: "#7b1ee3",
                 barPercentage: 0.8,
               },
             ],
@@ -147,7 +147,7 @@ const generatePDF = async (data) => {
   );
 
   const pdf = await page.pdf({
-    format: 'A3',
+    format: 'a3',
     displayHeaderFooter: true,
     printBackground: true,
     headerTemplate: '',
