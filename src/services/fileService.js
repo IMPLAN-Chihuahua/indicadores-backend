@@ -65,7 +65,7 @@ const generateXLSX = (indicador) => {
             innerRow.getCell(innerCol++).value = h?.fuente || 'NA';
             innerRow.commit()
           }
-          col +=3;
+          col += 3;
           continue;
         }
         row.getCell(col).value = value || 'NA';
@@ -78,12 +78,12 @@ const generateXLSX = (indicador) => {
     });
 };
 
-const generatePDF = async (data) => {
-  let indicador = data;
+
+const generatePDF = async (indicador) => {
   const browser = await puppeteer.launch({
     headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    executablePath: '/usr/bin/chromium-browser'
+    // executablePath: '/usr/bin/chromium-browser'
   });
 
   const page = await browser.newPage();
@@ -91,13 +91,16 @@ const generatePDF = async (data) => {
   const templateHtml = fs.readFileSync("./src/templates/indicador.html", "utf8");
   handlebars.registerHelper('isAscending', (str) => str === 'ASCENDENTE');
   handlebars.registerHelper('numberWithCommas', numberWithCommas);
-  handlebars.registerHelper('isOds', (int) => int === 1);
-  handlebars.registerHelper('isCobertura', (int) => int === 3);
-  handlebars.registerHelper('isUnidad', (int) => int === 2);
-  handlebars.registerHelper('toString', (int) => int?.toString());
+  handlebars.registerHelper('getCatalogo', (catalogos, id) => {
+    return catalogos
+      .sort((a, b) => a.idCatalogo - b.idCatalogo)
+      .find(indicador => indicador.idCatalogo === id)?.nombre || 'NA';
+  });
+  handlebars.registerHelper('toString', (num) => num?.toString());
   handlebars.registerHelper('containsNA', (str) => str?.includes("NA") ? "NA" : str);
   handlebars.registerHelper('valueIsNull', (str) => str === null);
   handlebars.registerHelper('hasHistoricos', (historicos) => historicos.length > 0);
+  handlebars.registerHelper('hasFormula', (formula) => typeof formula !== undefined || formula !== null)
 
   const template = handlebars.compile(templateHtml);
 
@@ -106,15 +109,18 @@ const generatePDF = async (data) => {
     waitUntil: "networkidle0",
   });
 
+  const years = []
+  const values = []
   if (indicador.historicos.length > 0) {
-    const years = indicador?.historicos.map((elem) => elem.anio);
-    const values = indicador?.historicos.map((elem) => elem.valor);
-    years.push(indicador.anioUltimoValorDisponible)
+    const historicosSorted = indicador.historicos.sort((a, b) => a.anio - b.anio);
+    years.push(...historicosSorted.map(indicador => indicador.anio));
+    values.push(...historicosSorted.map((elem) => elem.valor));
+    years.push(indicador.anioUltimoValorDisponible);
     values.push(indicador.ultimoValorDisponible);
-
+  
     await page.evaluate(
       (years, values) => {
-        const ctx = document.getElementById("myChart").getContext("2d");
+        const ctx = document.getElementById("chart").getContext("2d");
         new Chart(ctx, {
           type: "bar",
           data: {
@@ -123,7 +129,7 @@ const generatePDF = async (data) => {
               {
                 label: 'Valores históricos',
                 data: values,
-                backgroundColor: "#204c5a",
+                backgroundColor: "#7b1ee3",
                 barPercentage: 0.8,
               },
             ],
@@ -132,6 +138,14 @@ const generatePDF = async (data) => {
             animation: {
               duration: 0,
             },
+            responsive: true,
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
           },
         });
       },
@@ -147,7 +161,7 @@ const generatePDF = async (data) => {
   );
 
   const pdf = await page.pdf({
-    format: 'A3',
+    format: 'a3',
     displayHeaderFooter: true,
     printBackground: true,
     headerTemplate: '',
