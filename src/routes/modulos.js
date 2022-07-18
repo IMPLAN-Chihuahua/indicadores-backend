@@ -151,6 +151,11 @@ moduloRouter.route('/')
  *             type: string
  *             format: string
  *             description: Identifier of an trend
+ *         - in: query
+ *           name: searchQuery
+ *           required: false
+ *           schema:
+ *             type: string
  *       responses:
  *         200:
  *           description: A very friendly list of indicadores
