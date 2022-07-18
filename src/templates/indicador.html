@@ -8,6 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@latest/dist/Chart.min.js"></script>
     <script
       type="text/javascript"
+
       id="MathJax-script"
       async
       src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
@@ -31,9 +32,9 @@
     }
 
     .img_container {
-      background-color: bisque;
       width: 300px;
       height: 80px;
+      position: relative;
     }
 
     .d_flex {
@@ -70,13 +71,8 @@
       margin: 0px;
     }
 
-    .inner_section {
+    .inner-section {
       margin-left: 15px !important;
-    }
-
-    .light-title {
-      font-weight: 400 !important;
-      font-size: 16px;
     }
 
     .inline {
@@ -87,11 +83,6 @@
     .info-container {
       max-width: 300px;
       text-align: center;
-    }
-
-    .light-weight {
-      font-weight: 400;
-      font-size: 16px;
     }
 
     .bolder-weight {
@@ -121,19 +112,39 @@
         break-inside: avoid;
       }
     }
+
+    table tr td:empty {
+      width: 50px;
+    }
+
+    table tr td {
+      padding: 10px;
+    }
   </style>
   <body>
     <main id="container">
       <header class="d_flex justify_content_between">
-        <div class="img_container"></div>
-        <div class="img_container"></div>
+        <div class="img_container">
+          <img
+            src="http://localhost:8080/images/implan_logo.png"
+            style="object-fit: contain"
+            width="241px"
+            height="80px"
+          />
+        </div>
+        <div class="img_container" style="display: flex; justify-content: flex-end">
+          <img
+            src="http://localhost:8080/images/metrica_logo.png"
+            style="object-fit: contain"
+            width="241px"
+            height="80px"
+          />
+        </div>
       </header>
 
       <section class="mt-3">
         <h1>{{nombre}}</h1>
-        <p class="inner_section mt-1">
-          {{definicion}}
-        </p>
+        <p class="inner-section mt-1">{{definicion}}</p>
 
         <section class="d_flex mt-1 justify_content_around">
           <div class="info-container">
@@ -146,44 +157,58 @@
           </div>
           <div class="info-container">
             <h3>Año de Referencia</h3>
-            <span class="inline bolder-weight">{{anioUltimoValorDisponible}}</span>
+            <span class="inline bolder-weight"
+              >{{anioUltimoValorDisponible}}</span
+            >
           </div>
         </section>
       </section>
 
       <section class="mt-3">
         <h2>Información general</h2>
-        <section class="inner_section d_flex mt-1 justify_content_between" style="column-gap: 40px">
-          <div style="max-width: 260px;">
+        <section
+          class="inner-section d_flex mt-1 justify_content_between"
+          style="column-gap: 40px"
+        >
+          <div style="max-width: 260px">
             <h3>Temática</h3>
-            <span class="inline semibold-weight" style="word-break: break-word;">{{modulo.temaIndicador}}</span>
+            <span class="inline semibold-weight" style="word-break: break-word"
+              >{{modulo.temaIndicador}}</span
+            >
           </div>
-          <div class="d_flex justify_content_around" style="flex-grow: 1;">
-            <div>
+          <div class="d_flex justify_content_around" style="flex-grow: 1">
+            <div style="min-width: 200px">
               <h3>Unidad de medida</h3>
-              <span class="inline semibold-weight">Lorem ipsum</span>
+              <span class="inline semibold-weight"
+                >{{getCatalogo catalogos 2}}</span
+              >
             </div>
             <div>
               <h3>ODS</h3>
-              <span class="inline semibold-weight">Mauris venenatis</span>
+              <span class="inline semibold-weight"
+                >{{getCatalogo catalogos 1}}</span
+              >
             </div>
             <div>
               <h3>Cobertura geográfica</h3>
-              <span class="inline semibold-weight">condimentum</span>
+              <span class="inline semibold-weight"
+                >{{getCatalogo catalogos 3}}</span
+              >
             </div>
           </div>
         </section>
       </section>
-
+      {{#if formula}}
       <section class="mt-3">
         <h2>Formula</h2>
-        <div class="inner_section mt-1">
-          <h3>Ecuación</h3>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer condimentum turpis et scelerisque placerat.</p>
+        <div class="inner-section mt-1">
+          <p>{{formula.descripcion}}</p>
         </div>
-        <span style="font-size: 24px">$$c^2 = a^2 + b^2$$</span>
-        <h3 class="inner_section">Variables</h3>
-        <table class="mt-1" style="width: 70%; border-collapse: collapse; margin: auto;">
+        <span style="font-size: 24px">$${{formula.ecuacion}}$$</span>
+        <table
+          class="mt-1"
+          style="width: 70%; border-collapse: collapse; margin: auto"
+        >
           <thead>
             <tr style="border-bottom: 1px solid; font-weight: 600">
               <td>Variable</td>
@@ -192,28 +217,23 @@
             </tr>
           </thead>
           <tbody>
+            {{#each formula.variables}}
             <tr>
-              <td>$$a$$</td>
-              <td>dignissim lectus commodo id.</td>
-              <td align="right">90</td>
+              <td style="padding: 0; margin: 0; display: block">
+                $${{this.nombre}}$$
+              </td>
+              <td>{{this.nombreAtributo}}</td>
+              <td align="right">{{this.dato}}</td>
             </tr>
-            <tr>
-              <td>$$b$$</td>
-              <td>non ex laoreet bibendum</td>
-              <td align="right">90</td>
-            </tr>
-            <tr>
-              <td>$$c$$</td>
-              <td>rutrum nibh</td>
-              <td align="right">90</td>
-            </tr>
+            {{/each}}
           </tbody>
         </table>
       </section>
-
+      {{/if}}
+      {{#if (hasHistoricos historicos)}}
       <section class="mt-3">
         <h2>Valores historicos</h2>
-        <table style="width: 70%; border-collapse: collapse; margin: auto">
+        <table style="width: 100%; border-collapse: collapse; margin: auto">
           <thead>
             <tr style="border-bottom: 1px solid; font-weight: 600">
               <td>Año</td>
@@ -222,45 +242,32 @@
             </tr>
           </thead>
           <tbody>
+            {{#each historicos}}
             <tr>
-              <td align="right" style="padding: 1em 0; display: block;">2020</td>
-              <td align="right">90</td>
-              <td>Nam laoreet lorem ut velit interdum malesuada</td>
+              <td align="right">{{this.anio}}</td>
+              <td align="right">{{this.valor}}</td>
+              <td>{{this.fuente}}</td>
             </tr>
-            <tr>
-              <td align="right" style="padding: 1em 0; display: block;">2019</td>
-              <td align="right">90</td>
-              <td>
-                Aliquam pretium urna ut mollis aliquet. Cras in lectus in augue
-                viverra finibus tincidunt vitae ante.
-              </td>
-            </tr>
-            <tr>
-              <td align="right" style="padding: 1em 0; display: block;">2018</td>
-              <td align="right">90</td>
-              <td>
-                Mauris sed velit vel elit tempor gravida et posuere dolor.
-                Maecenas vitae ex euismod, pharetra metus blandit,
-              </td>
-            </tr>
+            {{/each}}
           </tbody>
         </table>
-
-        <canvas id="myChart" style="width: 800px; margin: auto;">
+        <canvas id="chart" style="width: 800px; margin: auto">
           Grafica
         </canvas>
       </section>
+      {{/if}}
+
       <section class="mt-3">
         <h2>Fuentes de consulta</h2>
-        <span class="inner_section mt-1">Consulta</span>
+        <p class="inner-section">{{fuente}}</p>
       </section>
+
       <section class="mt-3">
         <h2>Más información</h2>
-        <h3 class="inner_section mt-1">Enlace a la plataforma</h3>
         <a
-          class="inner_section"
-          href="https://chihuahuametrica.online/chihuahua-en-datos/indicadores/20"
-          >https://chihuahuametrica.online/chihuahua-en-datos/indicadores/20</a
+          class="inner-section"
+          href="https://chihuahuametrica.online/chihuahua-en-datos/indicadores/{{id}}"
+          >https://chihuahuametrica.online/chihuahua-en-datos/indicadores/{{id}}</a
         >
       </section>
     </main>
