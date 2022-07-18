@@ -110,6 +110,7 @@ const defineWhere = (pathway, matchedData) => {
       where = {
         idModulo: matchedData.idModulo,
         ...filterIndicadorBy(matchedData),
+        ...getIndicadoresFilters(matchedData)
       };
       break;
     case FRONT_PATH:

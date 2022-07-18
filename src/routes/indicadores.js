@@ -218,6 +218,12 @@ router.route('/:idIndicador')
  *           name: perPage
  *           schema:
  *             type: integer
+ *         - in: query
+ *           name: searchQuery
+ *           description: Search query
+ *           required: false
+ *           schema:
+ *             type: string
  *       responses:
  *         200:
  *           description: A very friendly list of indicadores
