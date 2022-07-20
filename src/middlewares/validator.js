@@ -113,8 +113,7 @@ const filterIndicadoresValidationRules = () => [
         }),
     query('tendenciaActual')
         .optional()
-        .toUpperCase()
-        .isIn(['ASCENDENTE', 'DESCENDENTE', 'NO APLICA']),
+        .isIn(['Ascendente', 'Descendente', 'No aplica']),
     query('searchQuery')
         .optional()
 ];
