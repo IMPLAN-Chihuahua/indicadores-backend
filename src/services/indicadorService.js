@@ -151,7 +151,6 @@ const getIndicadoresFilters = (matchedData) => {
         { definicion: { [Op.iLike]: `%${searchQuery}%` } },
         { codigo: { [Op.iLike]: `%${searchQuery}%` } },
         { codigoObjeto: { [Op.iLike]: `%${searchQuery}%` } },
-        { tendenciaActual: { [Op.iLike]: `%${searchQuery}%` } },
         { observaciones: { [Op.iLike]: `%${searchQuery}%` } },
       ]
     };
@@ -238,17 +237,7 @@ const defineIncludesForAnIndicador = (pathway, queryParams) => {
   return [
     ...includeBasicModels(),
     ...includeCatalogoFilters(queryParams),
-    ...includeHistorico(pathway)
-  ];
-}
-
-const includeBasicModels = () => {
-  return [
-    {
-      model: Modulo,
-      required: true,
-      attributes: ['id', 'temaIndicador', 'descripcion', 'color'],
-    },
+    ...includeHistorico(pathway),
     {
       model: Mapa,
       required: false,
@@ -269,6 +258,16 @@ const includeBasicModels = () => {
           ],
         }
       ]
+    },
+  ];
+}
+
+const includeBasicModels = () => {
+  return [
+    {
+      model: Modulo,
+      required: true,
+      attributes: ['id', 'temaIndicador', 'descripcion', 'color'],
     },
     {
       model: CatalogoDetail,
