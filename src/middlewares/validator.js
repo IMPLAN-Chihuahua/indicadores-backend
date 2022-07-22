@@ -90,7 +90,7 @@ const updateValidationRules = () => [
 const paginationValidationRules = () => [
     query(['page', 'perPage'])
         .optional()
-        .isInt().withMessage('campo debe ser entero')
+        .isInt().withMessage('Field must be an integer number')
         .toInt()
         .custom((value) => {
             if (value < 1) {
@@ -103,7 +103,7 @@ const paginationValidationRules = () => [
 const filterIndicadoresValidationRules = () => [
     query(['anioUltimoValorDisponible', 'idOds', 'idCobertura', 'idUnidadMedida'])
         .optional()
-        .isInt().withMessage('campo debe ser entero')
+        .isInt().withMessage('Field must be an integer number')
         .toInt()
         .custom((value) => {
             if (value < 1) {
@@ -128,7 +128,7 @@ const filterModulosValidationRules = () => [
 const paramValidationRules = () => [
     param(['idModulo', 'idIndicador', 'idUser', 'idOds', 'idCobertura', 'idUnidadMedida', 'idCatalogo', 'idHistorico'])
         .optional()
-        .isInt().withMessage('Campo debe ser entero')
+        .isInt().withMessage('Field must be an integer number')
         .toInt()
         .custom((value) => {
             if (value < 1) {
@@ -203,7 +203,7 @@ const updateModuloValidationRules = () => [
         .exists()
         .withMessage('por favor agrega un id de modulo')
         .isInt()
-        .withMessage('campo debe ser entero')
+        .withMessage('Field must be an integer number')
         .toInt(),
 
     check('codigo')
@@ -228,7 +228,7 @@ const updateHistoricoValidationRules = () => [
         .exists()
         .withMessage('por favor agrega un id de historico')
         .isInt()
-        .withMessage('campo debe ser entero')
+        .withMessage('Field must be an integer number')
         .toInt(),
 
     check('valor')
@@ -331,6 +331,7 @@ const validate = (req, res, next) => {
     }
 
     return res.status(422).json({
+        status: 422,
         errors: errors.array({ onlyFirstError: true })
     });
 

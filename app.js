@@ -9,23 +9,35 @@ const path = require('path')
 const logger = require('./src/config/logger');
 const logErrors = require('./src/middlewares/log');
 
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
+const env = process.env.NODE_ENV || 'development';
+const servers = [
+  {
+    url: 'https://indicadores-backend.chihuahuametrica.online/api/v1',
+    description: 'Production Server'
+  }
+]
+
+if (env === 'development') {
+  servers.push({
+    url: `http://localhost:${PORT}/api/v1`,
+    description: 'Local setup'
+  })
+}
+
 const options = {
   definition: {
     openapi: '3.0.0',
     info: {
       title: 'Indicadores API',
       version: '1.0.0',
-      description: 'Set of endpoints to keep track of urban data.'
+      description: `The Indicadores API follows the constraints of the 
+      REST architectural style. This set of endpoints keep track of urban data.`
     },
-    servers: [
-      {
-        url: 'http://localhost:8080/api/v1'
-      }
-    ],
-
+    servers
   },
-  apis: [`${__dirname}/src/routes/*.js`]
+  apis: [`${__dirname}/src/routes/*.js`],
+
 }
 
 const swaggerSpec = swaggerJSDoc(options)
@@ -51,7 +63,7 @@ app.use(helmet({
 
 // Log HTTP requests with Morgan and Winston
 app.use(morgan(':method :url :status :response-time ms - :res[content-length]', {
-  stream: { write: message => logger.info(message.trim()) }
+  stream: { write: message => logger.http(message.trim()) }
 }));
 
 // Parse data from requests

@@ -45,7 +45,7 @@ const createUser = async (req, res, next) => {
   const avatar = `images/${req.file ? req.file.originalName : 'avatar.jpg'}`;
   try {
     if (await isCorreoAlreadyInUse(correo)) {
-      return res.status(409).send('Correo no disponible')
+      return res.status(409).json({ status: 409, message: 'Email is already in use' })
     }
     const hashedClave = await hashClave(clave);
     const savedUser = await addUsuario({
