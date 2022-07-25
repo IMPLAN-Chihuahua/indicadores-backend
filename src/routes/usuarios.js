@@ -252,7 +252,7 @@ router.get(
 
 /**
  * @swagger
- *  /usuarios/{idUsuario}:
+ *  /usuarios/{idUser}:
  *    patch:
  *      summary: Update user's information
  *      tags: [Usuarios]
@@ -298,7 +298,7 @@ router.patch(
 
 /**
  * @swagger
- *  /usuarios/{idUsuario}/toggle-status:
+ *  /usuarios/{idUser}/toggle-status:
  *  patch:
  *    summary: Update status of a user.
  *    description: Update user status, for instance if it is active it will change to inactive.
@@ -401,12 +401,6 @@ router.post('/:idUser/indicadores',
     validate,
     setIndicadoresToUsuario,
 );
-
-router.get('/:idUser/profile',
-    paramValidationRules(),
-    validate,
-    getUserFromId
-)
 
 
 module.exports = router;
