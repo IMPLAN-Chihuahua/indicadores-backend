@@ -356,11 +356,13 @@ moduloRouter.route('/:idModulo')
  *         200:
  *           description: A modulo object with public fields
  *         404:
- *           description: Modulo with given id does not exist
+ *           $ref: '#components/responses/NotFound'
  *         422:
- *           description: Unable to process request due to semantic errors
+ *           $ref: '#components/responses/UnprocessableEntity'
  *         429:
- *           description: The app has exceeded its rate limit
+ *           $ref: '#components/responses/TooManyRequests'
+ *         500:
+ *           $ref: '#components/responses/InternalServerError'
  */
 moduloRouter.route('/:idModulo')
     .get(
