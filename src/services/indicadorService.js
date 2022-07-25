@@ -150,7 +150,6 @@ const getIndicadoresFilters = (matchedData) => {
         { nombre: { [Op.iLike]: `%${searchQuery}%` } },
         { definicion: { [Op.iLike]: `%${searchQuery}%` } },
         { codigo: { [Op.iLike]: `%${searchQuery}%` } },
-        { codigoObjeto: { [Op.iLike]: `%${searchQuery}%` } },
         { observaciones: { [Op.iLike]: `%${searchQuery}%` } },
       ]
     };

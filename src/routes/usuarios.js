@@ -220,6 +220,7 @@ router.post(
  *      parameters:
  *        - in: path
  *          name: idUser
+ *          format: int64
  *          required: true
  *          schema: 
  *            type: integer
@@ -261,6 +262,7 @@ router.get(
  *      parameters:
  *        - in: path
  *          name: idUser
+ *          format: int64
  *          required: true
  *          schema:
  *              type: integer
@@ -271,7 +273,7 @@ router.get(
  *              $ref: '#/components/schemas/Usuario'
  *      responses:
  *        204:
- *          description: User information was updated successfully
+ *          description: Updated
  *        401:
  *          $ref: '#/components/responses/Unauthorized'
  *        403:
@@ -309,11 +311,12 @@ router.patch(
  *      - in: path
  *        name: idUser
  *        required: true
+ *        format: int64
  *        schema:
  *          type: integer
  *    responses:
  *      204:
- *        description: User status changed successfully.
+ *        description: Updated
  *      400:
  *        description: User status was not changed.
  *        content:
@@ -355,7 +358,8 @@ router.patch(
  *         - bearer: []
  *       parameters:
  *         - in: path
- *           name: idIndicador
+ *           name: idUser
+ *           format: int64
  *           required: true
  *           schema: 
  *             type: integer
