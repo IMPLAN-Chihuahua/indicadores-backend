@@ -59,11 +59,10 @@ const {
  *             description: Second lastname
  *           urlImagen:
  *             type: string
+ *             format: binary
  *             description: Profile picture
  *           activo:
- *             type: string
- *             example: SI
- *             description: Is user active?
+ *             $ref: '#/components/schemas/Status'
  *           idRol:
  *             type: int
  *             example: 1
@@ -77,7 +76,12 @@ const {
  *             type: string
  *             format: date-time
  *             description: Timestamp of latest update in 'Z time'
- *             readOnly: true 
+ *             readOnly: true
+ *       Status:
+ *         type: string
+ *         enum:
+ *           - SI
+ *           - NO
  */
 
 /**

@@ -39,9 +39,11 @@ const { determinePathway, FILE_PATH } = require('../middlewares/determinePathway
  *                 description: Used to specify the type of the file
  *                 example: application/json
  *         422:
- *           description: Unable to process request due to semantic errors
+ *           $ref: '#/components/responses/UnprocessableEntity'
+ *         429:
+ *           $ref: '#/components/responses/TooManyRequests'
  *         500:
- *           description: Internal server error
+ *           $ref: '#/components/responses/InternalServerError'
  */
 
 /**
@@ -79,9 +81,11 @@ const { determinePathway, FILE_PATH } = require('../middlewares/determinePathway
  *                 description: Used to specify the type of the file
  *                 example: application/pdf
  *         422:
- *           description: Unable to process request due to semantic errors
+ *           $ref: '#/components/responses/UnprocessableEntity'
+ *         429:
+ *           $ref: '#/components/responses/TooManyRequests'
  *         500:
- *           description: Internal server error
+ *           $ref: '#/components/responses/InternalServerError'
  */
 
 /**
@@ -119,9 +123,11 @@ const { determinePathway, FILE_PATH } = require('../middlewares/determinePathway
  *                 description: Used to specify the type of the file
  *                 example: application/csv
  *         422:
- *           description: Unable to process request due to semantic errors
+ *           $ref: '#/components/responses/UnprocessableEntity'
+ *         429:
+ *           $ref: '#/components/responses/TooManyRequests'
  *         500:
- *           description: Internal server error
+ *           $ref: '#/components/responses/InternalServerError'
  */
 
 /**
@@ -159,9 +165,11 @@ const { determinePathway, FILE_PATH } = require('../middlewares/determinePathway
  *                 description: Used to specify the type of the file
  *                 example: test.xlsx
  *         422:
- *           description: Unable to process request due to semantic errors
+ *           $ref: '#/components/responses/UnprocessableEntity'
+ *         429:
+ *           $ref: '#/components/responses/TooManyRequests'
  *         500:
- *           description: Internal server error
+ *           $ref: '#/components/responses/InternalServerError'
  */
 
 router.route('/:idIndicador/:format?')

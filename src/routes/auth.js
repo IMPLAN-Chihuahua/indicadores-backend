@@ -102,7 +102,7 @@ const { loginValidationRules, validate, tokenValidationRules } = require('../mid
  *   /auth/login:
  *     post:
  *       summary: Let a client log into the app
- *       description: If a request has valid credentials, this endpoint returns a JWT to use in every subsequent request
+ *       description: If a request has valid credentials, this endpoint returns a token to use in every subsequent request
  *       requestBody:
  *         description: User's credentials
  *         required: true
@@ -123,9 +123,21 @@ const { loginValidationRules, validate, tokenValidationRules } = require('../mid
  *       tags: [ Auth ]
  *       responses:
  *         200: 
- *           description: Returns a JWT if credentials are correct.
+ *           description: Returns a token if credentials are correct.
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   token:
+ *                     type: string
+ *                     example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIn0.rTCH8cLoGxAm_xw68z-zXVKi9ie6xJn9tnVWjd_9ftE
  *         422:
- *           description: Unable to process request due to semantic errors in the body or param payload
+ *           $ref: '#/components/responses/UnprocessableEntity'
+ *         429:
+ *           $ref: '#/components/responses/TooManyRequests'
+ *         500:
+ *           $ref: '#/components/responses/InternalServerError'
  */
 router.post('/login', loginValidationRules(), validate, login);
 
@@ -150,7 +162,11 @@ router.post('/login', loginValidationRules(), validate, login);
  *         200:
  *           description: Sends an email to the address in the body request
  *         422:
- *           description: Unable to process request due to semantic errors in the body payload
+ *           $ref: '#/components/responses/UnprocessableEntity'
+ *         429:
+ *           $ref: '#/components/responses/TooManyRequests'
+ *         500:
+ *           $ref: '#/components/responses/InternalServerError'
  */
 router.post('/password-reset',
   body('correo').trim().isEmail(),
@@ -181,6 +197,12 @@ router.post('/password-reset',
  *       responses:
  *         200:
  *           description: Updates password succesfully
+ *         422:
+ *           $ref: '#/components/responses/UnprocessableEntity'
+ *         429:
+ *           $ref: '#/components/responses/TooManyRequests'
+ *         500:
+ *           $ref: '#/components/responses/InternalServerError'
  */
 router.patch('/password-reset/:token?',
   tokenValidationRules(),

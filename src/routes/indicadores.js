@@ -478,8 +478,28 @@ router.route('/:idIndicador/usuarios')
  *             type: integer
  *             format: int64
  *       responses:
- *         201:
+ *         200:
  *           description: List of catalogos.
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   data:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: integer
+ *                         idIndicador:
+ *                           type: integer
+ *                         idCatalogoDetail:
+ *                           type: integer
+ *                         nombreAtributo: 
+ *                           type: string
+ *                         idCatalogo:
+ *                           type: integer
  *         401:
  *           $ref: '#/components/responses/Unauthorized'
  *         403:
