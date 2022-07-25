@@ -390,7 +390,7 @@ router.route('/:idIndicador')
  *      429:
  *        $ref: '#components/responses/TooManyRequests'
  *      500:
- *        $ref: '#components/respones/InternalServerError'
+ *        $ref: '#components/responses/InternalServerError'
  */
 router.route('/:idIndicador/toggle-status')
     .patch(
@@ -448,7 +448,7 @@ router.route('/:idIndicador/toggle-status')
  *       429:
  *         $ref: '#components/responses/TooManyRequests'
  *       500:
- *         $ref: '#components/respones/InternalServerError'
+ *         $ref: '#components/responses/InternalServerError'
  */
 router.route('/:idIndicador/usuarios')
     .post(
@@ -489,7 +489,7 @@ router.route('/:idIndicador/usuarios')
  *         429:
  *           $ref: '#components/responses/TooManyRequests'
  *         500:
- *           $ref: '#components/respones/InternalServerError'
+ *           $ref: '#components/responses/InternalServerError'
  */
 router.route('/:idIndicador/catalogos')
     .get(
