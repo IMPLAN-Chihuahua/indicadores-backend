@@ -128,7 +128,7 @@ const getUser = async (req, res, id) => {
   try {
     const usuario = await getUsuarioById(id);
     if (usuario === null) {
-      return res.sendStatus(204);
+      return res.status(404).json({status: 404, message: `User with id ${id} not found`});
     }
     return res.status(200).json({ data: usuario });
   } catch (err) {

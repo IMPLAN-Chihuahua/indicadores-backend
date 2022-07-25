@@ -43,6 +43,7 @@ const {
  *             description: Email address
  *           clave:
  *             type: string
+ *             format: password
  *             description: Password
  *             writeOnly: true
  *           nombres:
@@ -69,31 +70,15 @@ const {
  *             description: Id of given rol
  *           createAt:
  *             type: string
+ *             format: date-time
  *             description: Timestamp of creation in 'Z time'
  *             readOnly: true
  *           updatedAt:
  *             type: string
+ *             format: date-time
  *             description: Timestamp of latest update in 'Z time'
  *             readOnly: true 
  */
-
-/**
- * @swagger
- *   components:
- *     schemas:
- *       BasicError:
- *         type: object
- *         properties:
- *           status:
- *             type: integer
- *             minimum: 400
- *             maximum: 599
- *             description: HTTP status code
- *           message:
- *             type: string
- *             description: Short message with cause of the error
- */         
-
 
 /**
  * @swagger
@@ -107,16 +92,20 @@ const {
  *       parameters:
  *         - in: query
  *           name: page
- *           required: false
  *           schema:
  *             type: integer
  *           example: 1
  *         - in: query
  *           name: perPage
- *           required: false
  *           schema:
  *             type: integer
  *           example: 25
+ *         - in: query
+ *           name: searchQuery
+ *           description: A search query to filter list of users by nombres, apellido paterno, apellido materno, or correo
+ *           required: false
+ *           schema:
+ *             type: string
  *       responses: 
  *         200:
  *           description: A list of users
@@ -133,57 +122,24 @@ const {
  *                     example: 25
  *                   total:
  *                     type: integer
+ *                     example: 50
  *                   totalPages:
  *                     type: integer
+ *                     example: 2
  *                   data:
  *                     type: array
  *                     items: 
  *                       $ref: '#/components/schemas/Usuario'
  *         401:
- *           description: Unauthorized
- *           content:
- *             aplication/json:
- *               type: object
- *               schema:
- *                 $ref: '#/components/schemas/BasicError'
- *               example:
- *                 status: 401
- *                 message: This response requires authentication
+ *           $ref: '#/components/responses/Unauthorized'
  *         403:
- *           description: Forbidden
- *           content:
- *             aplication/json:
- *               type: object
- *               schema:
- *                 $ref: '#/components/schemas/BasicError'
- *               example:
- *                 status: 403
- *                 message: User has no access to this resource
+ *           $ref: '#/components/responses/Forbidden'
  *         422:
- *           description: Validation failed
- *           content:
- *             application/json:
- *               schema:
- *                 type: object
- *                 properties:
- *                   status:
- *                     type: integer
- *                     example: 422
- *                   errors:
- *                     type: array
- *                     items:
- *                       type: string
- *                       example: 'query[page]: Field must be an integer number'
+ *           $ref: '#/components/responses/UnprocessableEntity'
  *         429:
- *           description: Too many request were made in a short time, making the app exceed its rate limit
- *           content:
- *             aplication/json:
- *               type: object
- *               schema:
- *                 $ref: '#/components/schemas/BasicError'
- *               example:
- *                 status: 429
- *                 message: Too many requests, please try again later
+ *           $ref: '#/components/responses/TooManyRequests'
+ *         500:
+ *           $ref: '#/components/responses/InternalServerError'
  */
 router.get(
     '/',
@@ -221,16 +177,10 @@ router.get(
  *                   data:
  *                     type: object
  *                     $ref: '#/components/schemas/Usuario'
+ *         401:
+ *           $ref: '#/components/responses/Unauthorized'
  *         403:
- *           description: Forbidden
- *           content:
- *             aplication/json:
- *               type: object
- *               schema:
- *                 $ref: '#/components/schemas/BasicError'
- *               example:
- *                 status: 403
- *                 message: User has no access to this resource
+ *           $ref: '#/components/responses/Forbidden'
  *         409:
  *           description: Conflict
  *           content:
@@ -242,30 +192,11 @@ router.get(
  *                 status: 409
  *                 message: Email address is already in use 
  *         422:
- *           description: Validation failed
- *           content:
- *             application/json:
- *               schema:
- *                 type: object
- *                 properties:
- *                   status:
- *                     type: integer
- *                     example: 422
- *                   errors:
- *                     type: array
- *                     items:
- *                       type: string
- *                       example: 'body[correo]: Field must be a valid email address'
+ *           $ref: '#/components/responses/UnprocessableEntity'
  *         429:
- *           description: Too many request were made in a short time, making the app exceed its rate limit
- *           content:
- *             aplication/json:
- *               type: object
- *               schema:
- *                 $ref: '#/components/schemas/BasicError'
- *               example:
- *                 status: 429
- *                 message: Too many requests, please try again later
+ *           $ref: '#/components/responses/TooManyRequests'
+ *         500:
+ *           $ref: '#/components/responses/InternalServerError'
  */
 router.post(
     '/',
@@ -281,13 +212,11 @@ router.post(
 
 /**
  * @swagger
- *  /usuarios/{idUsuario}:
+ *  /usuarios/{idUser}:
  *    get:
  *      summary: Get information about a user
  *      description: Retrieve user with given id
  *      tags: [Usuarios]
- *      security:
- *        - bearer: []
  *      parameters:
  *        - in: path
  *          name: idUser
@@ -295,36 +224,26 @@ router.post(
  *          schema: 
  *            type: integer
  *          style: simple
- *      responses: 
+ *      responses:
  *        200:
  *          description: A user
- *        204:
- *          description: User with given id was not found
- *        401:
- *          description: Unauthorized
- *        403:
- *          description: Forbidden
- *        422:
- *          description: Validation failed
  *          content:
  *            application/json:
  *              schema:
  *                type: object
  *                properties:
- *                  status:
- *                    type: integer
- *                    example: 422
- *                  errors:
- *                    type: array
- *                    items:
- *                      type: string
- *                      example: 'param[idUsuario]: Field must be an integer number'
+ *                  data:
+ *                    type: object
+ *                    $ref: '#/components/schemas/Usuario'
+ *        404:
+ *          $ref: '#/components/responses/NotFound'
+ *        422:
+ *          $ref: '#/components/responses/UnprocessableEntity'
+ *        500:
+ *          $ref: '#/components/responses/InternalServerError'
  */
 router.get(
     '/:idUser',
-    verifyJWT,
-    verifyUserIsActive,
-    verifyUserHasRoles(['ADMIN']),
     paramValidationRules(),
     validate,
     getUserFromId
@@ -354,11 +273,15 @@ router.get(
  *        204:
  *          description: User information was updated successfully
  *        401:
- *          description: Unauthorized
+ *          $ref: '#/components/responses/Unauthorized'
  *        403:
- *          description: Forbidden
+ *          $ref: '#/components/responses/Forbidden'
  *        422:
- *          description: Unable to process request due to semantic errors in the body or param payload
+ *          $ref: '#/components/responses/UnprocessableEntity'
+ *        429:
+ *          $ref: '#/components/responses/TooManyRequests'
+ *        500:
+ *          $ref: '#/components/responses/InternalServerError'
  */
 router.patch(
     '/:idUser',
@@ -377,7 +300,8 @@ router.patch(
  * @swagger
  *  /usuarios/{idUsuario}/toggle-status:
  *  patch:
- *    summary: Update status of user (if it was active changes to inactive)
+ *    summary: Update status of a user.
+ *    description: Update user status, for instance if it is active it will change to inactive.
  *    tags: [Usuarios]
  *    security:
  *      - bearer: []
@@ -389,11 +313,26 @@ router.patch(
  *          type: integer
  *    responses:
  *      204:
- *        description: User status changed successfully
+ *        description: User status changed successfully.
+ *      400:
+ *        description: User status was not changed.
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/BasicError'
+ *            example:
+ *              status: 400
+ *              message: Could not update user status
  *      401:
- *        description: Unauthorized request (not valid JWT in Authorization header)
+ *        $ref: '#/components/responses/Unauthorized'
  *      403:
- *        description: The request has an invalid token, rol or privileges (inactive account)
+ *        $ref: '#/components/responses/Forbidden'
+ *      422:
+ *        $ref: '#/components/responses/UnprocessableEntity'
+ *      429:
+ *        $ref: '#/components/responses/TooManyRequests'
+ *      500:
+ *        $ref: '#/components/responses/InternalServerError'
  */
 router.patch(
     '/:idUser/toggle-status',
@@ -410,7 +349,7 @@ router.patch(
  * @swagger
  *   /usuarios/{idUser}/indicadores:
  *     post:
- *       summary: Assign indicadores to a user
+ *       summary: Assign indicadores to a user.
  *       tags: [Usuarios]
  *       security:
  *         - bearer: []
@@ -434,27 +373,23 @@ router.patch(
  *                   example: [1, 2, 3, 4, 5]
  *                 desde:
  *                   type: string   
- *                   example: 2022-05-09
+ *                   format: date
  *                 hasta:
  *                   type: string
- *                   example: 2022-05-10
+ *                   format: date
  *       responses:
  *         201:
- *           description: Operations was successful (indicadores are assigned to an usuario)
+ *           description: Indicadores assigned to a user was successfull
  *         401:
- *           description: Unauthorized request (not valid JWT in Authorization header)
- *         403:   
- *           description: The request has an invalid token, rol, privileges or account is inactive
+ *           $ref: '#/components/responses/Unauthorized'
+ *         403:
+ *           $ref: '#/components/responses/Forbidden'
+ *         422:
+ *           $ref: '#/components/responses/UnprocessableEntity'
  *         429:
- *           description: Too many request were made in a short time, making the app exceed its rate limit
- *           content:
- *             aplication/json:
- *               type: object
- *               schema:
- *                 $ref: '#/components/schemas/BasicError'
- *               example:
- *                 status: 429
- *                 message: Too many requests, please try again later
+ *           $ref: '#/components/responses/TooManyRequests'
+ *         500:
+ *           $ref: '#/components/responses/InternalServerError'
  */
 router.post('/:idUser/indicadores',
     verifyJWT,

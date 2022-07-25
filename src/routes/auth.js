@@ -3,7 +3,8 @@ const { body } = require('express-validator');
 
 const router = express.Router();
 const { login, generatePasswordRecoveryToken, handlePasswordRecoveryToken } = require('../controllers/authController');
-const { loginValidationRules, validate, tokenValidationRules } = require('../middlewares/validator')
+const { loginValidationRules, validate, tokenValidationRules } = require('../middlewares/validator');
+
 /**
  * @swagger
  *   components:
@@ -12,8 +13,89 @@ const { loginValidationRules, validate, tokenValidationRules } = require('../mid
  *         type: http
  *         scheme: bearer
  *         bearerFormat: JWT
+ *     schemas:
+ *       BasicError:
+ *         type: object
+ *         properties:
+ *           status:
+ *             type: integer
+ *             minimum: 400
+ *             maximum: 599
+ *             description: HTTP status code
+ *           message:
+ *             type: string
+ *             description: Short message with cause of the error
+ *     responses:
+ *       BadRequest:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/BasicError'
+ *             example:
+ *               status: 400
+ *               message: There is something wrong in the request
+ *       Unauthorized:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/BasicError'
+ *             example:
+ *               status: 401
+ *               message: This request requires authentication
+ *       Forbidden:
+ *         description: Authentication credentials are insufficient to grant access to this resource.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/BasicError'
+ *             example:
+ *               status: 403
+ *               message: User has no access
+ *       NotFound:
+ *         description: The specified resource was not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/BasicError'
+ *             example:
+ *               status: 404
+ *               message: Resource was not found
+ *       UnprocessableEntity:
+ *         description: Validation failed.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 422
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: 'location[field]: Field must be...'
+ *       TooManyRequests:
+ *         description: App has exceeded its rate limit.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/BasicError'
+ *             example:
+ *               status: 429
+ *               message: Too many requests, try later
+ *       InternalServerError:
+ *         description: Something went wrong, look into the message response for more details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/BasicError'
+ *             example:
+ *               status: 500
+ *               message: Something went wrong
  */
-
 
 /**
  * @swagger
