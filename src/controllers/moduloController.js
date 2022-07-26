@@ -26,7 +26,8 @@ const createModulo = async (req, res, next) => {
 
   try {
     if (await moduloService.isTemaIndicadorAlreadyInUse(temaIndicador)) {
-      return res.status(400).json({
+      return res.status(409).json({
+        status: 409,
         message: `El tema indicador ${temaIndicador} ya está en uso`,
       });
     }

@@ -12,7 +12,7 @@ const getIndicador = async (req, res, next) => {
   try {
     const indicador = await IndicadorService.getIndicador(idIndicador, pathway);
     if (indicador === null) {
-      return res.status(404).send(`Indicador con id ${idIndicador} no encontrado`);
+      return res.status(404).json({status: 404, message: `Indicador with id ${idIndicador} not found`});
     }
     if (pathway === FILE_PATH) {
       return generateFile(format, res, indicador).catch(err => next(err));
@@ -60,7 +60,7 @@ const generateFile = async (format, res, indicador) => {
 
 const getIndicadores = async (req, res, next) => {
   const { pathway } = req;
-  const { page, perPage, order } = getPagination(req.matchedData);
+  const { page, perPage } = getPagination(req.matchedData);
   try {
     const { indicadores, total } = await IndicadorService.getIndicadores(page, perPage, req.matchedData, pathway);
     const totalPages = Math.ceil(total / perPage);

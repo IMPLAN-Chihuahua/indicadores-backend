@@ -81,8 +81,10 @@ const { verifyJWT } = require('../middlewares/auth');
  *                     items:
  *                       $ref: '#/components/schemas/UnidadMedida'
  *                     description: List of UnidadMedida
+ *         429:
+ *           $ref: '#/components/responses/TooManyRequests'
  *         500:
- *           description: Internal server error           
+ *           $ref: '#/components/responses/InternalServerError'
  */
 
 catalogoRouter.route('/')
