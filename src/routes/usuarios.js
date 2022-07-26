@@ -79,9 +79,7 @@ const {
  *             readOnly: true
  *       Status:
  *         type: string
- *         enum:
- *           - SI
- *           - NO
+ *         enum: [SI, NO]
  */
 
 /**
