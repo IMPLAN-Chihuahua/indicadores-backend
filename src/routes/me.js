@@ -43,9 +43,7 @@ const { uploadImage } = require('../middlewares/fileUpload');
  *        401:
  *          $ref: '#/components/responses/Unauthorized'
  *        403:
- *          $ref: '#/components/responses/Forbidden'
- *        422:
- *          $ref: '#/components/responses/UnprocessableEntity'
+ *          $ref: '#/components/responses/Forbidden
  *        429:
  *          $ref: '#/components/responses/TooManyRequests'
  *        500:

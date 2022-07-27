@@ -48,7 +48,7 @@ const app = express();
 // See https://expressjs.com/en/guide/behind-proxies.html
 app.set('trust proxy', 1);
 
-// API rate limiter (prevent DoS attacks)
+// API throttling (prevent DoS attacks)
 app.use(require('./src/middlewares/limiter'));
 
 // Enable CORS for all requests
