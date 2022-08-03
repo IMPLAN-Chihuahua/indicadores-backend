@@ -1,9 +1,10 @@
 const stream = require('stream');
 const IndicadorService = require("../services/indicadorService")
-const { generateCSV, generateXLSX, generatePDF } = require("../services/generadorArchivosService");
+const { generateCSV, generateXLSX, generatePDF } = require("../services/fileService");
 const UsuarioService = require('../services/usuariosService');
 const { areConnected, createRelation } = require("../services/usuarioIndicadorService");
 const { getPagination } = require('../utils/pagination');
+const { FILE_PATH } = require('../middlewares/determinePathway')
 
 const getIndicador = async (req, res, next) => {
   const { pathway } = req;
@@ -11,55 +12,55 @@ const getIndicador = async (req, res, next) => {
   try {
     const indicador = await IndicadorService.getIndicador(idIndicador, pathway);
     if (indicador === null) {
-      return res.status(404).send(`Indicador con id ${idIndicador} no encontrado`);
+      return res.status(404).json({status: 404, message: `Indicador with id ${idIndicador} not found`});
     }
-
-    if (typeof format !== 'undefined') {
-      return generateFile(format, res, indicador)
+    if (pathway === FILE_PATH) {
+      return generateFile(format, res, indicador).catch(err => next(err));
     }
-
     return (res.status(200).json({ data: indicador }))
   } catch (err) {
     next(err)
   }
 };
 
-const generateFile = async (format, res, data) => {
+const generateFile = async (format, res, indicador) => {
+  const filename = `${indicador.nombre}.${format}`
+  res.header('Content-disposition', 'attachment');
   switch (format) {
     case 'json':
       return (
-        res.header('Content-disposition', 'attachment'),
         res.header('Content-Type', 'application/json'),
-        res.attachment(`${data.nombre}.json`),
-        res.send(data));
+        res.attachment(filename),
+        res.send(indicador));
     case 'csv':
-      const csvData = generateCSV(data);
+      const csvData = generateCSV(indicador);
       return (
-        res.header('Content-disposition', 'attachment'),
         res.header('Content-Type', 'application/csv'),
-        res.attachment(`${data.nombre}.csv`),
+        res.attachment(filename),
         res.send(csvData));
     case 'xlsx':
-      const content = await generateXLSX(data);
+      const content = await generateXLSX(indicador);
       const readStream = new stream.PassThrough();
       readStream.end(content);
       return (
-        res.header('Content-disposition', 'attachment'),
         res.header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
+        res.attachment(filename),
         readStream.pipe(res)
       );
     case 'pdf':
-      const doc = await generatePDF(data);
+      const doc = await generatePDF(indicador);
       return (
-        res.header('Content-disposition', 'attachment'),
         res.header('Content-Type', 'application/pdf'),
+        res.attachment(filename),
         res.send(doc));
+    default:
+      throw new Error('Invalid file format');
   }
 }
 
 const getIndicadores = async (req, res, next) => {
   const { pathway } = req;
-  const { page, perPage, order } = getPagination(req.matchedData);
+  const { page, perPage } = getPagination(req.matchedData);
   try {
     const { indicadores, total } = await IndicadorService.getIndicadores(page, perPage, req.matchedData, pathway);
     const totalPages = Math.ceil(total / perPage);

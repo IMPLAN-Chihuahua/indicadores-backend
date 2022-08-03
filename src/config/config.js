@@ -25,6 +25,7 @@ module.exports = {
     username: process.env.POSTGRE_PRO_USER,
     password: process.env.POSTGRE_PRO_PASS,
     database: process.env.POSTGRE_PRO_DB_NAME,
+    port: process.env.POSTGRE_PRO_PORT,
     host: process.env.POSTGRE_PRO_HOST,
     dialect: 'postgres',
     logging: logger.info.bind(logger)

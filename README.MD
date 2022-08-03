@@ -2,10 +2,10 @@
 # Indicadores Backend
 This projects servs as the backend for the IMPLAN's website and management application.
 
-The backend itself is implemented in Nodejs using the following technologies:
-- ExpressJS.
-- Swagger.
-- Sinon, chai and mocha.
+The backend itself is implemented in NodeJS using the following technologies:
+- Web Framework: Express
+- Documentation: Swagger
+- Testing: Mocha, Chai, and Sinon
 
 
 ## API Reference
@@ -31,8 +31,8 @@ To run tests, the following commands are acceptable.
 
 ## Authors
 
-- [@luisccc99](https://www.github.com/ImMorales)
-- [@ImMorales](https://www.github.com/luisccc99)
+- [@luisccc99](https://www.github.com/luisccc99)
+- [@ImMorales](https://www.github.com/ImMorales)
 - [@MiquelVald](https://www.github.com/MiquelVald)
 
 
@@ -40,5 +40,5 @@ To run tests, the following commands are acceptable.
 
 This project is used by the following companies:
 
-- Instituto Municipal de Planeación (IMPLAN Chihuahua)
+- Instituto de Planeación Integral del Municipio de Chihuahua (IMPLAN)
 
