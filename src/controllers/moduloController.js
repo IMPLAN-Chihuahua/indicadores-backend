@@ -1,5 +1,6 @@
 const moduloService = require('../services/moduloService');
 const { Modulo } = require('../models');
+const logger = require('../config/logger');
 
 const getModulos = async (req, res, next) => {
   try {
@@ -20,10 +21,7 @@ const createModulo = async (req, res, next) => {
     descripcion,
     color,
   } = req.matchedData;
-  let urlImagen = 'images/avatar.jpg';
-
-  urlImagen = req.file ? `images/${req.file.filename}` : urlImagen;
-
+  const urlImagen = req.file.location;
   try {
     if (await moduloService.isTemaIndicadorAlreadyInUse(temaIndicador)) {
       return res.status(409).json({
