@@ -1,4 +1,3 @@
-const multer = require('multer')
 const fileService = require('../services/fileService');
 
 const uploadImage = (destination) => (req, res, next) => {
