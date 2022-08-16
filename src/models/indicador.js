@@ -109,6 +109,16 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.INTEGER,
                 allowNull: true,
                 defaultValue: null
+            },
+            prev: {
+                type: DataTypes.STRING,
+                allowNull: true,
+                defaultValue: null
+            },
+            next: {
+                type: DataTypes.STRING,
+                allowNull: true,
+                defaultValue: null
             }
         },
         {
