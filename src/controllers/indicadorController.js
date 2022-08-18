@@ -12,7 +12,7 @@ const getIndicador = async (req, res, next) => {
   try {
     const indicador = await IndicadorService.getIndicador(idIndicador, pathway);
     if (indicador === null) {
-      return res.status(404).json({status: 404, message: `Indicador with id ${idIndicador} not found`});
+      return res.status(404).json({ status: 404, message: `Indicador with id ${idIndicador} not found` });
     }
     if (pathway === FILE_PATH) {
       return generateFile(format, res, indicador).catch(err => next(err));

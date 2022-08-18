@@ -128,19 +128,47 @@ const getIndicador = async (idIndicador, pathway) => {
   const includes = defineIncludesForAnIndicador(pathway);
   const attributes = defineAttributes(pathway);
   try {
-    const indicador = await Indicador.findOne({
+    let indicador = await Indicador.findOne({
       where: { id: idIndicador, },
       include: includes,
       attributes,
     });
     if (pathway !== FILE_PATH || indicador === null) {
+      const moduleId = indicador.modulo.id;
+      const { prevIndicador, nextIndicador } = await definePrevNextIndicadores(moduleId, idIndicador);
+      indicador['prev'] = prevIndicador;
+      indicador['next'] = nextIndicador;
       return indicador;
     }
+
     return { ...indicador.dataValues };
   } catch (err) {
     throw new Error(`Error al obtener indicador ${idIndicador}\n${err.message}`)
   }
 };
+
+const getIndicadoresFromTemaInteres = async (id) => {
+  const indicadores = await Indicador.findAll({
+    where: { idModulo: id },
+    attributes: ["id"],
+    raw: true
+  });
+  return indicadores;
+}
+
+const definePrevNextIndicadores = async (moduloId, idIndicador) => {
+  const indicadores = await getIndicadoresFromTemaInteres(moduloId);
+  const indicadorIndex = indicadores.findIndex(indicador => indicador.id === idIndicador);
+  const indicadoresSize = indicadores.length;
+
+  const prevIndex = indicadorIndex === 0 ? null : indicadorIndex - 1;
+  const nextIndex = indicadorIndex === indicadoresSize - 1 ? null : indicadorIndex + 1;
+
+  const prevIndicador = indicadores[prevIndex] === undefined ? null : indicadores[prevIndex].id;
+  const nextIndicador = indicadores[nextIndex] === undefined ? null : indicadores[nextIndex].id;
+
+  return { prevIndicador, nextIndicador };
+}
 
 const getIndicadoresFilters = (matchedData) => {
   const { searchQuery } = matchedData;
