@@ -294,7 +294,7 @@ const includeBasicModels = () => {
     {
       model: Modulo,
       required: true,
-      attributes: ['id', 'temaIndicador', 'descripcion', 'color'],
+      attributes: ['id', 'temaIndicador', 'descripcion', 'color', 'codigo'],
     },
     {
       model: CatalogoDetail,
