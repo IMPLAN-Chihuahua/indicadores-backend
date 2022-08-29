@@ -18,7 +18,16 @@
       rel="stylesheet"
     />
   </head>
-  <style>
+    <style>
+
+   @page:first {
+    margin-top: 0px;
+   }   
+
+    @page {
+      margin-top: 20px;
+    }
+
     body {
       box-sizing: border-box;
       margin: 0px;
@@ -27,90 +36,211 @@
     }
 
     #container {
-      max-width: 85%;
+      max-width: 90%;
       margin: auto;
     }
+    
+    #pageHeader {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+    }
 
-    .img_container {
-      width: 300px;
-      height: 80px;
+    .tematica__id {
+      width: 35px;
+      height: 35px;
+      background:#D12D6A;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 600;
+      position: absolute;
+    }
+    
+    .header__img {
+      width: 270px;
+      height: 65px;
       position: relative;
     }
 
-    .d_flex {
-      display: flex;
-    }
-
-    .justify_content_between {
-      justify-content: space-between;
-    }
-
-    .justify_content_around {
-      justify-content: space-around;
-    }
-
-    h1 {
-      font-weight: 500;
-      font-size: 30px;
-      margin: 0px;
-    }
-
-    h2 {
-      font-weight: 500;
-      font-size: 24px;
-      margin: 0px;
-    }
-
-    h3 {
-      font-weight: 100;
-      font-size: 16px;
-      margin: 0px;
-    }
-
-    p {
-      margin: 0px;
-    }
-
-    .inner-section {
-      margin-left: 15px !important;
-    }
-
-    .inline {
-      display: inline-block;
+    .watermark {
       width: 100%;
+      position: relative;
+    }    
+
+    .watermark__img {
+      width: 350px;
+      height: 120px;
+      opacity: 30%;
+      position: absolute;
+      float: right;
+      right: -70px !important;
+      top: -20px !important;
     }
 
-    .info-container {
-      max-width: 300px;
+    .watermark__img__bottom {
+      width: 400px;
+      height: 130px;
+      opacity: 30%;
+      margin-bottom: -50px;
+      position: absolute;
+      left: -135px;
+      transform: rotate(180deg);
+    }
+
+    
+    .title__logos {
+      padding-top: 30px;
+    }
+    
+    .chihuahua__en__datos {
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      justify-content: center;
+      line-height: 80%;
+      font-size: 15px;
+      margin-bottom: -10px !important;
+      margin-top: -10px !important;
+    }
+
+    .indicador__title {
+      text-transform: y;
+      margin-top: 40px !important;
+      text-align: center;
+      font-weight: bold;
+      letter-spacing:5px;
+      font-size: 18px;
+      background: -webkit-linear-gradient(180deg, #712370, #D12D6A);
+      background: linear-gradient(180deg, #712370, #D12D6A);
+      background-clip: border-box;
+      -webkit-background-clip: text;      
+      -webkit-text-fill-color: transparent;
+      border-collapse: collapse;
+    }
+
+    .indicador__information_body {
+      margin-top:  -10px !important;
+    }
+
+    .indicador__information_body div{
+      margin-top: 25px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    table {
+      border-collapse: collapse;
+      table-layout: fixed;
+      width: 100%;
+      max-width: 100%;
+      font-size: 12px;
+    }
+
+    table td,
+    table th {
+      padding: 7px;
+    }
+
+    th {
+      background: #263044;
+      color: white;
+      font-weight: 500;
       text-align: center;
     }
 
-    .bolder-weight {
-      font-weight: bolder;
-      font-size: 24px;
+    td {
+      text-align: center;
+      font-weight: 400;
+      word-wrap: break-word;
     }
 
-    .semibold-weight {
-      font-weight: 600;
-      font-size: 20px;
+    td, th {
+      border: 1px solid #e1e1e1;
+      border-collapse: collapse;
+      table-layout: fixed;
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .card {
+        width: 260px;
+        height: 260px;
+        background-color: #ffffff;
+        color: white;
+        border: 1px solid #e1e1e1;
+        font-family: Arial, Helvetica, sans-serif;
+        margin-right: 20px;
+        border-radius: 5px;
+        margin-left: 20px;
+      }
+
+    .card__header {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .card__circle {
+      background-color: #0f252c;
+      border-radius: 50%;
+      height: 110px;
+      width: 110px;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 16px;
+      color: white !important;
+      margin-top: -10px !important;
+    }
+
+    .container__card {
+      text-align: center;
+      color: black;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: start !important;
+      letter-spacing: 10% !important;
+
+    }
+
+    .container__card span {
+      margin-top: -20px !important;
+    }
+
+    .indicador__values {
+      margin-top: -20px !important;
+    }
+    
+    .card__container {
+      display: flex;
+      flex-direction: row !important;
+    }
+
+    .card__container__2 {
+      margin-top: -10px !important;
     }
 
     .mt-3 {
       margin-top: 20px !important;
     }
 
-    .mt-2 {
-      margin-top: 15px !important;
-    }
-
-    .mt-1 {
-      margin-top: 10px !important;
-    }
-
-    @media print {
-      section {
-        break-inside: avoid;
-      }
+    .caption__historicos {
+      text-align: center;
+      font-weight: bold;
+      font-size: 10px !important;
+      background: -webkit-linear-gradient(180deg, #0b0b0b, #3a3a3a);
+      background: linear-gradient(180deg, #0b0b0b, #3a3a3a);
+      background-clip: border-box;
+      -webkit-background-clip: text;      
+      -webkit-text-fill-color: transparent;
+      border-collapse: collapse;
     }
 
     table tr td:empty {
@@ -120,100 +250,177 @@
     table tr td {
       padding: 10px;
     }
+
+    @media print {
+      section {
+        break-inside: avoid;
+      }
+    }
+    
   </style>
-  <body>
+<body>
+  
+  <div>
+    {{{calculateTopPx modulo}}}
+  </div>
     <main id="container">
-      <header class="d_flex justify_content_between">
-        <div class="img_container">
-          <img
-            src="https://indicadores-bucket-chihuahua.s3.us-east-2.amazonaws.com/images/implan-logo.png"
-            style="object-fit: contain"
-            width="241px"
-            height="80px"
-          />
+      <div class="watermark" id="watermark">
+          <img  
+              class="watermark__img"
+              alt="Metrica"
+              src="https://indicadores-bucket-chihuahua.s3.us-east-2.amazonaws.com/images/METRICA_logo_cutted.png"
+          />      
+      </div>
+      <header>
+        <div id="pageHeader" class="title__logos">
+            <img
+                class="header__img"
+                alt="IMPLAN"
+                src="https://indicadores-bucket-chihuahua.s3.us-east-2.amazonaws.com/images/implan_logo_color.png"
+            />
+
+            <img
+                class="header__img"
+                alt="Metrica"
+                src="https://indicadores-bucket-chihuahua.s3.us-east-2.amazonaws.com/images/Metrica_logo_color.png"
+            />
         </div>
-        <div class="img_container" style="display: flex; justify-content: flex-end">
-          <img
-            src="https://indicadores-bucket-chihuahua.s3.us-east-2.amazonaws.com/images/chihuahua-metrica-logo.png"
-            style="object-fit: contain"
-            width="241px"
-            height="80px"
-          />
+          <div class="chihuahua__en__datos">
+            <h2>Chihuahua en Datos</h2>
+            <caption><i>www.chihuahuametrica.online/chihuahua-en-datos</i></caption>
+          </div>
+        <div class="indicador__title">
+          {{modulo.temaIndicador}}
         </div>
       </header>
 
       <section class="mt-3">
-        <h1>{{nombre}}</h1>
-        <p class="inner-section mt-1">{{definicion}}</p>
+      <div class="indicador__information_body">
+        <div class="indicador__summary">
+            <table>
+              <thead>
+                <tr>
+                  <th>{{nombre}}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{{definicion}}</td>
+                </tr>
+              </tbody>
+            </table>
+        </div>
+        
+        <div class="indicador__catalogs">
+            <table>
+              <thead>
+                <tr>
+                  <th>Tema de interés</th>
+                  <th>ODS</th>
+                  <th>Cobertura geográfica</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{{modulo.temaIndicador}}</td>
+                  <td>{{getCatalogo catalogos 1}}</td>
+                  <td>{{getCatalogo catalogos 3}}</td>
+                </tr>
+              </tbody>
+            </table>
+        </div>
 
-        <section class="d_flex mt-1 justify_content_around">
-          <div class="info-container">
-            <h3>Último Valor Disponible</h3>
-            <span class="inline bolder-weight">{{ultimoValorDisponible}}</span>
+        <div class="indicador__values">
+          <div class="card__container">
+            <div class="card">
+              <div class="card__header">
+                <div class="card__circle">
+                  <b>{{numberWithCommas ultimoValorDisponible}}</b>
+                </div>
+              </div>
+              <div class="container__card">
+                <span>
+                  <p><b>Último Valor Disponible</b></p>
+                  <p>{{getCatalogo catalogos 2}}</p>
+                </span>
+              </div>
+            </div>
+          <div class="card">
+            <div class="card__header">
+              <div class="card__circle">
+                {{#if (isAscending tendenciaActual) }}
+                <span class="material-icons" style="font-size: 50px"
+                  >arrow_upward</span>
+                {{else}}
+                  {{#if (notApplies tendenciaActual) }}
+                  <span class="material-icons" style="font-size: 50px"
+                    >error_outline</span>
+                  {{else}}
+                  <span class="material-icons" style="font-size: 50px"
+                    >arrow_downward</span>
+                  {{/if }}
+                {{/if }}
+              </div>
+            </div>
+            <div class="container__card">
+              <span>
+                <p><b>Tendencia Actual</b></p>
+                <p>{{tendenciaActual}}</p>
+              </span>
+            </div>
           </div>
-          <div class="info-container">
-            <h3>Tendencia Actual</h3>
-            <span class="inline bolder-weight">{{tendenciaActual}}</span>
           </div>
-          <div class="info-container">
-            <h3>Año de Referencia</h3>
-            <span class="inline bolder-weight"
-              >{{anioUltimoValorDisponible}}</span
-            >
+          
+          <div class="card__container card__container__2">
+            <div class="card">
+              <div class="card__header">
+                <div class="card__circle">
+                  <b>{{anioUltimoValorDisponible}}</b>
+                </div>
+              </div>
+              <div class="container__card">
+                <span>
+                  <p><b>Año de Referencia</b></p>
+                  <p>Año del último valor disponible</p>
+                </span>
+              </div>
+            </div>
+          <div class="card">
+            <div class="card__header">
+              <div class="card__circle">
+                <b>{{getCatalogo catalogos 3}}</b>
+              </div>
+             <div class="container__card">
+              <span>
+                <p><b>Cobertura geográfica</b></p>
+                <p>Territorio de la captación de datos</p>
+              </span>
+              </div>
+            </div>
           </div>
-        </section>
+          </div>
+        </div>
+      </div>
       </section>
 
-      <section class="mt-3">
-        <h2>Información general</h2>
-        <section
-          class="inner-section d_flex mt-1 justify_content_between"
-          style="column-gap: 40px"
-        >
-          <div style="max-width: 260px">
-            <h3>Temática</h3>
-            <span class="inline semibold-weight" style="word-break: break-word"
-              >{{modulo.temaIndicador}}</span
-            >
-          </div>
-          <div class="d_flex justify_content_around" style="flex-grow: 1">
-            <div style="min-width: 200px">
-              <h3>Unidad de medida</h3>
-              <span class="inline semibold-weight"
-                >{{getCatalogo catalogos 2}}</span
-              >
-            </div>
-            <div>
-              <h3>ODS</h3>
-              <span class="inline semibold-weight"
-                >{{getCatalogo catalogos 1}}</span
-              >
-            </div>
-            <div>
-              <h3>Cobertura geográfica</h3>
-              <span class="inline semibold-weight"
-                >{{getCatalogo catalogos 3}}</span
-              >
-            </div>
-          </div>
-        </section>
-      </section>
+
       {{#if formula}}
       <section class="mt-3">
-        <h2>Formula</h2>
+        <br/>
+        <h2>Fórmula</h2>
         <div class="inner-section mt-1">
           <p>{{formula.descripcion}}</p>
         </div>
-        <span style="font-size: 24px">$${{formula.ecuacion}}$$</span>
+        <span style="font-size: 22px">$${{formula.ecuacion}}$$</span>
         <table
           class="mt-1"
-          style="width: 70%; border-collapse: collapse; margin: auto"
+          style="width: 100%; border-collapse: collapse; margin: auto"
         >
           <thead>
             <tr style="border-bottom: 1px solid; font-weight: 600">
-              <td>Variable</td>
-              <td>Descripción</td>
-              <td>Valor</td>
+              <th>Variable</th>
+              <th>Descripción</td>
+              <th>Valor</th>
             </tr>
           </thead>
           <tbody>
@@ -230,9 +437,11 @@
         </table>
       </section>
       {{/if}}
+
+
       {{#if (hasHistoricos historicos)}}
       <section class="mt-3">
-        <h2>Valores historicos</h2>
+        <h2 >Valores históricos</h2>
         <table style="width: 100%; border-collapse: collapse; margin: auto">
           <thead>
             <tr style="border-bottom: 1px solid; font-weight: 600">
@@ -242,6 +451,11 @@
             </tr>
           </thead>
           <tbody>
+            <tr>
+              <td align="right">{{anioUltimoValorDisponible}}</td>
+              <td align="right">{{ultimoValorDisponible}}</td>
+              <td>{{fuente}}</td> 
+            </tr>
             {{#each historicos}}
             <tr>
               <td align="right">{{this.anio}}</td>
@@ -251,16 +465,23 @@
             {{/each}}
           </tbody>
         </table>
-        <canvas id="chart" style="width: 800px; margin: auto">
-          Grafica
-        </canvas>
+        <p class="caption__historicos">
+          Tabla con la evolución de los datos registrados en los últimos años.
+        </p>
       </section>
       {{/if}}
 
+      {{#if (hasHistoricos historicos)}}
       <section class="mt-3">
-        <h2>Fuentes de consulta</h2>
-        <p class="inner-section">{{fuente}}</p>
+        <h2>Gráfica de datos</h2>
+        <canvas id="chart" style="width: 500px; margin: auto; height: 150px;">
+          Grafica
+        </canvas>
+        <p class="caption__historicos">
+          Gráfica de barras representativa del valor en los últimos años disponibles
+        </caption>
       </section>
+      {{/if}}
 
       <section class="mt-3">
         <h2>Más información</h2>
@@ -271,5 +492,12 @@
         >
       </section>
     </main>
-  </body>
+    <!-- <footer class="watermark">
+          <img  
+              class="watermark__img__bottom"
+              alt="Metrica"
+              src="https://indicadores-bucket-chihuahua.s3.us-east-2.amazonaws.com/images/METRICA_logo_cutted.png"
+          />      
+      </footer> -->
+</body>
 </html>
