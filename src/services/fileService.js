@@ -172,10 +172,12 @@ const generatePDF = async (indicador) => {
     // executablePath: '/usr/bin/chromium-browser'
   });
 
+
   const page = await browser.newPage();
   await page.setViewport({ width: 800, height: 800, deviceScaleFactor: 3 });
   const templateHtml = fs.readFileSync("./src/templates/indicador.html", "utf8");
   handlebars.registerHelper('isAscending', (str) => str === 'ASCENDENTE');
+  handlebars.registerHelper('notApplies', (str) => str === 'No aplica');
   handlebars.registerHelper('numberWithCommas', numberWithCommas);
   handlebars.registerHelper('getCatalogo', (catalogos, id) => {
     return catalogos
@@ -187,6 +189,29 @@ const generatePDF = async (indicador) => {
   handlebars.registerHelper('valueIsNull', (str) => str === null);
   handlebars.registerHelper('hasHistoricos', (historicos) => historicos.length > 0);
   handlebars.registerHelper('hasFormula', (formula) => typeof formula !== undefined || formula !== null)
+  handlebars.registerHelper('calculateTopPx', (modulo) => {
+    const top = (parseInt(modulo.id) - 1) * 35;
+    return `
+    <style>
+      .tematica__id {
+        width: 28px;
+        height: 28px;
+        background: ${modulo.color};
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+        font-size: 12px;
+        position: absolute;
+        top: ${top}px;
+      }
+    </style>
+    <div class="tematica__id">
+      ${modulo.codigo}
+    </div>   
+    `;
+  })
 
   const template = handlebars.compile(templateHtml);
 
@@ -215,7 +240,7 @@ const generatePDF = async (indicador) => {
               {
                 label: 'Valores históricos',
                 data: values,
-                backgroundColor: "#7b1ee3",
+                backgroundColor: ['#D12D6A', '#C62C6B', '#A6296C', '#9C286D', '#91276E', '#662270'].reverse(),
                 barPercentage: 0.8,
               },
             ],
@@ -246,15 +271,28 @@ const generatePDF = async (indicador) => {
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36WAIT_UNTIL=load"
   );
 
+  const date = new Date();
+  const [month, day, year] = [date.getMonth(), date.getDate(), date.getFullYear()];
+
   const pdf = await page.pdf({
-    format: 'a3',
+    format: "letter",
     displayHeaderFooter: true,
     printBackground: true,
     headerTemplate: '',
     footerTemplate: `
-    <div style="width: 100%; font-size: 10px;
+    <div clas="test" style="width: 100%; font-size: 10px;
         padding: 5px 5px 0; position: relative;">
-        <div style="text-align: center">página <span class="pageNumber"></span> de <span class="totalPages"></span></div>
+        <div style="text-align: center; font-size: 7px; !important">
+          Página 
+          <span class="pageNumber">
+          </span> 
+          de 
+          <span class="totalPages">
+          </span>
+          <div>
+          Generado el ${month}/${day}/${year}
+          </div>
+        </div>
     </div>`,
     margin: { bottom: '70px' },
   });
