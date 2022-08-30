@@ -92,6 +92,8 @@
     
     .title__logos {
       padding-top: 30px;
+      display: flex;
+      justify-content: center !important;
     }
     
     .chihuahua__en__datos {
@@ -102,7 +104,6 @@
       line-height: 80%;
       font-size: 15px;
       margin-bottom: -10px !important;
-      margin-top: -10px !important;
     }
 
     .indicador__title {
@@ -273,11 +274,11 @@
       </div>
       <header>
         <div id="pageHeader" class="title__logos">
-            <img
+            <!-- <img
                 class="header__img"
                 alt="IMPLAN"
                 src="https://indicadores-bucket-chihuahua.s3.us-east-2.amazonaws.com/images/implan_logo_color.png"
-            />
+            /> -->
 
             <img
                 class="header__img"
@@ -445,9 +446,9 @@
         <table style="width: 100%; border-collapse: collapse; margin: auto">
           <thead>
             <tr style="border-bottom: 1px solid; font-weight: 600">
-              <td>Año</td>
-              <td>Valor</td>
-              <td>Fuente</td>
+              <th>Año</th>
+              <th>Valor</th>
+              <th>Fuente</td>
             </tr>
           </thead>
           <tbody>

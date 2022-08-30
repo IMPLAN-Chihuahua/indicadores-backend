@@ -8,6 +8,7 @@ const fs = require("fs");
 const puppeteer = require("puppeteer");
 const { numberWithCommas } = require("../utils/stringFormat");
 const handlebars = require("handlebars");
+const { footer } = require("../utils/footerImage");
 
 aws.config.update({
   secretAccessKey: process.env.S3_ACCESS_SECRET,
@@ -280,18 +281,23 @@ const generatePDF = async (indicador) => {
     printBackground: true,
     headerTemplate: '',
     footerTemplate: `
-    <div clas="test" style="width: 100%; font-size: 10px;
+    <div clas="test" style="width: 100%; font-size: 7px; z-index: 10000;
         padding: 5px 5px 0; position: relative;">
-        <div style="text-align: center; font-size: 7px; !important">
+        <div style="text-align: center;">
+          <div>
+          Generado el ${month}/${day}/${year}
+          </div>
+          <div>
+            ${footer}
+          </div>
+        </div>
+        <div style="position: absolute; right: 10px; bottom: 0; font-size: 8px; z-index: 10000;">
           Página 
           <span class="pageNumber">
           </span> 
           de 
           <span class="totalPages">
           </span>
-          <div>
-          Generado el ${month}/${day}/${year}
-          </div>
         </div>
     </div>`,
     margin: { bottom: '70px' },
@@ -300,6 +306,8 @@ const generatePDF = async (indicador) => {
   await browser.close();
   return pdf;
 };
+
+
 
 
 module.exports = {
