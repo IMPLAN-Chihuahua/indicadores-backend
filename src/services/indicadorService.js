@@ -273,7 +273,7 @@ const defineIncludesForAnIndicador = (pathway, queryParams) => {
     {
       model: Formula,
       required: false,
-      attributes: ['ecuacion', 'descripcion'],
+      attributes: ['ecuacion', 'descripcion', 'isFormula'],
       include: [
         {
           model: Variable,
@@ -282,6 +282,7 @@ const defineIncludesForAnIndicador = (pathway, queryParams) => {
             'nombre',
             'nombreAtributo',
             'dato',
+            'idUnidad',
           ],
         }
       ]
