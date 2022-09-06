@@ -6,7 +6,7 @@ const { Parser } = require("json2csv");
 const Excel = require("exceljs");
 const fs = require("fs");
 const puppeteer = require("puppeteer");
-const { numberWithCommas } = require("../utils/stringFormat");
+const { numberWithCommas, returnUnit, returnFuente } = require("../utils/stringFormat");
 const handlebars = require("handlebars");
 const { footer } = require("../utils/footerImage");
 
@@ -177,7 +177,7 @@ const generatePDF = async (indicador) => {
   const page = await browser.newPage();
   await page.setViewport({ width: 800, height: 800, deviceScaleFactor: 3 });
   const templateHtml = fs.readFileSync("./src/templates/indicador.html", "utf8");
-  handlebars.registerHelper('isAscending', (str) => str === 'ASCENDENTE');
+  handlebars.registerHelper('isAscending', (str) => str === 'Ascendente');
   handlebars.registerHelper('notApplies', (str) => str === 'No aplica');
   handlebars.registerHelper('numberWithCommas', numberWithCommas);
   handlebars.registerHelper('getCatalogo', (catalogos, id) => {
@@ -213,6 +213,10 @@ const generatePDF = async (indicador) => {
     </div>   
     `;
   })
+  handlebars.registerHelper('hasVariablesNotFormula', (formula) => formula.dataValues.isFormula == 'SI');
+  handlebars.registerHelper('hasValue', (value) => (value.trim().length === 0));
+  handlebars.registerHelper('returnDato', (idUnidad) => returnUnit(idUnidad));
+  handlebars.registerHelper('returnFuente', (fuente) => returnFuente(fuente));
 
   const template = handlebars.compile(templateHtml);
 
@@ -283,10 +287,13 @@ const generatePDF = async (indicador) => {
     footerTemplate: `
     <div clas="test" style="width: 100%; font-size: 7px; z-index: 10000;
         padding: 5px 5px 0; position: relative;">
-        <div style="text-align: center;">
+        <div style="position: absolute; left: 10px; bottom: 0; font-size: 8px; z-index: 10000;">
           <div>
           Generado el ${month}/${day}/${year}
           </div>
+        </div>
+        <div style="text-align: center; margin-top: 220px !important;">
+
           <div>
             ${footer}
           </div>

@@ -25,13 +25,14 @@
    }   
 
     @page {
-      margin-top: 20px;
+      margin-top: 10px;
     }
 
     body {
       box-sizing: border-box;
       margin: 0px;
       padding: 0px;
+      background-color: rgba(255, 0, 0, 0) !important;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
@@ -119,6 +120,15 @@
       -webkit-background-clip: text;      
       -webkit-text-fill-color: transparent;
       border-collapse: collapse;
+    }
+
+    .indicador__name {
+      text-transform: uppercase;
+      text-align: center;
+      font-weight: bold;
+      letter-spacing:5px;
+      font-size: 16px;
+      background-clip: border-box;
     }
 
     .indicador__information_body {
@@ -301,7 +311,7 @@
             <table>
               <thead>
                 <tr>
-                  <th>{{nombre}}</th>
+                  <th class="indicador__name">{{nombre}}</th>
                 </tr>
               </thead>
               <tbody>
@@ -350,8 +360,10 @@
             <div class="card__header">
               <div class="card__circle">
                 {{#if (isAscending tendenciaActual) }}
+
                 <span class="material-icons" style="font-size: 50px"
                   >arrow_upward</span>
+
                 {{else}}
                   {{#if (notApplies tendenciaActual) }}
                   <span class="material-icons" style="font-size: 50px"
@@ -406,37 +418,73 @@
 
 
       {{#if formula}}
-      <section class="mt-3">
-        <br/>
-        <h2>Fórmula</h2>
-        <div class="inner-section mt-1">
-          <p>{{formula.descripcion}}</p>
-        </div>
-        <span style="font-size: 22px">$${{formula.ecuacion}}$$</span>
-        <table
-          class="mt-1"
-          style="width: 100%; border-collapse: collapse; margin: auto"
-        >
-          <thead>
-            <tr style="border-bottom: 1px solid; font-weight: 600">
-              <th>Variable</th>
-              <th>Descripción</td>
-              <th>Valor</th>
-            </tr>
-          </thead>
-          <tbody>
-            {{#each formula.variables}}
-            <tr>
-              <td style="padding: 0; margin: 0; display: block">
-                $${{this.nombre}}$$
-              </td>
-              <td>{{this.nombreAtributo}}</td>
-              <td align="right">{{this.dato}}</td>
-            </tr>
-            {{/each}}
-          </tbody>
-        </table>
-      </section>
+        {{#if (hasVariablesNotFormula formula)}}
+        <section class="mt-3">
+          <br/>
+          <h2>Fórmula</h2>
+          <div class="inner-section mt-1">
+            <p>{{formula.descripcion}}</p>
+          </div>
+          <span style="font-size: 22px">$${{formula.ecuacion}}$$</span>
+          <table
+            class="mt-1"
+            style="width: 100%; border-collapse: collapse; margin: auto"
+          >
+            <thead>
+              <tr style="border-bottom: 1px solid; font-weight: 600">
+                <th>Variable</th>
+                <th>Descripción</td>
+                <th>Valor</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each formula.variables}}
+              <tr>
+                <td style="padding: 0; margin: 0; display: block">
+                  $${{this.nombre}}$$
+                </td>
+                <td>{{this.nombreAtributo}}</td>
+                {{#if (hasValue this.dato)}}
+                <td align="right">NA</td>
+                {{else}}
+                <td align="right">{{this.dato}}</td>
+                {{/if}}
+              </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </section>
+
+        {{else}}
+        <section>
+          <h2>Fórmula</h2>
+          <div class="inner-section mt-1">
+            <p>{{formula.descripcion}}</p>
+          </div>
+          <table
+            style="width: 100%; border-collapse: collapse; margin: auto"
+          >
+            <thead>
+              <tr style="border-bottom: 1px solid; font-weight: 600">
+                <th>Variable</th>
+                <th>Descripción</td>
+                <th>Valor</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each formula.variables}}
+              <tr>
+                <td style="word-wrap: break-word;">
+                  {{this.nombre}}
+                </td>
+                <td>{{returnFuente ../fuente}}</td>
+                <td align="right">{{this.dato}}{{{returnDato this.idUnidad}}}</td>
+              </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </section>
+        {{/if}}
       {{/if}}
 
 
