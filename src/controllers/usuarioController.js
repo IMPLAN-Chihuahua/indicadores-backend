@@ -1,3 +1,4 @@
+const { es } = require('faker/lib/locales');
 const { hashClave } = require('../middlewares/auth');
 const { createRelation } = require('../services/usuarioIndicadorService');
 const { addUsuario,
@@ -6,7 +7,9 @@ const { addUsuario,
   getUsuarioById,
   updateUsuario,
   updateUserStatus,
-  countInactiveUsers } = require('../services/usuariosService');
+  countInactiveUsers,
+  getUserStatsInfo,
+} = require('../services/usuariosService');
 require('dotenv').config();
 
 const getUsers = async (req, res, next) => {
@@ -128,7 +131,7 @@ const getUser = async (req, res, id) => {
   try {
     const usuario = await getUsuarioById(id);
     if (usuario === null) {
-      return res.status(404).json({status: 404, message: `User with id ${id} not found`});
+      return res.status(404).json({ status: 404, message: `User with id ${id} not found` });
     }
     return res.status(200).json({ data: usuario });
   } catch (err) {
@@ -174,6 +177,22 @@ const setIndicadoresToUsuario = async (req, res, next) => {
   }
 };
 
+
+const getUserStats = async (req, res, next) => {
+  const { idUser } = req.params;
+  try {
+    const { indicadores, indicadoresAsignados, modulos, modulosInactivos, usuarios, usuariosInactivos } = await getUserStatsInfo(idUser);
+
+    return res.status(200).json({
+      indicadoresCount: [{ indicadores, indicadoresAsignados }],
+      modulosCount: [{ modulos, modulosInactivos }],
+      usuarios: [{ usuarios, usuariosInactivos }]
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   getUsers,
   createUser,
@@ -182,5 +201,6 @@ module.exports = {
   editUserStatus,
   getUserFromId,
   getUserFromToken,
-  setIndicadoresToUsuario
+  setIndicadoresToUsuario,
+  getUserStats,
 };

@@ -4,7 +4,9 @@ const router = express.Router();
 const {
     getUserFromToken,
     getUserFromId,
-    editUser } = require('../controllers/usuarioController');
+    editUser,
+    getUserStats,
+} = require('../controllers/usuarioController');
 const { verifyJWT, verifyUserIsActive } = require('../middlewares/auth');
 
 const {
@@ -243,6 +245,13 @@ router.patch(
     validate,
     verifyJWT,
     editUser,
+)
+
+router.get(
+    '/stats/:idUser',
+    validate,
+    verifyJWT,
+    getUserStats,
 )
 
 module.exports = router;
