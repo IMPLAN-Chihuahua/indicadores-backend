@@ -1,5 +1,5 @@
 const logger = require('../config/logger');
-const { Usuario, Rol, Indicador, Sequelize, sequelize } = require('../models');
+const { Usuario, Rol, Indicador, Sequelize, sequelize, UsuarioIndicador, Modulo } = require('../models');
 
 const { Op } = Sequelize;
 
@@ -236,6 +236,43 @@ const isUserActive = async (id) => {
     } catch (err) {
         throw new Error(`Error al obtener estado de usuario ${err.message}`);
     }
+};
+
+const getUserStatsInfo = async (id) => {
+    try {
+        const indicadorCount = await Indicador.count({});
+        const usuarioIndicadorCount = await UsuarioIndicador.count({
+            where: {
+                idUsuario: id,
+            }
+        });
+        const modulosCount = await Modulo.count({});
+        const modulosInactivosCount = await Modulo.count({
+            where: {
+                activo: 'NO'
+            }
+        });
+
+        const usuariosCount = await Usuario.count({});
+        const usuariosInactivosCount = await Usuario.count({
+            where: {
+                activo: 'NO'
+            }
+        });
+
+        return {
+            indicadores: (indicadorCount - usuarioIndicadorCount),
+            indicadoresAsignados: (usuarioIndicadorCount),
+            modulos: (modulosCount - modulosInactivosCount),
+            modulosInactivos: modulosInactivosCount,
+            usuarios: (usuariosCount - usuariosInactivosCount),
+            usuariosInactivos: usuariosInactivosCount
+        }
+
+    }
+    catch (err) {
+        throw new Error(`Error al obtener estadísticas de usuario ${err.message}`);
+    }
 }
 
 module.exports = {
@@ -251,5 +288,6 @@ module.exports = {
     countInactiveUsers,
     updateUserPassword,
     updateUserPasswordStatus,
-    isUserActive
+    isUserActive,
+    getUserStatsInfo,
 }
