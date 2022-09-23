@@ -18,6 +18,7 @@ const {
     updateIndicador,
     updateIndicadorStatus,
     setUsuariosToIndicador,
+    getUsersFromIndicador,
 } = require('../controllers/indicadorController');
 const { verifyJWT, verifyUserHasRoles, verifyUserIsActive } = require('../middlewares/auth');
 const { determinePathway, SITE_PATH, FRONT_PATH } = require('../middlewares/determinePathway');
@@ -462,6 +463,15 @@ router.route('/:idIndicador/usuarios')
         setUsuariosToIndicador
     );
 
+router.route('/:idIndicador/usuarios')
+    .get(
+        // verifyJWT,
+        // verifyUserIsActive,
+        paramValidationRules(),
+        validate,
+        getUsersFromIndicador
+    )
+
 /**
  * @swagger
  *   /indicadores/{idIndicador}/catalogos:
@@ -517,5 +527,4 @@ router.route('/:idIndicador/catalogos')
         validate,
         getCatalogosFromIndicador
     )
-
-module.exports = router;
+module.exports = router;    
