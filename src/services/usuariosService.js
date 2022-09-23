@@ -275,6 +275,33 @@ const getUserStatsInfo = async (id) => {
     }
 }
 
+const getUsersFromIndicador = async (id) => {
+    try {
+        const result = await UsuarioIndicador.findAll({
+            where: {
+                idIndicador: id,
+            },
+            include: {
+                model: Usuario,
+                attributes: []
+            },
+            attributes: [
+                'idUsuario',
+                'fechaDesde',
+                'fechaHasta',
+                'activo',
+                [sequelize.literal('"usuario"."nombres"'), "nombres"],
+                [sequelize.literal('"usuario"."apellidoPaterno"'), "apellido"],
+                [sequelize.literal('"usuario"."activo"'), "activo"],
+                [sequelize.literal('"usuario"."urlImagen"'), "urlImagen"],
+            ]
+        });
+        return result;
+    } catch (err) {
+        throw new Error(`Error al obtener usuarios de indicador ${err.message}`);
+    }
+}
+
 module.exports = {
     addUsuario,
     getUsuarioById,
@@ -290,4 +317,5 @@ module.exports = {
     updateUserPasswordStatus,
     isUserActive,
     getUserStatsInfo,
+    getUsersFromIndicador,
 }
