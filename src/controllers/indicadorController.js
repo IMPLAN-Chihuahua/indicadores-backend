@@ -169,6 +169,17 @@ const setUsuariosToIndicador = async (req, res, next) => {
   }
 }
 
+const getUsersFromIndicador = async (req, res, next) => {
+  const { idIndicador } = req.params;
+  try {
+    const usuarios = await UsuarioService.getUsersFromIndicador(idIndicador);
+    return res.status(200).json({ data: usuarios });
+  } catch (err) {
+    next(err);
+  }
+};
+
+
 module.exports = {
   getIndicadores,
   getIndicador,
@@ -176,5 +187,6 @@ module.exports = {
   createIndicador,
   updateIndicador,
   updateIndicadorStatus,
-  setUsuariosToIndicador
+  setUsuariosToIndicador,
+  getUsersFromIndicador
 };

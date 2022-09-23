@@ -9,9 +9,16 @@ const getHistoricos = async (req, res, next) => {
         const { ultimoValorDisponible, updatedAt, periodicidad } = await IndicadorService.getIndicador(idIndicador, 'front');
 
         const { historicos, total } = await HistoricoService.getHistoricos(idIndicador, page, perPage, order, sortBy);
+        console.log('through controller');
+        console.log(perPage)
+        console.log(historicos)
+        console.log(total);
         if (historicos.length > 0) {
             const totalPages = Math.ceil(total / perPage);
+            console.log(historicos);
             return res.status(200).json({ idIndicador: idIndicador, indicadorLastValue: ultimoValorDisponible, indicadorLastUpdateDate: updatedAt, indicadorPeriodicidad: periodicidad, page: page, perPage: perPage, total: total, totalPages: totalPages, data: historicos });
+        } else {
+            return res.status(200).json({ idIndicador: idIndicador, indicadorLastValue: ultimoValorDisponible, indicadorLastUpdateDate: updatedAt, indicadorPeriodicidad: periodicidad, page: page, perPage: perPage, total: total, totalPages: 0, data: [] });
         }
 
     } catch (err) {

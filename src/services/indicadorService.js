@@ -65,10 +65,9 @@ const defineAttributes = (pathway, matchedData) => {
       return attributes;
     case FRONT_PATH:
       attributes.push(
-        "urlImagen",
         "definicion",
         "codigo",
-        "codigoObjeto",
+        "owner",
         "observaciones",
         "createdBy",
         "updatedBy",
@@ -312,6 +311,7 @@ const includeBasicModels = () => {
 const includeHistorico = (pathway) => {
   switch (pathway) {
     case FRONT_PATH:
+      return [];
     case SITE_PATH:
       return [{
         model: Historico,
@@ -330,7 +330,7 @@ const includeHistorico = (pathway) => {
     default:
       throw new Error('Invalid pathway')
   };
-}
+};
 
 const includeCatalogoFilters = (queryParams) => {
   const inIds = [];
@@ -358,7 +358,7 @@ const includeCatalogoFilters = (queryParams) => {
       where: { idCatalogoDetail: [...inIds] },
     }
   }];
-}
+};
 
 module.exports = {
   getIndicadores,
