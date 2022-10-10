@@ -24,6 +24,7 @@ const { verifyJWT, verifyUserHasRoles, verifyUserIsActive } = require('../middle
 const { determinePathway, SITE_PATH, FRONT_PATH } = require('../middlewares/determinePathway');
 const { uploadImage } = require('../middlewares/fileUpload');
 const { getCatalogosFromIndicador } = require('../controllers/catalogoController');
+const { DESTINATIONS } = require('../services/fileService');
 
 /**
  * @swagger
@@ -117,10 +118,7 @@ const { getCatalogosFromIndicador } = require('../controllers/catalogoController
  *           nombre:
  *             type: string
  *             description: Name.
- *           codigoAtributo:
- *             type: string
- *             description: SIGMUN code.
- *           nombreAtributo:
+ *           descripcion:
  *             type: string 
  *             description: Description.
  *           dato:
@@ -312,11 +310,13 @@ router.route('/')
 router.route('/').post(
     verifyJWT,
     verifyUserIsActive,
-    verifyUserHasRoles(['ADMIN']),
+    uploadImage(DESTINATIONS.MAPAS),
+    verifyUserHasRoles(['ADMIN', 'USER']),
     createIndicadorValidationRules(),
     validate,
     createIndicador
 );
+
 
 /**
  * @swagger
@@ -359,7 +359,7 @@ router.route('/:idIndicador')
         verifyJWT,
         verifyUserIsActive,
         paramValidationRules(),
-        uploadImage('indicadores'),
+        uploadImage(DESTINATIONS.INDICADORES),
         updateIndicadorValidationRules(),
         validate,
         updateIndicador
@@ -506,7 +506,7 @@ router.route('/:idIndicador/usuarios')
  *                           type: integer
  *                         idCatalogoDetail:
  *                           type: integer
- *                         nombreAtributo: 
+ *                         descripcion: 
  *                           type: string
  *                         idCatalogo:
  *                           type: integer

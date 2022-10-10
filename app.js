@@ -88,6 +88,7 @@ app.use('/images', express.static(path.join(__dirname, 'uploads', 'images')));
 app.use('/images/indicador', express.static(path.join(__dirname, 'uploads', 'indicadores/images')));
 app.use('/images/temaInteres', express.static(path.join(__dirname, 'uploads', 'modules/images')));
 app.use('/images/user', express.static(path.join(__dirname, 'uploads', 'users/images')));
+app.use('/uploads/mapas', express.static(path.join(__dirname, 'uploads', 'mapas')));
 app.use(logErrors)
 
 const server = app.listen(PORT, () => logger.info(`App starting on port ${PORT}`));

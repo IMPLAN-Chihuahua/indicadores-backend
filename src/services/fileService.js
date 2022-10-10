@@ -17,12 +17,11 @@ aws.config.update({
 });
 const s3 = new aws.S3();
 
-const isProductionEnvironment = process.env.NODE_ENV === 'production';
-
 const DESTINATIONS = {
   MODULOS: 'modulos',
   INDICADORES: 'indicadores',
-  USUARIOS: 'usuarios'
+  USUARIOS: 'usuarios',
+  MAPAS: 'mapas'
 }
 
 const generateFileName = (file) => {
@@ -33,33 +32,6 @@ const getDestination = (type) => {
   return true ? `uploads/${type}/` : 'uploads/tmp'
 };
 
-const moduleStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, getDestination(DESTINATIONS.MODULOS))
-  },
-  filename: (req, file, cb) => {
-    cb(null, generateFileName(file))
-  }
-});
-
-const userStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, getDestination(DESTINATIONS.USUARIOS))
-  },
-  filename: (req, file, cb) => {
-    cb(null, generateFileName(file))
-  }
-});
-
-const indicatorStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, getDestination(DESTINATIONS.INDICADORES))
-  },
-  filename: (req, file, cb) => {
-    cb(null, generateFileName(file))
-  }
-});
-
 const validateFileType = (file, cb) => {
   const validMIMETypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/svg', 'image/webp', 'image/bmp'];
   const isValidMimetype = validMIMETypes.includes(file.mimetype);
@@ -69,19 +41,36 @@ const validateFileType = (file, cb) => {
   return cb(null, true);
 };
 
-const getStorage = (route) => {
-  if (isProductionEnvironment) {
-    return multerS3()
-  }
-  switch (route) {
-    case DESTINATIONS.MODULOS:
-      return moduleStorage;
-    case DESTINATIONS.INDICADORES:
-      return indicatorStorage;
-    case DESTINATIONS.USUARIOS:
-      return userStorage;
-    default:
-      throw new Error('Invalid route')
+const getDiskStorage = (destination) => {
+  return multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, getDestination(destination))
+    },
+    filename: (req, file, cb) => {
+      cb(null, generateFileName(file))
+    }
+  });
+}
+
+/**
+ * @param {*} destination where to store the image file
+ * @returns the storage to use, it saves files locally if env is testing or development
+ * only uses S3 if application is in production env
+ */
+const getStorage = (destination) => {
+  if (process.env.NODE_ENV === 'production') {
+    return multerS3({
+      s3,
+      bucket: process.env.S3_INDICADORES_BUCKET,
+      metadata: function (req, file, cb) {
+        cb(null, { fieldName: file.fieldname });
+      },
+      key: function (req, file, cb) {
+        cb(null, getDestination(destination) + generateFileName(file))
+      }
+    })
+  } else {
+    return getDiskStorage(destination)
   }
 };
 
@@ -136,7 +125,7 @@ const generateXLSX = (indicador) => {
             let innerRow = workSheet.getRow(initialRow++);
             let innerCol = col;
             innerRow.getCell(innerCol++).value = v?.nombre || 'NA';
-            innerRow.getCell(innerCol++).value = v?.nombreAtributo || 'NA';
+            innerRow.getCell(innerCol++).value = v?.descripcion || 'NA';
             innerRow.getCell(innerCol++).value = v?.dato || 'NA';
             innerRow.commit()
           }
