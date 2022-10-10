@@ -10,8 +10,11 @@ const areConnected = async (idUsuario, idIndicador) => {
         idUsuario,
         idIndicador,
         activo: 'SI',
-        fechaHasta: {
-          [Op.gte]: Sequelize.literal('CURRENT_DATE')
+        [Op.or]: {
+          fechaHasta: {
+            [Op.gte]: Sequelize.literal('CURRENT_DATE')
+          },
+          expires: 'NO'
         }
       },
       attributes: [

@@ -95,6 +95,7 @@ const createIndicador = async (req, res, next) => {
     const indicador = req.matchedData;
     indicador.createdBy = req.sub;
     indicador.updatedBy = req.sub;
+    indicador.owner = req.sub;
     if (urlImagen) {
       indicador.mapa.urlImagen = urlImagen;
     }
