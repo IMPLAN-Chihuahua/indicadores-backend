@@ -23,7 +23,6 @@ const getHistoricos = async (idIndicador, page, perPage, order, sortBy) => {
                 'ecuacion',
                 'descripcionEcuacion',
                 'createdAt',
-                'fechaIngreso'
             ]
         });
         return { historicos: result.rows, total: result.count };
