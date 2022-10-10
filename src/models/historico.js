@@ -45,12 +45,6 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: 'No aplica'
       },
 
-      fechaIngreso: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW
-      },
-
       anio: {
         type: DataTypes.INTEGER,
         allowNull: false,
