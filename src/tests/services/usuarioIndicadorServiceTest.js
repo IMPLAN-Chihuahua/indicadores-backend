@@ -8,7 +8,7 @@ const { UsuarioIndicador } = require('../../models');
 const UsuarioIndicadorService = require('../../services/usuarioIndicadorService');
 const { server } = require('../../../app');
 
-describe('Usuario-Indicador service', function () {
+describe.only('Usuario-Indicador service', function () {
 
   this.afterEach(function () {
     sinon.restore();
@@ -19,7 +19,7 @@ describe('Usuario-Indicador service', function () {
   });
 
   describe('Read operations', () => {
-    it('Returns true if user has a relation with an indicador', () => {
+    it('Returns true if user has relation with an indicador', () => {
       const findOneFake = sinon.fake.resolves({ count: 1 });
       sinon.replace(UsuarioIndicador, 'findOne', findOneFake)
       return UsuarioIndicadorService.areConnected(1, 1)
@@ -39,5 +39,24 @@ describe('Usuario-Indicador service', function () {
         });
     });
 
+  });
+
+  describe('Create operations', () => {
+    it('Creates a relation between a user and an indicador that expires in 1 day', () => {
+      const desde = new Date();
+      const hasta = new Date();
+      hasta.setDate(desde.getDate() + 1) 
+      const createFake = sinon.fake.resolves(true);
+      sinon.replace(UsuarioIndicador, 'bulkCreate', createFake);
+      return UsuarioIndicadorService.createRelation([1], [1], {
+        fechaDesde: desde,
+        fechaHasta: hasta,
+        updatedBy: 1,
+        createdBy: 1,
+        expires: 'SI'
+      }).then(_ => {
+        expect(createFake.calledOnce).to.be.true;
+      })
+    });
   });
 });
