@@ -270,17 +270,19 @@ describe('v1/indicadores', function () {
         });
 
         it('Should create an indicador successfully', function (done) {
-            const createFake = sinon.fake.resolves(anIndicador());
+            const toCreate = indicadorToCreate();
+            const createFake = sinon.fake.resolves(toCreate)
             sinon.replace(Indicador, 'create', createFake);
             chai.request(app)
                 .post('/api/v1/indicadores')
                 .set({ Authorization: `Bearer ${validToken}` })
-                .send(validIndicador)
+                .send(toCreate)
                 .end(function (err, res) {
                     expect(findOneFake.calledTwice).to.be.true;
                     expect(createFake.calledOnce).to.be.true;
                     expect(res.body.data).to.not.be.undefined;
                     expect(res).to.have.status(201);
+                    expect(res.body.data).to.not.be.empty;
                     done();
                 });
         });
@@ -308,7 +310,7 @@ describe('v1/indicadores', function () {
             const indicador = indicadorToCreate();
             const formula = aFormula(1);
             const badVariable = aVariable();
-            badVariable.codigoAtributo = 'incorrect';
+            badVariable.dato = 'not a number';
             formula.variables = [badVariable];
             indicador.formula = formula;
             chai.request(app)
@@ -395,8 +397,7 @@ describe('v1/indicadores', function () {
         });
 
         it('Should fail to create indicador due to semantic errors', function (done) {
-            const invalidIndicador = indicadorToCreate();
-            delete invalidIndicador.codigo;
+            const { codigo, invalidIndicador } = indicadorToCreate();
             chai.request(app)
                 .post('/api/v1/indicadores')
                 .set({ Authorization: `Bearer ${validToken}` })
@@ -435,7 +436,7 @@ describe('v1/indicadores', function () {
         });
 
         it('Should not create indicador because user has no permission', function (done) {
-            sinon.restore()
+            sinon.restore();
             const accessRolUserFake = sinon.fake.resolves({ dataValues: userRol });
             sinon.replace(Usuario, 'findOne', accessRolUserFake);
             chai.request(app)
