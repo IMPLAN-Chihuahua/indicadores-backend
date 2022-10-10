@@ -13,7 +13,6 @@ module.exports = {
         urlImagen: faker.image.imageUrl(),
         nombre: `Test ${faker.random.word()}`,
         codigo,
-        codigoObjeto: codigo,
         ultimoValorDisponible: faker.datatype.number(),
         anioUltimoValorDisponible: randomYear(),
         createdBy: 1,

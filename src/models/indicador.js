@@ -39,11 +39,6 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.STRING
             },
 
-            codigoObjeto: {
-                allowNull: false,
-                type: DataTypes.STRING
-            },
-
             nombre: {
                 type: DataTypes.STRING,
                 allowNull: false
@@ -100,26 +95,18 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false,
                 defaultValue: 'SI'
             },
+
             fuente: {
                 type: DataTypes.STRING(1000),
                 allowNull: true,
                 defaultValue: null
             },
+
             periodicidad: {
                 type: DataTypes.INTEGER,
                 allowNull: true,
                 defaultValue: null
             },
-            prev: {
-                type: DataTypes.STRING,
-                allowNull: true,
-                defaultValue: null
-            },
-            next: {
-                type: DataTypes.STRING,
-                allowNull: true,
-                defaultValue: null
-            }
         },
         {
             sequelize,

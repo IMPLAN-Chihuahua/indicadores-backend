@@ -22,12 +22,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
 
-    codigoAtributo: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-
-    nombreAtributo: {
+    descripcion: {
       type: DataTypes.STRING,
       allowNull: false
     },

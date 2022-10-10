@@ -5,6 +5,7 @@ const UsuarioService = require('../services/usuariosService');
 const { areConnected, createRelation } = require("../services/usuarioIndicadorService");
 const { getPagination } = require('../utils/pagination');
 const { FILE_PATH } = require('../middlewares/determinePathway')
+const os = require('os')
 
 const getIndicador = async (req, res, next) => {
   const { pathway } = req;
@@ -84,10 +85,19 @@ const getIndicadoresFromUser = async (req, res, next) => {
 }
 
 const createIndicador = async (req, res, next) => {
+  let urlImagen = '';
+  if (process.env.NODE_ENV === 'production') {
+    urlImagen = req.file.location;
+  } else if (req.file) {
+    urlImagen = `http://${req.headers.host}/${req.file.path}`;
+  }
   try {
     const indicador = req.matchedData;
     indicador.createdBy = req.sub;
     indicador.updatedBy = req.sub;
+    if (urlImagen) {
+      indicador.mapa.urlImagen = urlImagen;
+    }
     const savedIndicador = await IndicadorService.createIndicador(indicador);
     return res.status(201).json({ data: savedIndicador });
   } catch (err) {

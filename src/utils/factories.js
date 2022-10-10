@@ -1,5 +1,6 @@
 const faker = require('faker');
-const { Modulo } = require('../models')
+const { Modulo, Indicador } = require('../models')
+
 
 const aDummyWithName = (id) => ({
 	id,
@@ -38,7 +39,7 @@ const anIndicador = (id) => ({
 		variables: [{
 			dataValues: {
 				nombre: faker.random.word(),
-				nombreAtributo: faker.random.word(),
+				descripcion: faker.random.word(),
 				dato: faker.datatype.number(),
 				Unidad: faker.random.word()
 			}
@@ -52,29 +53,27 @@ const anIndicador = (id) => ({
 		},
 	}],
 	codigo: aCodigo(),
-	codigoObjeto: aCodigo(),
 	createdAt: new Date(),
 	createdBy: faker.datatype.number(9),
 	updatedAt: new Date(),
 });
 
-const indicadorToCreate = () => ({
-	nombre: faker.random.word(),
-	codigo: aCodigo(),
-	codigoObjeto: aCodigo(),
-	definicion: faker.lorem.sentence(),
-	ultimoValorDisponible: faker.datatype.number(),
-	anioUltimoValorDisponible: randomYear(),
-	tendenciaActual: faker.datatype.boolean() ? "ASCENDENTE" : "DESCENDENTE",
-	tendenciaDeseada: faker.datatype.boolean() ? "ASCENDENTE" : "DESCENDENTE",
-	observaciones: faker.random.words(10),
-	idOds: faker.datatype.number(9),
-	idCobertura: faker.datatype.number(9),
-	idUnidadMedida: faker.datatype.number(9),
-	idModulo: 1,
-	createdBy: faker.datatype.number(9),
-	updatedBy: faker.datatype.number(9)
-});
+const indicadorToCreate = () => {
+	const indicador = Indicador.build({
+		nombre: faker.random.word(),
+		codigo: aCodigo(),
+		definicion: faker.lorem.sentence(),
+		ultimoValorDisponible: faker.datatype.number(),
+		anioUltimoValorDisponible: randomYear(),
+		periodicidad: faker.datatype.number({ min: 1, max: 120 }),
+		tendenciaActual: faker.datatype.boolean() ? "ASCENDENTE" : "DESCENDENTE",
+		observaciones: faker.random.words(10),
+		fuente: faker.internet.url(),
+		urlImagen: faker.image.avatar(),
+		idModulo: 1
+	});
+	return indicador.dataValues;
+}
 
 const aFormula = () => ({
 	ecuacion: '\\frac{1}{x^2-1}',
@@ -83,9 +82,9 @@ const aFormula = () => ({
 
 const aVariable = () => ({
 	nombre: faker.lorem.word(),
-	codigoAtributo: aCodigo(),
-	nombreAtributo: faker.lorem.word(),
+	descripcion: faker.lorem.word(),
 	dato: faker.datatype.number(),
+	anio: randomYear(),
 	idUnidad: 1
 });
 

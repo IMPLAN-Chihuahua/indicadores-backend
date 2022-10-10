@@ -9,7 +9,8 @@ const {
   Variable,
   sequelize,
   Sequelize,
-  CatalogoDetail
+  CatalogoDetail,
+  CatalogoDetailIndicador
 } = require("../models");
 const { toggleStatus, isObjEmpty } = require("../utils/objectUtils");
 
@@ -214,19 +215,26 @@ const getIncludesToCreateIndicador = (indicador) => {
 const createIndicador = async (indicador) => {
   const t = await sequelize.transaction();
   try {
-    const createdIndicador = await Indicador.create(indicador, {
+    const created = await Indicador.create(indicador, {
       ...getIncludesToCreateIndicador(indicador), transaction: t
     });
-
+    if (indicador.catalogos) {
+      const catalogos = indicador.catalogos.map(c => ({
+        idCatalogoDetail: c,
+        idIndicador: created.id
+      }))
+      createdCatalogos = await CatalogoDetailIndicador.bulkCreate(catalogos, {
+        transaction: t
+      });
+    }
     await t.commit();
-    return createdIndicador;
+    return created;
 
   } catch (err) {
     await t.rollback();
     throw new Error(`Error al crear indicador: ${err.message}`);
   }
 };
-
 
 const updateIndicadorStatus = async (id) => {
   try {
@@ -279,7 +287,7 @@ const defineIncludesForAnIndicador = (pathway, queryParams) => {
           required: false,
           attributes: [
             'nombre',
-            'nombreAtributo',
+            'descripcion',
             'dato',
             'idUnidad',
           ],

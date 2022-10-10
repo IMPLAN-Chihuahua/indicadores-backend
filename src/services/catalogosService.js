@@ -42,7 +42,7 @@ const getCatalogosFromIndicador = async (idIndicador) => {
 			where: {
 				idIndicador: idIndicador
 			},
-			attributes: ['id', 'idIndicador', 'idCatalogoDetail', [sequelize.literal('"catalogoDetail"."nombre"'), "nombreAtributo"], [sequelize.literal('"catalogoDetail"."idCatalogo"'), "idCatalogo"]],
+			attributes: ['id', 'idIndicador', 'idCatalogoDetail', [sequelize.literal('"catalogoDetail"."nombre"'), "descripcion"], [sequelize.literal('"catalogoDetail"."idCatalogo"'), "idCatalogo"]],
 			include: [{
 				model: CatalogoDetail,
 				attributes: [],
