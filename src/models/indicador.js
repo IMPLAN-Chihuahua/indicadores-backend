@@ -107,6 +107,12 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: true,
                 defaultValue: null
             },
+
+            owner: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+                defaultValue: 1
+            }
         },
         {
             sequelize,

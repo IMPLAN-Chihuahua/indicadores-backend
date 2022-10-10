@@ -107,20 +107,11 @@ const createIndicador = async (req, res, next) => {
 
 const updateIndicador = async (req, res, next) => {
   try {
-    let urlImagen = '';
     const { idIndicador, ...indicador } = req.matchedData;
     const idUsuario = req.sub;
     const rol = req.rol || await UsuarioService.getRol(idUsuario);
 
-    urlImagen = req.file ? `/images/indicador/${req.file.filename}` : urlImagen;
-
-    let fields = {};
-    if (urlImagen) {
-      fields = { ...indicador, urlImagen };
-    }
-    else {
-      fields = { ...indicador };
-    }
+    fields = { ...indicador };
 
     let saved;
     if (rol === 'ADMIN') {

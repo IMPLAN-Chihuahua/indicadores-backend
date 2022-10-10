@@ -5,13 +5,16 @@ const { paramValidationRules,
     paginationValidationRules,
     sortValidationRules,
     updateHistoricoValidationRules,
+    createHistoricoValidationRules,
 } = require('../middlewares/validator');
 const {
     getHistoricos,
     deleteHistorico,
     updateHistorico,
+    createHistorico,
 } = require('../controllers/historicoController');
 const { verifyJWT, verifyUserHasRoles, verifyUserIsActive } = require('../middlewares/auth');
+const { Router } = require('express');
 
 
 router.route('/:idIndicador')
@@ -42,6 +45,15 @@ router.route('/:idHistorico')
         paramValidationRules(),
         validate,
         updateHistorico
+    );
+
+router.route('/:idIndicador')
+    .post(
+        verifyJWT,
+        verifyUserIsActive,
+        createHistoricoValidationRules(),
+        validate,
+        createHistorico
     );
 
 module.exports = router;

@@ -230,6 +230,8 @@ const updateModuloValidationRules = () => [
     .withMessage('El tema no puede estar vacio'),
 ]
 
+const validYear = (year) => year <= new Date().getFullYear();
+
 const updateHistoricoValidationRules = () => [
   param(['idHistorico'])
     .exists()
@@ -245,7 +247,27 @@ const updateHistoricoValidationRules = () => [
     .optional(),
 ]
 
-const validYear = (year) => year <= new Date().getFullYear();
+const createHistoricoValidationRules = () => [
+  check('idIndicador')
+    .exists()
+    .withMessage('El id del indicador es obligatorio'),
+
+  check('anio')
+    .exists()
+    .withMessage('El año es obligatorio')
+    .isNumeric()
+    .withMessage('El año debe ser un numero')
+  ,
+
+  check('valor')
+    .exists()
+    .withMessage('El valor es obligatorio')
+    .isNumeric()
+    .withMessage('El valor debe ser un numero'),
+
+  check('fuente')
+    .exists(),
+]
 
 const createIndicadorValidationRules = () => [
   body(['nombre', 'codigo', 'definicion', 'ultimoValorDisponible'])
@@ -306,8 +328,11 @@ const createIndicadorValidationRules = () => [
 ];
 
 const updateIndicadorValidationRules = () => [
-  body(['nombre', 'definicion', 'ultimoValorDisponible',
-    'observaciones', 'codigo'])
+  body(['codigo', 'codigoObjeto'])
+    .optional()
+    .isLength({ max: 3 })
+    .matches(/\d{3}$/),
+  body(['activo', 'definicion', 'fuente', 'nombre', 'observaciones', 'owner', 'periodicidad', 'ultimoValorDisponible', 'updatedBy'])
     .optional()
     .trim().escape(),
   body(['tendenciaActual', 'tendenciaDeseada'])
@@ -377,5 +402,6 @@ module.exports = {
   indicadorAssignUsuarioValidationRules,
   usuarioAssignIndicadorValidationRules,
   desdeHastaDateRangeValidationRules,
+  createHistoricoValidationRules,
 };
 

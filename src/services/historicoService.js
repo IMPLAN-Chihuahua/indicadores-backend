@@ -35,7 +35,7 @@ const getHistoricosSorting = ({ sortBy, order }) => {
     const arrangement = [];
     arrangement.push([sortBy || 'id', order || 'ASC']);
     return arrangement;
-}
+};
 
 const deleteHistorico = async (idHistorico) => {
     try {
@@ -46,7 +46,7 @@ const deleteHistorico = async (idHistorico) => {
     } catch (err) {
         throw new Error(`Error al eliminar el historico: ${err.message}`);
     }
-}
+};
 
 const updateHistorico = async (idHistorico, historico) => {
     try {
@@ -60,8 +60,27 @@ const updateHistorico = async (idHistorico, historico) => {
     };
 };
 
+const createHistorico = async (idIndicador, historico) => {
+    try {
+        const response = await Historico.create({
+            idIndicador: idIndicador,
+            valor: historico.valor,
+            anio: historico.anio,
+            fuente: historico.fuente,
+            ecuacion: 'NAN',
+            descripcionEcuacion: 'NAN',
+            fechaIngreso: new Date(),
+            pushedBy: 1,
+        });
+        return response;
+    } catch (err) {
+        throw new Error(`Error al crear el historico: ${err.message}`);
+    }
+}
+
 module.exports = {
     getHistoricos,
     deleteHistorico,
-    updateHistorico
+    updateHistorico,
+    createHistorico,
 }
