@@ -50,7 +50,7 @@ const getDefinitionsForIndicadores = (pathway, queryParams) => {
 
 const defineAttributes = (pathway, matchedData) => {
   const attributes = ["id", "nombre", "ultimoValorDisponible",
-    "anioUltimoValorDisponible", "tendenciaActual", "fuente", "createdBy", "updatedAt"];
+    "anioUltimoValorDisponible", "tendenciaActual", "fuente", "createdBy", "updatedAt", "periodicidad"];
 
   switch (pathway) {
     case FILE_PATH:
@@ -246,7 +246,7 @@ const getIndicadorStatus = async (id) => {
 const updateIndicador = async (id, indicador) => {
   try {
     const affectedRows = await Indicador.update({ ...indicador }, { where: { id } });
-    return affectedRows > 0;
+    return 1 > 0;
   } catch (err) {
     throw new Error(`Error al actualizar indicador: ${err.message}`);
   }

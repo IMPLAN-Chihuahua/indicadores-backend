@@ -11,7 +11,6 @@ const getHistoricos = async (req, res, next) => {
         const { historicos, total } = await HistoricoService.getHistoricos(idIndicador, page, perPage, order, sortBy);
         if (historicos.length > 0) {
             const totalPages = Math.ceil(total / perPage);
-            console.log(historicos);
             return res.status(200).json({ idIndicador: idIndicador, indicadorLastValue: ultimoValorDisponible, indicadorLastUpdateDate: updatedAt, indicadorPeriodicidad: periodicidad, page: page, perPage: perPage, total: total, totalPages: totalPages, data: historicos });
         } else {
             return res.status(200).json({ idIndicador: idIndicador, indicadorLastValue: ultimoValorDisponible, indicadorLastUpdateDate: updatedAt, indicadorPeriodicidad: periodicidad, page: page, perPage: perPage, total: total, totalPages: 0, data: [] });
@@ -47,8 +46,19 @@ const updateHistorico = async (req, res, next) => {
     };
 };
 
+const createHistorico = async (req, res, next) => {
+    const { idIndicador, ...historico } = req.matchedData;
+    try {
+        const response = await HistoricoService.createHistorico(idIndicador, historico);
+        return res.status(201).json(response);
+    } catch (err) {
+        next(err)
+    }
+}
+
 module.exports = {
     getHistoricos,
     deleteHistorico,
     updateHistorico,
+    createHistorico,
 }

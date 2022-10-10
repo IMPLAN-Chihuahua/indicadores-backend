@@ -238,16 +238,42 @@ const updateHistoricoValidationRules = () => [
         .withMessage('Field must be an integer number')
         .toInt(),
 
+    check('anio')
+        .exists(),
+
     check('valor')
-        .optional(),
+        .exists(),
 
     check('fuente')
-        .optional(),
+        .exists(),
 
     check('fechaIngreso')
         .optional()
         .isISO8601()
         .withMessage('fecha debe tener formato ISO8601'),
+]
+
+const createHistoricoValidationRules = () => [
+    check('idIndicador')
+        .exists()
+        .withMessage('El id del indicador es obligatorio'),
+
+
+    check('anio')
+        .exists()
+        .withMessage('El año es obligatorio')
+        .isNumeric()
+        .withMessage('El año debe ser un numero')
+    ,
+
+    check('valor')
+        .exists()
+        .withMessage('El valor es obligatorio')
+        .isNumeric()
+        .withMessage('El valor debe ser un numero'),
+
+    check('fuente')
+        .exists(),
 ]
 
 const createIndicadorValidationRules = () => [
@@ -293,8 +319,7 @@ const updateIndicadorValidationRules = () => [
         .optional()
         .isLength({ max: 3 })
         .matches(/\d{3}$/),
-    body(['nombre', 'definicion',
-        'ultimoValorDisponible', 'observaciones'])
+    body(['activo', 'definicion', 'fuente', 'nombre', 'observaciones', 'owner', 'periodicidad', 'ultimoValorDisponible', 'updatedBy'])
         .optional()
         .trim().escape(),
     body(['tendenciaActual', 'tendenciaDeseada'])
@@ -364,5 +389,6 @@ module.exports = {
     indicadorAssignUsuarioValidationRules,
     usuarioAssignIndicadorValidationRules,
     desdeHastaDateRangeValidationRules,
+    createHistoricoValidationRules,
 };
 
