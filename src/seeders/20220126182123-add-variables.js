@@ -1,6 +1,6 @@
 'use strict';
 
-const { aCodigo, randomYear } = require("../utils/factories");
+const { randomYear } = require("../utils/factories");
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -9,8 +9,7 @@ module.exports = {
     const nombresFromFormula = ['Descripción de valor 1', 'Descripción de valor 2', 'Descripción de valor 3'];
     variables.push({
       nombre: variablesFromFormula[0],
-      codigoAtributo: aCodigo(),
-      nombreAtributo: nombresFromFormula[0],
+      descripcion: nombresFromFormula[0],
       dato: '123',
       anio: randomYear(),
       idUnidad: 2,
@@ -18,8 +17,7 @@ module.exports = {
     });
     variables.push({
       nombre: variablesFromFormula[1],
-      codigoAtributo: aCodigo(),
-      nombreAtributo: nombresFromFormula[1],
+      descripcion: nombresFromFormula[1],
       dato: '123',
       anio: randomYear(),
       idUnidad: 5,
@@ -27,8 +25,7 @@ module.exports = {
     });
     variables.push({
       nombre: variablesFromFormula[2],
-      codigoAtributo: aCodigo(),
-      nombreAtributo: nombresFromFormula[2],
+      descripcion: nombresFromFormula[2],
       dato: '123',
       anio: randomYear(),
       idUnidad: 8,

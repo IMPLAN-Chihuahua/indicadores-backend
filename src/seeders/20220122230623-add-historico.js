@@ -10,7 +10,6 @@ module.exports = {
         id: i + 16,
         valor: faker.datatype.number(),
         anio: 2022 - i,
-        fechaIngreso: date,
         fuente: faker.internet.url(),
         idIndicador: Math.random() * (5 - 1) + 1,
         createdAt: date,
