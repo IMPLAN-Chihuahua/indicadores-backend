@@ -68,6 +68,15 @@ module.exports = (sequelize, DataTypes) => {
                 validate: {
                     isIn: [['SI', 'NO']]
                 }
+            },
+
+            expires: {
+                type: DataTypes.STRING,
+                allowNull: true,
+                defaultValue: 'SI',
+                validate: {
+                    isIn: [['SI', 'NO']]
+                }
             }
         },
         {

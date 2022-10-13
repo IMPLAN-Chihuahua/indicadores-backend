@@ -13,6 +13,7 @@ const {
   CatalogoDetailIndicador
 } = require("../models");
 const { toggleStatus, isObjEmpty } = require("../utils/objectUtils");
+const { createRelation } = require("./usuarioIndicadorService");
 
 const { Op } = Sequelize;
 
@@ -227,6 +228,7 @@ const createIndicador = async (indicador) => {
     const created = await Indicador.create(indicador, {
       ...getIncludesToCreateIndicador(indicador), transaction: t
     });
+    
     if (indicador.catalogos) {
       const catalogos = indicador.catalogos.map(c => ({
         idCatalogoDetail: c,
@@ -236,6 +238,15 @@ const createIndicador = async (indicador) => {
         transaction: t
       });
     }
+    
+    createRelation([indicador.owner], [created.id], {
+      fechaDesde: new Date(),
+      fechaHasta: new Date(),
+      updatedBy: indicador.updatedBy,
+      createdBy: indicador.createdBy,
+      expires: 'NO'
+    })
+
     await t.commit();
     return created;
 
