@@ -10,9 +10,8 @@ require('dotenv').config();
 
 chai.use(chaiHttp);
 const { expect } = chai;
-const { Indicador, Modulo, Usuario, UsuarioIndicador } = require('../../models');
-const { anIndicador, aModulo,
-    indicadorToCreate, aFormula,
+const { Indicador, Modulo, Usuario, UsuarioIndicador, Formula } = require('../../models');
+const { anIndicador, aModulo, indicadorToCreate, aFormula,
     aVariable, anHistorico, aMapa } = require('../../utils/factories');
 const { app, server } = require('../../../app');
 const { addDays } = require('../../utils/dates');
@@ -67,7 +66,6 @@ describe('v1/indicadores', function () {
                     done();
                 });
         });
-
 
         it('Should return status code 404 if :idModulo does not exist', function (done) {
             const findOneFake = sinon.fake.resolves(null);
@@ -154,7 +152,7 @@ describe('v1/indicadores', function () {
                 });
         });
 
-        it('Should return an individual item', function (done) {
+        it('Should return an indicador', function (done) {
             const findOneFake = sinon.fake.resolves(dummyIndicador);
             sinon.replace(Indicador, 'findOne', findOneFake);
             chai.request(app)
@@ -167,6 +165,18 @@ describe('v1/indicadores', function () {
                     expect(res.body.data.codigo).to.equal(dummyIndicador.codigo);
                     done();
                 });
+        });
+
+        it('Should fail to return an indicador because it does not exist', function (done) {3000
+            const findOneFake = sinon.fake.resolves({ count: 0 });
+            sinon.replace(Indicador, 'findOne', findOneFake)
+            chai.request(app)
+                .get('/api/v1/indicadores/1/formula')
+                .end((err, res) => {
+                    expect(res).to.have.status(404);
+                    expect(findOneFake.calledOnce).to.be.true;
+                    done()
+                })
         });
 
         it('Should return status code 422 if :idIndicador is invalid', function (done) {
@@ -248,7 +258,7 @@ describe('v1/indicadores', function () {
                 });
         });
 
-        it('Should return not found if sort by or order is undefined', function (done) {
+        it('Should fail to return list due to invalid sortby and order values', function (done) {
             chai.request(app)
                 .get('/api/v1/modulos/1/indicadores')
                 .query({ sortBy: 'invalid', order: 'invalid' })
@@ -256,6 +266,38 @@ describe('v1/indicadores', function () {
                     expect(res).to.have.status(422);
                     done();
                 });
+        })
+
+        it('Should return formula and variables of an indicador', function (done) {
+            const formulaWithVariables = { ...aFormula(1), variables: [aVariable(1), aVariable(2)] }
+            const findOneFake = sinon.fake.resolves({ dataValues: formulaWithVariables });
+            sinon.replace(Formula, 'findOne', findOneFake);
+            chai.request(app)
+                .get('/api/v1/indicadores/1/formula')
+                .end((err, res) => {
+                    expect(findOneFake.calledOnce).to.be.true;
+                    expect(err).to.be.null;
+                    expect(res).to.have.status(200);
+                    expect(res.body.data).to.not.be.empty;
+                    expect(res.body.data.variables).to.be.an('array');
+                    expect(res.body.data.variables).to.have.length(2)
+                    expect(res.body.data.ecuacion).to.be.an('string');
+                    expect(res.body.data.descripcion).to.be.an('string');
+                    done();
+                });
+        })
+
+        it('Should return no data because indicador does not have formula', function (done) {
+            const findOneFake = sinon.fake.resolves(null);
+            sinon.replace(Formula, 'findOne', findOneFake);
+            chai.request(app)
+                .get('/api/v1/indicadores/1/formula')
+                .end((err, res) => {
+                    expect(res).to.have.status(200);
+                    expect(res.body.data).to.be.an('object').and.be.empty;
+                    expect(findOneFake.calledOnce).to.be.true;
+                    done();
+                })
         })
 
     });
