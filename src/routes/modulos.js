@@ -4,9 +4,23 @@ const moduloRouter = express.Router();
 const indicadorRouter = express.Router({ mergeParams: true });
 const { getModulos, createModulo, editModulo, updateModuloStatus, getModulo } = require('../controllers/moduloController');
 const { getIndicadores } = require('../controllers/indicadorController');
-const { paramValidationRules, paginationValidationRules,
-    validate, filterIndicadoresValidationRules, sortValidationRules,
-    createModuloValidationRules, updateModuloValidationRules } = require('../middlewares/validator');
+
+const {
+    filterIndicadoresValidationRules,
+    sortValidationRules,
+} = require('../middlewares/validator/indicadorValidator')
+
+const {
+    paginationValidationRules,
+    paramValidationRules,
+    validate,
+} = require('../middlewares/validator/generalValidator')
+
+const {
+    createModuloValidationRules,
+    updateModuloValidationRules,
+} = require('../middlewares/validator/moduloValidator')
+
 const { moduloExists } = require('../middlewares/verifyIdModulo');
 const { verifyJWT, verifyUserIsActive, verifyUserHasRoles } = require('../middlewares/auth');
 const { uploadImage } = require('../middlewares/fileUpload');
@@ -48,7 +62,7 @@ const { determinePathway, SITE_PATH } = require('../middlewares/determinePathway
  *             description: Representative hexadecimal color.
  *             example: '#d2d2d2'
  *           createdAt:
- *             type: string 
+ *             type: string
  *             description: Timestamp of creation in 'Z time'.
  *             format: date-time
  *             readOnly: true
@@ -73,7 +87,7 @@ moduloRouter.use('/:idModulo/indicadores', indicadorRouter);
  *                 properties:
  *                   data:
  *                     type: array
- *                     items: 
+ *                     items:
  *                       $ref: '#/components/schemas/Modulo'
  *                     description: List of modules
  *         429:
@@ -177,7 +191,7 @@ moduloRouter.route('/')
  *           $ref: '#/components/responses/TooManyRequests'
  *         500:
  *           $ref: '#/components/responses/InternalServerError'
- * 
+ *
  */
 
 indicadorRouter.route('/')
@@ -245,7 +259,7 @@ moduloRouter.route('/')
     );
 
 
-/** 
+/**
  * @swagger
  *   /modulos/{idModulo}:
  *     put:
@@ -280,7 +294,7 @@ moduloRouter.route('/')
  *          $ref: '#components/responses/TooManyRequests'
  *        500:
  *          $ref: '#components/responses/InternalServerError'
- * 
+ *
  */
 
 moduloRouter.route('/:idModulo')
@@ -343,7 +357,7 @@ moduloRouter.route('/:idModulo')
  *     get:
  *       summary: Retrieves information about a tema (modulo)
  *       tags: [Modulos]
- *       parameters: 
+ *       parameters:
  *         - name: idModulo
  *           in: path
  *           required: true

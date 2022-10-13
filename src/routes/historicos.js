@@ -1,12 +1,21 @@
 const express = require('express');
 const router = express.Router();
-const { paramValidationRules,
-    validate,
+
+const {
+    sortValidationRules
+} = require('../middlewares/validator/indicadorValidator')
+
+const {
     paginationValidationRules,
-    sortValidationRules,
+    paramValidationRules,
+    validate,
+} = require('../middlewares/validator/generalValidator')
+
+const {
     updateHistoricoValidationRules,
     createHistoricoValidationRules,
-} = require('../middlewares/validator');
+} = require('../middlewares/validator/historicoValidator');
+
 const {
     getHistoricos,
     deleteHistorico,

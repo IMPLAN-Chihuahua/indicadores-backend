@@ -15,12 +15,19 @@ const {
 const { getAllModulos } = require('../controllers/moduloController');
 
 const {
-    validate,
-    paramValidationRules,
     paginationValidationRules,
+    paramValidationRules,
+    validate,
+} = require('../middlewares/validator/generalValidator')
+
+const {
+    updateValidationRules,
+} = require('../middlewares/validator/usuarioValidator')
+
+const {
     filterModulosValidationRules,
     sortModulosValidationRules,
-    updateValidationRules } = require('../middlewares/validator');
+} = require('../middlewares/validator/moduloValidator')
 
 const { determinePathway, FRONT_PATH } = require('../middlewares/determinePathway');
 

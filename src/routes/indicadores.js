@@ -1,16 +1,25 @@
 const express = require('express');
 
 const router = express.Router();
-const { paramValidationRules,
-    validate,
-    createIndicadorValidationRules,
-    updateIndicadorValidationRules,
-    paginationValidationRules,
-    filterIndicadoresValidationRules,
-    sortValidationRules,
+
+const {
     indicadorAssignUsuarioValidationRules,
     desdeHastaDateRangeValidationRules
-} = require('../middlewares/validator');
+} = require('../middlewares/validator/usuarioIndicadorValidator')
+
+const {
+    filterIndicadoresValidationRules,
+    sortValidationRules,
+    createIndicadorValidationRules,
+    updateIndicadorValidationRules,
+} = require('../middlewares/validator/indicadorValidator')
+
+const {
+    paginationValidationRules,
+    paramValidationRules,
+    validate,
+} = require('../middlewares/validator/generalValidator')
+
 const {
     getIndicador,
     getIndicadores,
