@@ -3,7 +3,10 @@ const { body } = require('express-validator');
 
 const router = express.Router();
 const { login, generatePasswordRecoveryToken, handlePasswordRecoveryToken } = require('../controllers/authController');
-const { loginValidationRules, validate, tokenValidationRules } = require('../middlewares/validator');
+const { loginValidationRules, tokenValidationRules } = require('../middlewares/validator/authValidator');
+const {
+  validate,
+} = require('../middlewares/validator/generalValidator');
 
 /**
  * @swagger

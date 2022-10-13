@@ -8,17 +8,25 @@ const { getUsers,
     editUser,
     editUserStatus,
     setIndicadoresToUsuario } = require('../controllers/usuarioController');
+const { createRelationship } = require('../controllers/usuarioIndicadorController');
 const { verifyJWT, verifyUserHasRoles, verifyUserIsActive } = require('../middlewares/auth');
 const { uploadImage } = require('../middlewares/fileUpload');
+
 const {
     registerValidationRules,
-    paginationValidationRules,
-    validate,
-    paramValidationRules,
-    updateValidationRules,
-    usuarioAssignIndicadorValidationRules,
-    desdeHastaDateRangeValidationRules } = require('../middlewares/validator');
+    updateValidationRules
+} = require('../middlewares/validator/usuarioValidator')
 
+const {
+    paginationValidationRules,
+    paramValidationRules,
+    validate,
+} = require('../middlewares/validator/generalValidator')
+
+const {
+    usuarioAssignIndicadorValidationRules,
+    desdeHastaDateRangeValidationRules
+} = require('../middlewares/validator/usuarioIndicadorValidator')
 
 /**
  * @swagger
@@ -405,6 +413,7 @@ router.post('/:idUser/indicadores',
     desdeHastaDateRangeValidationRules(),
     paramValidationRules(),
     validate,
+    createRelationship,
     setIndicadoresToUsuario,
 );
 
