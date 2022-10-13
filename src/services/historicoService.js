@@ -62,6 +62,8 @@ const updateHistorico = async (idHistorico, historico) => {
 
 const createHistorico = async (idIndicador, historico) => {
     try {
+        console.log('o raios');
+        console.log(historico);
         const response = await Historico.create({
             idIndicador: idIndicador,
             valor: historico.valor,
@@ -69,8 +71,7 @@ const createHistorico = async (idIndicador, historico) => {
             fuente: historico.fuente,
             ecuacion: 'NAN',
             descripcionEcuacion: 'NAN',
-            fechaIngreso: new Date(),
-            pushedBy: 1,
+            pushedBy: historico.idUsuario,
         });
         return response;
     } catch (err) {
