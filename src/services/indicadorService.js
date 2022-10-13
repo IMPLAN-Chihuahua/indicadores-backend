@@ -36,6 +36,15 @@ const getIndicadores = async (page, perPage, matchedData, pathway) => {
   }
 };
 
+const getInactiveIndicadores = async () => {
+  const indicadores = await Indicador.findAndCountAll({
+    where: { activo: 'NO' },
+    attributes: ["id", "nombre"],
+    raw: true
+  });
+  return indicadores;
+}
+
 const getDefinitionsForIndicadores = (pathway, queryParams) => {
   const attributes = defineAttributes(pathway, queryParams);
   const includes = defineIncludesForIndicadores(queryParams);
@@ -263,7 +272,6 @@ const getIndicadorStatus = async (id) => {
 }
 
 const updateIndicador = async (id, indicador) => {
-  console.log(indicador)
   try {
     const affectedRows = await Indicador.update({ ...indicador }, { where: { id } });
     return affectedRows > 0;
@@ -386,4 +394,5 @@ module.exports = {
   createIndicador,
   updateIndicador,
   updateIndicadorStatus,
+  getInactiveIndicadores,
 };

@@ -1,7 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { paramValidationRules,
-    validate } = require('../middlewares/validator');
+
+const {
+    paramValidationRules,
+    validate,
+} = require('../middlewares/validator/generalValidator')
+
 const { getIndicador } = require('../controllers/indicadorController');
 const { determinePathway, FILE_PATH } = require('../middlewares/determinePathway');
 

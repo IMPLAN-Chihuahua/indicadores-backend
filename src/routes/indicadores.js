@@ -1,12 +1,30 @@
 const express = require('express');
 
 const router = express.Router();
-const { paramValidationRules, validate, createIndicadorValidationRules, updateIndicadorValidationRules,
-    paginationValidationRules, filterIndicadoresValidationRules, sortValidationRules,
-    indicadorAssignUsuarioValidationRules, desdeHastaDateRangeValidationRules
-} = require('../middlewares/validator');
-const { getIndicador, getIndicadores, createIndicador, updateIndicador, updateIndicadorStatus,
-    setUsuariosToIndicador, getUsersFromIndicador, } = require('../controllers/indicadorController');
+const {
+    indicadorAssignUsuarioValidationRules,
+    desdeHastaDateRangeValidationRules
+} = require('../middlewares/validator/usuarioIndicadorValidator')
+const {
+    filterIndicadoresValidationRules,
+    sortValidationRules,
+    createIndicadorValidationRules,
+    updateIndicadorValidationRules,
+} = require('../middlewares/validator/indicadorValidator')
+const {
+    paginationValidationRules,
+    paramValidationRules,
+    validate,
+} = require('../middlewares/validator/generalValidator')
+const {
+    getIndicador,
+    getIndicadores,
+    createIndicador,
+    updateIndicador,
+    updateIndicadorStatus,
+    setUsuariosToIndicador,
+    getUsersFromIndicador,
+} = require('../controllers/indicadorController');
 const { verifyJWT, verifyUserHasRoles, verifyUserIsActive } = require('../middlewares/auth');
 const { determinePathway, SITE_PATH, FRONT_PATH } = require('../middlewares/determinePathway');
 const { uploadImage } = require('../middlewares/fileUpload');

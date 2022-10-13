@@ -61,8 +61,9 @@ const getIndicadores = async (req, res, next) => {
   const { page, perPage } = getPagination(req.matchedData);
   try {
     const { indicadores, total } = await IndicadorService.getIndicadores(page, perPage, req.matchedData, pathway);
+    const { count } = await IndicadorService.getInactiveIndicadores();
     const totalPages = Math.ceil(total / perPage);
-    return res.status(200).json({ page, perPage, total, totalPages, data: indicadores });
+    return res.status(200).json({ page, perPage, total, totalInactive: count, totalPages, data: indicadores });
   } catch (err) {
     next(err)
   }
