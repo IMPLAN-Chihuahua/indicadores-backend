@@ -1,25 +1,21 @@
 const express = require('express');
 
 const router = express.Router();
-
 const {
     indicadorAssignUsuarioValidationRules,
     desdeHastaDateRangeValidationRules
 } = require('../middlewares/validator/usuarioIndicadorValidator')
-
 const {
     filterIndicadoresValidationRules,
     sortValidationRules,
     createIndicadorValidationRules,
     updateIndicadorValidationRules,
 } = require('../middlewares/validator/indicadorValidator')
-
 const {
     paginationValidationRules,
     paramValidationRules,
     validate,
 } = require('../middlewares/validator/generalValidator')
-
 const {
     getIndicador,
     getIndicadores,
@@ -34,6 +30,8 @@ const { determinePathway, SITE_PATH, FRONT_PATH } = require('../middlewares/dete
 const { uploadImage } = require('../middlewares/fileUpload');
 const { getCatalogosFromIndicador } = require('../controllers/catalogoController');
 const { DESTINATIONS } = require('../services/fileService');
+const { getFormulaOfIndicador } = require('../controllers/formulaController');
+const { verifyResourceExists } = require('../middlewares/resourceExists');
 
 /**
  * @swagger
@@ -213,6 +211,7 @@ router.route('/:idIndicador').get(
     paramValidationRules(),
     filterIndicadoresValidationRules(),
     validate,
+    verifyResourceExists('idIndicador', 'Indicador'),
     determinePathway(SITE_PATH),
     getIndicador
 );
@@ -371,6 +370,7 @@ router.route('/:idIndicador')
         uploadImage(DESTINATIONS.INDICADORES),
         updateIndicadorValidationRules(),
         validate,
+        verifyResourceExists('idIndicador', 'Indicador'),
         updateIndicador
     );
 
@@ -409,6 +409,7 @@ router.route('/:idIndicador/toggle-status')
         verifyUserHasRoles(['ADMIN']),
         paramValidationRules(),
         validate,
+        verifyResourceExists('idIndicador', 'Indicador'),
         updateIndicadorStatus
     );
 
@@ -478,6 +479,7 @@ router.route('/:idIndicador/usuarios')
         // verifyUserIsActive,
         paramValidationRules(),
         validate,
+        verifyResourceExists('idIndicador', 'Indicador'),
         getUsersFromIndicador
     )
 
@@ -534,6 +536,34 @@ router.route('/:idIndicador/catalogos')
     .get(
         paramValidationRules(),
         validate,
+        verifyResourceExists('idIndicador', 'Indicador'),
         getCatalogosFromIndicador
     )
-module.exports = router;    
+
+
+/**
+ * @swagger
+ *   /indicadores/{idIndicador}/formula:
+ *     get:
+ *       summary: Retrieves formula and variables from a given Indicador
+ *       tags: [Indicadores, Formula]
+ *       parameters:
+ *         - in: path
+ *           name: idIndicador
+ *           required: true
+ *           schema:
+ *             type: integer
+ *             format: int64
+ *       responses:
+ *         200:
+ *           description: Equation, description and variables of an Indicador.
+ */
+router.route('/:idIndicador/formula')
+    .get(
+        paramValidationRules(),
+        validate,
+        verifyResourceExists('idIndicador', 'Indicador'),
+        getFormulaOfIndicador
+    )
+
+module.exports = router;

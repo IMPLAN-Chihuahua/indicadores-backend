@@ -75,12 +75,14 @@ const indicadorToCreate = () => {
 	return indicador.dataValues;
 }
 
-const aFormula = () => ({
+const aFormula = (id) => ({
+	...(id && { id }),
 	ecuacion: '\\frac{1}{x^2-1}',
 	descripcion: faker.lorem.words(20)
 });
 
-const aVariable = () => ({
+const aVariable = (id) => ({
+	...(id && { id }),
 	nombre: faker.lorem.word(),
 	descripcion: faker.lorem.word(),
 	dato: faker.datatype.number(),

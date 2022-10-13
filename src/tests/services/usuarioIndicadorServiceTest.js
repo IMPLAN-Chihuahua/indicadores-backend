@@ -8,7 +8,7 @@ const { UsuarioIndicador } = require('../../models');
 const UsuarioIndicadorService = require('../../services/usuarioIndicadorService');
 const { server } = require('../../../app');
 
-describe.only('Usuario-Indicador service', function () {
+describe('Usuario-Indicador service', function () {
 
   this.afterEach(function () {
     sinon.restore();

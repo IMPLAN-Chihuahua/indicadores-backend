@@ -13,7 +13,7 @@ const { TOKEN_SECRET } = process.env;
 
 describe('v1/historicos', function () {
     const historicos = someHistoricos(1);
-    const indicador = anIndicador(11111111111111111);
+    const indicador = anIndicador(1);
 
     const validToken = jwt.sign({ sub: 1 }, TOKEN_SECRET, { expiresIn: '5h' });
 
