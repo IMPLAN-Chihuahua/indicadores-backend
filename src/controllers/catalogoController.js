@@ -29,8 +29,20 @@ const getCatalogosFromIndicador = async (req, res, next) => {
 	}
 };
 
+const updateOrCreateCatalogFromIndicador = async (req, res, next) => {
+	const { idIndicador, catalogos } = req.body || {};
+	try {
+		await catalogosService.updateOrCreateCatalogosFromIndicador(idIndicador, catalogos);
+		return res.sendStatus(204);
+	} catch (err) {
+		next(err)
+	}
+};
+
+
 module.exports = {
 	getCatalogos,
 	getCatalogosDetails,
 	getCatalogosFromIndicador,
+	updateOrCreateCatalogFromIndicador,
 };

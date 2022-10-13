@@ -252,6 +252,10 @@ const createHistoricoValidationRules = () => [
     .exists()
     .withMessage('El id del indicador es obligatorio'),
 
+  check('idUsuario')
+    .exists()
+    .withMessage('El id del usuario es obligatorio'),
+
   check('anio')
     .exists()
     .withMessage('El año es obligatorio')
@@ -267,6 +271,7 @@ const createHistoricoValidationRules = () => [
 
   check('fuente')
     .exists(),
+
 ]
 
 const createIndicadorValidationRules = () => [
@@ -369,6 +374,7 @@ const errorFormatter = ({ location, msg, param: paramFormatter }) => `${location
 
 const validate = (req, res, next) => {
   const errors = validationResult(req).formatWith(errorFormatter);
+  console.log(errors);
 
   if (errors.isEmpty()) {
     req.matchedData = matchedData(req);
@@ -380,7 +386,20 @@ const validate = (req, res, next) => {
     errors: errors.array({ onlyFirstError: true })
   });
 
-}
+};
+
+const createOrUpdateCatalogosFromIndicadorValidationRules = () => [
+  body('idIndicador')
+    .exists()
+    .withMessage('El id del indicador es obligatorio')
+    .isInt()
+    .withMessage('El id del indicador debe ser un numero')
+    .toInt(),
+
+  body('catalogos.*')
+    .exists()
+    .withMessage('El catalogo es obligatorio')
+]
 
 module.exports = {
   validate,
@@ -403,5 +422,6 @@ module.exports = {
   usuarioAssignIndicadorValidationRules,
   desdeHastaDateRangeValidationRules,
   createHistoricoValidationRules,
+  createOrUpdateCatalogosFromIndicadorValidationRules,
 };
 

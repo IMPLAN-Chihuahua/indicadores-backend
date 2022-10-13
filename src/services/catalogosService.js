@@ -56,9 +56,46 @@ const getCatalogosFromIndicador = async (idIndicador) => {
 	};
 };
 
+const updateOrCreateCatalogosFromIndicador = async (idIndicador, catalogos) => {
+	console.log(catalogos);
+	try {
+		catalogos.map(async (catalogo, index) => {
+			if (catalogo !== 'default') {
+				const catalogExists = await CatalogoDetailIndicador.findOne({
+					where: {
+						idIndicador: idIndicador,
+						idCatalogoDetail: catalogo.id
+					}
+				});
+				console.log(catalogExists);
+				if (catalogExists) {
+					await CatalogoDetailIndicador.update({
+						idIndicador: idIndicador,
+						idCatalogoDetail: catalogo.id
+					}, {
+						where: {
+							idIndicador: idIndicador,
+							idCatalogoDetail: catalogo.id
+						}
+					});
+				}
+				else {
+					await CatalogoDetailIndicador.create({
+						idIndicador: idIndicador,
+						idCatalogoDetail: catalogo.id
+					});
+				}
+			}
+		})
+	} catch (err) {
+		throw new Error(`Error al obtener Catalogos: ${err.message}`);
+	}
+}
+
 
 module.exports = {
 	getCatalogos,
 	getCatalogosDetails,
-	getCatalogosFromIndicador
+	getCatalogosFromIndicador,
+	updateOrCreateCatalogosFromIndicador
 }

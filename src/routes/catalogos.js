@@ -1,10 +1,11 @@
 const express = require('express');
 const catalogoRouter = express.Router();
 
-const { getCatalogos, getCatalogosDetails, getCatalogosFromIndicador } = require('../controllers/catalogoController');
-const { paramValidationRules, validate } = require('../middlewares/validator');
+const { getCatalogos, getCatalogosDetails, getCatalogosFromIndicador, updateOrCreateCatalogFromIndicador } = require('../controllers/catalogoController');
+const { paramValidationRules, validate, createOrUpdateCatalogosFromIndicadorValidationRules } = require('../middlewares/validator');
 
-const { verifyJWT } = require('../middlewares/auth');
+const { verifyJWT, verifyUserIsActive } = require('../middlewares/auth');
+const { updateOrCreateCatalogosFromIndicador } = require('../services/catalogosService');
 
 /**
  * @swagger
@@ -95,5 +96,15 @@ catalogoRouter.route('/:idCatalogo')
 	.get(paramValidationRules(),
 		validate,
 		getCatalogosDetails);
+
+catalogoRouter.route('/indicador/:idIndicador')
+	.patch(
+		verifyJWT,
+		verifyUserIsActive,
+		paramValidationRules(),
+		createOrUpdateCatalogosFromIndicadorValidationRules(),
+		validate,
+		updateOrCreateCatalogFromIndicador,
+	)
 
 module.exports = catalogoRouter;
