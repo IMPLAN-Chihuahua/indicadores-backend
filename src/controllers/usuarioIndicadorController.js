@@ -2,7 +2,7 @@ const stream = require('stream');
 const UsuarioIndicadorService = require('../services/usuarioIndicadorService');
 
 const createRelation = async (req, res, next) => {
-    const { idIndicador, usuarios, desde, hasta, idUser: idUsuario, indicadores } = req.matchedData;
+    const { idIndicador, idUsuario, usuarios, desde, hasta, indicadores } = req.matchedData;
 
     const updatedBy = req.sub;
     const createdBy = req.sub;

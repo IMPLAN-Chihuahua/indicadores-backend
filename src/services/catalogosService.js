@@ -57,7 +57,6 @@ const getCatalogosFromIndicador = async (idIndicador) => {
 };
 
 const updateOrCreateCatalogosFromIndicador = async (idIndicador, catalogos) => {
-	console.log(catalogos);
 	try {
 		catalogos.map(async (catalogo, index) => {
 			if (catalogo !== 'default') {
@@ -67,7 +66,6 @@ const updateOrCreateCatalogosFromIndicador = async (idIndicador, catalogos) => {
 						idCatalogoDetail: catalogo.id
 					}
 				});
-				console.log(catalogExists);
 				if (catalogExists) {
 					await CatalogoDetailIndicador.update({
 						idIndicador: idIndicador,

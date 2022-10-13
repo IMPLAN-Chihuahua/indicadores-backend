@@ -353,7 +353,7 @@ router.patch(
     verifyUserHasRoles(['ADMIN']),
     paramValidationRules(),
     validate,
-    editUserStatus
+    editUserStatus,
 );
 
 
