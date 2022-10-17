@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-syntax */
-const { UsuarioIndicador, Usuario, Indicador, Sequelize } = require('../models');
+const { UsuarioIndicador, Usuario, Indicador, sequelize } = require('../models');
 
-const { Op } = Sequelize;
+const { Op } = sequelize;
 
 const areConnected = async (idUsuario, idIndicador) => {
   try {
@@ -46,6 +46,7 @@ const areConnected = async (idUsuario, idIndicador) => {
 
 const createRelation = async (usuarios, indicadores, options) => {
   const relations = [];
+
   for (const u of usuarios) {
     for (const i of indicadores) {
       relations.push({
@@ -63,7 +64,40 @@ const createRelation = async (usuarios, indicadores, options) => {
   }
 };
 
+const getUsuariosIndicadores = async (page, perPage, order, sortBy) => {
+  try {
+    const result = await UsuarioIndicador.findAndCountAll({
+      include: [
+        {
+          model: Indicador,
+          required: true,
+          attributes: ['owner'],
+        },
+      ],
+      attributes: [
+        'indicador.updatedAt',
+        'indicador.id',
+        'indicador.nombre',
+      ],
+      group: [
+        'indicador.id',
+        'indicador.nombre',
+        'indicador.owner',
+        'indicador.updatedAt',
+      ],
+    });
+    return {
+      total: result.rows,
+      data: result.count,
+    }
+  } catch (err) {
+    throw new Error(`Error al obtener los usuariosIndicadores: ${err.message}`);
+  }
+}
+
+
 module.exports = {
   areConnected,
-  createRelation
+  createRelation,
+  getUsuariosIndicadores
 }
