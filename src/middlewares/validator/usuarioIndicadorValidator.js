@@ -20,8 +20,27 @@ const desdeHastaDateRangeValidationRules = () => [
     }),
 ];
 
+const filterRelationValidationRules = () => [
+    query('searchQuery')
+        .optional()
+];
+
+const sortValidationRules = () => [
+    query('sort')
+        .optional()
+        .isIn(['id', 'idUsuario', 'idIndicador', 'desde', 'hasta'])
+        .withMessage('sort must be id, idUsuario, idIndicador, desde, hasta'),
+    query('order')
+        .optional()
+        .toUpperCase()
+        .isIn(['ASC', 'DESC'])
+        .withMessage('order must be asc or desc'),
+]
+
 module.exports = {
     indicadorAssignUsuarioValidationRules,
     usuarioAssignIndicadorValidationRules,
     desdeHastaDateRangeValidationRules,
+    filterRelationValidationRules,
+    sortValidationRules
 }
