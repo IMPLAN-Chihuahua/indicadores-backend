@@ -29,7 +29,7 @@ module.exports = {
         apellidoPaterno: firstName,
         apellidoMaterno: lastName,
         descripcion: faker.lorem.words(5),
-        urlImagen: faker.internet.avatar(),
+        urlImagen: 'https://lorempokemon.fakerapi.it/pokemon/200/280',
         activo: i % 2 === 0 ? 'SI' : 'NO',
         createdAt: new Date(),
         updatedAt: new Date(),
