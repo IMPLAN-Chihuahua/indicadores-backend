@@ -4,7 +4,7 @@ const ProtectedIndicadorService = require('../services/protectedIndicadorService
 const { getUsuariosByBulk } = require('../services/usuariosService');
 
 const createRelationUI = async (req, res, next) => {
-    const { relationIds, desde, hasta, id, relationType } = req.matchedData;
+    const { relationIds, desde, hasta, id, relationType, expires } = req.matchedData;
     const updatedBy = req.sub;
     const createdBy = req.sub;
     try {
@@ -16,7 +16,8 @@ const createRelationUI = async (req, res, next) => {
                     fechaDesde: desde ? desde : null,
                     fechaHasta: hasta ? hasta : null,
                     updatedBy,
-                    createdBy
+                    createdBy,
+                    expires
                 });
         } else if (relationType === 'indicadores') {
             await UsuarioIndicadorService.createRelation(
@@ -26,7 +27,8 @@ const createRelationUI = async (req, res, next) => {
                     fechaDesde: desde ? desde : null,
                     fechaHasta: hasta ? hasta : null,
                     updatedBy,
-                    createdBy
+                    createdBy,
+                    expires
                 });
         }
         return res.sendStatus(201);
@@ -52,7 +54,6 @@ const getIndicadoresRelations = async (req, res, next) => {
         const { usuarios } = await getRelationInformation(data);
 
         const indicadorData = data.map(indicador => {
-            console.log(indicador);
             const owner = usuarios.find(usuario => usuario.id === indicador.owner);
 
             return {
