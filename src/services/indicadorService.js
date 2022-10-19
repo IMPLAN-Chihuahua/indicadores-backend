@@ -238,13 +238,16 @@ const createIndicador = async (indicador) => {
       });
     }
 
-    createRelation([indicador.owner], [created.id], {
+    createRelation(
+      [indicador.owner], [created.id], {
       fechaDesde: new Date(),
       fechaHasta: new Date(),
       updatedBy: indicador.updatedBy,
       createdBy: indicador.createdBy,
       expires: 'NO'
-    })
+    }
+
+    )
 
     await t.commit();
     return created;

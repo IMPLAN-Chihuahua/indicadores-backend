@@ -3,22 +3,15 @@ const { check, validationResult, query, param, matchedData, body } = require('ex
 
 const indicadorAssignUsuarioValidationRules = () => [
     body('usuarios.*').isInt().toInt(),
-    body(['desde', 'hasta']).isISO8601()
+    body(['desde', 'hasta'])
+        .optional()
 ];
 
-const usuarioAssignIndicadorValidationRules = () => [
-    body('indicadores.*').isInt().toInt(),
-    body(['desde', 'hasta']).isISO8601()
+const relationAssignValidationRules = () => [
+    body('relationIds.*').isInt().toInt(),
+    body(['desde', 'hasta'])
+        .optional()
 ]
-
-const desdeHastaDateRangeValidationRules = () => [
-    check('hasta').custom((value, { req }) => {
-        if (new Date(value) < new Date(req.body.desde)) {
-            throw new Error("Fecha 'hasta' debe ser mayor a fecha 'desde'")
-        }
-        return true;
-    }),
-];
 
 const filterRelationValidationRules = () => [
     query('searchQuery')
@@ -37,10 +30,21 @@ const sortValidationRules = () => [
         .withMessage('order must be asc or desc'),
 ]
 
+const relationTypeValidationRules = () => [
+    query('id')
+        .exists()
+        .isInt().toInt(),
+
+    query('relationType')
+        .optional()
+        .isIn(['usuarios', 'indicadores'])
+        .withMessage('relationType must be usuarios or indicadores')
+]
+
 module.exports = {
+    relationAssignValidationRules,
     indicadorAssignUsuarioValidationRules,
-    usuarioAssignIndicadorValidationRules,
-    desdeHastaDateRangeValidationRules,
     filterRelationValidationRules,
-    sortValidationRules
+    sortValidationRules,
+    relationTypeValidationRules
 }

@@ -136,7 +136,6 @@ const updateIndicador = async (req, res, next) => {
 
 const updateIndicadorStatus = async (req, res, next) => {
   const { idIndicador } = req.matchedData;
-
   try {
     const updatedIndicador = await IndicadorService.updateIndicadorStatus(idIndicador);
     if (updatedIndicador) {
@@ -148,27 +147,6 @@ const updateIndicadorStatus = async (req, res, next) => {
   }
 };
 
-const setUsuariosToIndicador = async (req, res, next) => {
-  const { idIndicador, usuarios, desde, hasta } = req.matchedData;
-  const updatedBy = req.sub;
-  const createdBy = req.sub;
-
-  try {
-    await createRelation(
-      [...usuarios],
-      [idIndicador],
-      {
-        fechaDesde: desde,
-        fechaHasta: hasta,
-        updatedBy,
-        createdBy
-      }
-    )
-    return res.sendStatus(201);
-  } catch (err) {
-    next(err)
-  }
-}
 
 const getUsersFromIndicador = async (req, res, next) => {
   const { idIndicador } = req.params;
@@ -188,6 +166,5 @@ module.exports = {
   createIndicador,
   updateIndicador,
   updateIndicadorStatus,
-  setUsuariosToIndicador,
   getUsersFromIndicador
 };

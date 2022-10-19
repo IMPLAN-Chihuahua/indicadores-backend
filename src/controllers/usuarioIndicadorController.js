@@ -1,42 +1,47 @@
 const stream = require('stream');
 const UsuarioIndicadorService = require('../services/usuarioIndicadorService');
+const ProtectedIndicadorService = require('../services/protectedIndicadorService');
 const { getUsuariosByBulk } = require('../services/usuariosService');
 
-const createRelation = async (req, res, next) => {
-    const { idIndicador, idUsuario, usuarios, desde, hasta, indicadores } = req.matchedData;
-
+const createRelationUI = async (req, res, next) => {
+    const { relationIds, desde, hasta, id, relationType } = req.matchedData;
     const updatedBy = req.sub;
     const createdBy = req.sub;
-
     try {
-        if (idIndicador) {
-            await createRelation(
-                [...usuarios],
-                [idIndicador],
+        if (relationType === 'usuarios') {
+            await UsuarioIndicadorService.createRelation(
+                [...relationIds],
+                [id],
                 {
-                    fechaDesde: desde,
-                    fechaHasta: hasta,
+                    fechaDesde: desde ? desde : null,
+                    fechaHasta: hasta ? hasta : null,
                     updatedBy,
                     createdBy
                 });
-            return res.sendStatus(201);
-        } else if (idUsuario) {
-            await createRelation(
-                [idUsuario],
-                [...indicadores],
+        } else if (relationType === 'indicadores') {
+            await UsuarioIndicadorService.createRelation(
+                [id],
+                [...relationIds],
                 {
-                    fechaDesde: desde,
-                    fechaHasta: hasta,
-                    createdBy,
-                    updatedBy
+                    fechaDesde: desde ? desde : null,
+                    fechaHasta: hasta ? hasta : null,
+                    updatedBy,
+                    createdBy
                 });
-            return res.sendStatus(201);
         }
+        return res.sendStatus(201);
 
     } catch (err) {
         next(err)
     }
 }
+
+const getRelationInformation = async (data) => {
+    const ownersIds = [...new Set(data.map(indicador => indicador.owner))];
+    const { usuarios } = await getUsuariosByBulk(ownersIds);
+    return { usuarios };
+}
+
 
 const getIndicadoresRelations = async (req, res, next) => {
     const { page, perPage, order, sortBy } = req.matchedData;
@@ -44,27 +49,40 @@ const getIndicadoresRelations = async (req, res, next) => {
     try {
         const { data } = await UsuarioIndicadorService.getUsuariosIndicadores(page, perPage, order, sortBy);
 
-        // Iterate through data and retrieve only their id. If the ID repeats, ommitting repeated values
-        const ownersIds = [...new Set(data.map(indicador => indicador.owner))];
+        const { usuarios } = await getRelationInformation(data);
 
-        const { usuarios } = await getUsuariosByBulk(ownersIds);
-
-        // Generate a new array with the data and the owner's name
-        const dataWithOwners = data.map(indicador => {
+        const indicadorData = data.map(indicador => {
+            console.log(indicador);
             const owner = usuarios.find(usuario => usuario.id === indicador.owner);
+
             return {
                 ...indicador,
                 owner: owner.nombres + ' ' + owner.apellidoPaterno
             }
+
         });
 
-        return res.status(200).json({ data: dataWithOwners });
+        return res.status(200).json({ data: indicadorData });
+    } catch (err) {
+        next(err);
+    }
+}
+
+const getRelationUsers = async (req, res, next) => {
+    const { idIndicador } = req.matchedData;
+    const attributes = ['nombre']
+    try {
+        const { data, total } = await UsuarioIndicadorService.getRelationUsers(idIndicador);
+        const { nombre } = await ProtectedIndicadorService.getIndicador(idIndicador, attributes);
+
+        return res.status(200).json({ data, total, nombre });
     } catch (err) {
         next(err);
     }
 }
 
 module.exports = {
-    createRelation,
+    createRelationUI,
     getIndicadoresRelations,
+    getRelationUsers,
 }

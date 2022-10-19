@@ -158,6 +158,7 @@ const getUserFromToken = async (req, res, next) => {
 };
 
 const setIndicadoresToUsuario = async (req, res, next) => {
+
   const { idUser: idUsuario, indicadores, desde, hasta } = req.matchedData;
   const updatedBy = req.sub;
   const createdBy = req.sub;
