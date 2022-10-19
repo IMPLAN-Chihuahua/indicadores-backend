@@ -22,11 +22,6 @@ const {
     validate,
 } = require('../middlewares/validator/generalValidator')
 
-const {
-    usuarioAssignIndicadorValidationRules,
-    desdeHastaDateRangeValidationRules
-} = require('../middlewares/validator/usuarioIndicadorValidator')
-
 /**
  * @swagger
  *   components:
@@ -353,7 +348,7 @@ router.patch(
     verifyUserHasRoles(['ADMIN']),
     paramValidationRules(),
     validate,
-    editUserStatus
+    editUserStatus,
 );
 
 

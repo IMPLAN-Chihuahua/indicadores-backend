@@ -102,6 +102,24 @@ const getUsuarios = async (limit, offset, searchQuery) => {
     }
 };
 
+
+const getUsuariosByBulk = async (ids) => {
+    try {
+        const result = await Usuario.scope('withoutPassword').findAndCountAll({
+            where: {
+                id: {
+                    [Op.in]: ids
+                }
+            }
+        });
+        const usuarios = result.rows;
+        return { usuarios };
+    } catch (err) {
+        throw new Error(`Error al obtener lista de usuarios: ${err.message}`);
+    }
+};
+
+
 const countInactiveUsers = async () => {
     try {
         const inactiveCount = await Usuario.count({ where: { activo: 'NO' } });
@@ -318,4 +336,5 @@ module.exports = {
     isUserActive,
     getUserStatsInfo,
     getUsersFromIndicador,
+    getUsuariosByBulk
 }

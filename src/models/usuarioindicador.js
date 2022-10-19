@@ -43,12 +43,12 @@ module.exports = (sequelize, DataTypes) => {
 
             fechaDesde: {
                 type: DataTypes.DATEONLY,
-                allowNull: false
+                allowNull: true
             },
 
             fechaHasta: {
                 type: DataTypes.DATEONLY,
-                allowNull: false
+                allowNull: true
             },
 
             createdBy: {
