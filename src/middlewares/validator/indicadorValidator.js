@@ -14,7 +14,8 @@ const filterIndicadoresValidationRules = () => [
         }),
     query('tendenciaActual')
         .optional()
-        .isIn(['Ascendente', 'Descendente', 'No aplica']),
+        .toUpperCase()
+        .isIn(['ASCENDENTE', 'DESCENDENTE', 'NO APLICA']),
     query('searchQuery')
         .optional()
 ];
@@ -95,8 +96,8 @@ const updateIndicadorValidationRules = () => [
         .matches(/\d{3}$/),
     body(['activo', 'definicion', 'fuente', 'nombre', 'observaciones', 'owner', 'periodicidad', 'ultimoValorDisponible', 'updatedBy'])
         .optional()
-        .trim().escape(),
-    body(['tendenciaActual', 'tendenciaDeseada'])
+        .trim(),
+    body('tendenciaActual')
         .optional()
         .toUpperCase()
         .isIn(['ASCENDENTE', 'DESCENDENTE']),

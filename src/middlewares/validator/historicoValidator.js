@@ -20,9 +20,9 @@ const createHistoricoValidationRules = () => [
         .exists()
         .withMessage('El id del indicador es obligatorio'),
 
-    check('idUsuario')
-        .exists()
-        .withMessage('El id del usuario es obligatorio'),
+    // check('idUsuario')
+    //     .exists()
+    //     .withMessage('El id del usuario es obligatorio'),
 
     check('anio')
         .exists()
