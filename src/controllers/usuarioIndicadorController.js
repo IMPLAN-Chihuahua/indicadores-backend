@@ -5,8 +5,10 @@ const { getUsuariosByBulk } = require('../services/usuariosService');
 
 const createRelationUI = async (req, res, next) => {
     const { relationIds, desde, hasta, id, relationType, expires } = req.matchedData;
+
     const updatedBy = req.sub;
     const createdBy = req.sub;
+
     try {
         if (relationType === 'usuarios') {
             await UsuarioIndicadorService.createRelation(
