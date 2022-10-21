@@ -18,7 +18,7 @@ aws.config.update({
 const s3 = new aws.S3();
 
 const DESTINATIONS = {
-  MODULOS: 'modulos',
+  MODULOS: 'temas',
   INDICADORES: 'indicadores',
   USUARIOS: 'usuarios',
   MAPAS: 'mapas'
@@ -29,7 +29,7 @@ const generateFileName = (file) => {
 };
 
 const getDestination = (type) => {
-  return true ? `uploads/${type}/` : 'uploads/tmp'
+  return process.env.NODE_ENV === 'development' ? `uploads/${type}/images` : 'uploads/tmp'
 };
 
 const validateFileType = (file, cb) => {
@@ -77,7 +77,14 @@ const getStorage = (destination) => {
 
 const upload = (destination) => {
   return multer({
-    storage: getStorage(destination)
+    storage: getStorage(destination),
+    limits: {
+      fileSize: 1000000,
+      files: 1
+    },
+    fileFilter: (req, file, cb) => {
+      validateFileType(file, cb);
+    },
   }).single('urlImagen');
 };
 
@@ -111,16 +118,16 @@ const generateXLSX = (indicador) => {
         if (field === 'modulo') {
           value = indicador[field].dataValues.temaIndicador;
         } else if (field === 'medida') {
-          value = getFromCatalogos(indicador['catalogos'], UNIDAD_ID).dataValues.nombre;
+          value = getFromCatalogos(indicador['catalogos'], UNIDAD_ID)?.dataValues.nombre || 'NA';
         } else if (field === 'cobertura') {
-          value = getFromCatalogos(indicador['catalogos'], COBERTURA_ID).dataValues.nombre;
+          value = getFromCatalogos(indicador['catalogos'], COBERTURA_ID)?.dataValues.nombre || 'NA';
         } else if (field === 'ecuacion') {
           const formula = indicador?.formula?.dataValues;
           row.getCell(col++).value = formula?.ecuacion || 'NA';
           row.getCell(col++).value = formula?.descripcion || 'NA';
           continue;
         } else if (field === 'variables') {
-          const variables = indicador?.formula?.dataValues.variables || [{}];
+          const variables = indicador?.formula?.dataValues?.variables || [{}];
           for (const v of variables) {
             let innerRow = workSheet.getRow(initialRow++);
             let innerCol = col;
