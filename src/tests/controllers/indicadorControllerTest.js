@@ -275,10 +275,10 @@ describe('v1/indicadores', function () {
                 });
         })
 
-        it('Should return formula and variables of an indicador', function (done) {
+        it.only('Should return formula and variables of an indicador', function (done) {
             const formulaWithVariables = { ...aFormula(1), variables: [aVariable(1), aVariable(2)] }
             const findOneFormula = sinon.fake.resolves({ dataValues: formulaWithVariables });
-            sinon.replace(Formula, 'findOne', findOneFormula);
+            // sinon.replace(Formula, 'findOne', findOneFormula);
             const findOneIndicador = sinon.fake.resolves({ count: 1 });
             sinon.replace(Indicador, 'findOne', findOneIndicador)
             
@@ -286,6 +286,7 @@ describe('v1/indicadores', function () {
                 .get('/api/v1/indicadores/1/formula')
                 .set({ Authorization: `Bearer ${validToken}` })
                 .end((err, res) => {
+                    console.log(res.body.data.variables)
                     expect(findOneFormula.calledOnce, 'formula').to.be.true;
                     expect(findOneIndicador.calledOnce, 'indicador').to.be.true;
                     expect(err).to.be.null;

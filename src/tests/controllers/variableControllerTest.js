@@ -109,7 +109,7 @@ describe('v1/variables', function () {
         .set('Authorization', `Bearer ${validToken}`)
         .end((err, res) => {
           expect(err).to.be.null;
-          expect(res).to.have.status(200);
+          expect(res).to.have.status(204);
           expect(findOneVariable.calledOnce).to.be.true;
           expect(destroyVariable.calledOnce).to.be.true;
           done();

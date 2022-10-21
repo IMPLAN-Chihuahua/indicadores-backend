@@ -4,21 +4,17 @@ const sinon = require('sinon');
 require('dotenv').config();
 chai.use(chaiHttp);
 const { expect } = chai;
-const { app } = require('../../../app');
+const { app, server } = require('../../../app');
 const { generateToken } = require('../../middlewares/auth');
 const { Usuario, Formula, Variable } = require('../../models');
-const { aFormula, aVariable } = require('../../utils/factories');
+const { aVariable } = require('../../utils/factories');
 
 describe('v1/formulas', function () {
-  const SUB_ID = 100;
+  const SUB_ID = 1;
   const validToken = generateToken({ sub: SUB_ID });
   const adminRol = { rolValue: 'ADMIN' };
   const userRol = { rolValue: 'USER' };
   const statusActive = { activo: 'SI' };
-
-  this.afterEach(function () {
-    sinon.restore();
-  });
 
   let usuarioStub;
 
@@ -27,6 +23,15 @@ describe('v1/formulas', function () {
     usuarioStub.onFirstCall().resolves(statusActive);
     usuarioStub.onSecondCall().resolves(adminRol);
   });
+
+  this.afterEach(function () {
+    sinon.restore();
+  });
+
+  this.afterAll(function () {
+    server.close();
+  });
+
 
   describe('PATCH /formulas/:idFormula', function () {
     it('Should update fields of a formula', function (done) {
@@ -91,6 +96,7 @@ describe('v1/formulas', function () {
       sinon.replace(Formula, 'findOne', findOneFormula);
       chai.request(app)
         .post('/api/v1/formulas/1/variables')
+        .set('Authorization', `Bearer ${validToken}`)
         .send(formulaWithVariables)
         .end((err, res) => {
           expect(res).to.have.status(201);
@@ -106,6 +112,7 @@ describe('v1/formulas', function () {
 
       chai.request(app)
         .post('/api/v1/formulas/1/variables')
+        .set('Authorization', `Bearer ${validToken}`)
         .send({ variables: [aVariable()] })
         .end((err, res) => {
           expect(res).to.have.status(404);
@@ -118,6 +125,7 @@ describe('v1/formulas', function () {
       const badVariable = { ...aVariable(), dato: 'not valid', anio: 3000, idUnidad: 'wrong' };
       chai.request(app)
         .post('/api/v1/formulas/8/variables')
+        .set('Authorization', `Bearer ${validToken}`)
         .send({ variables: [badVariable] })
         .end((err, res) => {
           expect(res).to.have.status(422);

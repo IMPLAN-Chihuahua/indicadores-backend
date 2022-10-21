@@ -37,52 +37,17 @@ describe('v1/usuarios', function () {
   });
 
   describe('GET /usuarios', function () {
-    it('Should return a user if current user is admin', function (done) {
-      const findOneFake = sinon.stub(Usuario, 'findOne');
-      findOneFake.onFirstCall().resolves(statusActive);
-      findOneFake.onSecondCall().resolves(adminRol);
-      findOneFake.onThirdCall().resolves(aUser(1));
-      chai.request(app)
-        .get('/api/v1/usuarios/1')
-        .set({ Authorization: `Bearer ${token}` })
-        .end((err, res) => {
-          expect(err).to.be.null;
-          expect(findOneFake.calledThrice).to.be.true;
-          expect(res).have.status(200);
-          expect(res.body).have.be.a("object");
-          done();
-        });
-    });
 
-    it('Should return not content if user is not found', function (done) {
+    it('Should return not found if user does not exist', function (done) {
       const findOneFake = sinon.stub(Usuario, 'findOne');
-      findOneFake.onFirstCall().resolves(statusActive);
-      findOneFake.onSecondCall().resolves(adminRol);
-      findOneFake.onThirdCall().resolves(null);
+      findOneFake.onFirstCall().resolves({ count: 0 });
       chai.request(app)
         .get('/api/v1/usuarios/1')
         .set({ Authorization: `Bearer ${token}` })
         .end((err, res) => {
           expect(err).to.be.null;
-          expect(findOneFake.calledThrice).to.be.true;
-          expect(res).have.status(204);
-          expect(res.body).have.be.a("object");
-          done();
-        });
-    });
-
-    it('Should not to return a user because call to db fails', function (done) {
-      const findOneFake = sinon.stub(Usuario, 'findOne');
-      findOneFake.onFirstCall().resolves(statusActive);
-      findOneFake.onSecondCall().resolves(adminRol);
-      findOneFake.onThirdCall().rejects(new Error('Failed to connect to DB'));
-      chai.request(app)
-        .get('/api/v1/usuarios/1')
-        .set({ Authorization: `Bearer ${token}` })
-        .end((err, res) => {
-          expect(err).to.be.null;
-          expect(findOneFake.calledThrice).to.be.true;
-          expect(res).have.status(500);
+          expect(findOneFake.calledOnce).to.be.true;
+          expect(res).have.status(404);
           done();
         });
     });
@@ -196,10 +161,6 @@ describe('v1/usuarios', function () {
 
     it('Should fail to create a user because avatar image is too big', function (done) {
       const userFake = aUser(1);
-      const findOneFake = sinon.stub(Usuario, 'findOne');
-      findOneFake.onFirstCall().resolves(statusActive);
-      findOneFake.onSecondCall().resolves(adminRol);
-
       chai.request(app)
         .post('/api/v1/usuarios')
         .set({ Authorization: `Bearer ${token}` })
@@ -216,16 +177,12 @@ describe('v1/usuarios', function () {
           expect(err).to.be.null;
           expect(res).have.status(413);
           expect(res.error.text).to.be.equal('LIMIT_FILE_SIZE');
-          expect(findOneFake.calledTwice).to.be.true;
           done();
         });
     });
 
     it('Should fail to create a user because avatar has an incorrect format', function (done) {
       const userFake = aUser(1);
-      const findOneFake = sinon.stub(Usuario, 'findOne');
-      findOneFake.onFirstCall().resolves(statusActive);
-      findOneFake.onSecondCall().resolves(adminRol);
       chai.request(app)
         .post('/api/v1/usuarios')
         .set({ Authorization: `Bearer ${token}` })
@@ -242,7 +199,6 @@ describe('v1/usuarios', function () {
           expect(res.error.text).to.be.equal('FILE_TYPE_NOT_ALLOWED');
           expect(err).to.be.null;
           expect(res).have.status(422);
-          expect(findOneFake.calledTwice).to.be.true;
           done();
         });
     });
@@ -287,104 +243,6 @@ describe('v1/usuarios', function () {
           done();
         });
     });
-  });
-
-  describe('POST /usuarios/:idUsuario/indicadores', function () {
-    const USUARIO_ID = 1;
-    const DESDE = new Date();
-    const HASTA = addDays(new Date(), 2);
-    const validPayload = {
-      indicadores: [1, 2, 3, 4],
-      desde: DESDE,
-      hasta: HASTA
-    };
-
-    const invalidIds = {
-      indicadores: ['not', 'valid'],
-      desde: DESDE,
-      hasta: HASTA
-    };
-
-    // desde (start date) is greater than hasta (end date) 
-    const invalidDates = {
-      indicadores: [1, 2, 3],
-      desde: HASTA,
-      hasta: DESDE
-    }
-
-    let findOneFake;
-
-    this.beforeEach(function () {
-      findOneFake = sinon.stub(Usuario, 'findOne');
-      findOneFake.onFirstCall().resolves(statusActive);
-      findOneFake.onSecondCall().resolves(adminRol);
-    });
-
-    this.afterEach(function () {
-      sinon.restore();
-    });
-
-    it('Should assign indicadores to an usuario', function (done) {
-      const bulkCreateFake = sinon.fake.resolves();
-      sinon.replace(UsuarioIndicador, 'bulkCreate', bulkCreateFake);
-      chai.request(app)
-        .post(`/api/v1/usuarios/${USUARIO_ID}/indicadores`)
-        .set({ Authorization: `Bearer ${token}` })
-        .send({ ...validPayload })
-        .end((err, res) => {
-          expect(findOneFake.calledTwice).to.be.true;
-          expect(bulkCreateFake.cal)
-          expect(res).to.have.status(201);
-          done();
-        });
-    });
-
-    it('Should not assign indicadores due to invalid indicadores id', function (done) {
-      chai.request(app)
-        .post(`/api/v1/usuarios/${USUARIO_ID}/indicadores`)
-        .set({ Authorization: `Bearer ${token}` })
-        .send({ ...invalidIds })
-        .end((err, res) => {
-          expect(findOneFake.calledTwice).to.be.true;
-          expect(res).to.have.status(422);
-          expect(res.body.errors).to.have.lengthOf(2)
-          done();
-        })
-
-    });
-
-    it('Should not assign indicadores due to invalid dates', function (done) {
-      chai.request(app)
-        .post(`/api/v1/usuarios/${USUARIO_ID}/indicadores`)
-        .set({ Authorization: `Bearer ${token}` })
-        .send({ ...invalidDates })
-        .end((err, res) => {
-          expect(res).to.have.status(422);
-          expect(res.body.errors).to.have.lengthOf(1);
-          expect(findOneFake.calledTwice).to.be.true;
-          done();
-        });
-
-    });
-
-    it('Should fail due to lack of authorization (user rol)', function (done) {
-      sinon.restore();
-      const findOneUsuarioFake = sinon.stub(Usuario, 'findOne');
-      findOneUsuarioFake.onFirstCall().resolves(statusActive);
-      findOneUsuarioFake.onSecondCall().resolves(userRol);
-
-      chai.request(app)
-        .post(`/api/v1/usuarios/${USUARIO_ID}/indicadores`)
-        .set({ Authorization: `Bearer ${token}` })
-        .send({ ...validPayload })
-        .end((err, res) => {
-          expect(findOneUsuarioFake.calledTwice).to.be.true;
-          expect(res).to.have.status(403);
-          expect(res.error.text).to.be.equals('No tiene permiso a realizar acciones en este recurso');
-          done();
-        })
-    });
-
   });
 
   describe('PATCH /usuarios/:idUsuario', function () {
