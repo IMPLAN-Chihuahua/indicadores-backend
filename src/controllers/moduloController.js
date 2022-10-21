@@ -21,7 +21,12 @@ const createModulo = async (req, res, next) => {
     descripcion,
     color,
   } = req.matchedData;
-  const urlImagen = req.file.location;
+  let urlImagen = '';
+  if (process.env.NODE_ENV === 'production') {
+    urlImagen = req.file.location;
+  } else if (req.file) {
+    urlImagen = `http://${req.headers.host}/${req.file.path}`;
+  }
   try {
     if (await moduloService.isTemaIndicadorAlreadyInUse(temaIndicador)) {
       return res.status(409).json({

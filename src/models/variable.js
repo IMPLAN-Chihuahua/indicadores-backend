@@ -6,6 +6,7 @@ module.exports = (sequelize, DataTypes) => {
   class Variable extends Model {
     static associate(models) {
       this.belongsTo(models.Formula, { foreignKey: 'idFormula' });
+      this.belongsTo(models.CatalogoDetail, { foreignKey: 'idUnidad' });
     }
   };
   Variable.init({
@@ -47,7 +48,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: 0
     }
-    
+
   }, {
     sequelize,
     name: {
@@ -56,7 +57,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     modelName: 'Variable',
     timestamps: false,
-    indexes : [
+    indexes: [
       {
         unique: false,
         fields: ['idUnidad']

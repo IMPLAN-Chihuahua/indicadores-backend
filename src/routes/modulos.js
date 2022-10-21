@@ -25,6 +25,7 @@ const { moduloExists } = require('../middlewares/verifyIdModulo');
 const { verifyJWT, verifyUserIsActive, verifyUserHasRoles } = require('../middlewares/auth');
 const { uploadImage } = require('../middlewares/fileUpload');
 const { determinePathway, SITE_PATH } = require('../middlewares/determinePathway');
+const { exists } = require('../middlewares/resourceExists');
 
 /**
  * @swagger
@@ -201,7 +202,7 @@ indicadorRouter.route('/')
         filterIndicadoresValidationRules(),
         sortValidationRules(),
         validate,
-        moduloExists,
+        exists('idModulo', 'Modulo'),
         determinePathway(SITE_PATH),
         getIndicadores
     );

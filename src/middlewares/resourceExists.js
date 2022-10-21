@@ -1,6 +1,6 @@
 const models = require('../models');
 
-const verifyResourceExists = (pkName, modelName) => async (req, res, next) => {
+const exists = (pkName, modelName) => async (req, res, next) => {
   try {
     const id = req.matchedData[pkName];
     const result = await models[modelName].findOne({
@@ -23,4 +23,4 @@ const verifyResourceExists = (pkName, modelName) => async (req, res, next) => {
   }
 };
 
-module.exports = { verifyResourceExists }
+module.exports = { exists }

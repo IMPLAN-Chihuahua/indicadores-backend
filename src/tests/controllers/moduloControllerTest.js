@@ -70,26 +70,8 @@ describe('/modulos', function () {
         })
     })
 
-    it('Should return an error if getAllModulos fails to retrieve data', function (done) {
-      const findAndCountAllFake = sinon.fake.throws('Fail to fetch modulos');
-      const findOneFake = sinon.fake.resolves(aUser(1));
-
-      sinon.replace(Usuario, 'findOne', findOneFake);
-      sinon.replace(Modulo, 'findAndCountAll', findAndCountAllFake);
-      chai.request(app)
-        .get('/api/v1/me/modulos')
-        .set('Authorization', `Bearer ${token}`)
-        .end(function (err, res) {
-          expect(findAndCountAllFake.calledOnce).to.be.true;
-          expect(findOneFake.calledOnce).to.be.true;
-          expect(res).to.have.status(500);
-          expect(res.error.text).to.be.equals('Error al obtener todos los modulos Fail to fetch modulos')
-          done();
-        });
-    });
-
     it('Should return status 500 if any error is found', function (done) {
-      const findAllFake = sinon.fake.throws('Error');
+      const findAllFake = sinon.fake.rejects(new Error('Testing error'));
       sinon.replace(Modulo, 'findAll', findAllFake);
       chai.request(app)
         .get('/api/v1/modulos')
@@ -171,7 +153,7 @@ describe('/modulos', function () {
     })
   });
 
-  describe('POST', function () {
+  describe('POST /modulos', function () {
 
     this.afterEach(function () {
       sinon.restore();
@@ -309,7 +291,7 @@ describe('/modulos', function () {
         });
     });
 
-    it('Should not create a new modulo due to repeated temaIndicador', function (done) {
+    it('Should not create a new modulo because tema is already in use', function (done) {
       const moduloFake = aModulo(1).dataValues;
       const findOneFake = sinon.fake.resolves(false);
       sinon.replace(Modulo, 'findOne', findOneFake);
@@ -321,26 +303,11 @@ describe('/modulos', function () {
           expect(err).to.be.null;
           expect(usuarioStub.calledTwice).to.be.true;
           expect(findOneFake.calledOnce).to.be.true;
-          expect(res).to.have.status(400);
+          expect(res).to.have.status(409);
           expect(res.body.message).to.be.equal(`El tema indicador ${moduloFake.temaIndicador} ya está en uso`)
           done();
         });
     });
-
-    it('Should not create a new modulo due to wrong temaIndicador attribute', function (done) {
-      const invalidModulo = aModulo(1).dataValues;
-      invalidModulo.temaIndicador = '';
-      chai.request(app)
-        .post('/api/v1/modulos')
-        .set({ Authorization: `Bearer ${token}` })
-        .send(invalidModulo)
-        .end((err, res) => {
-          expect(err).to.be.null;
-          expect(usuarioStub.calledTwice).to.be.true;
-          expect(res).to.have.status(422);
-          done();
-        });
-    })
 
     it('Should not create a new modulo due to wrong codigo attribute', function (done) {
       const moduloFake = { ...aModulo(1), codigo: '1' };
@@ -392,6 +359,13 @@ describe('/modulos', function () {
   });
 
   describe('PUT', function () {
+    let usuarioStub;
+    this.beforeEach(function () {
+      usuarioStub = sinon.stub(Usuario, 'findOne');
+      usuarioStub.onFirstCall().resolves(statusActive);
+      usuarioStub.onSecondCall().resolves(adminRol);
+    });
+
     this.afterEach(function () {
       sinon.restore();
     });
@@ -447,6 +421,13 @@ describe('/modulos', function () {
   });
 
   describe('PATCH', function () {
+    let usuarioStub;
+    this.beforeEach(function () {
+      usuarioStub = sinon.stub(Usuario, 'findOne');
+      usuarioStub.onFirstCall().resolves(statusActive);
+      usuarioStub.onSecondCall().resolves(adminRol);
+    });
+
     this.afterEach(function () {
       sinon.restore();
     });

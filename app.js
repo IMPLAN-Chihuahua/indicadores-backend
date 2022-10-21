@@ -83,12 +83,14 @@ app.use('/api/v1/catalogos', require('./src/routes/catalogos'));
 app.use('/api/v1/documentos', require('./src/routes/documentos'));
 app.use('/api/v1/me', require('./src/routes/me'));
 app.use('/api/v1/historicos', require('./src/routes/historicos'));
+app.use('/api/v1/formulas', require('./src/routes/formulas'));
+app.use('/api/v1/variables', require('./src/routes/variables'));
 app.use('/api/v1/relation', require('./src/routes/usuariosIndicadores'));
 
 app.use('/images', express.static(path.join(__dirname, 'uploads', 'images')));
 app.use('/images/indicador', express.static(path.join(__dirname, 'uploads', 'indicadores/images')));
-app.use('/images/temaInteres', express.static(path.join(__dirname, 'uploads', 'modules/images')));
-app.use('/images/user', express.static(path.join(__dirname, 'uploads', 'users/images')));
+app.use('/images/temas', express.static(path.join(__dirname, 'uploads', 'modules/images')));
+app.use('/usuarios/images', express.static(path.join(__dirname, 'uploads', 'usuarios/images')));
 app.use('/uploads/mapas', express.static(path.join(__dirname, 'uploads', 'mapas')));
 app.use(logErrors)
 

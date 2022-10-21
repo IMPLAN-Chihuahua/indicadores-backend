@@ -45,7 +45,12 @@ const createUser = async (req, res, next) => {
     activo,
     idRol
   } = req.matchedData;
-  const avatar = `images/${req.file ? req.file.originalName : 'avatar.jpg'}`;
+  let urlImagen = '';
+  if (process.env.NODE_ENV === 'production') {
+    urlImagen = req.file.location;
+  } else if (req.file) {
+    urlImagen = `http://${req.headers.host}/usuarios/images/${req.file.originalname}`;
+  }
   try {
     if (await isCorreoAlreadyInUse(correo)) {
       return res.status(409).json({ status: 409, message: 'Email is already in use' })
@@ -58,7 +63,7 @@ const createUser = async (req, res, next) => {
       apellidoPaterno,
       apellidoMaterno,
       activo,
-      avatar,
+      urlImagen,
       idRol
     });
     return res.status(201).json({ data: savedUser });

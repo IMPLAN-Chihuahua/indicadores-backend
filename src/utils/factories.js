@@ -121,7 +121,7 @@ const aModulo = (id) => {
 		observaciones: faker.lorem.words(20),
 		activo: faker.datatype.boolean() ? 'SI' : 'NO',
 		urlImagen: faker.image.imageUrl(),
-		color: faker.commerce.color(),
+		color: '#ffffff',
 		descripcion: faker.lorem.paragraph(),
 	});
 	modulo.validate();

@@ -6,8 +6,7 @@ const { getUsers,
     createUser,
     getUserFromId,
     editUser,
-    editUserStatus,
-    setIndicadoresToUsuario } = require('../controllers/usuarioController');
+    editUserStatus } = require('../controllers/usuarioController');
 const { verifyJWT, verifyUserHasRoles, verifyUserIsActive } = require('../middlewares/auth');
 const { uploadImage } = require('../middlewares/fileUpload');
 
@@ -21,6 +20,8 @@ const {
     paramValidationRules,
     validate,
 } = require('../middlewares/validator/generalValidator')
+const { exists } = require('../middlewares/resourceExists');
+const { DESTINATIONS } = require('../services/fileService');
 
 /**
  * @swagger
@@ -204,12 +205,12 @@ router.get(
  */
 router.post(
     '/',
+    uploadImage(DESTINATIONS.USUARIOS),
+    registerValidationRules(),
+    validate,
     verifyJWT,
     verifyUserIsActive,
     verifyUserHasRoles(['ADMIN']),
-    uploadImage('usuarios'),
-    registerValidationRules(),
-    validate,
     createUser
 );
 
@@ -251,6 +252,7 @@ router.get(
     '/:idUser',
     paramValidationRules(),
     validate,
+    exists('idUser', 'Usuario'),
     getUserFromId
 );
 

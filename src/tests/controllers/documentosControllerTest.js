@@ -5,7 +5,7 @@ const expect = chai.expect;
 const { Indicador } = require('../../models');
 const { app, server } = require('../../../app');
 const sinon = require('sinon');
-const { anIndicador } = require('../../utils/factories');
+const { anIndicador, aModulo } = require('../../utils/factories');
 
 describe('v1/documentos', function () {
   const dummyIndicador = anIndicador(1);
@@ -18,7 +18,7 @@ describe('v1/documentos', function () {
   });
 
   it('Should return an excel document', function (done) {
-    const findOneFake = sinon.fake.resolves(dummyIndicador);
+    const findOneFake = sinon.fake.resolves({ dataValues: { ...dummyIndicador, modulo: aModulo(1) } });
     sinon.replace(Indicador, 'findOne', findOneFake);
     chai.request(app)
       .get('/api/v1/documentos/1/xlsx')
