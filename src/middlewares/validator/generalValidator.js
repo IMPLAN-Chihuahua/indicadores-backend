@@ -32,12 +32,11 @@ const validYear = (year) => year <= new Date().getFullYear();
 const errorFormatter = ({ location, msg, param: paramFormatter }) => `${location}[${paramFormatter}]: ${msg}`
 
 const validate = (req, res, next) => {
-  const errors = validationResult(req).formatWith(errorFormatter);
-
-  if (errors.isEmpty()) {
-    req.matchedData = matchedData(req);
-    return next();
-  }
+    const errors = validationResult(req).formatWith(errorFormatter);
+    if (errors.isEmpty()) {
+        req.matchedData = matchedData(req);
+        return next();
+    }
 
   return res.status(422).json({
     status: 422,

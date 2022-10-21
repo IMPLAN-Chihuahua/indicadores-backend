@@ -6,8 +6,7 @@ const { getUsers,
     createUser,
     getUserFromId,
     editUser,
-    editUserStatus,
-    setIndicadoresToUsuario } = require('../controllers/usuarioController');
+    editUserStatus } = require('../controllers/usuarioController');
 const { verifyJWT, verifyUserHasRoles, verifyUserIsActive } = require('../middlewares/auth');
 const { uploadImage } = require('../middlewares/fileUpload');
 
@@ -21,11 +20,6 @@ const {
     paramValidationRules,
     validate,
 } = require('../middlewares/validator/generalValidator')
-
-const {
-    usuarioAssignIndicadorValidationRules,
-    desdeHastaDateRangeValidationRules
-} = require('../middlewares/validator/usuarioIndicadorValidator');
 const { exists } = require('../middlewares/resourceExists');
 const { DESTINATIONS } = require('../services/fileService');
 
@@ -356,7 +350,7 @@ router.patch(
     verifyUserHasRoles(['ADMIN']),
     paramValidationRules(),
     validate,
-    editUserStatus
+    editUserStatus,
 );
 
 

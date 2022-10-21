@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-syntax */
-const { UsuarioIndicador, Usuario, Indicador, Sequelize } = require('../models');
+const { UsuarioIndicador, Usuario, Indicador, sequelize } = require('../models');
 
-const { Op } = Sequelize;
+const { Op } = sequelize;
 
 const areConnected = async (idUsuario, idIndicador) => {
   try {
@@ -63,7 +63,74 @@ const createRelation = async (usuarios, indicadores, options) => {
   }
 };
 
+const getUsuariosIndicadores = async (page, perPage, order, sortBy) => {
+  try {
+    const result = await UsuarioIndicador.findAndCountAll({
+      include: [
+        {
+          model: Indicador,
+          required: true,
+          attributes: ['owner'],
+        },
+      ],
+      attributes: [
+        'indicador.updatedAt',
+        'indicador.id',
+        'indicador.nombre',
+      ],
+      group: [
+        'indicador.id',
+        'indicador.nombre',
+        'indicador.owner',
+        'indicador.updatedAt',
+      ],
+    });
+    return {
+      total: result.rows,
+      data: result.count,
+    }
+  } catch (err) {
+    throw new Error(`Error al obtener los usuariosIndicadores: ${err.message}`);
+  }
+}
+
+const getRelationUsers = async (idIndicador) => {
+  try {
+    const result = await UsuarioIndicador.findAndCountAll({
+      where: {
+        idIndicador,
+      },
+      include: [
+        {
+          model: Usuario,
+          required: true,
+          attributes: ['nombres', 'apellidoPaterno', 'apellidoMaterno'],
+        },
+        {
+          model: Indicador,
+          required: true,
+          attributes: [],
+        }
+      ],
+      attributes: [
+        'id', 'idUsuario', 'fechaDesde', 'fechaHasta', 'expires', 'createdBy',
+        [sequelize.literal('"indicador"."nombre"'), "indicador"],
+      ],
+    });
+
+    return {
+      data: result.rows,
+      total: result.count,
+    };
+
+  } catch (err) {
+    throw new Error(`Error al obtener los usuariosIndicadores: ${err.message}`);
+  }
+}
+
 module.exports = {
   areConnected,
-  createRelation
+  createRelation,
+  getUsuariosIndicadores,
+  getRelationUsers
 }
