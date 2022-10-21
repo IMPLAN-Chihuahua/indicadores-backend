@@ -55,7 +55,7 @@ const {
  *               $ref: '#/components/schemas/BasicError'
  *             example:
  *               status: 403
- *               message: User has no access
+ *               message: User has no access or an invalid token was provided
  *       NotFound:
  *         description: The specified resource was not found.
  *         content:
@@ -64,7 +64,7 @@ const {
  *               $ref: '#/components/schemas/BasicError'
  *             example:
  *               status: 404
- *               message: Resource was not found
+ *               message: Resource with id was not found
  *       UnprocessableEntity:
  *         description: Validation failed.
  *         content:
