@@ -36,15 +36,7 @@ const getUsers = async (req, res, next) => {
 }
 
 const createUser = async (req, res, next) => {
-  const {
-    correo,
-    clave,
-    nombres,
-    apellidoPaterno,
-    apellidoMaterno,
-    activo,
-    idRol
-  } = req.matchedData;
+  const { clave, ...values } = req.matchedData;
   let urlImagen = '';
   if (process.env.NODE_ENV === 'production') {
     urlImagen = req.file.location;
@@ -52,19 +44,14 @@ const createUser = async (req, res, next) => {
     urlImagen = `http://${req.headers.host}/usuarios/images/${req.file.originalname}`;
   }
   try {
-    if (await isCorreoAlreadyInUse(correo)) {
+    if (await isCorreoAlreadyInUse(values.correo)) {
       return res.status(409).json({ status: 409, message: 'Email is already in use' })
     }
     const hashedClave = await hashClave(clave);
     const savedUser = await addUsuario({
-      correo,
+      ...values,
       clave: hashedClave,
-      nombres,
-      apellidoPaterno,
-      apellidoMaterno,
-      activo,
       urlImagen,
-      idRol
     });
     return res.status(201).json({ data: savedUser });
   } catch (err) {
