@@ -1,4 +1,4 @@
-const { check, validationResult, query, param, matchedData, body } = require('express-validator');
+const { body } = require('express-validator');
 
 const registerValidationRules = () => [
     body('correo')
@@ -39,47 +39,58 @@ const registerValidationRules = () => [
 ];
 
 const updateValidationRules = () => [
-    check('correo')
+    body('correo')
         .optional()
         .isEmail()
         .withMessage('El correo tiene un formato incorrecto'),
 
-    check('clave')
+    body('clave')
         .optional()
         .isLength({ min: 8 })
         .withMessage('La clave debe tener al menos 8 caracteres'),
 
-    check('nombres')
+    body('nombres')
         .optional()
         .isAlpha('es-ES', { ignore: '\s' })
         .withMessage('nombre invalido'),
 
-    check('apellidoPaterno')
+    body('apellidoPaterno')
         .optional()
         .isAlpha('es-ES', { ignore: '\s' })
         .withMessage('apellido paterno invalido'),
 
-    check('apellidoMaterno')
+    body('apellidoMaterno')
         .optional()
         .isAlpha('es-ES', { ignore: '\s' })
         .withMessage('apellido materno invalido'),
 
-    check('activo')
+    body('activo')
         .optional()
         .toUpperCase()
         .isIn(['SI', 'NO'])
         .withMessage('estado invalido'),
 
-    check('descripcion')
+    body('descripcion')
         .optional()
         .isLength({ min: 1 })
         .withMessage('descripcion debe tener al menos 1 caracter'),
+];
 
+const updateProfileValidationRules = () => [
+    body('correo')
+        .optional()
+        .isEmail()
+        .withMessage('El correo tiene un formato incorrecto'),
+
+    body(['nombres', 'apellidoPaterno', 'apellidoMaterno',  'descripcion'])
+        .optional()
+        .isAlpha('es-ES', { ignore: '\s' })
+        .withMessage('Valor invalido'),
 ];
 
 
 module.exports = {
     registerValidationRules,
     updateValidationRules,
-
+    updateProfileValidationRules
 }
