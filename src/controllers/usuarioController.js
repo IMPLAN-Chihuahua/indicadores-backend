@@ -1,4 +1,3 @@
-const { es } = require('faker/lib/locales');
 const { hashClave } = require('../middlewares/auth');
 const { createRelation } = require('../services/usuarioIndicadorService');
 const { addUsuario,
@@ -36,15 +35,7 @@ const getUsers = async (req, res, next) => {
 }
 
 const createUser = async (req, res, next) => {
-  const {
-    correo,
-    clave,
-    nombres,
-    apellidoPaterno,
-    apellidoMaterno,
-    activo,
-    idRol
-  } = req.matchedData;
+  const { clave, ...values } = req.matchedData;
   let urlImagen = '';
   if (process.env.NODE_ENV === 'production') {
     urlImagen = req.file.location;
@@ -52,19 +43,14 @@ const createUser = async (req, res, next) => {
     urlImagen = `http://${req.headers.host}/usuarios/images/${req.file.originalname}`;
   }
   try {
-    if (await isCorreoAlreadyInUse(correo)) {
+    if (await isCorreoAlreadyInUse(values.correo)) {
       return res.status(409).json({ status: 409, message: 'Email is already in use' })
     }
     const hashedClave = await hashClave(clave);
     const savedUser = await addUsuario({
-      correo,
+      ...values,
       clave: hashedClave,
-      nombres,
-      apellidoPaterno,
-      apellidoMaterno,
-      activo,
       urlImagen,
-      idRol
     });
     return res.status(201).json({ data: savedUser });
   } catch (err) {
@@ -72,50 +58,32 @@ const createUser = async (req, res, next) => {
   }
 }
 
+/**
+ * Edit user in the next scenarios:
+ *   - Users update their profile
+ *   - Admin wants to edit another user's info
+ */
 const editUser = async (req, res, next) => {
   let urlImagen = '';
   const idFromToken = req.sub;
-  const fields = req.body;
   const { idUser } = req.params;
-
-  urlImagen = req.file ? `images/user/${req.file.filename}` : urlImagen;
-
-  let fieldsWithImage = {};
-
-  if (urlImagen) {
-    fieldsWithImage = {
-      ...fields,
-      urlImagen
-    };
-  } else {
-    fieldsWithImage = {
-      ...fields
-    };
+  const values = req.matchedData;
+  const id = idUser ? idUser : idFromToken;
+  
+  if (process.env.NODE_ENV === 'production') {
+    urlImagen = req.file.location;
+  } else if (req.file) {
+    urlImagen = `http://${req.headers.host}/${req.file.path}`;
   }
 
-  if (idUser) {
-    try {
-      if (await updateUsuario(idUser, fieldsWithImage)) {
-        return res.sendStatus(204);
-      }
-      return res.sendStatus(400);
-    } catch (err) {
-      next(err)
+  console.log('UPDATING', {urlImagen, ...values})
+  try {
+    if (await updateUsuario(id, { ...values, urlImagen })) {
+      return res.sendStatus(204);
     }
-  }
-  else {
-    try {
-      if (fields.id === idFromToken) {
-        if (await updateUsuario(fields.id, fieldsWithImage)) {
-          return res.sendStatus(204);
-        }
-        return res.sendStatus(400);
-      }
-      return res.sendStatus(401);
-
-    } catch (err) {
-      next(err)
-    }
+    return res.sendStatus(400);
+  } catch (err) {
+    next(err)
   }
 }
 

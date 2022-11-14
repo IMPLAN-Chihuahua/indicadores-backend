@@ -21,7 +21,7 @@ const {
 } = require('../middlewares/validator/generalValidator')
 
 const {
-    updateValidationRules,
+    updateValidationRules, updateProfileValidationRules,
 } = require('../middlewares/validator/usuarioValidator')
 
 const {
@@ -32,6 +32,7 @@ const {
 const { determinePathway, FRONT_PATH } = require('../middlewares/determinePathway');
 
 const { uploadImage } = require('../middlewares/fileUpload');
+const { DESTINATIONS } = require('../services/fileService');
 /**
  * @swagger
  *  /me:
@@ -247,17 +248,17 @@ router.route('/modulos').get(
  */
 router.patch(
     '/',
-    uploadImage('usuarios'),
-    updateValidationRules(),
-    validate,
     verifyJWT,
+    uploadImage(DESTINATIONS.USUARIOS),
+    updateProfileValidationRules(),
+    validate,
     editUser,
 )
 
 router.get(
     '/stats/:idUser',
-    validate,
     verifyJWT,
+    validate,
     getUserStats,
 )
 

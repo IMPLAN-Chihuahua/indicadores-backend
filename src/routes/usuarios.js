@@ -205,11 +205,11 @@ router.get(
  */
 router.post(
     '/',
+    verifyJWT,
+    verifyUserIsActive,
     uploadImage(DESTINATIONS.USUARIOS),
     registerValidationRules(),
     validate,
-    verifyJWT,
-    verifyUserIsActive,
     verifyUserHasRoles(['ADMIN']),
     createUser
 );
@@ -296,10 +296,10 @@ router.patch(
     verifyJWT,
     verifyUserIsActive,
     verifyUserHasRoles(['ADMIN']),
+    uploadImage(DESTINATIONS.USUARIOS),
     paramValidationRules(),
     updateValidationRules(),
     validate,
-    uploadImage('usuarios'),
     editUser
 );
 
@@ -343,7 +343,7 @@ router.patch(
  *      500:
  *        $ref: '#/components/responses/InternalServerError'
  */
-router.patch(
+router.post(
     '/:idUser/toggle-status',
     verifyJWT,
     verifyUserIsActive,

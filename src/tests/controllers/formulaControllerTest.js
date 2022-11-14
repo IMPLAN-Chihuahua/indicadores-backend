@@ -13,7 +13,6 @@ describe('v1/formulas', function () {
   const SUB_ID = 1;
   const validToken = generateToken({ sub: SUB_ID });
   const adminRol = { rolValue: 'ADMIN' };
-  const userRol = { rolValue: 'USER' };
   const statusActive = { activo: 'SI' };
 
   let usuarioStub;

@@ -275,7 +275,7 @@ describe('v1/indicadores', function () {
                 });
         })
 
-        it.only('Should return formula and variables of an indicador', function (done) {
+        it('Should return formula and variables of an indicador', function (done) {
             const formulaWithVariables = { ...aFormula(1), variables: [aVariable(1), aVariable(2)] }
             const findOneFormula = sinon.fake.resolves({ dataValues: formulaWithVariables });
             // sinon.replace(Formula, 'findOne', findOneFormula);
