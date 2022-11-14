@@ -149,7 +149,7 @@ router.get(
     '/',
     verifyJWT,
     verifyUserIsActive,
-    verifyUserHasRoles(['ADMIN']),
+    verifyUserHasRoles(['ADMIN', 'USER']),
     paginationValidationRules(),
     query('searchQuery'),
     validate,
