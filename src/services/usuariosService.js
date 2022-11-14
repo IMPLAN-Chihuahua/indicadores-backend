@@ -100,7 +100,7 @@ const getUsuarios = async (limit, offset, searchQuery) => {
                     attributes: ['rol', 'id']
                 }
             ],
-            
+
         });
         const usuarios = result.rows;
         const total = result.count;
@@ -119,7 +119,7 @@ const getUsuariosByBulk = async (ids) => {
                     [Op.in]: ids
                 }
             }
-            
+
         });
         const usuarios = result.rows;
         return { usuarios };
@@ -207,13 +207,9 @@ const getIndicadoresFromUser = async (id) => {
     }
 };
 
-const updateUserStatus = async (id) => {
-
+const toggleStatus = async (id) => {
     try {
-        const usuario = await Usuario.findOne({
-            where: { id },
-            attributes: ['activo'],
-        });
+        const usuario = await Usuario.findOne({ where: { id }, attributes: ['activo'] });
         const nuevoEstado = usuario.activo === 'SI' ? 'NO' : 'SI';
 
         const updateUsuario = await Usuario.update(
@@ -336,7 +332,7 @@ module.exports = {
     getUsuarios,
     isCorreoAlreadyInUse,
     updateUsuario,
-    updateUserStatus,
+    updateUserStatus: toggleStatus,
     getRol,
     getIndicadoresFromUser,
     countInactiveUsers,

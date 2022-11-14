@@ -343,7 +343,7 @@ router.patch(
  *      500:
  *        $ref: '#/components/responses/InternalServerError'
  */
-router.patch(
+router.post(
     '/:idUser/toggle-status',
     verifyJWT,
     verifyUserIsActive,
