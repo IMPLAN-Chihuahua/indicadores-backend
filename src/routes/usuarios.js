@@ -307,9 +307,9 @@ router.patch(
 /**
  * @swagger
  *  /usuarios/{idUser}/toggle-status:
- *  patch:
- *    summary: Update status of a user.
- *    description: Update user status, for instance if it is active it will change to inactive.
+ *  post:
+ *    summary: Toggles the status of a user.
+ *    description: Update user status, if it is active it will change to inactive.
  *    tags: [Usuarios]
  *    security:
  *      - bearer: []
