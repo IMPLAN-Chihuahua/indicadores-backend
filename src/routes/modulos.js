@@ -26,6 +26,7 @@ const { verifyJWT, verifyUserIsActive, verifyUserHasRoles } = require('../middle
 const { uploadImage } = require('../middlewares/fileUpload');
 const { determinePathway, SITE_PATH } = require('../middlewares/determinePathway');
 const { exists } = require('../middlewares/resourceExists');
+const { DESTINATIONS } = require('../services/fileService');
 
 /**
  * @swagger
@@ -253,7 +254,7 @@ moduloRouter.route('/')
         verifyJWT,
         verifyUserIsActive,
         verifyUserHasRoles(['ADMIN']),
-        uploadImage('modulos'),
+        uploadImage(DESTINATIONS.MODULOS),
         createModuloValidationRules(),
         validate,
         createModulo
@@ -303,8 +304,10 @@ moduloRouter.route('/:idModulo')
         verifyJWT,
         verifyUserIsActive,
         verifyUserHasRoles(['ADMIN']),
+        uploadImage(DESTINATIONS.MODULOS),
         updateModuloValidationRules(),
         validate,
+        exists('idModulo', 'Modulo'),
         editModulo
     );
 

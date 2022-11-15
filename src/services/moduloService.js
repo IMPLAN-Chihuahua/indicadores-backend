@@ -1,5 +1,4 @@
 const { Modulo, Sequelize, Indicador } = require('../models');
-
 const { Op } = Sequelize;
 
 const getModulos = async () => {
@@ -36,7 +35,7 @@ const addModulo = async (modulo) => {
         const created = await Modulo.create(modulo);
         return created;
     } catch (err) {
-        return Promise.reject(new Error(`Error al crear modulo ${err.message}`));
+        throw new Error(`Error al crear modulo ${err.message}`);
     }
 };
 

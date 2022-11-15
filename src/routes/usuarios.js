@@ -207,10 +207,10 @@ router.post(
     '/',
     verifyJWT,
     verifyUserIsActive,
+    verifyUserHasRoles(['ADMIN']),
     uploadImage(DESTINATIONS.USUARIOS),
     registerValidationRules(),
     validate,
-    verifyUserHasRoles(['ADMIN']),
     createUser
 );
 
