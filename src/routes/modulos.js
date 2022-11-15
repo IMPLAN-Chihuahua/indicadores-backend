@@ -311,9 +311,10 @@ moduloRouter.route('/:idModulo')
 
 /**
  * @swagger
- *   /modulos/{idModulo}:
- *     patch:
- *       summary: Updates a modulo status (active/inactive)
+ *   /modulos/{idModulo}/toggle-status:
+ *     post:
+ *       summary: Toggles the status of a tema (active/inactive)
+ *       description: Update tema status, if it is active it will change to inactive.
  *       tags: [Modulos]
  *       security:
  *         - bearer: []
@@ -341,12 +342,12 @@ moduloRouter.route('/:idModulo')
  *           $ref: '#components/responses/InternalServerError'
  */
 
-moduloRouter.route('/:idModulo')
-    .patch(
+moduloRouter.route('/:idModulo/toggle-status')
+    .post(
         verifyJWT,
         verifyUserIsActive,
         verifyUserHasRoles(['ADMIN']),
-        updateModuloValidationRules(),
+        paramValidationRules(),
         validate,
         updateModuloStatus
     );

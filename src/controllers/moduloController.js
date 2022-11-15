@@ -85,11 +85,11 @@ const editModulo = async (req, res, next) => {
 }
 
 
-const updateModuloStatus = async (req, res, next) => {
+const editUserStatus = async (req, res, next) => {
   const { idModulo } = req.matchedData;
   try {
-    const updatedEstado = await moduloService.updateModuloStatus(idModulo);
-    if (updatedEstado) {
+    const updated = await moduloService.updateModuloStatus(idModulo);
+    if (updated) {
       return res.sendStatus(204);
     }
     return res.sendStatus(400)
@@ -116,4 +116,4 @@ const getModulo = async (req, res, next) => {
 }
 
 
-module.exports = { getModulos, createModulo, editModulo, getAllModulos, updateModuloStatus, getModulo }
+module.exports = { getModulos, createModulo, editModulo, getAllModulos, updateModuloStatus: editUserStatus, getModulo }
