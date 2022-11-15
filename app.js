@@ -89,7 +89,7 @@ app.use('/api/v1/relation', require('./src/routes/usuariosIndicadores'));
 
 app.use('/images', express.static(path.join(__dirname, 'uploads', 'images')));
 app.use('/images/indicador', express.static(path.join(__dirname, 'uploads', 'indicadores/images')));
-app.use('/images/temas', express.static(path.join(__dirname, 'uploads', 'modules/images')));
+app.use('/uploads/temas/images', express.static(path.join(__dirname, 'uploads', 'temas/images')));
 app.use('/uploads/usuarios/images', express.static(path.join(__dirname, 'uploads', 'usuarios/images')));
 app.use('/uploads/mapas', express.static(path.join(__dirname, 'uploads', 'mapas')));
 app.use(logErrors)
