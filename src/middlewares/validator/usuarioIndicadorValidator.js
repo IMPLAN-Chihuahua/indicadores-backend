@@ -3,13 +3,13 @@ const { check, validationResult, query, param, matchedData, body } = require('ex
 
 const indicadorAssignUsuarioValidationRules = () => [
     body('usuarios.*').isInt().toInt(),
-    body(['desde', 'hasta'])
+    body(['desde', 'hasta', 'expires'])
         .optional()
 ];
 
 const relationAssignValidationRules = () => [
     body('relationIds.*').isInt().toInt(),
-    body(['desde', 'hasta'])
+    body(['desde', 'hasta', 'expires'])
         .optional()
 ]
 

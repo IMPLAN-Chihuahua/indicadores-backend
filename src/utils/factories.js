@@ -137,8 +137,6 @@ const aRol = (id) => ({
 	updatedAt: new Date()
 });
 
-
-
 /** Catalogos */
 
 const someCatalogos = (id) => ([
@@ -229,6 +227,72 @@ const someHistoricos = (idIndicador) => ([
 	},
 ]);
 
+const relationInfo = () => ([
+	{
+		id: 1,
+		nombre: faker.random.word(),
+		owner: faker.random.word(),
+		updatedAt: new Date(),
+		count: faker.datatype.number(),
+	},
+	{
+		id: 2,
+		nombre: faker.random.word(),
+		owner: faker.random.word(),
+		updatedAt: new Date(),
+		count: faker.datatype.number(),
+	},
+	{
+		id: 3,
+		nombre: faker.random.word(),
+		owner: faker.random.word(),
+		updatedAt: new Date(),
+		count: faker.datatype.number(),
+	},
+]);
+
+const usersToIndicador = () => ([
+	{
+		id: 1,
+		idUsuario: 1,
+		fechaDesde: new Date(),
+		fechaHasta: new Date(),
+		expires: 'SI',
+		createdBy: 1,
+		usuario: {
+			nombres: faker.name.firstName(),
+			apellidoPaterno: faker.name.lastName(),
+			apellidoMaterno: faker.name.lastName(),
+		}
+	},
+	{
+		id: 2,
+		idUsuario: 6,
+		fechaDesde: null,
+		fechaHasta: null,
+		expires: 'NO',
+		createdBy: 1,
+		usuario: {
+			nombres: faker.name.firstName(),
+			apellidoPaterno: faker.name.lastName(),
+			apellidoMaterno: faker.name.lastName(),
+		}
+	},
+	{
+		id: 3,
+		idUsuario: 7,
+		fechaDesde: new Date(),
+		fechaHasta: new Date(),
+		expires: 'SI',
+		createdBy: 1,
+		usuario: {
+			nombres: faker.name.firstName(),
+			apellidoPaterno: faker.name.lastName(),
+			apellidoMaterno: faker.name.lastName(),
+		}
+	}
+])
+
 module.exports = {
 	anIndicador,
 	aUser,
@@ -245,5 +309,7 @@ module.exports = {
 	someCatalogosFromIndicador,
 	aCodigo,
 	randomYear,
-	someHistoricos
+	someHistoricos,
+	relationInfo,
+	usersToIndicador,
 };

@@ -12,8 +12,10 @@ const getHistoricos = async (req, res, next) => {
         if (historicos.length > 0) {
             const totalPages = Math.ceil(total / perPage);
             return res.status(200).json({ idIndicador: idIndicador, indicadorLastValue: ultimoValorDisponible, indicadorLastUpdateDate: updatedAt, indicadorPeriodicidad: periodicidad, page: page, perPage: perPage, total: total, totalPages: totalPages, data: historicos });
-        } else {
+        } else if (historicos.length === 0) {
             return res.status(200).json({ idIndicador: idIndicador, indicadorLastValue: ultimoValorDisponible, indicadorLastUpdateDate: updatedAt, indicadorPeriodicidad: periodicidad, page: page, perPage: perPage, total: total, totalPages: 0, data: [] });
+        } else {
+            return res.sendStatus(400);
         }
 
     } catch (err) {
