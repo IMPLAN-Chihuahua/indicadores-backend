@@ -18,6 +18,7 @@ const {
     getRelationUsers,
     getUsuarios,
     deleteRelation,
+    updateRelation,
 } = require('../controllers/usuarioIndicadorController');
 
 
@@ -213,6 +214,17 @@ router.delete(
     paramValidationRules(),
     validate,
     deleteRelation,
-)
+);
+
+router.patch(
+    '/:idRelacion',
+    verifyJWT,
+    verifyUserIsActive,
+    verifyUserHasRoles(['ADMIN']),
+    paramValidationRules(),
+    validate,
+    updateRelation,
+);
+
 
 module.exports = router;

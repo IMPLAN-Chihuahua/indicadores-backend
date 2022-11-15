@@ -103,10 +103,28 @@ const deleteRelation = async (req, res, next) => {
     }
 };
 
+const updateRelation = async (req, res, next) => {
+    const { idRelacion, desde, hasta, expires } = req.matchedData;
+
+    const updatedBy = req.sub;
+    try {
+        await UsuarioIndicadorService.updateRelation(idRelacion, {
+            fechaDesde: desde ? desde : null,
+            fechaHasta: hasta ? hasta : null,
+            updatedBy,
+            expires
+        });
+        return res.sendStatus(204);
+    } catch (err) {
+        next(err);
+    }
+};
+
 module.exports = {
     createRelationUI,
     getIndicadoresRelations,
     getRelationUsers,
     getUsuarios,
     deleteRelation,
+    updateRelation
 }

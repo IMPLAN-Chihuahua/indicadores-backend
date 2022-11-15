@@ -164,6 +164,20 @@ const deleteRelation = async (id) => {
   } catch (err) {
     throw new Error(`Error al eliminar la relacion: ${err.message}`);
   }
+};
+
+const updateRelation = async (id, options) => {
+  console.log(id, options);
+  // try {
+  //   await UsuarioIndicador.update(options, {
+  //     where: {
+  //       id
+  //     }
+  //   });
+  //   return;
+  // } catch (err) {
+  //   throw new Error(`Error al actualizar la relacion: ${err.message}`);
+  // }
 }
 
 module.exports = {
@@ -173,4 +187,5 @@ module.exports = {
   getRelationUsers,
   getUsuariosThatDoesntHaveIndicador,
   deleteRelation,
+  updateRelation,
 }
