@@ -46,11 +46,6 @@ const areConnected = async (idUsuario, idIndicador) => {
 
 const createRelation = async (usuarios, indicadores, options) => {
   const relations = [];
-  console.log('#####')
-  console.log(usuarios);
-  console.log(indicadores);
-  console.log(options);
-  console.log('#####')
 
   for (const u of usuarios) {
     for (const i of indicadores) {
@@ -100,7 +95,6 @@ const getUsuariosIndicadores = async (page, perPage, order, sortBy) => {
     throw new Error(`Error al obtener los usuariosIndicadores: ${err.message}`);
   }
 };
-
 
 /** Returns a list of how many users and the information about the relation between usuarios - indicadores. Also, it returns the name of the selected indicador */
 const getRelationUsers = async (idIndicador) => {
@@ -159,6 +153,18 @@ const getUsuariosThatDoesntHaveIndicador = async (idIndicador) => {
   }
 };
 
+const deleteRelation = async (id) => {
+  try {
+    await UsuarioIndicador.destroy({
+      where: {
+        id
+      }
+    });
+    return;
+  } catch (err) {
+    throw new Error(`Error al eliminar la relacion: ${err.message}`);
+  }
+}
 
 module.exports = {
   areConnected,
@@ -166,4 +172,5 @@ module.exports = {
   getUsuariosIndicadores,
   getRelationUsers,
   getUsuariosThatDoesntHaveIndicador,
+  deleteRelation,
 }

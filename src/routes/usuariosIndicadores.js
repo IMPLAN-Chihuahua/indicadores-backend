@@ -17,6 +17,7 @@ const {
     createRelationUI,
     getRelationUsers,
     getUsuarios,
+    deleteRelation,
 } = require('../controllers/usuarioIndicadorController');
 
 
@@ -192,7 +193,7 @@ router.get(
     paramValidationRules(),
     validate,
     getRelationUsers,
-)
+);
 
 router.get(
     '/indicador/:idIndicador/usuarios',
@@ -202,6 +203,16 @@ router.get(
     paramValidationRules(),
     validate,
     getUsuarios,
+);
+
+router.delete(
+    '/:idRelacion',
+    verifyJWT,
+    verifyUserIsActive,
+    verifyUserHasRoles(['ADMIN']),
+    paramValidationRules(),
+    validate,
+    deleteRelation,
 )
 
 module.exports = router;

@@ -14,7 +14,7 @@ const paginationValidationRules = () => [
 ];
 
 const paramValidationRules = () => [
-    param(['idModulo', 'idIndicador', 'idUser', 'idOds', 'idCobertura', 'idUnidadMedida', 'idCatalogo', 'idHistorico'])
+    param(['idModulo', 'idIndicador', 'idUser', 'idOds', 'idCobertura', 'idUnidadMedida', 'idCatalogo', 'idHistorico', 'idRelacion'])
         .optional()
         .isInt().withMessage('Field must be an integer number')
         .toInt()

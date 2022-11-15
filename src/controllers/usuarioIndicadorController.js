@@ -5,7 +5,6 @@ const { getUsuariosByBulk } = require('../services/usuariosService');
 
 const createRelationUI = async (req, res, next) => {
     const { relationIds, desde, hasta, id, relationType, expires } = req.matchedData;
-
     const updatedBy = req.sub;
     const createdBy = req.sub;
 
@@ -38,14 +37,13 @@ const createRelationUI = async (req, res, next) => {
     } catch (err) {
         next(err)
     }
-}
+};
 
 const getRelationInformation = async (data) => {
     const ownersIds = [...new Set(data.map(indicador => indicador.owner))];
     const { usuarios } = await getUsuariosByBulk(ownersIds);
     return { usuarios };
-}
-
+};
 
 const getIndicadoresRelations = async (req, res, next) => {
     const { page, perPage, order, sortBy } = req.matchedData;
@@ -69,7 +67,7 @@ const getIndicadoresRelations = async (req, res, next) => {
     } catch (err) {
         next(err);
     }
-}
+};
 
 const getRelationUsers = async (req, res, next) => {
     const { idIndicador } = req.matchedData;
@@ -93,11 +91,22 @@ const getUsuarios = async (req, res, next) => {
     catch (err) {
         next(err);
     }
-}
+};
+
+const deleteRelation = async (req, res, next) => {
+    const { idRelacion } = req.matchedData;
+    try {
+        await UsuarioIndicadorService.deleteRelation(idRelacion);
+        return res.sendStatus(204);
+    } catch (err) {
+        next(err);
+    }
+};
 
 module.exports = {
     createRelationUI,
     getIndicadoresRelations,
     getRelationUsers,
-    getUsuarios
+    getUsuarios,
+    deleteRelation,
 }
