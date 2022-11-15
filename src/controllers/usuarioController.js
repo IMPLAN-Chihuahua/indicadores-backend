@@ -9,6 +9,7 @@ const { addUsuario,
   countInactiveUsers,
   getUserStatsInfo,
 } = require('../services/usuariosService');
+const { getImagePathLocation } = require('../utils/stringFormat');
 require('dotenv').config();
 
 const getUsers = async (req, res, next) => {
@@ -36,12 +37,8 @@ const getUsers = async (req, res, next) => {
 
 const createUser = async (req, res, next) => {
   const { clave, ...values } = req.matchedData;
-  let urlImagen = '';
-  if (process.env.NODE_ENV === 'production') {
-    urlImagen = req.file.location;
-  } else if (req.file) {
-    urlImagen = `http://${req.headers.host}/usuarios/images/${req.file.originalname}`;
-  }
+  const image = getImagePathLocation(req);
+
   try {
     if (await isCorreoAlreadyInUse(values.correo)) {
       return res.status(409).json({ status: 409, message: 'Email is already in use' })
@@ -50,7 +47,7 @@ const createUser = async (req, res, next) => {
     const savedUser = await addUsuario({
       ...values,
       clave: hashedClave,
-      urlImagen,
+      ...image,
     });
     return res.status(201).json({ data: savedUser });
   } catch (err) {
@@ -64,21 +61,14 @@ const createUser = async (req, res, next) => {
  *   - Admin wants to edit another user's info
  */
 const editUser = async (req, res, next) => {
-  let urlImagen = '';
   const idFromToken = req.sub;
   const { idUser } = req.params;
   const values = req.matchedData;
   const id = idUser ? idUser : idFromToken;
-  
-  if (process.env.NODE_ENV === 'production') {
-    urlImagen = req.file.location;
-  } else if (req.file) {
-    urlImagen = `http://${req.headers.host}/${req.file.path}`;
-  }
+  const image = getImagePathLocation(req);
 
-  console.log('UPDATING', {urlImagen, ...values})
   try {
-    if (await updateUsuario(id, { ...values, urlImagen })) {
+    if (await updateUsuario(id, { ...values, ...image })) {
       return res.sendStatus(204);
     }
     return res.sendStatus(400);
