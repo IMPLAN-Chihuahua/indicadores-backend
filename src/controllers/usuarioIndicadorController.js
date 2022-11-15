@@ -82,10 +82,22 @@ const getRelationUsers = async (req, res, next) => {
     } catch (err) {
         next(err);
     }
+};
+
+const getUsuarios = async (req, res, next) => {
+    const { idIndicador } = req.matchedData;
+    try {
+        const result = await UsuarioIndicadorService.getUsuariosThatDoesntHaveIndicador(idIndicador);
+        return res.status(200).json(result);
+    }
+    catch (err) {
+        next(err);
+    }
 }
 
 module.exports = {
     createRelationUI,
     getIndicadoresRelations,
     getRelationUsers,
+    getUsuarios
 }

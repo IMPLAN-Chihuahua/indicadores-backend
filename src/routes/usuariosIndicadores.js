@@ -15,7 +15,8 @@ const { verifyJWT, verifyUserIsActive, verifyUserHasRoles } = require('../middle
 const {
     getIndicadoresRelations,
     createRelationUI,
-    getRelationUsers
+    getRelationUsers,
+    getUsuarios,
 } = require('../controllers/usuarioIndicadorController');
 
 
@@ -191,6 +192,16 @@ router.get(
     paramValidationRules(),
     validate,
     getRelationUsers,
+)
+
+router.get(
+    '/indicador/:idIndicador/usuarios',
+    verifyJWT,
+    verifyUserIsActive,
+    verifyUserHasRoles(['ADMIN']),
+    paramValidationRules(),
+    validate,
+    getUsuarios,
 )
 
 module.exports = router;
