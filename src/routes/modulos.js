@@ -26,6 +26,7 @@ const { verifyJWT, verifyUserIsActive, verifyUserHasRoles } = require('../middle
 const { uploadImage } = require('../middlewares/fileUpload');
 const { determinePathway, SITE_PATH } = require('../middlewares/determinePathway');
 const { exists } = require('../middlewares/resourceExists');
+const { DESTINATIONS } = require('../services/fileService');
 
 /**
  * @swagger
@@ -253,7 +254,7 @@ moduloRouter.route('/')
         verifyJWT,
         verifyUserIsActive,
         verifyUserHasRoles(['ADMIN']),
-        uploadImage('modulos'),
+        uploadImage(DESTINATIONS.MODULOS),
         createModuloValidationRules(),
         validate,
         createModulo
@@ -303,17 +304,20 @@ moduloRouter.route('/:idModulo')
         verifyJWT,
         verifyUserIsActive,
         verifyUserHasRoles(['ADMIN']),
+        uploadImage(DESTINATIONS.MODULOS),
         updateModuloValidationRules(),
         validate,
+        exists('idModulo', 'Modulo'),
         editModulo
     );
 
 
 /**
  * @swagger
- *   /modulos/{idModulo}:
- *     patch:
- *       summary: Updates a modulo status (active/inactive)
+ *   /modulos/{idModulo}/toggle-status:
+ *     post:
+ *       summary: Toggles the status of a tema (active/inactive)
+ *       description: Update tema status, if it is active it will change to inactive.
  *       tags: [Modulos]
  *       security:
  *         - bearer: []
@@ -341,12 +345,12 @@ moduloRouter.route('/:idModulo')
  *           $ref: '#components/responses/InternalServerError'
  */
 
-moduloRouter.route('/:idModulo')
-    .patch(
+moduloRouter.route('/:idModulo/toggle-status')
+    .post(
         verifyJWT,
         verifyUserIsActive,
         verifyUserHasRoles(['ADMIN']),
-        updateModuloValidationRules(),
+        paramValidationRules(),
         validate,
         updateModuloStatus
     );
