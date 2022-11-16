@@ -7,7 +7,6 @@ const createRelationUI = async (req, res, next) => {
     const { relationIds, desde, hasta, id, relationType, expires } = req.matchedData;
     const updatedBy = req.sub;
     const createdBy = req.sub;
-
     try {
         if (relationType === 'usuarios') {
             await UsuarioIndicadorService.createRelation(
@@ -24,6 +23,19 @@ const createRelationUI = async (req, res, next) => {
             await UsuarioIndicadorService.createRelation(
                 [id],
                 [...relationIds],
+                {
+                    fechaDesde: desde ? desde : null,
+                    fechaHasta: hasta ? hasta : null,
+                    updatedBy,
+                    createdBy,
+                    expires
+                });
+        } else if (relationType === 'modulos') {
+            const indicadores = await UsuarioIndicadorService.createRelationWithModules(id);
+            const indicadoresId = indicadores.map(indicador => indicador.id);
+            await UsuarioIndicadorService.createRelation(
+                [...relationIds],
+                indicadoresId,
                 {
                     fechaDesde: desde ? desde : null,
                     fechaHasta: hasta ? hasta : null,
@@ -126,5 +138,5 @@ module.exports = {
     getRelationUsers,
     getUsuarios,
     deleteRelation,
-    updateRelation
+    updateRelation,
 }

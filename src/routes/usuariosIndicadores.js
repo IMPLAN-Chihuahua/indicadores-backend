@@ -196,6 +196,41 @@ router.get(
     getRelationUsers,
 );
 
+/**
+ * @swagger
+ *   /relation/indicador/{idIndicador}/usuarios:
+ *     get:
+ *       summary: Get a list of users not assigned to an indicator.
+ *       description: Get a list of users that are not assigned to an indicator.
+ *       tags: [UsuarioIndicador]
+ *       security:
+ *         - bearer: []
+ *       parameters:
+ *         - name: idIndicador
+ *           in: path
+ *           required: true
+ *           schema:
+ *             type: integer
+ *             format: int64
+ *             minimum: 1
+ *       responses:
+ *         200:
+ *           description: UsuarioIndicador object
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/components/schemas/Usuario'
+ *         404:
+ *           $ref: '#/components/responses/NotFound'
+ *         422:
+ *           $ref: '#/components/responses/UnprocessableEntity'
+ *         429:
+ *           $ref: '#/components/responses/TooManyRequests'
+ *         500:
+ *           $ref: '#/components/responses/InternalServerError'
+ * 
+ */
+
 router.get(
     '/indicador/:idIndicador/usuarios',
     verifyJWT,
@@ -205,6 +240,37 @@ router.get(
     validate,
     getUsuarios,
 );
+
+/**
+ * @swagger
+ *   /relation/{idRelacion}:
+ *     delete:
+ *       summary: Deletes a relation between an user and an indicador.
+ *       description: Deletes a relation between an user and an indicador.
+ *       tags: [UsuarioIndicador]
+ *       security:
+ *         - bearer: []
+ *       parameters:
+ *         - name: idRelacion
+ *           in: path
+ *           required: true
+ *           schema:
+ *             type: integer
+ *             format: int64
+ *             minimum: 1
+ *       responses:
+ *         204:
+ *           description: Operation was successful
+ *         404:
+ *           $ref: '#/components/responses/NotFound'
+ *         422:
+ *           $ref: '#/components/responses/UnprocessableEntity'
+ *         429:
+ *           $ref: '#/components/responses/TooManyRequests'
+ *         500:
+ *           $ref: '#/components/responses/InternalServerError'
+ * 
+ */
 
 router.delete(
     '/:idRelacion',
@@ -225,6 +291,5 @@ router.patch(
     validate,
     updateRelation,
 );
-
 
 module.exports = router;
