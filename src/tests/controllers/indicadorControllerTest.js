@@ -281,12 +281,11 @@ describe('v1/indicadores', function () {
             // sinon.replace(Formula, 'findOne', findOneFormula);
             const findOneIndicador = sinon.fake.resolves({ count: 1 });
             sinon.replace(Indicador, 'findOne', findOneIndicador)
-            
+
             chai.request(app)
                 .get('/api/v1/indicadores/1/formula')
                 .set({ Authorization: `Bearer ${validToken}` })
                 .end((err, res) => {
-                    console.log(res.body.data.variables)
                     expect(findOneFormula.calledOnce, 'formula').to.be.true;
                     expect(findOneIndicador.calledOnce, 'indicador').to.be.true;
                     expect(err).to.be.null;
