@@ -73,17 +73,17 @@ const updateModuloValidationRules = () => [
         .isLength({ min: 5 })
         .withMessage('El tema no puede estar vacio'),
 
-    check('descripcion')
+    body('descripcion')
         .exists()
         .withMessage('Descripcion es obligatoria'),
 
-    check('observaciones')
+    body('observaciones')
         .optional()
         .trim()
         .notEmpty()
         .withMessage('Observaciones debe tener un valor'),
 
-    check('color')
+    body('color')
         .optional()
         .isHexColor()
         .withMessage('Solo colores en hexadecimal')
