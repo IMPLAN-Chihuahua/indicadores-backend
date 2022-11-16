@@ -8,8 +8,6 @@ const { TOKEN_SECRET } = process.env;
 const { sendEmail } = require('../services/emailSenderService');
 const { generateToken, hashClave } = require('../middlewares/auth');
 
-const SALT_ROUNDS = 10;
-
 const login = async (req, res, next) => {
   try {
     const { correo, clave } = req.body;
