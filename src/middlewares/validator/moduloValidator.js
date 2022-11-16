@@ -1,4 +1,4 @@
-const { check, validationResult, query, param, matchedData, body } = require('express-validator');
+const { query, param, body } = require('express-validator');
 
 const filterModulosValidationRules = () => [
     query(['searchQuery'])
@@ -19,19 +19,59 @@ const sortModulosValidationRules = () => [
 ];
 
 const createModuloValidationRules = () => [
-    check('codigo')
+    body('codigo')
         .exists()
         .withMessage('El codigo es obligatorio'),
 
-    check('activo')
+    body('activo')
         .optional()
         .toUpperCase()
         .isIn(['SI', 'NO'])
         .withMessage('Estado invalido'),
 
-    check('temaIndicador')
+    body('temaIndicador')
         .exists()
         .withMessage('El tema es obligatorio'),
+
+    body('descripcion')
+        .exists()
+        .withMessage('Descripcion es obligatoria'),
+
+    body('observaciones')
+        .optional()
+        .trim()
+        .notEmpty()
+        .withMessage('Observaciones debe tener un valor'),
+
+    body('color')
+        .optional()
+        .isHexColor()
+        .withMessage('Solo colores en hexadecimal')
+];
+
+const updateModuloValidationRules = () => [
+    param(['idModulo'])
+        .exists()
+        .withMessage('por favor agrega un id de modulo')
+        .isInt()
+        .withMessage('Field must be an integer number')
+        .toInt(),
+
+    body('codigo')
+        .optional()
+        .isLength({ min: 3 })
+        .withMessage('El codigo debe tener 3 caracteres'),
+
+    body('activo')
+        .optional()
+        .toUpperCase()
+        .isIn(['SI', 'NO'])
+        .withMessage('estado invalido'),
+
+    body('temaIndicador')
+        .optional()
+        .isLength({ min: 5 })
+        .withMessage('El tema no puede estar vacio'),
 
     check('descripcion')
         .exists()
@@ -47,31 +87,6 @@ const createModuloValidationRules = () => [
         .optional()
         .isHexColor()
         .withMessage('Solo colores en hexadecimal')
-];
-
-const updateModuloValidationRules = () => [
-    param(['idModulo'])
-        .exists()
-        .withMessage('por favor agrega un id de modulo')
-        .isInt()
-        .withMessage('Field must be an integer number')
-        .toInt(),
-
-    check('codigo')
-        .optional()
-        .isLength({ min: 3 })
-        .withMessage('El codigo debe tener 3 caracteres'),
-
-    check('activo')
-        .optional()
-        .toUpperCase()
-        .isIn(['SI', 'NO'])
-        .withMessage('estado invalido'),
-
-    check('temaIndicador')
-        .optional()
-        .isLength({ min: 5 })
-        .withMessage('El tema no puede estar vacio'),
 ]
 
 module.exports = {
