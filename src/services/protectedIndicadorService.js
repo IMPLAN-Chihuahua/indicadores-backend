@@ -14,8 +14,6 @@ const {
 } = require("../models");
 
 const getIndicador = async (id, attributes) => {
-    console.log(id);
-    console.log(attributes)
     try {
 
         const result = await Indicador.findOne({
