@@ -1,4 +1,3 @@
-const stream = require('stream');
 const UsuarioIndicadorService = require('../services/usuarioIndicadorService');
 const ProtectedIndicadorService = require('../services/protectedIndicadorService');
 const { getUsuariosByBulk } = require('../services/usuariosService');
