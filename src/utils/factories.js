@@ -96,9 +96,11 @@ const anHistorico = () => ({
 	fuente: faker.random.word()
 });
 
-const aMapa = () => ({
+const aMapa = (id) => ({
+	...(id && { id }),
 	ubicacion: faker.random.word(),
-	url: faker.internet.url()
+	url: faker.internet.url(),
+	urlImagen: faker.image.imageUrl()
 });
 
 const aUser = (id) => ({
