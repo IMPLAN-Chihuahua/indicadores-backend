@@ -18,7 +18,7 @@ const { app, server } = require('../../../app');
 const { generateToken } = require('../../middlewares/auth');
 
 
-describe.only('v1/indicadores', function () {
+describe('v1/indicadores', function () {
 
 	const SUB_ID = 1;
 	const validToken = generateToken({ sub: SUB_ID });
@@ -37,6 +37,9 @@ describe.only('v1/indicadores', function () {
 		findOneFake = sinon.stub(Usuario, 'findOne')
 		findOneFake.onFirstCall().resolves(statusActive);
 		findOneFake.onSecondCall().resolves(adminRol);
+
+		const findOneIndicador = sinon.fake.resolves({ count: 1 })
+		sinon.replace(Indicador, 'findOne', findOneIndicador);
 	});
 
 	this.afterAll(function () {
@@ -155,9 +158,11 @@ describe.only('v1/indicadores', function () {
 		});
 
 		it('Should return an indicador', function (done) {
+			sinon.restore();
 			const findOneIndicador = sinon.stub(Indicador, 'findOne');
 			findOneIndicador.onFirstCall().resolves({ count: 1 })
 			findOneIndicador.onSecondCall().resolves(dummyIndicador);
+
 			const findAllIndicadores = sinon.fake.resolves(indicadoresList);
 			sinon.replace(Indicador, 'findAll', findAllIndicadores);
 			chai.request(app)
@@ -174,6 +179,7 @@ describe.only('v1/indicadores', function () {
 		});
 
 		it('Should fail to return an indicador because it does not exist', function (done) {
+			sinon.restore();
 			const findOneFake = sinon.fake.resolves({ count: 0 });
 			sinon.replace(Indicador, 'findOne', findOneFake)
 			chai.request(app)
@@ -486,11 +492,6 @@ describe.only('v1/indicadores', function () {
 	});
 
 	describe('PATCH /indicadores/:idIndicador', function () {
-		this.beforeEach(function () {
-			const findOneIndicador = sinon.fake.resolves({ count: 1 })
-			sinon.replace(Indicador, 'findOne', findOneIndicador);
-		});
-
 		it('Should update indicador successfully (admin rol)', function (done) {
 			const updateIndicadorFake = sinon.fake.resolves(1);
 			sinon.replace(Indicador, 'update', updateIndicadorFake);
@@ -602,9 +603,11 @@ describe.only('v1/indicadores', function () {
 
 	describe('GET /indicadores/:id/formula', function () {
 		it('Should return formula and variables of an indicador', function (done) {
+			sinon.restore();
 			const formulaWithVariables = { ...aFormula(1), variables: [aVariable(1), aVariable(2)] }
 			const findOneFormula = sinon.fake.resolves({ dataValues: formulaWithVariables });
 			sinon.replace(Formula, 'findOne', findOneFormula);
+
 			const findOneIndicador = sinon.fake.resolves({ count: 1 });
 			sinon.replace(Indicador, 'findOne', findOneIndicador)
 
@@ -626,10 +629,13 @@ describe.only('v1/indicadores', function () {
 		})
 
 		it('Should return no data because indicador does not have formula', function (done) {
+			sinon.restore();
 			const findOneFormula = sinon.fake.resolves(null);
 			sinon.replace(Formula, 'findOne', findOneFormula);
+
 			const findOneIndicador = sinon.fake.resolves({ count: 1 });
 			sinon.replace(Indicador, 'findOne', findOneIndicador)
+
 			chai.request(app)
 				.get('/api/v1/indicadores/1/formula')
 				.set({ Authorization: `Bearer ${validToken}` })
@@ -645,11 +651,10 @@ describe.only('v1/indicadores', function () {
 
 	describe('POST /indicadores/:id/formula', function () {
 		it('Should create formula for an Indicador', function (done) {
-			const findOneIndicador = sinon.fake.resolves({ count: 1 });
-			sinon.replace(Indicador, 'findOne', findOneIndicador)
 			const formula = aFormula(1);
 			const createFake = sinon.fake.resolves(formula);
 			sinon.replace(Formula, 'create', createFake);
+
 			chai.request(app)
 				.post('/api/v1/indicadores/1/formula')
 				.set('Authorization', `Bearer ${validToken}`)
@@ -658,14 +663,11 @@ describe.only('v1/indicadores', function () {
 					expect(err).to.be.null;
 					expect(res).to.have.status(201)
 					expect(createFake.calledOnce).to.be.true;
-					expect(findOneIndicador.calledOnce).to.be.true;
 					done();
 				})
 		});
 
 		it('Should create formula with variables for an Indicador', function (done) {
-			const findOneIndicador = sinon.fake.resolves({ count: 1 });
-			sinon.replace(Indicador, 'findOne', findOneIndicador)
 			const formulaWithVariables = { ...aFormula(), variables: [aVariable(1), aVariable(2)] }
 			const createFake = sinon.fake.resolves(formulaWithVariables);
 			sinon.replace(Formula, 'create', createFake);
@@ -677,15 +679,17 @@ describe.only('v1/indicadores', function () {
 					expect(err).to.be.null;
 					expect(res).to.have.status(201)
 					expect(createFake.calledOnce).to.be.true;
-					expect(findOneIndicador.calledOnce).to.be.true;
 					done();
 				})
 		});
 
 		it('Should fail to create formula because indicador does not exist', function (done) {
+			sinon.restore();
 			const findOneIndicador = sinon.fake.resolves({ count: 0 });
 			sinon.replace(Indicador, 'findOne', findOneIndicador)
+
 			const formulaWithVariables = { ...aFormula(), variables: [aVariable(1)] }
+
 			chai.request(app)
 				.post('/api/v1/indicadores/1/formula')
 				.set('Authorization', `Bearer ${validToken}`)
@@ -701,10 +705,13 @@ describe.only('v1/indicadores', function () {
 
 	describe('GET /indicadores/:id/mapa', function () {
 		it('Should return the mapa of an indicador', function (done) {
+			sinon.restore();
 			const findOneIndicador = sinon.fake.resolves({ count: 1 });
 			sinon.replace(Indicador, 'findOne', findOneIndicador);
+
 			const findOneMapa = sinon.fake.resolves(aMapa());
 			sinon.replace(Mapa, 'findOne', findOneMapa);
+
 			chai.request(app)
 				.get('/api/v1/indicadores/1/mapa')
 				.end((err, res) => {
@@ -718,10 +725,13 @@ describe.only('v1/indicadores', function () {
 		});
 
 		it('Should return no data when getting mapa because indicador does not have one', function (done) {
+			sinon.restore();
 			const findOneIndicador = sinon.fake.resolves({ count: 1 });
 			sinon.replace(Indicador, 'findOne', findOneIndicador);
+
 			const findOneMapa = sinon.fake.resolves(null);
 			sinon.replace(Mapa, 'findOne', findOneMapa);
+
 			chai.request(app)
 				.get('/api/v1/indicadores/1/mapa')
 				.end((err, res) => {
@@ -733,8 +743,10 @@ describe.only('v1/indicadores', function () {
 		});
 
 		it('Should fail to get mapa because indicador does not exist', function (done) {
+			sinon.restore();
 			const findOneIndicador = sinon.fake.resolves({ count: 0 });
 			sinon.replace(Indicador, 'findOne', findOneIndicador);
+
 			chai.request(app)
 				.get('/api/v1/indicadores/1/mapa')
 				.end((err, res) => {
@@ -745,13 +757,8 @@ describe.only('v1/indicadores', function () {
 		})
 	})
 
-	describe.only('POST /indicadores/:id/mapa', () => {
+	describe('POST /indicadores/:id/mapa', () => {
 		const mapa = aMapa();
-
-		this.beforeEach(() => {
-			const findOneIndicador = sinon.fake.resolves({ count: 1 })
-			sinon.replace(Indicador, 'findOne', findOneIndicador);
-		})
 
 		it('Should create a mapa for an indicador', done => {
 			const createFakeMapa = sinon.fake.resolves({ dataValues: mapa })
