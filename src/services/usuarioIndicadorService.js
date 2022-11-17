@@ -65,13 +65,14 @@ const createRelation = async (usuarios, indicadores, options) => {
 };
 
 /** Gets a list of indicadores, its owner and how many users are responsible for them */
-const getUsuariosIndicadores = async (page, perPage, order, sortBy) => {
+const getUsuariosIndicadores = async (page, perPage, matchedData) => {
   try {
     const result = await UsuarioIndicador.findAndCountAll({
       include: [
         {
           model: Indicador,
           required: true,
+          where: getAllRelationsFilters(matchedData),
           attributes: ['owner'],
         },
       ],
@@ -87,8 +88,8 @@ const getUsuariosIndicadores = async (page, perPage, order, sortBy) => {
         'indicador.updatedAt',
       ],
     });
+
     return {
-      total: result.rows,
       data: result.count,
     }
   } catch (err) {
@@ -153,6 +154,39 @@ const getUsuariosThatDoesntHaveIndicador = async (idIndicador) => {
   }
 };
 
+const getAllRelationsFilters = (matchedData) => {
+  const { searchQuery } = matchedData;
+  if (searchQuery) {
+    const filter = {
+      [Op.or]: [
+        { nombre: { [Op.iLike]: `%${searchQuery}%` } },
+      ]
+    }
+    return filter;
+  }
+  return {};
+};
+
+const getRelationsSorting = ({ sortBy, order }) => {
+  const arrangement = [];
+  arrangement.push([sortBy || 'id', order || 'ASC']);
+  return arrangement;
+};
+
+const createRelationWithModules = async (idModulo) => {
+  try {
+    const indicadoresID = await Indicador.findAll({
+      where: {
+        idModulo
+      },
+      attributes: ['id']
+    });
+    return indicadoresID;
+  } catch (err) {
+    throw new Error(`Error al actualizar la relacion: ${err.message}`);
+  }
+};
+
 const deleteRelation = async (id) => {
   try {
     await UsuarioIndicador.destroy({
@@ -188,4 +222,5 @@ module.exports = {
   getUsuariosThatDoesntHaveIndicador,
   deleteRelation,
   updateRelation,
+  createRelationWithModules,
 }
