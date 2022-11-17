@@ -19,11 +19,35 @@ const determinePathway = (route) => (req, res, next) => {
     default:
       throw new Error('Invalid pathway');
   }
+};
+
+const determineModule = (req, res, next) => {
+  const model = req.baseUrl.split('/').slice(-1)[0];
+  switch (model) {
+    case 'indicadores':
+      req.model = 'indicador';
+      next();
+      break;
+    case 'usuarios':
+      req.model = 'usuario';
+      next();
+      break;
+    case 'modulos':
+      req.model = 'modulo';
+      next();
+      break;
+    default:
+      return res.status(403).send('Este módulo no tiene petición general de información.');
+
+  }
 }
+
 
 module.exports = {
   determinePathway,
   FRONT_PATH,
   SITE_PATH,
-  FILE_PATH
+  FILE_PATH,
+  determineModule,
+
 }
