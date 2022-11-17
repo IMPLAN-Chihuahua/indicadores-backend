@@ -49,6 +49,12 @@ const validate = (req, res, next) => {
 
 };
 
+const generalFilterOptions = () => {
+    return body(['options'])
+        .optional()
+        .isObject()
+
+}
 
 const idValidation = () => {
     return param(['idModulo', 'idIndicador', 'idUser', 'idOds', 'idCobertura',
@@ -79,5 +85,6 @@ module.exports = {
     validate,
     idValidation,
     joinRules,
-    formatDocsValidation
+    formatDocsValidation,
+    generalFilterOptions,
 }

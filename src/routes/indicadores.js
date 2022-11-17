@@ -16,6 +16,7 @@ const {
     paramValidationRules,
     validate,
     idValidation,
+    generalFilterOptions,
 } = require('../middlewares/validator/generalValidator')
 const {
     getIndicador,
@@ -26,7 +27,7 @@ const {
     getUsersFromIndicador,
 } = require('../controllers/indicadorController');
 const { verifyJWT, verifyUserHasRoles, verifyUserIsActive } = require('../middlewares/auth');
-const { determinePathway, SITE_PATH, FRONT_PATH } = require('../middlewares/determinePathway');
+const { determinePathway, SITE_PATH, FRONT_PATH, determineModule } = require('../middlewares/determinePathway');
 const { uploadImage } = require('../middlewares/fileUpload');
 const { getCatalogosFromIndicador } = require('../controllers/catalogoController');
 const { DESTINATIONS } = require('../services/fileService');
@@ -34,6 +35,7 @@ const { getFormulaOfIndicador, createFormula } = require('../controllers/formula
 const { exists } = require('../middlewares/resourceExists');
 const { createFormulaValidationRules } = require('../middlewares/validator/formulaValidator');
 const { createRelationUI } = require('../controllers/usuarioIndicadorController');
+const { getInformation } = require('../controllers/generalController');
 
 /**
  * @swagger
@@ -632,6 +634,16 @@ router.route('/:idIndicador/formula')
         verifyUserHasRoles(['USER', 'ADMIN']),
         exists('idIndicador', 'Indicador'),
         createFormula
+    )
+
+
+router.route('/info/general')
+    .get
+    (
+        determineModule,
+        generalFilterOptions(),
+        validate,
+        getInformation,
     )
 
 module.exports = router;
