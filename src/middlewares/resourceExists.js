@@ -1,8 +1,8 @@
 const models = require('../models');
 
 const exists = (pathId, modelName) => async (req, res, next) => {
+  const id = req.matchedData[pathId];
   try {
-    const id = req.matchedData[pathId];
     const result = await models[modelName].findOne({
       where: { id },
       raw: true,

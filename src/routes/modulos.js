@@ -20,8 +20,6 @@ const {
     createModuloValidationRules,
     updateModuloValidationRules,
 } = require('../middlewares/validator/moduloValidator')
-
-const { moduloExists } = require('../middlewares/verifyIdModulo');
 const { verifyJWT, verifyUserIsActive, verifyUserHasRoles } = require('../middlewares/auth');
 const { uploadImage } = require('../middlewares/fileUpload');
 const { determinePathway, SITE_PATH } = require('../middlewares/determinePathway');
