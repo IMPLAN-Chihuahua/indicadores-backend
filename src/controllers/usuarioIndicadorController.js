@@ -58,24 +58,22 @@ const getRelationInformation = async (data) => {
 };
 
 const getIndicadoresRelations = async (req, res, next) => {
-    const { page, perPage, order, sortBy } = req.matchedData;
-
+    const page = req.matchedData.page || 1;
+    const perPage = req.matchedData.perPage || 10;
     try {
-        const { data } = await UsuarioIndicadorService.getUsuariosIndicadores(page, perPage, order, sortBy);
-
+        const { data } = await UsuarioIndicadorService.getUsuariosIndicadores(page, perPage, req.matchedData);
         const { usuarios } = await getRelationInformation(data);
-
         const indicadorData = data.map(indicador => {
             const owner = usuarios.find(usuario => usuario.id === indicador.owner);
-
             return {
                 ...indicador,
                 owner: owner.nombres + ' ' + owner.apellidoPaterno
             }
-
         });
-
-        return res.status(200).json({ data: indicadorData });
+        // Paginate indicadorData
+        const total = indicadorData.length;
+        const paginatedData = indicadorData.slice((page - 1) * perPage, page * perPage);
+        return res.status(200).json({ data: paginatedData, total });
     } catch (err) {
         next(err);
     }

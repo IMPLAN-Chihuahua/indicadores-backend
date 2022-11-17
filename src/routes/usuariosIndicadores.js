@@ -8,7 +8,10 @@ const {
 } = require('../middlewares/validator/generalValidator')
 
 const {
-    sortValidationRules, relationTypeValidationRules, relationAssignValidationRules
+    sortValidationRules,
+    relationTypeValidationRules,
+    relationAssignValidationRules,
+    filterRelationValidationRules,
 } = require('../middlewares/validator/usuarioIndicadorValidator')
 
 const { verifyJWT, verifyUserIsActive, verifyUserHasRoles } = require('../middlewares/auth');
@@ -81,6 +84,7 @@ const {
 
 router.get(
     '/',
+    filterRelationValidationRules(),
     paginationValidationRules(),
     sortValidationRules(),
     paramValidationRules(),
