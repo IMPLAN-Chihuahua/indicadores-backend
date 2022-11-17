@@ -52,7 +52,8 @@ const validate = (req, res, next) => {
 
 const idValidation = () => {
     return param(['idModulo', 'idIndicador', 'idUser', 'idOds', 'idCobertura',
-        'idUnidadMedida', 'idCatalogo', 'idHistorico', 'idFormula', 'idVariable'])
+        'idUnidadMedida', 'idCatalogo', 'idHistorico', 'idFormula', 'idVariable',
+        'idMapa'])
         .optional()
         .isInt().withMessage('Field must be an integer number').bail()
         .toInt()
