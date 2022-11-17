@@ -26,5 +26,19 @@ const createMapa = async (req, res, next) => {
   }
 }
 
+const updateMapa = async (req, res, next) => {
+  const { idMapa, ...values } = req.matchedData;
+  const image = getImagePathLocation(req)
+  try {
+    const affectedRows = await Mapa.update(
+      { ...values, ...image }, {
+      where: { id: idMapa }
+    });
+    return affectedRows > 0 ? res.sendStatus(204) : res.sendStatus(400);
+  } catch (err) {
+    next(err)
+  }
+}
 
-module.exports = { getMapaOfIndicador, createMapa };
+
+module.exports = { getMapaOfIndicador, createMapa, updateMapa };

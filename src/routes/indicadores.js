@@ -664,7 +664,7 @@ router.route('/:idIndicador/mapa')
  *             format: int64
  *       requestBody:
  *         content:
- *           application/json:
+ *           multipart/form-data:
  *              schema:
  *                $ref: '#/components/schemas/Mapa'
  *       responses:
