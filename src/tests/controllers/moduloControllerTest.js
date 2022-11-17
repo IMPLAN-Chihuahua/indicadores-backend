@@ -167,9 +167,9 @@ describe('/modulos', function () {
       usuarioStub.onSecondCall().resolves(adminRol);
     });
 
-    const bigImage = Buffer.alloc(100200000, '.jpg')
-    const allowedImage = Buffer.alloc(10000, '.jpg')
-    const notAllowedFile = Buffer.alloc(10000, '.pdf')
+    const bigImage = Buffer.alloc(2_200_000, '.jpg')
+    const allowedImage = Buffer.alloc(10_000, '.jpg')
+    const notAllowedFile = Buffer.alloc(50, '.pdf')
 
     it('Should reject the creation of a new modulo due to file size limit exceeded', function (done) {
       const moduloFake = aModulo(5);
