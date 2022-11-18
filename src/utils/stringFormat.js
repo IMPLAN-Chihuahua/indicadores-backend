@@ -47,6 +47,9 @@ const getImagePathLocation = (req) => {
 		image.urlImagen = req.file.location;
 	} else if (req.file) {
 		image.urlImagen = `http://${req.headers.host}/${req.file.path}`;
+	} 
+	if (req.body.urlImagen === 'null') {
+		image.urlImagen = null;
 	}
 	return image;
 };

@@ -6,7 +6,7 @@ const getMapaOfIndicador = async (req, res, next) => {
   const { idIndicador } = req.matchedData;
   try {
     const mapa = await Mapa.findOne({ where: { idIndicador } });
-    return res.status(200).json({ data: { ...mapa } });
+    return res.status(200).json({ data: { ...mapa?.dataValues } });
   } catch (err) {
     next(err)
   }
@@ -28,7 +28,7 @@ const createMapa = async (req, res, next) => {
 
 const updateMapa = async (req, res, next) => {
   const { idMapa, ...values } = req.matchedData;
-  const image = getImagePathLocation(req)
+  const image = getImagePathLocation(req);
   try {
     const affectedRows = await Mapa.update(
       { ...values, ...image }, {

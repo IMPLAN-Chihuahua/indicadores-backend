@@ -23,6 +23,7 @@ const updateFormula = async (req, res, next) => {
 }
 
 const createFormula = async (req, res, next) => {
+  // TODO: Add validation if user is related to indicador
   try {
     const values = req.matchedData;
     const created = await formulaService.createFormula(values);

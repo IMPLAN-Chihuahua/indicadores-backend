@@ -6,9 +6,7 @@ const mapaValidationRules = () => [
     .isURL(),
 
   body('ubicacion')
-    .optional()
     .trim()
-    .notEmpty(),
 ];
 
 
