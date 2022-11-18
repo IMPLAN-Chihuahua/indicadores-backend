@@ -49,12 +49,41 @@ const validate = (req, res, next) => {
 
 };
 
-const generalFilterOptions = () => {
-    return body(['options'])
+const generalFilterOptions = () => [
+    //Allow attributes query, if only one attribute is passed, it will be converted to an array
+    query('attributes')
         .optional()
-        .isObject()
+        .customSanitizer((value) => {
+            if (typeof value === 'string') {
+                return [value];
+            }
+            return value;
+        }),
+    query('id')
+        .optional()
+        .isInt().withMessage('Field must be an integer number')
+        .toInt()
+        .custom((value) => {
+            if (value < 1) {
+                throw new Error('El valor del campo debe ser mayor a 0');
+            }
+            return true;
+        }),
 
-}
+];
+
+const generalSortValidationRules = () => [
+    query('sortBy')
+        .optional()
+        .isString().withMessage('Parámetro debe ser una cadena de texto')
+    ,
+
+    query('order')
+        .optional()
+        .toUpperCase()
+        .isIn(['ASC', 'DESC'])
+        .withMessage('Parámetro de ordenamiento debe ser ASC o DESC.')
+];
 
 const idValidation = () => {
     return param(['idModulo', 'idIndicador', 'idUser', 'idOds', 'idCobertura',
@@ -76,6 +105,7 @@ const formatDocsValidation = () => {
         .withMessage('formato debe ser csv, xlsx, pdf o json')
 }
 
+
 const joinRules = (...rules) => [rules]
 
 module.exports = {
@@ -87,4 +117,5 @@ module.exports = {
     joinRules,
     formatDocsValidation,
     generalFilterOptions,
+    generalSortValidationRules,
 }

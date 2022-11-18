@@ -21,7 +21,7 @@ const determinePathway = (route) => (req, res, next) => {
   }
 };
 
-const determineModule = (req, res, next) => {
+const determineModel = (req, res, next) => {
   const model = req.baseUrl.split('/').slice(-1)[0];
   switch (model) {
     case 'indicadores':
@@ -48,6 +48,6 @@ module.exports = {
   FRONT_PATH,
   SITE_PATH,
   FILE_PATH,
-  determineModule,
+  determineModel,
 
 }
