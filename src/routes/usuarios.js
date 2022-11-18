@@ -415,9 +415,9 @@ router
     .get
     (
         '/info/general',
-        verifyJWT,
-        verifyUserIsActive,
-        verifyUserHasRoles(['USER', 'ADMIN']),
+        // verifyJWT,
+        // verifyUserIsActive,
+        // verifyUserHasRoles(['USER', 'ADMIN']),
         determineModel,
         generalFilterOptions(),
         paramValidationRules(),
