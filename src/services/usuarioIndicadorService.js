@@ -196,7 +196,6 @@ const deleteRelation = async (id) => {
 };
 
 const updateRelation = async (id, options) => {
-  console.log(id, options);
   // try {
   //   await UsuarioIndicador.update(options, {
   //     where: {
