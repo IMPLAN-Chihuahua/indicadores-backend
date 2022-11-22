@@ -19,9 +19,13 @@ const {
     paginationValidationRules,
     paramValidationRules,
     validate,
+    generalFilterOptions,
+    generalSortValidationRules
 } = require('../middlewares/validator/generalValidator')
 const { exists } = require('../middlewares/resourceExists');
 const { DESTINATIONS } = require('../services/fileService');
+const { determineModel } = require('../middlewares/determinePathway');
+const { getInformation } = require('../controllers/generalController');
 
 /**
  * @swagger
@@ -353,5 +357,74 @@ router.post(
     editUserStatus,
 );
 
+/**
+ * @swagger
+ *   /usuarios/info/general:
+ *     get:
+ *       summary: Retrieve general information about Usuarios.
+ *       tags: [Usuarios]
+ *       parameters:
+ *         - in: query
+ *           name: page
+ *           schema:
+ *             type: integer
+ *         - in: query
+ *           name: perPage
+ *           schema:
+ *             type: integer
+ *         - in: query
+ *           name: id
+ *           schema:
+ *             type: integer
+ *         - in: query
+ *           name: sortBy
+ *           schema:
+ *             type: string
+ *         - in: query
+ *           name: order
+ *           schema:
+ *             type: string
+ *             enum: [asc, desc]
+ *         - in: query
+ *           name: attributes
+ *           schema:
+ *             type: array
+ *       security:
+ *         - bearer: []
+ *       responses:
+ *         200:
+ *           description: General information about Usuarios.
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/components/schemas/Usuario'
+ *         401:
+ *           $ref: '#/components/responses/Unauthorized'
+ *         403:
+ *           $ref: '#/components/responses/Forbidden'
+ *         404:
+ *           $ref: '#/components/responses/NotFound'
+ *         422:
+ *           $ref: '#components/responses/UnprocessableEntity'
+ *         429:
+ *           $ref: '#components/responses/TooManyRequests'
+ *         500:
+ *           $ref: '#components/responses/InternalServerError'
+ */
+router
+    .get
+    (
+        '/info/general',
+        verifyJWT,
+        verifyUserIsActive,
+        verifyUserHasRoles(['USER', 'ADMIN']),
+        determineModel,
+        generalFilterOptions(),
+        paramValidationRules(),
+        paginationValidationRules(),
+        generalSortValidationRules(),
+        validate,
+        getInformation,
+    )
 
 module.exports = router;

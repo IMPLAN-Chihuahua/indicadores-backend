@@ -1,6 +1,7 @@
 /* eslint-disable no-restricted-syntax */
-const { UsuarioIndicador, Usuario, Indicador, sequelize, Sequelize } = require('../models');
-const { Op } = Sequelize;
+const { UsuarioIndicador, Usuario, Indicador, sequelize } = require('../models');
+const { getInformation } = require('./generalServices');
+const { Op } = sequelize.Sequelize;
 
 const areConnected = async (idUsuario, idIndicador) => {
   try {
@@ -166,12 +167,6 @@ const getAllRelationsFilters = (matchedData) => {
   return {};
 };
 
-const getRelationsSorting = ({ sortBy, order }) => {
-  const arrangement = [];
-  arrangement.push([sortBy || 'id', order || 'ASC']);
-  return arrangement;
-};
-
 const createRelationWithModules = async (idModulo) => {
   try {
     const indicadoresID = await Indicador.findAll({
@@ -200,7 +195,6 @@ const deleteRelation = async (id) => {
 };
 
 const updateRelation = async (id, options) => {
-  console.log(id, options);
   // try {
   //   await UsuarioIndicador.update(options, {
   //     where: {
@@ -211,6 +205,15 @@ const updateRelation = async (id, options) => {
   // } catch (err) {
   //   throw new Error(`Error al actualizar la relacion: ${err.message}`);
   // }
+};
+
+const getModelSelected = async (model, options) => {
+  try {
+    const result = await getInformation(model, options);
+    return result;
+  } catch (err) {
+    throw new Error(`Error al obtener la información: ${err.message}`);
+  }
 }
 
 module.exports = {
@@ -222,4 +225,5 @@ module.exports = {
   deleteRelation,
   updateRelation,
   createRelationWithModules,
+  getModelSelected,
 }

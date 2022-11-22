@@ -13,6 +13,8 @@ const {
     paramValidationRules,
     validate,
     idValidation,
+    generalFilterOptions,
+    generalSortValidationRules,
 } = require('../middlewares/validator/generalValidator')
 const {
     getIndicador,
@@ -23,7 +25,7 @@ const {
     getUsersFromIndicador,
 } = require('../controllers/indicadorController');
 const { verifyJWT, verifyUserHasRoles, verifyUserIsActive } = require('../middlewares/auth');
-const { determinePathway, SITE_PATH, FRONT_PATH } = require('../middlewares/determinePathway');
+const { determinePathway, SITE_PATH, FRONT_PATH, determineModel } = require('../middlewares/determinePathway');
 const { uploadImage } = require('../middlewares/fileUpload');
 const { getCatalogosFromIndicador } = require('../controllers/catalogoController');
 const { DESTINATIONS } = require('../services/fileService');
@@ -31,6 +33,7 @@ const { getFormulaOfIndicador, createFormula } = require('../controllers/formula
 const { exists } = require('../middlewares/resourceExists');
 const { createFormulaValidationRules } = require('../middlewares/validator/formulaValidator');
 const { createRelationUI } = require('../controllers/usuarioIndicadorController');
+const { getInformation } = require('../controllers/generalController');
 const { getMapaOfIndicador, createMapa } = require('../controllers/mapaController');
 const { mapaValidationRules } = require('../middlewares/validator/mapaValidator');
 
@@ -195,14 +198,14 @@ const router = express.Router();
  *           $ref: '#/components/responses/InternalServerError'
  */
 router.route('/:idIndicador')
-	.get(
-		idValidation(),
-		filterIndicadoresValidationRules(),
-		validate,
-		determinePathway(SITE_PATH),
-		exists('idIndicador', 'Indicador'),
-		getIndicador
-	);
+    .get(
+        idValidation(),
+        filterIndicadoresValidationRules(),
+        validate,
+        determinePathway(SITE_PATH),
+        exists('idIndicador', 'Indicador'),
+        getIndicador
+    );
 
 /**
  * @swagger
@@ -262,13 +265,13 @@ router.route('/:idIndicador')
  */
 
 router.route('/')
-	.get(verifyJWT,
-		paginationValidationRules(),
-		sortValidationRules(),
-		filterIndicadoresValidationRules(),
-		validate,
-		determinePathway(FRONT_PATH),
-		getIndicadores);
+    .get(verifyJWT,
+        paginationValidationRules(),
+        sortValidationRules(),
+        filterIndicadoresValidationRules(),
+        validate,
+        determinePathway(FRONT_PATH),
+        getIndicadores);
 
 
 /**
@@ -304,13 +307,13 @@ router.route('/')
  *           $ref: '#/components/responses/InternalServerError'
  */
 router.route('/').post(
-	verifyJWT,
-	verifyUserIsActive,
-	uploadImage(DESTINATIONS.MAPAS),
-	verifyUserHasRoles(['ADMIN', 'USER']),
-	createIndicadorValidationRules(),
-	validate,
-	createIndicador
+    verifyJWT,
+    verifyUserIsActive,
+    uploadImage(DESTINATIONS.MAPAS),
+    verifyUserHasRoles(['ADMIN', 'USER']),
+    createIndicadorValidationRules(),
+    validate,
+    createIndicador
 );
 
 
@@ -351,16 +354,16 @@ router.route('/').post(
  *           $ref: '#/components/responses/InternalServerError'
  */
 router.route('/:idIndicador')
-	.patch(
-		paramValidationRules(),
-		uploadImage(DESTINATIONS.INDICADORES),
-		updateIndicadorValidationRules(),
-		validate,
-		verifyJWT,
-		verifyUserIsActive,
-		exists('idIndicador', 'Indicador'),
-		updateIndicador
-	);
+    .patch(
+        paramValidationRules(),
+        uploadImage(DESTINATIONS.INDICADORES),
+        updateIndicadorValidationRules(),
+        validate,
+        verifyJWT,
+        verifyUserIsActive,
+        exists('idIndicador', 'Indicador'),
+        updateIndicador
+    );
 
 /**
  * @swagger
@@ -391,15 +394,15 @@ router.route('/:idIndicador')
  *        $ref: '#components/responses/InternalServerError'
  */
 router.route('/:idIndicador/toggle-status')
-	.patch(
-		verifyJWT,
-		verifyUserIsActive,
-		verifyUserHasRoles(['ADMIN']),
-		paramValidationRules(),
-		validate,
-		exists('idIndicador', 'Indicador'),
-		updateIndicadorStatus
-	);
+    .patch(
+        verifyJWT,
+        verifyUserIsActive,
+        verifyUserHasRoles(['ADMIN']),
+        paramValidationRules(),
+        validate,
+        exists('idIndicador', 'Indicador'),
+        updateIndicadorStatus
+    );
 
 
 /**
@@ -450,23 +453,23 @@ router.route('/:idIndicador/toggle-status')
  *         $ref: '#components/responses/InternalServerError'
  */
 router.route('/:idIndicador/usuarios')
-	.post(
-		verifyJWT,
-		verifyUserIsActive,
-		verifyUserHasRoles(['ADMIN']),
-		paramValidationRules(),
-		indicadorAssignUsuarioValidationRules(),
-		validate,
-		createRelationUI,
-	);
+    .post(
+        verifyJWT,
+        verifyUserIsActive,
+        verifyUserHasRoles(['ADMIN']),
+        paramValidationRules(),
+        indicadorAssignUsuarioValidationRules(),
+        validate,
+        createRelationUI,
+    );
 
 router.route('/:idIndicador/usuarios')
-	.get(
-		paramValidationRules(),
-		validate,
-		exists('idIndicador', 'Indicador'),
-		getUsersFromIndicador
-	)
+    .get(
+        paramValidationRules(),
+        validate,
+        exists('idIndicador', 'Indicador'),
+        getUsersFromIndicador
+    )
 
 /**
  * @swagger
@@ -518,12 +521,12 @@ router.route('/:idIndicador/usuarios')
  *           $ref: '#components/responses/InternalServerError'
  */
 router.route('/:idIndicador/catalogos')
-	.get(
-		paramValidationRules(),
-		validate,
-		exists('idIndicador', 'Indicador'),
-		getCatalogosFromIndicador
-	)
+    .get(
+        paramValidationRules(),
+        validate,
+        exists('idIndicador', 'Indicador'),
+        getCatalogosFromIndicador
+    )
 
 
 /**
@@ -562,15 +565,15 @@ router.route('/:idIndicador/catalogos')
  *           $ref: '#components/responses/InternalServerError'
  */
 router.route('/:idIndicador/formula')
-	.get(
-		paramValidationRules(),
-		validate,
-		verifyJWT,
-		verifyUserIsActive,
-		verifyUserHasRoles(['USER', 'ADMIN']),
-		exists('idIndicador', 'Indicador'),
-		getFormulaOfIndicador
-	)
+    .get(
+        paramValidationRules(),
+        validate,
+        verifyJWT,
+        verifyUserIsActive,
+        verifyUserHasRoles(['USER', 'ADMIN']),
+        exists('idIndicador', 'Indicador'),
+        getFormulaOfIndicador
+    )
 
 /**
  * @swagger
@@ -607,16 +610,16 @@ router.route('/:idIndicador/formula')
  *           $ref: '#components/responses/InternalServerError'
  */
 router.route('/:idIndicador/formula')
-	.post(
-		idValidation(),
-		createFormulaValidationRules(),
-		validate,
-		verifyJWT,
-		verifyUserIsActive,
-		verifyUserHasRoles(['USER', 'ADMIN']),
-		exists('idIndicador', 'Indicador'),
-		createFormula
-	)
+    .post(
+        idValidation(),
+        createFormulaValidationRules(),
+        validate,
+        verifyJWT,
+        verifyUserIsActive,
+        verifyUserHasRoles(['USER', 'ADMIN']),
+        exists('idIndicador', 'Indicador'),
+        createFormula
+    )
 
 /**
  * @swagger
@@ -642,12 +645,12 @@ router.route('/:idIndicador/formula')
  *           $ref: '#components/responses/InternalServerError'
  */
 router.route('/:idIndicador/mapa')
-	.get(
-		idValidation(),
-		validate,
-		exists('idIndicador', 'Indicador'),
-		getMapaOfIndicador
-	);
+    .get(
+        idValidation(),
+        validate,
+        exists('idIndicador', 'Indicador'),
+        getMapaOfIndicador
+    );
 
 /**
  * @swagger
@@ -682,17 +685,86 @@ router.route('/:idIndicador/mapa')
  *           $ref: '#components/responses/InternalServerError'
  */
 router.route('/:idIndicador/mapa')
-	.post(
-		verifyJWT,
-		verifyUserIsActive,
-		verifyUserHasRoles(['USER', 'ADMIN']),
-		idValidation(),
-		uploadImage(DESTINATIONS.MAPAS),
-		mapaValidationRules(),
-		validate,
-		exists('idIndicador', 'Indicador'),
-		createMapa
-	);
+    .post(
+        verifyJWT,
+        verifyUserIsActive,
+        verifyUserHasRoles(['USER', 'ADMIN']),
+        idValidation(),
+        uploadImage(DESTINATIONS.MAPAS),
+        mapaValidationRules(),
+        validate,
+        exists('idIndicador', 'Indicador'),
+        createMapa
+    );
 
+
+/**
+ * @swagger
+ *   /indicadores/info/general:
+ *     get:
+ *       summary: Retrieve general information about Indicadores.
+ *       tags: [Indicadores]
+ *       parameters:
+ *         - in: query
+ *           name: page
+ *           schema:
+ *             type: integer
+ *         - in: query
+ *           name: perPage
+ *           schema:
+ *             type: integer
+ *         - in: query
+ *           name: id
+ *           schema:
+ *             type: integer
+ *         - in: query
+ *           name: sortBy
+ *           schema:
+ *             type: string
+ *         - in: query
+ *           name: order
+ *           schema:
+ *             type: string
+ *             enum: [asc, desc]
+ *         - in: query
+ *           name: attributes
+ *           schema:
+ *             type: array
+ *       security:
+ *         - bearer: []
+ *       responses:
+ *         200:
+ *           description: General information about Indicadores.
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/components/schemas/Indicador'
+ *         401:
+ *           $ref: '#/components/responses/Unauthorized'
+ *         403:
+ *           $ref: '#/components/responses/Forbidden'
+ *         404:
+ *           $ref: '#/components/responses/NotFound'
+ *         422:
+ *           $ref: '#components/responses/UnprocessableEntity'
+ *         429:
+ *           $ref: '#components/responses/TooManyRequests'
+ *         500:
+ *           $ref: '#components/responses/InternalServerError'
+ */
+router.route('/info/general')
+    .get
+    (
+        verifyJWT,
+        verifyUserIsActive,
+        verifyUserHasRoles(['USER', 'ADMIN']),
+        determineModel,
+        generalFilterOptions(),
+        paramValidationRules(),
+        paginationValidationRules(),
+        generalSortValidationRules(),
+        validate,
+        getInformation,
+    )
 
 module.exports = router;
