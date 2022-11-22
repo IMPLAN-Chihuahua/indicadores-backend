@@ -361,7 +361,7 @@ router.post(
  * @swagger
  *   /usuarios/info/general:
  *     get:
- *       summary: Retrieve general information about Indicadores.
+ *       summary: Retrieve general information about Usuarios.
  *       tags: [Usuarios]
  *       parameters:
  *         - in: query
@@ -393,11 +393,11 @@ router.post(
  *         - bearer: []
  *       responses:
  *         200:
- *           description: General information about Indicadores.
+ *           description: General information about Usuarios.
  *           content:
  *             application/json:
  *               schema:
- *                 $ref: '#/components/schemas/Indicador'
+ *                 $ref: '#/components/schemas/Usuario'
  *         401:
  *           $ref: '#/components/responses/Unauthorized'
  *         403:
@@ -415,9 +415,9 @@ router
     .get
     (
         '/info/general',
-        // verifyJWT,
-        // verifyUserIsActive,
-        // verifyUserHasRoles(['USER', 'ADMIN']),
+        verifyJWT,
+        verifyUserIsActive,
+        verifyUserHasRoles(['USER', 'ADMIN']),
         determineModel,
         generalFilterOptions(),
         paramValidationRules(),
