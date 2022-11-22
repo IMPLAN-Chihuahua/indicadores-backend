@@ -10,6 +10,8 @@ const { numberWithCommas, returnUnit, returnFuente } = require("../utils/stringF
 const handlebars = require("handlebars");
 const { footer } = require("../utils/footerImage");
 
+const MAX_IMAGE_SIZE = 1_048_576; // 1MB
+
 aws.config.update({
   secretAccessKey: process.env.S3_ACCESS_SECRET,
   accessKeyId: process.env.S3_ACCESS_KEY,
@@ -79,7 +81,7 @@ const upload = (destination) => {
   return multer({
     storage: getStorage(destination),
     limits: {
-      fileSize: 1000000,
+      fileSize: MAX_IMAGE_SIZE,
       files: 1
     },
     fileFilter: (req, file, cb) => {
