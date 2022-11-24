@@ -196,6 +196,7 @@ router.post('/create',
 router.get(
     '/indicador/:idIndicador',
     paramValidationRules(),
+    paginationValidationRules(),
     validate,
     getRelationUsers,
 );

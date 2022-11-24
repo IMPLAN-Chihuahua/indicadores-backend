@@ -98,9 +98,11 @@ const getUsuariosIndicadores = async (page, perPage, matchedData) => {
 };
 
 /** Returns a list of how many users and the information about the relation between usuarios - indicadores. Also, it returns the name of the selected indicador */
-const getRelationUsers = async (idIndicador) => {
+const getRelationUsers = async (limit, offset, idIndicador) => {
   try {
     const result = await UsuarioIndicador.findAndCountAll({
+      limit,
+      offset,
       where: {
         idIndicador,
       },

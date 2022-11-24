@@ -81,11 +81,18 @@ const getIndicadoresRelations = async (req, res, next) => {
 const getRelationUsers = async (req, res, next) => {
     const { idIndicador } = req.matchedData;
     const attributes = ['nombre']
+
+    const page = req.matchedData.page || 1;
+    const perPage = req.matchedData.perPage || 25;
+
     try {
-        const { data, total } = await UsuarioIndicadorService.getRelationUsers(idIndicador);
+        const { data, total } = await UsuarioIndicadorService.getRelationUsers(perPage, (page - 1) * perPage, idIndicador);
+
+        const totalPages = Math.ceil(total / perPage);
+
         const { nombre } = await ProtectedIndicadorService.getIndicador(idIndicador, attributes);
 
-        return res.status(200).json({ data, total, nombre });
+        return res.status(200).json({ data, page, perPage, total, totalPages, nombre });
     } catch (err) {
         next(err);
     }
