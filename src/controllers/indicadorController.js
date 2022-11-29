@@ -15,7 +15,7 @@ const getIndicador = async (req, res, next) => {
     if (pathway === FILE_PATH) {
       return generateFile(format, res, indicador).catch(err => next(err));
     }
-    return (res.status(200).json({ data: indicador }))
+    return (res.status(200).json({ data: indicador, navigation: { prev: indicador.prev, next: indicador.next } }));
   } catch (err) {
     next(err)
   }
