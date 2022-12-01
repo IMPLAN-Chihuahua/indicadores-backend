@@ -123,7 +123,6 @@ const getRelationUsers = async (limit, offset, idIndicador) => {
         [sequelize.literal('"indicador"."nombre"'), "indicador"],
       ],
     });
-
     return {
       data: result.rows,
       total: result.count,
@@ -197,16 +196,16 @@ const deleteRelation = async (id) => {
 };
 
 const updateRelation = async (id, options) => {
-  // try {
-  //   await UsuarioIndicador.update(options, {
-  //     where: {
-  //       id
-  //     }
-  //   });
-  //   return;
-  // } catch (err) {
-  //   throw new Error(`Error al actualizar la relacion: ${err.message}`);
-  // }
+  try {
+    await UsuarioIndicador.update(options, {
+      where: {
+        id
+      }
+    });
+    return;
+  } catch (err) {
+    throw new Error(`Error al actualizar la relacion: ${err.message}`);
+  }
 };
 
 const getModelSelected = async (model, options) => {

@@ -292,6 +292,7 @@ router.patch(
     verifyJWT,
     verifyUserIsActive,
     verifyUserHasRoles(['ADMIN']),
+    relationAssignValidationRules(),
     paramValidationRules(),
     validate,
     updateRelation,

@@ -121,7 +121,6 @@ const deleteRelation = async (req, res, next) => {
 
 const updateRelation = async (req, res, next) => {
     const { idRelacion, desde, hasta, expires } = req.matchedData;
-
     const updatedBy = req.sub;
     try {
         await UsuarioIndicadorService.updateRelation(idRelacion, {
