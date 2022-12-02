@@ -12,9 +12,8 @@ const {
   CatalogoDetail,
   CatalogoDetailIndicador
 } = require("../models");
-const { toggleStatus, isObjEmpty } = require("../utils/objectUtils");
+const { toggleStatus } = require("../utils/objectUtils");
 const { createRelation } = require("./usuarioIndicadorService");
-
 const { Op } = Sequelize;
 
 const getIndicadores = async (page, perPage, matchedData, pathway) => {
@@ -32,7 +31,7 @@ const getIndicadores = async (page, perPage, matchedData, pathway) => {
 
     return { indicadores: result.rows, total: result.count };
   } catch (err) {
-    throw new Error(`Error al obtener indicadores: ${err.message}`);
+    throw err;
   }
 };
 
@@ -60,7 +59,7 @@ const getDefinitionsForIndicadores = (pathway, queryParams) => {
 };
 
 const defineAttributes = (pathway, matchedData) => {
-  const attributes = ["id", "nombre", "ultimoValorDisponible",
+  const attributes = ["id", "nombre", "ultimoValorDisponible", "activo",
     "anioUltimoValorDisponible", "tendenciaActual", "fuente", "createdBy", "updatedAt", "periodicidad", "owner"];
 
   switch (pathway) {
@@ -84,8 +83,7 @@ const defineAttributes = (pathway, matchedData) => {
         "updatedBy",
         "idModulo",
         "createdAt",
-        "updatedAt",
-        "activo")
+        "updatedAt",)
       return attributes;
     default:
       throw new Error('Invalid pathway');
@@ -153,7 +151,7 @@ const getIndicador = async (idIndicador, pathway) => {
 
     return { ...indicador.dataValues };
   } catch (err) {
-    throw new Error(`Error al obtener indicador ${idIndicador}\n${err.message}`)
+    throw err;
   }
 };
 
@@ -198,7 +196,7 @@ const getIndicadoresFilters = (matchedData) => {
 
 const filterIndicadorBy = (matchedData) => {
   const { anioUltimoValorDisponible, tendenciaActual } = matchedData;
-  const filters = {};
+  const filters = { activo: 'SI' };
   if (anioUltimoValorDisponible) {
     filters.anioUltimoValorDisponible = anioUltimoValorDisponible;
   }
@@ -324,7 +322,7 @@ const includeBasicModels = () => {
     {
       model: Modulo,
       required: true,
-      attributes: ['id', 'temaIndicador', 'descripcion', 'color', 'codigo'],
+      attributes: ['id', 'temaIndicador', 'descripcion', 'color', 'codigo', 'activo'],
     },
     {
       model: CatalogoDetail,

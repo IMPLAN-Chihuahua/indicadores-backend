@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 8080;
 const env = process.env.NODE_ENV || 'development';
 const servers = [
   {
-    url: 'https://indicadores-backend.chihuahuametrica.online/api/v1',
+    url: 'http://indicadores-backend.chihuahuametrica.online/',
     description: 'Production Server'
   }
 ]

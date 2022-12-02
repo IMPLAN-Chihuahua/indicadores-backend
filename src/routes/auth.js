@@ -65,6 +65,15 @@ const {
  *             example:
  *               status: 404
  *               message: Resource with id was not found
+ *       Conflict:
+ *         description: There's a conflict with the specified resource.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/BasicError'
+ *             example:
+ *               status: 409
+ *               message: Resource is not active
  *       UnprocessableEntity:
  *         description: Validation failed.
  *         content:

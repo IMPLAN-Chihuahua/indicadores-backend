@@ -138,7 +138,7 @@ describe('/modulos', function () {
         });
     });
 
-    it('Should return no content if modulo is not active', function (done) {
+    it('Should return conflict error if modulo is not active', function (done) {
       const inactiveModulo = aModulo(20);
       inactiveModulo.activo = 'NO';
       const findByPkFake = sinon.fake.resolves(inactiveModulo);
@@ -147,7 +147,7 @@ describe('/modulos', function () {
         .get('/api/v1/modulos/20')
         .end(function (err, res) {
           expect(err).to.be.null;
-          expect(res).to.have.status(204);
+          expect(res).to.have.status(409);
           done();
         })
     })
@@ -358,7 +358,7 @@ describe('/modulos', function () {
 
   });
 
-  describe('PUT', function () {
+  describe('PUT /:idModulo', function () {
     let usuarioStub;
     this.beforeEach(function () {
       usuarioStub = sinon.stub(Usuario, 'findOne');
@@ -420,7 +420,7 @@ describe('/modulos', function () {
     });
   });
 
-  describe('PATCH', function () {
+  describe('PATCH /:idModulo', function () {
     let usuarioStub;
     this.beforeEach(function () {
       usuarioStub = sinon.stub(Usuario, 'findOne');

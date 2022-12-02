@@ -88,7 +88,7 @@ const getModulo = async (req, res, next) => {
       return res.sendStatus(404);
     }
     if (modulo.activo === 'NO') {
-      return res.sendStatus(204)
+      return res.status(409).json({status: 409, message: `El tema ${modulo.temaIndicador} se encuentra inactivo`});
     }
     return res.status(200).json({ data: { ...modulo.dataValues } });
   } catch (err) {

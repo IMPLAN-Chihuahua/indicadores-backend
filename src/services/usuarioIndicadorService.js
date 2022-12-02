@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-syntax */
-const { UsuarioIndicador, Usuario, Indicador, sequelize } = require('../models');
+const { UsuarioIndicador, Usuario, Indicador, sequelize, Sequelize } = require('../models');
 const { getInformation } = require('./generalServices');
-const { Op } = sequelize.Sequelize;
+const { Op } = Sequelize;
 
 const areConnected = async (idUsuario, idIndicador) => {
   try {
