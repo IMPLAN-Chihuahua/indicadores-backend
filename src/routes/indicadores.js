@@ -190,6 +190,8 @@ const router = express.Router();
  *                 $ref: '#/components/schemas/Indicador'
  *         404:
  *           $ref: '#/components/responses/NotFound'
+ *         409:
+ *           $ref: '#/components/responses/Conflict'
  *         422:
  *           $ref: '#/components/responses/UnprocessableEntity'
  *         429:
