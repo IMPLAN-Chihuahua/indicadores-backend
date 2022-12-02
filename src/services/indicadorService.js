@@ -60,7 +60,7 @@ const getDefinitionsForIndicadores = (pathway, queryParams) => {
 
 const defineAttributes = (pathway, matchedData) => {
   const attributes = ["id", "nombre", "ultimoValorDisponible", "activo",
-    "anioUltimoValorDisponible", "tendenciaActual", "fuente", "createdBy", "updatedAt", "periodicidad"];
+    "anioUltimoValorDisponible", "tendenciaActual", "fuente", "createdBy", "updatedAt", "periodicidad", "owner"];
 
   switch (pathway) {
     case FILE_PATH:

@@ -98,9 +98,11 @@ const getUsuariosIndicadores = async (page, perPage, matchedData) => {
 };
 
 /** Returns a list of how many users and the information about the relation between usuarios - indicadores. Also, it returns the name of the selected indicador */
-const getRelationUsers = async (idIndicador) => {
+const getRelationUsers = async (limit, offset, idIndicador) => {
   try {
     const result = await UsuarioIndicador.findAndCountAll({
+      limit,
+      offset,
       where: {
         idIndicador,
       },
@@ -121,7 +123,6 @@ const getRelationUsers = async (idIndicador) => {
         [sequelize.literal('"indicador"."nombre"'), "indicador"],
       ],
     });
-
     return {
       data: result.rows,
       total: result.count,
@@ -195,16 +196,16 @@ const deleteRelation = async (id) => {
 };
 
 const updateRelation = async (id, options) => {
-  // try {
-  //   await UsuarioIndicador.update(options, {
-  //     where: {
-  //       id
-  //     }
-  //   });
-  //   return;
-  // } catch (err) {
-  //   throw new Error(`Error al actualizar la relacion: ${err.message}`);
-  // }
+  try {
+    await UsuarioIndicador.update(options, {
+      where: {
+        id
+      }
+    });
+    return;
+  } catch (err) {
+    throw new Error(`Error al actualizar la relacion: ${err.message}`);
+  }
 };
 
 const getModelSelected = async (model, options) => {

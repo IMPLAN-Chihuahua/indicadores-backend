@@ -196,6 +196,7 @@ router.post('/create',
 router.get(
     '/indicador/:idIndicador',
     paramValidationRules(),
+    paginationValidationRules(),
     validate,
     getRelationUsers,
 );
@@ -291,6 +292,7 @@ router.patch(
     verifyJWT,
     verifyUserIsActive,
     verifyUserHasRoles(['ADMIN']),
+    relationAssignValidationRules(),
     paramValidationRules(),
     validate,
     updateRelation,
