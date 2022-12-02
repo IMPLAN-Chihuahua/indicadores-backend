@@ -94,6 +94,23 @@ describe('v1/indicadores', function () {
 				})
 		});
 
+		it('Should fail to return indicador because is inactivo', done => {
+			sinon.restore();
+			const findOneIndicadorFake = sinon.stub(Indicador, 'findOne')
+			findOneIndicadorFake.onFirstCall().resolves({ count: 1 });
+			findOneIndicadorFake.onSecondCall().resolves({ ...anIndicador(1), activo: 'NO' });
+			const findIndicadores = sinon.fake.resolves([{ id: 3 }, { id: 23 }])
+			sinon.replace(Indicador, 'findAll', findIndicadores);
+			chai.request(app)
+				.get('/api/v1/indicadores/1')
+				.end((err, res) => {
+					expect(res).to.have.status(409);
+					expect(findOneIndicadorFake.calledTwice).to.be.true;
+					expect(findIndicadores.calledOnce).to.be.true;
+					done();
+				})
+		})
+
 		it('Should return 2 items per page', function (done) {
 			const findAndCountAllFake = sinon.fake.resolves({ rows: indicadoresList, count: indicadoresList.length });
 			const findOneFake = sinon.fake.resolves({ count: 1 });

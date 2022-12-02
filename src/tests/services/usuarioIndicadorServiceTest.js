@@ -9,7 +9,7 @@ const UsuarioIndicadorService = require('../../services/usuarioIndicadorService'
 const { server } = require('../../../app');
 const { relationInfo, usersToIndicador } = require('../../utils/factories');
 
-describe.only('Usuario-Indicador service', function () {
+describe('Usuario-Indicador service', function () {
 
   const relations = relationInfo();
   const userToIndicador = usersToIndicador();
