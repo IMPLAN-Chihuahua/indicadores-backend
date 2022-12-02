@@ -2,20 +2,24 @@ const stream = require('stream');
 const IndicadorService = require("../services/indicadorService")
 const { generateCSV, generateXLSX, generatePDF } = require("../services/fileService");
 const UsuarioService = require('../services/usuariosService');
-const { areConnected, createRelation } = require("../services/usuarioIndicadorService");
+const { areConnected } = require("../services/usuarioIndicadorService");
 const { getPagination } = require('../utils/pagination');
-const { FILE_PATH } = require('../middlewares/determinePathway')
-const os = require('os')
+const { FILE_PATH, FRONT_PATH } = require('../middlewares/determinePathway')
+
 
 const getIndicador = async (req, res, next) => {
   const { pathway } = req;
   const { idIndicador, format } = req.matchedData;
   try {
     const indicador = await IndicadorService.getIndicador(idIndicador, pathway);
+    const hasConflict = indicador.activo === 'NO' || indicador?.modulo.activo === 'NO';
+    if (hasConflict && pathway !== FRONT_PATH) {
+      return res.status(409).json({ status: 409, message: `El indicador ${indicador.nombre} se encuentra inactivo`});
+    }
     if (pathway === FILE_PATH) {
       return generateFile(format, res, indicador).catch(err => next(err));
     }
-    return (res.status(200).json({ data: indicador }))
+    return res.status(200).json({ data: indicador })
   } catch (err) {
     next(err)
   }
