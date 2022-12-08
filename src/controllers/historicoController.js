@@ -48,6 +48,7 @@ const updateHistorico = async (req, res, next) => {
     };
 };
 
+// TODO: Validat user and indicador are connected
 const createHistorico = async (req, res, next) => {
     const { idIndicador, ...historico } = req.matchedData;
     try {

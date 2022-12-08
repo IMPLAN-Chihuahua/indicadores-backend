@@ -2,31 +2,30 @@ const express = require('express');
 
 const router = express.Router();
 const {
-    getUserFromToken,
-    getUserFromId,
-    editUser,
-    getUserStats,
+  getUserFromToken,
+  editUser,
+  getUserStats,
 } = require('../controllers/usuarioController');
 const { verifyJWT, verifyUserIsActive } = require('../middlewares/auth');
 
 const {
-    getIndicadoresFromUser,
-    getIndicador } = require('../controllers/indicadorController');
+  getIndicadoresFromUser,
+  getIndicador } = require('../controllers/indicadorController');
 const { getAllModulos } = require('../controllers/moduloController');
 
 const {
-    paginationValidationRules,
-    paramValidationRules,
-    validate,
+  paginationValidationRules,
+  paramValidationRules,
+  validate,
 } = require('../middlewares/validator/generalValidator')
 
 const {
-    updateValidationRules, updateProfileValidationRules,
+  updateProfileValidationRules,
 } = require('../middlewares/validator/usuarioValidator')
 
 const {
-    filterModulosValidationRules,
-    sortModulosValidationRules,
+  filterModulosValidationRules,
+  sortModulosValidationRules,
 } = require('../middlewares/validator/moduloValidator')
 
 const { determinePathway, FRONT_PATH } = require('../middlewares/determinePathway');
@@ -61,9 +60,9 @@ const { DESTINATIONS } = require('../services/fileService');
  */
 
 router.route('/').get(
-    verifyJWT,
-    verifyUserIsActive,
-    getUserFromToken
+  verifyJWT,
+  verifyUserIsActive,
+  getUserFromToken
 );
 
 /**
@@ -123,26 +122,59 @@ router.route('/').get(
  */
 
 router.route('/indicadores').get(
-    verifyJWT,
-    verifyUserIsActive,
-    getIndicadoresFromUser
+  verifyJWT,
+  verifyUserIsActive,
+  getIndicadoresFromUser
 );
 
 
+/**
+ * @swagger
+ *   /me/indicadores/{idIndicador}:
+ *     get:
+ *       summary: Get information about an indicador.
+ *       description: Retrieve indicador with given id.
+ *       tags: [Perfiles]
+ *       parameters:
+ *         - name: idIndicador
+ *           in: path
+ *           required: true
+ *           schema:
+ *             type: integer
+ *             format: int64
+ *             minimum: 1
+ *       responses:
+ *         200:
+ *           description: Indicador object
+ *           content: 
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/components/schemas/Indicador'
+ *         404:
+ *           $ref: '#/components/responses/NotFound'
+ *         409:
+ *           $ref: '#/components/responses/Conflict'
+ *         422:
+ *           $ref: '#/components/responses/UnprocessableEntity'
+ *         429:
+ *           $ref: '#/components/responses/TooManyRequests'
+ *         500:
+ *           $ref: '#/components/responses/InternalServerError'
+ */
 router.route('/indicadores/:idIndicador').get(
-    verifyJWT,
-    verifyUserIsActive,
-    paramValidationRules(),
-    validate,
-    determinePathway(FRONT_PATH),
-    getIndicador,
+  verifyJWT,
+  verifyUserIsActive,
+  paramValidationRules(),
+  validate,
+  determinePathway(FRONT_PATH),
+  getIndicador,
 );
 
 /**
  * @swagger
  *   /me/modulos:
  *     get:
- *       summary: List of modulos.
+ *       summary: List of temas
  *       description: Retrieves a list of modulos from the database after pagination, sorting and filtering validation
  *       tags: [Perfiles]
  *       security:
@@ -221,13 +253,13 @@ router.route('/indicadores/:idIndicador').get(
  */
 
 router.route('/modulos').get(
-    verifyJWT,
-    verifyUserIsActive,
-    paginationValidationRules(),
-    filterModulosValidationRules(),
-    sortModulosValidationRules(),
-    validate,
-    getAllModulos,
+  verifyJWT,
+  verifyUserIsActive,
+  paginationValidationRules(),
+  filterModulosValidationRules(),
+  sortModulosValidationRules(),
+  validate,
+  getAllModulos,
 );
 
 
@@ -235,7 +267,7 @@ router.route('/modulos').get(
  * @swagger
  *   /me:
  *     patch:
- *       summary: Update user.
+ *       summary: Update user
  *       tags: [Perfiles]
  *       requestBody:
  *         content:
@@ -245,21 +277,39 @@ router.route('/modulos').get(
  *           multipart/form-data:
  *             schema:
  *               $ref: '#/components/schemas/Usuario'
+ *       responses:
+ *         204:
+ *           description: User updated successfully
+ *         400:
+ *           $ref: '#/components/responses/BadRequest'
+ *         401:
+ *           $ref: '#/components/responses/Unauthorized'
+ *         403:
+ *           $ref: '#/components/responses/Forbidden'
+ *         413:
+ *           $ref: '#/components/responses/PayloadTooLarge'
+ *         422:
+ *           $ref: '#/components/responses/UnprocessableEntity'
+ *         429:
+ *           $ref: '#/components/responses/TooManyRequests'
+ *         500:
+ *           $ref: '#/components/responses/InternalServerError'
  */
 router.patch(
-    '/',
-    verifyJWT,
-    uploadImage(DESTINATIONS.USUARIOS),
-    updateProfileValidationRules(),
-    validate,
-    editUser,
+  '/',
+  verifyJWT,
+  verifyUserIsActive,
+  uploadImage(DESTINATIONS.USUARIOS),
+  updateProfileValidationRules(),
+  validate,
+  editUser,
 )
 
 router.get(
-    '/stats/:idUser',
-    verifyJWT,
-    validate,
-    getUserStats,
+  '/stats/:idUser',
+  verifyJWT,
+  validate,
+  getUserStats,
 )
 
 module.exports = router;

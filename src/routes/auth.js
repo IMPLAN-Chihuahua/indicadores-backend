@@ -74,6 +74,15 @@ const {
  *             example:
  *               status: 409
  *               message: Resource is not active
+ *       PayloadTooLarge:
+ *         description: The request has a payload too large
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/BasicError'
+ *             example:
+ *               status: 413
+ *               message: The document size is too large
  *       UnprocessableEntity:
  *         description: Validation failed.
  *         content:
@@ -144,6 +153,10 @@ const {
  *                   token:
  *                     type: string
  *                     example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIn0.rTCH8cLoGxAm_xw68z-zXVKi9ie6xJn9tnVWjd_9ftE
+ *         401:
+ *           $ref: '#/components/responses/Unauthorized'
+ *         403:
+ *           $ref: '#/components/responses/Forbidden'
  *         422:
  *           $ref: '#/components/responses/UnprocessableEntity'
  *         429:
@@ -209,7 +222,11 @@ router.post('/password-reset',
  *       responses:
  *         200:
  *           description: Updates password succesfully
- *         422:
+ *         400:
+ *           $ref: '#/components/responses/BadRequest'
+ *         401:
+ *           $ref: '#/components/responses/Unauthorized'
+ *         422:  
  *           $ref: '#/components/responses/UnprocessableEntity'
  *         429:
  *           $ref: '#/components/responses/TooManyRequests'
