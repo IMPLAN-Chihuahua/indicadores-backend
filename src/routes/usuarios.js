@@ -3,24 +3,26 @@ const { query } = require('express-validator');
 
 const router = express.Router();
 const { getUsers,
-    createUser,
-    getUserFromId,
-    editUser,
-    editUserStatus } = require('../controllers/usuarioController');
+  createUser,
+  getUserFromId,
+  editUser,
+  editUserStatus, 
+  getUserStats} = require('../controllers/usuarioController');
 const { verifyJWT, verifyUserHasRoles, verifyUserIsActive } = require('../middlewares/auth');
 const { uploadImage } = require('../middlewares/fileUpload');
 
 const {
-    registerValidationRules,
-    updateValidationRules
+  registerValidationRules,
+  updateValidationRules
 } = require('../middlewares/validator/usuarioValidator')
 
 const {
-    paginationValidationRules,
-    paramValidationRules,
-    validate,
-    generalFilterOptions,
-    generalSortValidationRules
+  paginationValidationRules,
+  paramValidationRules,
+  validate,
+  generalFilterOptions,
+  generalSortValidationRules,
+  idValidation
 } = require('../middlewares/validator/generalValidator')
 const { exists } = require('../middlewares/resourceExists');
 const { DESTINATIONS } = require('../services/fileService');
@@ -151,14 +153,14 @@ const { getInformation } = require('../controllers/generalController');
  *           $ref: '#/components/responses/InternalServerError'
  */
 router.get(
-    '/',
-    verifyJWT,
-    verifyUserIsActive,
-    verifyUserHasRoles(['ADMIN', 'USER']),
-    paginationValidationRules(),
-    query('searchQuery'),
-    validate,
-    getUsers
+  '/',
+  verifyJWT,
+  verifyUserIsActive,
+  verifyUserHasRoles(['ADMIN', 'USER']),
+  paginationValidationRules(),
+  query('searchQuery'),
+  validate,
+  getUsers
 );
 
 /**
@@ -208,14 +210,14 @@ router.get(
  *           $ref: '#/components/responses/InternalServerError'
  */
 router.post(
-    '/',
-    verifyJWT,
-    verifyUserIsActive,
-    verifyUserHasRoles(['ADMIN']),
-    uploadImage(DESTINATIONS.USUARIOS),
-    registerValidationRules(),
-    validate,
-    createUser
+  '/',
+  verifyJWT,
+  verifyUserIsActive,
+  verifyUserHasRoles(['ADMIN']),
+  uploadImage(DESTINATIONS.USUARIOS),
+  registerValidationRules(),
+  validate,
+  createUser
 );
 
 
@@ -253,11 +255,11 @@ router.post(
  *          $ref: '#/components/responses/InternalServerError'
  */
 router.get(
-    '/:idUser',
-    paramValidationRules(),
-    validate,
-    exists('idUser', 'Usuario'),
-    getUserFromId
+  '/:idUser',
+  paramValidationRules(),
+  validate,
+  exists('idUser', 'Usuario'),
+  getUserFromId
 );
 
 
@@ -296,15 +298,15 @@ router.get(
  *          $ref: '#/components/responses/InternalServerError'
  */
 router.patch(
-    '/:idUser',
-    verifyJWT,
-    verifyUserIsActive,
-    verifyUserHasRoles(['ADMIN']),
-    uploadImage(DESTINATIONS.USUARIOS),
-    paramValidationRules(),
-    updateValidationRules(),
-    validate,
-    editUser
+  '/:idUser',
+  verifyJWT,
+  verifyUserIsActive,
+  verifyUserHasRoles(['ADMIN']),
+  uploadImage(DESTINATIONS.USUARIOS),
+  paramValidationRules(),
+  updateValidationRules(),
+  validate,
+  editUser
 );
 
 
@@ -348,13 +350,13 @@ router.patch(
  *        $ref: '#/components/responses/InternalServerError'
  */
 router.post(
-    '/:idUser/toggle-status',
-    verifyJWT,
-    verifyUserIsActive,
-    verifyUserHasRoles(['ADMIN']),
-    paramValidationRules(),
-    validate,
-    editUserStatus,
+  '/:idUser/toggle-status',
+  verifyJWT,
+  verifyUserIsActive,
+  verifyUserHasRoles(['ADMIN']),
+  paramValidationRules(),
+  validate,
+  editUserStatus,
 );
 
 /**
@@ -411,20 +413,61 @@ router.post(
  *         500:
  *           $ref: '#components/responses/InternalServerError'
  */
-router
-    .get
-    (
-        '/info/general',
-        verifyJWT,
-        verifyUserIsActive,
-        verifyUserHasRoles(['USER', 'ADMIN']),
-        determineModel,
-        generalFilterOptions(),
-        paramValidationRules(),
-        paginationValidationRules(),
-        generalSortValidationRules(),
-        validate,
-        getInformation,
-    )
+router.get
+  (
+    '/info/general',
+    verifyJWT,
+    verifyUserIsActive,
+    verifyUserHasRoles(['USER', 'ADMIN']),
+    determineModel,
+    generalFilterOptions(),
+    paramValidationRules(),
+    paginationValidationRules(),
+    generalSortValidationRules(),
+    validate,
+    getInformation,
+  )
+
+
+/**
+ * @swagger
+ *   /usuarios/{idUsuario}/stats:
+ *     get:
+ *       summary: Retrieve stats about a user
+ *       tags: [Usuarios]
+ *       security:
+ *         - bearer: []
+ *     parameters:
+ *       - in: path
+ *         name: idUser
+ *         required: true
+ *         format: int64
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Stats about a user (assigned indicadores, inactive temas, etc.)
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       422:
+ *         $ref: '#/components/responses/UnprocessableEntity'
+ *       429:
+ *         $ref: '#/components/responses/TooManyRequests'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
+router.get(
+  '/:idUser/stats',
+  verifyJWT,
+  verifyUserIsActive,
+  idValidation(),
+  validate,
+  exists('idUser', 'Usuario'),
+  getUserStats,
+)
 
 module.exports = router;

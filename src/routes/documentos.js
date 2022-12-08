@@ -15,7 +15,7 @@ const { determinePathway, FILE_PATH } = require('../middlewares/determinePathway
  * @swagger
  *   /documentos/{idIndicador}/json:
  *     get:
- *       summary: Indicador object
+ *       summary: Indicador in json format
  *       description: Retrieve data of an indicador an generates a JSON file.
  *       tags: [Documentos]
  *       parameters:
@@ -56,7 +56,7 @@ const { determinePathway, FILE_PATH } = require('../middlewares/determinePathway
  * @swagger
  *   /documentos/{idIndicador}/pdf:
  *     get:
- *       summary: Indicador object
+ *       summary: Indicador datasheet
  *       description: Retrieve data of an indicador an generates a PDF file.
  *       tags: [Documentos]
  *       parameters:
@@ -98,7 +98,7 @@ const { determinePathway, FILE_PATH } = require('../middlewares/determinePathway
  * @swagger
  *   /documentos/{idIndicador}/csv:
  *     get:
- *       summary: Indicador object
+ *       summary: Indicador in CSV format
  *       description: Retrieve data of an indicador an generates a CSV file.
  *       tags: [Documentos]
  *       parameters:
@@ -140,7 +140,7 @@ const { determinePathway, FILE_PATH } = require('../middlewares/determinePathway
  * @swagger
  *   /documentos/{idIndicador}/xlsx:
  *     get:
- *       summary: Indicador object
+ *       summary: Indicador in XLSX (Excel) format
  *       description: Retrieve data of an indicador an generates an Excel file.
  *       tags: [Documentos]
  *       parameters:
