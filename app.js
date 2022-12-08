@@ -46,13 +46,13 @@ const app = express();
 
 // Enable when behind a reverse proxy (Heroku, Bluemix, AWS ELB or API Gateway, Nginx, etc)
 // See https://expressjs.com/en/guide/behind-proxies.html
-app.set('trust proxy', 1);
+// app.set('trust proxy', 1);
 
 // API throttling (prevent DoS attacks)
 app.use(require('./src/middlewares/limiter'));
 
 // Enable CORS for all requests
-app.use(cors())
+app.use(cors({ origin: '*' }))
 
 // Prevent common vulnerabilities
 const cspDefaults = helmet.contentSecurityPolicy.getDefaultDirectives();
@@ -88,8 +88,13 @@ app.use('/api/v1/variables', require('./src/routes/variables'));
 app.use('/api/v1/relation', require('./src/routes/usuariosIndicadores'));
 app.use('/api/v1/mapas', require('./src/routes/mapas'));
 
-app.use('/images', express.static(path.join(__dirname, 'uploads', 'images')));
-app.use('/images/indicador', express.static(path.join(__dirname, 'uploads', 'indicadores/images')));
+if (process.env.NODE_ENV !== 'production') {
+  app.use('/uploads', (_, res, next) => {
+    res.set('Cross-Origin-Resource-Policy', 'cross-origin');
+    next();
+  })
+}
+
 app.use('/uploads/temas/images', express.static(path.join(__dirname, 'uploads', 'temas/images')));
 app.use('/uploads/usuarios/images', express.static(path.join(__dirname, 'uploads', 'usuarios/images')));
 app.use('/uploads/mapas', express.static(path.join(__dirname, 'uploads', 'mapas')));
