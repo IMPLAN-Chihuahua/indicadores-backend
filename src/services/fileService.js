@@ -30,9 +30,7 @@ const generateFileName = (file) => {
   return `${Date.now()}.${file.originalname.split('.')[1]}`;
 };
 
-const getDestination = (type) => {
-  return process.env.NODE_ENV === 'development' ? `uploads/${type}/images` : 'uploads/tmp'
-};
+const getDestination = (type) => `uploads/${type}/images`;
 
 const validateFileType = (file, cb) => {
   const validMIMETypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/svg', 'image/webp', 'image/bmp'];
@@ -168,7 +166,6 @@ const generatePDF = async (indicador) => {
   const browser = await puppeteer.launch({
     headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    // executablePath: '/usr/bin/chromium-browser'
   });
 
 
