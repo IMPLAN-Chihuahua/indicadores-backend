@@ -1,5 +1,5 @@
 require('dotenv').config();
-const aws = require('aws-sdk');
+const { S3Client } = require('@aws-sdk/client-s3')
 const multer = require('multer');
 const multerS3 = require('multer-s3');
 const { Parser } = require("json2csv");
@@ -9,15 +9,19 @@ const puppeteer = require("puppeteer");
 const { numberWithCommas, returnUnit, returnFuente } = require("../utils/stringFormat");
 const handlebars = require("handlebars");
 const { footer } = require("../utils/footerImage");
+const logger = require('../config/logger');
 
 const MAX_IMAGE_SIZE = 1_048_576; // 1MB
+const VALID_IMAGE_MIME_TYPES = ['image/jpeg', 'image/png', 'image/jpg',
+  'image/gif', 'image/svg', 'image/webp', 'image/bmp'];
 
-aws.config.update({
-  secretAccessKey: process.env.S3_ACCESS_SECRET,
-  accessKeyId: process.env.S3_ACCESS_KEY,
-  region: 'us-east-2'
+const s3 = new S3Client({
+  credentials: {
+    secretAccessKey: process.env.S3_ACCESS_SECRET,
+    accessKeyId: process.env.S3_ACCESS_KEY,
+  },
+  region: process.env.S3_REGION
 });
-const s3 = new aws.S3();
 
 const DESTINATIONS = {
   MODULOS: 'temas',
@@ -26,15 +30,12 @@ const DESTINATIONS = {
   MAPAS: 'mapas'
 }
 
-const generateFileName = (file) => {
-  return `${Date.now()}.${file.originalname.split('.')[1]}`;
-};
+const getUniqueName = (file) => `${Date.now().toString()}.${file.originalname.split('.')[1]}`;
 
-const getDestination = (type) => `uploads/${type}/images`;
+const getPath = (type) => type ? `uploads/${type}/images/` : 'uploads/tmp';
 
 const validateFileType = (file, cb) => {
-  const validMIMETypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/svg', 'image/webp', 'image/bmp'];
-  const isValidMimetype = validMIMETypes.includes(file.mimetype);
+  const isValidMimetype = VALID_IMAGE_MIME_TYPES.includes(file.mimetype);
   if (!isValidMimetype) {
     return cb(new Error('FILE_TYPE_NOT_ALLOWED'));
   }
@@ -44,10 +45,10 @@ const validateFileType = (file, cb) => {
 const getDiskStorage = (destination) => {
   return multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, getDestination(destination))
+      cb(null, getPath(destination))
     },
     filename: (req, file, cb) => {
-      cb(null, generateFileName(file))
+      cb(null, getUniqueName(file))
     }
   });
 }
@@ -62,11 +63,13 @@ const getStorage = (destination) => {
     return multerS3({
       s3,
       bucket: process.env.S3_INDICADORES_BUCKET,
-      metadata: function (req, file, cb) {
+      metadata: function (_, file, cb) {
         cb(null, { fieldName: file.fieldname });
       },
-      key: function (req, file, cb) {
-        cb(null, getDestination(destination) + generateFileName(file))
+      key: function (_, file, cb) {
+        const fullpath = getPath(destination) + getUniqueName(file);
+        logger.info(`Uploading file to S3 ${fullpath}`)
+        cb(null, fullpath)
       }
     })
   } else {
