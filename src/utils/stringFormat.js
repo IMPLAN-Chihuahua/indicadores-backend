@@ -44,7 +44,7 @@ const returnFuente = (fuente) => {
 const getImagePathLocation = (req) => {
 	const image = {}
 	if (process.env.NODE_ENV === 'production') {
-		image.urlImagen = req.file.location;
+		image.urlImagen = req?.file?.location;
 	} else if (req.file) {
 		image.urlImagen = `http://${req.headers.host}/${req.file.path}`;
 	} 
