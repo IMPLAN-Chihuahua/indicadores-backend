@@ -2,11 +2,11 @@ const express = require('express');
 const router = express.Router();
 
 const {
-    paramValidationRules,
-    validate,
-    idValidation,
-    formatDocsValidation,
-} = require('../middlewares/validator/generalValidator')
+  validate,
+  idValidation,
+  formatDocsValidation,
+} = require('../middlewares/validator/generalValidator');
+const { exists } = require('../middlewares/resourceExists');
 
 const { getIndicador } = require('../controllers/indicadorController');
 const { determinePathway, FILE_PATH } = require('../middlewares/determinePathway');
@@ -170,6 +170,8 @@ const { determinePathway, FILE_PATH } = require('../middlewares/determinePathway
  *                 type: string
  *                 description: Used to specify the type of the file
  *                 example: test.xlsx
+ *         404:
+ *           $ref: '#/components/responses/NotFound'
  *         422:
  *           $ref: '#/components/responses/UnprocessableEntity'
  *         429:
@@ -179,12 +181,13 @@ const { determinePathway, FILE_PATH } = require('../middlewares/determinePathway
  */
 
 router.route('/:idIndicador/:format?')
-    .get(
-        idValidation(),
-        formatDocsValidation(),
-        validate,
-        determinePathway(FILE_PATH),
-        getIndicador
-    );
+  .get(
+    idValidation(),
+    formatDocsValidation(),
+    validate,
+    exists('idIndicador', 'Indicador'),
+    determinePathway(FILE_PATH),
+    getIndicador
+  );
 
 module.exports = router;
