@@ -166,17 +166,12 @@ const generateXLSX = (indicador) => {
 
 
 const generatePDF = async (indicador) => {
-  console.time('LAUNCH')
   const browser = await puppeteer.launch({
     headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
   });
-  console.timeEnd('LAUNCH')
-  console.time('NEW PAGE')
   const page = await browser.newPage();
   await page.setViewport({ width: 800, height: 800, deviceScaleFactor: 3 });
-  console.timeEnd('NEW PAGE')
-  console.time('TEMPLATE')
 
   const template = fs.readFile("./src/templates/indicador.html", "utf8", templateHTML => {
     handlebars.registerHelper('isAscending', str => str === 'Ascendente');
@@ -224,8 +219,6 @@ const generatePDF = async (indicador) => {
 
   const html = template(indicador, { allowProtoPropertiesByDefault: true });
   await page.setContent(html);
-  console.timeEnd('TEMPLATE');
-  console.time('PDF');
   const years = []
   const values = []
   if (indicador.historicos.length > 0) {
@@ -311,7 +304,6 @@ const generatePDF = async (indicador) => {
     </div>`,
     margin: { bottom: '70px' },
   });
-  console.timeEnd('PDF');
   await browser.close();
   return pdf;
 };
