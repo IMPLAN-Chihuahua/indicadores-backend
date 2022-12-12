@@ -170,28 +170,27 @@ const generatePDF = async (indicador) => {
     headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
   });
-
-
   const page = await browser.newPage();
   await page.setViewport({ width: 800, height: 800, deviceScaleFactor: 3 });
-  const templateHtml = fs.readFileSync("./src/templates/indicador.html", "utf8");
-  handlebars.registerHelper('isAscending', (str) => str === 'Ascendente');
-  handlebars.registerHelper('notApplies', (str) => str === 'No aplica');
-  handlebars.registerHelper('numberWithCommas', numberWithCommas);
-  handlebars.registerHelper('getCatalogo', (catalogos, id) => {
-    return catalogos
-      .sort((a, b) => a.idCatalogo - b.idCatalogo)
-      .find(indicador => indicador.idCatalogo === id)?.nombre || 'NA';
-  });
-  handlebars.registerHelper('toString', (num) => num?.toString());
-  handlebars.registerHelper('containsNA', (str) => str?.includes("NA") ? "NA" : str);
-  handlebars.registerHelper('valueIsNull', (str) => str === null);
-  handlebars.registerHelper('hasHistoricos', (historicos) => historicos.length > 0);
-  handlebars.registerHelper('hasFormula', (formula) => typeof formula !== undefined || formula !== null)
-  handlebars.registerHelper('calculateTopPx', (modulo) => {
-    const top = (parseInt(modulo.id) - 1) * 35;
-    return `
-    <style>
+
+  const template = fs.readFile("./src/templates/indicador.html", "utf8", templateHTML => {
+    handlebars.registerHelper('isAscending', str => str === 'Ascendente');
+    handlebars.registerHelper('notApplies', str => str === 'No aplica');
+    handlebars.registerHelper('numberWithCommas', numberWithCommas);
+    handlebars.registerHelper('getCatalogo', (catalogos, id) => {
+      return catalogos
+        .sort((a, b) => a.idCatalogo - b.idCatalogo)
+        .find(indicador => indicador.idCatalogo === id)?.nombre || 'NA';
+    });
+    handlebars.registerHelper('toString', num => num?.toString());
+    handlebars.registerHelper('containsNA', str => str?.includes("NA") ? "NA" : str);
+    handlebars.registerHelper('valueIsNull', str => str === null);
+    handlebars.registerHelper('hasHistoricos', historicos => historicos.length > 0);
+    handlebars.registerHelper('hasFormula', formula => typeof formula !== undefined || formula !== null)
+    handlebars.registerHelper('calculateTopPx', modulo => {
+      const top = (parseInt(modulo.id) - 1) * 35;
+      return `
+      <style>
       .tematica__id {
         width: 28px;
         height: 28px;
@@ -205,24 +204,21 @@ const generatePDF = async (indicador) => {
         position: absolute;
         top: ${top}px;
       }
-    </style>
-    <div class="tematica__id">
+      </style>
+      <div class="tematica__id">
       ${modulo.codigo}
-    </div>   
-    `;
-  })
-  handlebars.registerHelper('hasVariablesNotFormula', (formula) => formula.dataValues.isFormula == 'SI');
-  handlebars.registerHelper('hasValue', (value) => (value.trim().length === 0));
-  handlebars.registerHelper('returnDato', (idUnidad) => returnUnit(idUnidad));
-  handlebars.registerHelper('returnFuente', (fuente) => returnFuente(fuente));
-
-  const template = handlebars.compile(templateHtml);
-
-  const html = template(indicador, { allowProtoPropertiesByDefault: true });
-  await page.setContent(html, {
-    waitUntil: "networkidle0",
+      </div>   
+      `;
+    })
+    handlebars.registerHelper('hasVariablesNotFormula', (formula) => formula.dataValues.isFormula == 'SI');
+    handlebars.registerHelper('hasValue', (value) => (value.trim().length === 0));
+    handlebars.registerHelper('returnDato', (idUnidad) => returnUnit(idUnidad));
+    handlebars.registerHelper('returnFuente', (fuente) => returnFuente(fuente));
+    return handlebars.compile(templateHTML);
   });
 
+  const html = template(indicador, { allowProtoPropertiesByDefault: true });
+  await page.setContent(html);
   const years = []
   const values = []
   if (indicador.historicos.length > 0) {
@@ -277,6 +273,7 @@ const generatePDF = async (indicador) => {
   const date = new Date();
   const [month, day, year] = [date.getMonth(), date.getDate(), date.getFullYear()];
 
+
   const pdf = await page.pdf({
     format: "letter",
     displayHeaderFooter: true,
@@ -307,7 +304,6 @@ const generatePDF = async (indicador) => {
     </div>`,
     margin: { bottom: '70px' },
   });
-
   await browser.close();
   return pdf;
 };

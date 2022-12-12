@@ -4,7 +4,8 @@ const { generateCSV, generateXLSX, generatePDF } = require("../services/fileServ
 const UsuarioService = require('../services/usuariosService');
 const { areConnected } = require("../services/usuarioIndicadorService");
 const { getPagination } = require('../utils/pagination');
-const { FILE_PATH, FRONT_PATH } = require('../middlewares/determinePathway')
+const { FILE_PATH, FRONT_PATH } = require('../middlewares/determinePathway');
+const { getImagePathLocation } = require('../utils/stringFormat');
 
 
 const getIndicador = async (req, res, next) => {
@@ -14,7 +15,7 @@ const getIndicador = async (req, res, next) => {
     const indicador = await IndicadorService.getIndicador(idIndicador, pathway);
     const hasConflict = indicador.activo === 'NO' || indicador?.modulo.activo === 'NO';
     if (hasConflict && pathway !== FRONT_PATH) {
-      return res.status(409).json({ status: 409, message: `El indicador ${indicador.nombre} se encuentra inactivo`});
+      return res.status(409).json({ status: 409, message: `El indicador ${indicador.nombre} se encuentra inactivo` });
     }
     if (pathway === FILE_PATH) {
       return generateFile(format, res, indicador).catch(err => next(err));
@@ -28,33 +29,33 @@ const getIndicador = async (req, res, next) => {
 const generateFile = async (format, res, indicador) => {
   const filename = `${indicador.nombre}.${format}`
   res.header('Content-disposition', 'attachment');
+  res.attachment(filename)
   switch (format) {
     case 'json':
       return (
         res.header('Content-Type', 'application/json'),
-        res.attachment(filename),
-        res.send(indicador));
+        res.send(indicador)
+      );
     case 'csv':
       const csvData = generateCSV(indicador);
       return (
         res.header('Content-Type', 'application/csv'),
-        res.attachment(filename),
-        res.send(csvData));
+        res.send(csvData)
+      );
     case 'xlsx':
       const content = await generateXLSX(indicador);
       const readStream = new stream.PassThrough();
       readStream.end(content);
       return (
         res.header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
-        res.attachment(filename),
         readStream.pipe(res)
       );
     case 'pdf':
       const doc = await generatePDF(indicador);
       return (
         res.header('Content-Type', 'application/pdf'),
-        res.attachment(filename),
-        res.send(doc));
+        res.send(doc)
+      );
     default:
       throw new Error('Invalid file format');
   }
@@ -87,21 +88,13 @@ const getIndicadoresFromUser = async (req, res, next) => {
 }
 
 const createIndicador = async (req, res, next) => {
-  let urlImagen = '';
-  if (process.env.NODE_ENV === 'production') {
-    urlImagen = req.file.location;
-  } else if (req.file) {
-    urlImagen = `http://${req.headers.host}/${req.file.path}`;
-  }
+  const image = getImagePathLocation(req);
   try {
     const indicador = req.matchedData;
     indicador.createdBy = req.sub;
     indicador.updatedBy = req.sub;
     indicador.owner = req.sub;
-
-    if (urlImagen) {
-      indicador.mapa.urlImagen = urlImagen;
-    }
+    indicador.mapa = {...indicador?.mapa, ...image};
     const savedIndicador = await IndicadorService.createIndicador(indicador);
     return res.status(201).json({ data: savedIndicador });
   } catch (err) {
