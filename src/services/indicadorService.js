@@ -388,6 +388,23 @@ const includeCatalogoFilters = (queryParams) => {
   }];
 };
 
+const getIdIndicadorRelatedTo = async (model, id) => {
+  try {
+    const indicador = await model.findOne({
+      where: { id },
+      attributes: [[sequelize.literal('"indicador"."id"'), "indicadorId"]],
+      include: {
+        model: Indicador,
+        attributes: []
+      },
+      raw: true
+    });
+    return indicador?.indicadorId;
+  } catch (err) {
+    throw err;
+  }
+}
+
 module.exports = {
   getIndicadores,
   getIndicador,
@@ -395,4 +412,5 @@ module.exports = {
   updateIndicador,
   updateIndicadorStatus,
   getInactiveIndicadores,
+  getIdIndicadorRelatedTo
 };
