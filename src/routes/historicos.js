@@ -15,7 +15,7 @@ const {
 	updateHistorico,
 } = require('../controllers/historicoController');
 
-const { verifyJWT, verifyUserIsActive } = require('../middlewares/auth');
+const { verifyJWT, verifyUserIsActive, verifyUserHasRoles } = require('../middlewares/auth');
 const { exists } = require('../middlewares/resourceExists');
 
 /**
@@ -56,8 +56,10 @@ router.route('/:idHistorico')
 	.delete(
 		verifyJWT,
 		verifyUserIsActive,
+    verifyUserHasRoles(['USER', 'ADMIN']),
 		paramValidationRules(),
 		validate,
+    exists('idHistorico', 'Historico'),
 		deleteHistorico
 	);
 
@@ -104,6 +106,7 @@ router.route('/:idHistorico')
 	.patch(
 		verifyJWT,
 		verifyUserIsActive,
+    verifyUserHasRoles(['USER', 'ADMIN']),
 		updateHistoricoValidationRules(),
 		paramValidationRules(),
 		validate,
