@@ -20,7 +20,7 @@ const updateFormula = async (req, res, next) => {
   const rol = req.rol;
   try {
     const idIndicador = await getIdIndicadorRelatedTo(Formula, idFormula);
-    return await validate(
+    return validate(
       { rol, idUsuario, idIndicador },
       async () => {
         const updatedRows = await Formula.update(values, { where: { id: idFormula } });
@@ -38,7 +38,7 @@ const createFormula = async (req, res, next) => {
   const idUsuario = req.sub;
   const rol = req.rol;
   try {
-    return await validate(
+    return validate(
       { rol, idUsuario, idIndicador },
       async () => {
         const created = await formulaService.createFormula(values);
@@ -57,7 +57,7 @@ const addVariablesToFormula = async (req, res, next) => {
   const rol = req.rol;
   try {
     const idIndicador = await getIdIndicadorRelatedTo(Formula, idFormula);
-    return await validate(
+    return validate(
       { rol, idUsuario, idIndicador },
       async () => {
         const formattedVariables = variables.map(v => ({ ...v, idFormula }))
