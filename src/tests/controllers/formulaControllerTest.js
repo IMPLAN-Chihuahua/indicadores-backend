@@ -6,13 +6,14 @@ chai.use(chaiHttp);
 const { expect } = chai;
 const { app, server } = require('../../../app');
 const { generateToken } = require('../../middlewares/auth');
-const { Usuario, Formula, Variable } = require('../../models');
+const { Usuario, Formula, Variable, UsuarioIndicador } = require('../../models');
 const { aVariable } = require('../../utils/factories');
 
 describe('v1/formulas', function () {
   const SUB_ID = 1;
   const validToken = generateToken({ sub: SUB_ID });
   const adminRol = { rolValue: 'ADMIN' };
+  const userRol = { rolValue: 'USER' };
   const statusActive = { activo: 'SI' };
 
   let usuarioStub;
@@ -80,6 +81,33 @@ describe('v1/formulas', function () {
           done();
         });
     });
+
+    it('Should fail to update formula because user is not assigned to it', done => {
+      sinon.restore();
+      const findOneUsuarioStub = sinon.stub(Usuario, 'findOne');
+      findOneUsuarioStub.onFirstCall().resolves(statusActive);
+      findOneUsuarioStub.onSecondCall().resolves(userRol);
+
+      const findOneFormulaStub = sinon.stub(Formula, 'findOne');
+      findOneFormulaStub.onFirstCall().resolves({ count: 1 });
+      findOneFormulaStub.onSecondCall().resolves({ indicadorId: 1 });
+
+      const findOneRelation = sinon.fake.resolves({ count: 0 });
+      sinon.replace(UsuarioIndicador, 'findOne', findOneRelation);
+
+      chai.request(app)
+        .patch('/api/v1/formulas/1')
+        .set('Authorization', `Bearer ${validToken}`)
+        .send({ ecuacion: 'new ecuacion', descripcion: 'new descripcion' })
+        .end((err, res) => {
+          expect(err).to.be.null;
+          expect(res).to.have.status(403);
+          expect(findOneUsuarioStub.calledTwice).to.be.true;
+          expect(findOneFormulaStub.calledTwice).to.be.true;
+          expect(findOneRelation.calledOnce).to.be.true;
+          done();
+        });
+    })
 
   });
 
