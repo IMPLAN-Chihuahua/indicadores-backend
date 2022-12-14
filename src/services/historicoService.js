@@ -39,7 +39,7 @@ const getHistoricosSorting = ({ sortBy, order }) => {
 
 const deleteHistorico = async (idHistorico) => {
     try {
-        const response = Historico.destroy({
+        const response = await Historico.destroy({
             where: { id: idHistorico }
         });
         return response;
