@@ -4,10 +4,11 @@ const multer = require('multer');
 const multerS3 = require('multer-s3');
 const { Parser } = require("json2csv");
 const Excel = require("exceljs");
-const fs = require("fs");
+const fs = require("fs").promises;
 const puppeteer = require("puppeteer");
-const { numberWithCommas, returnUnit, returnFuente } = require("../utils/stringFormat");
 const handlebars = require("handlebars");
+const path = require('path');
+const { numberWithCommas, returnUnit, returnFuente } = require("../utils/stringFormat");
 const { footer } = require("../utils/footerImage");
 const logger = require('../config/logger');
 
@@ -174,15 +175,13 @@ const generatePDF = async (indicador) => {
 
   const page = await browser.newPage();
   await page.setViewport({ width: 800, height: 800, deviceScaleFactor: 3 });
-  const templateHtml = fs.readFileSync("./src/templates/indicador.html", "utf8");
+  const templateHtml = await fs.readFile(path.join(__dirname, "../templates/indicador.html"), "utf8");
   handlebars.registerHelper('isAscending', (str) => str === 'Ascendente');
   handlebars.registerHelper('notApplies', (str) => str === 'No aplica');
   handlebars.registerHelper('numberWithCommas', numberWithCommas);
-  handlebars.registerHelper('getCatalogo', (catalogos, id) => {
-    return catalogos
-      .sort((a, b) => a.idCatalogo - b.idCatalogo)
-      .find(indicador => indicador.idCatalogo === id)?.nombre || 'NA';
-  });
+  handlebars.registerHelper('getCatalogo', (catalogos, id) => catalogos
+    .sort((a, b) => a.idCatalogo - b.idCatalogo)
+    .find(i => i.idCatalogo === id)?.nombre || 'NA');
   handlebars.registerHelper('toString', (num) => num?.toString());
   handlebars.registerHelper('containsNA', (str) => str?.includes("NA") ? "NA" : str);
   handlebars.registerHelper('valueIsNull', (str) => str === null);
