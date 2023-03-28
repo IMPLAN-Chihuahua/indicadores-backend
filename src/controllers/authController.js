@@ -1,6 +1,12 @@
+'use strict';
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { getUsuarioByCorreo, getUsuarioById, updateUserPassword, updateUserPasswordStatus } = require('../services/usuariosService');
+const {
+  getUsuarioByCorreo,
+  getUsuarioById,
+  updateUserPassword,
+  updateUserPasswordStatus
+} = require('../services/usuariosService');
 require('dotenv').config();
 
 const { TOKEN_SECRET } = process.env;
@@ -12,16 +18,25 @@ const login = async (req, res, next) => {
   const { correo, clave } = req.matchedData;
   try {
     const existingUser = await getUsuarioByCorreo(correo);
-    if (existingUser && await bcrypt.compare(clave, existingUser.clave)) {
-      if (existingUser.activo === 'NO') {
-        return res.status(403).json({
-          message: "La cuenta se encuentra deshabilitada"
-        });
-      }
+    if (!existingUser) {
+      return res.status(401).json({ message: "Credenciales invalidas" });
+    }
+
+    if (existingUser.activo === 'NO') {
+      return res.status(403).json({
+        message: "La cuenta se encuentra deshabilitada"
+      });
+    }
+
+    const passwordMatch = await bcrypt.compare(clave, existingUser.clave)
+
+    if (passwordMatch) {
       const token = generateToken({ sub: existingUser.id });
       return res.status(200).json({ token });
+    } else {
+      return res.status(401).json({ message: "Credenciales invalidas" });
     }
-    return res.status(401).json({ message: "Credenciales invalidas" });
+
   } catch (err) {
     next(err)
   }
@@ -30,7 +45,7 @@ const login = async (req, res, next) => {
 const generatePasswordRecoveryToken = async (req, res, next) => {
   try {
     const { correo } = req.body;
-    const existingUser = await getUsuarioByCorreo(correo);
+    const existingUser = await usuariosService.getUsuarioByCorreo(correo);
     if (existingUser) {
       const token = jwt.sign({
         sub: existingUser.id,
