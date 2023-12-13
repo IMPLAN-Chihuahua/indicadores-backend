@@ -31,6 +31,15 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         defaultValue: 'No aplica'
       },
+
+      isFormula: {
+        type: DataTypes.STRING(2),
+        allowNull: true,
+        defaultValue: 'NO',
+        validate: {
+          isIn: [['SI', 'NO']]
+        }
+      }
     },
     {
       sequelize,

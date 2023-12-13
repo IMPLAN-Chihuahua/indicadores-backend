@@ -6,7 +6,10 @@ const { addUsuario,
   getUsuarioById,
   updateUsuario,
   updateUserStatus,
-  countInactiveUsers } = require('../services/usuariosService');
+  countInactiveUsers,
+  getUserStatsInfo,
+} = require('../services/usuariosService');
+const { getImagePathLocation } = require('../utils/stringFormat');
 require('dotenv').config();
 
 const getUsers = async (req, res, next) => {
@@ -33,30 +36,18 @@ const getUsers = async (req, res, next) => {
 }
 
 const createUser = async (req, res, next) => {
-  const {
-    correo,
-    clave,
-    nombres,
-    apellidoPaterno,
-    apellidoMaterno,
-    activo,
-    idRol
-  } = req.matchedData;
-  const avatar = `images/${req.file ? req.file.originalName : 'avatar.jpg'}`;
+  const { clave, ...values } = req.matchedData;
+  const image = getImagePathLocation(req);
+
   try {
-    if (await isCorreoAlreadyInUse(correo)) {
-      return res.status(409).send('Correo no disponible')
+    if (await isCorreoAlreadyInUse(values.correo)) {
+      return res.status(409).json({ status: 409, message: 'Email is already in use' })
     }
     const hashedClave = await hashClave(clave);
     const savedUser = await addUsuario({
-      correo,
+      ...values,
       clave: hashedClave,
-      nombres,
-      apellidoPaterno,
-      apellidoMaterno,
-      activo,
-      avatar,
-      idRol
+      ...image,
     });
     return res.status(201).json({ data: savedUser });
   } catch (err) {
@@ -64,50 +55,25 @@ const createUser = async (req, res, next) => {
   }
 }
 
+/**
+ * Edit user in the next scenarios:
+ *   - Users update their profile
+ *   - Admin wants to edit another user's info
+ */
 const editUser = async (req, res, next) => {
-  let urlImagen = '';
   const idFromToken = req.sub;
-  const fields = req.body;
   const { idUser } = req.params;
+  const values = req.matchedData;
+  const id = idUser ? idUser : idFromToken;
+  const image = getImagePathLocation(req);
 
-  urlImagen = req.file ? `images/user/${req.file.filename}` : urlImagen;
-
-  let fieldsWithImage = {};
-
-  if (urlImagen) {
-    fieldsWithImage = {
-      ...fields,
-      urlImagen
-    };
-  } else {
-    fieldsWithImage = {
-      ...fields
-    };
-  }
-
-  if (idUser) {
-    try {
-      if (await updateUsuario(idUser, fieldsWithImage)) {
-        return res.sendStatus(204);
-      }
-      return res.sendStatus(400);
-    } catch (err) {
-      next(err)
+  try {
+    if (await updateUsuario(id, { ...values, ...image })) {
+      return res.sendStatus(204);
     }
-  }
-  else {
-    try {
-      if (fields.id === idFromToken) {
-        if (await updateUsuario(fields.id, fieldsWithImage)) {
-          return res.sendStatus(204);
-        }
-        return res.sendStatus(400);
-      }
-      return res.sendStatus(401);
-
-    } catch (err) {
-      next(err)
-    }
+    return res.sendStatus(400);
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -128,7 +94,7 @@ const getUser = async (req, res, id) => {
   try {
     const usuario = await getUsuarioById(id);
     if (usuario === null) {
-      return res.sendStatus(204);
+      return res.status(404).json({ status: 404, message: `User with id ${id} not found` });
     }
     return res.status(200).json({ data: usuario });
   } catch (err) {
@@ -155,6 +121,7 @@ const getUserFromToken = async (req, res, next) => {
 };
 
 const setIndicadoresToUsuario = async (req, res, next) => {
+
   const { idUser: idUsuario, indicadores, desde, hasta } = req.matchedData;
   const updatedBy = req.sub;
   const createdBy = req.sub;
@@ -174,6 +141,23 @@ const setIndicadoresToUsuario = async (req, res, next) => {
   }
 };
 
+
+const getUserStats = async (req, res, next) => {
+  const { idUser } = req.params;
+  try {
+    const { indicadores, indicadoresAsignados, modulos, modulosInactivos, usuarios, usuariosInactivos } = await getUserStatsInfo(idUser);
+
+    return res.status(200).json({
+      indicadoresCount: [{ indicadores, indicadoresAsignados }],
+      modulosCount: [{ modulos, modulosInactivos }],
+      usuarios: [{ usuarios, usuariosInactivos }]
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+
 module.exports = {
   getUsers,
   createUser,
@@ -182,5 +166,6 @@ module.exports = {
   editUserStatus,
   getUserFromId,
   getUserFromToken,
-  setIndicadoresToUsuario
+  setIndicadoresToUsuario,
+  getUserStats,
 };

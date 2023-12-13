@@ -1,5 +1,5 @@
 const logger = require('../config/logger');
-const { Usuario, Rol, Indicador, Sequelize, sequelize } = require('../models');
+const { Usuario, Rol, Indicador, Sequelize, sequelize, UsuarioIndicador, Modulo } = require('../models');
 
 const { Op } = Sequelize;
 
@@ -92,7 +92,15 @@ const getUsuarios = async (limit, offset, searchQuery) => {
             limit,
             offset,
             where: { ...addSearchQueryIfPresent(searchQuery) },
-            order: [['updatedAt', 'DESC']]
+            order: [['updatedAt', 'DESC']],
+            include: [
+                {
+                    model: Rol,
+                    required: true,
+                    attributes: ['rol', 'id']
+                }
+            ],
+
         });
         const usuarios = result.rows;
         const total = result.count;
@@ -101,6 +109,25 @@ const getUsuarios = async (limit, offset, searchQuery) => {
         throw new Error(`Error al obtener lista de usuarios: ${err.message}`);
     }
 };
+
+
+const getUsuariosByBulk = async (ids) => {
+    try {
+        const result = await Usuario.scope('withoutPassword').findAndCountAll({
+            where: {
+                id: {
+                    [Op.in]: ids
+                }
+            }
+
+        });
+        const usuarios = result.rows;
+        return { usuarios };
+    } catch (err) {
+        throw new Error(`Error al obtener lista de usuarios: ${err.message}`);
+    }
+};
+
 
 const countInactiveUsers = async () => {
     try {
@@ -180,13 +207,9 @@ const getIndicadoresFromUser = async (id) => {
     }
 };
 
-const updateUserStatus = async (id) => {
-
+const toggleStatus = async (id) => {
     try {
-        const usuario = await Usuario.findOne({
-            where: { id },
-            attributes: ['activo'],
-        });
+        const usuario = await Usuario.findOne({ where: { id }, attributes: ['activo'] });
         const nuevoEstado = usuario.activo === 'SI' ? 'NO' : 'SI';
 
         const updateUsuario = await Usuario.update(
@@ -236,6 +259,70 @@ const isUserActive = async (id) => {
     } catch (err) {
         throw new Error(`Error al obtener estado de usuario ${err.message}`);
     }
+};
+
+const getUserStatsInfo = async (id) => {
+    try {
+        const indicadorCount = await Indicador.count({});
+        const usuarioIndicadorCount = await UsuarioIndicador.count({
+            where: {
+                idUsuario: id,
+            }
+        });
+        const modulosCount = await Modulo.count({});
+        const modulosInactivosCount = await Modulo.count({
+            where: {
+                activo: 'NO'
+            }
+        });
+
+        const usuariosCount = await Usuario.count({});
+        const usuariosInactivosCount = await Usuario.count({
+            where: {
+                activo: 'NO'
+            }
+        });
+
+        return {
+            indicadores: (indicadorCount - usuarioIndicadorCount),
+            indicadoresAsignados: (usuarioIndicadorCount),
+            modulos: (modulosCount - modulosInactivosCount),
+            modulosInactivos: modulosInactivosCount,
+            usuarios: (usuariosCount - usuariosInactivosCount),
+            usuariosInactivos: usuariosInactivosCount
+        }
+
+    }
+    catch (err) {
+        throw new Error(`Error al obtener estadísticas de usuario ${err.message}`);
+    }
+}
+
+const getUsersFromIndicador = async (id) => {
+    try {
+        const result = await UsuarioIndicador.findAll({
+            where: {
+                idIndicador: id,
+            },
+            include: {
+                model: Usuario,
+                attributes: []
+            },
+            attributes: [
+                'idUsuario',
+                'fechaDesde',
+                'fechaHasta',
+                'activo',
+                [sequelize.literal('"usuario"."nombres"'), "nombres"],
+                [sequelize.literal('"usuario"."apellidoPaterno"'), "apellido"],
+                [sequelize.literal('"usuario"."activo"'), "activo"],
+                [sequelize.literal('"usuario"."urlImagen"'), "urlImagen"],
+            ]
+        });
+        return result;
+    } catch (err) {
+        throw new Error(`Error al obtener usuarios de indicador ${err.message}`);
+    }
 }
 
 module.exports = {
@@ -245,11 +332,14 @@ module.exports = {
     getUsuarios,
     isCorreoAlreadyInUse,
     updateUsuario,
-    updateUserStatus,
+    updateUserStatus: toggleStatus,
     getRol,
     getIndicadoresFromUser,
     countInactiveUsers,
     updateUserPassword,
     updateUserPasswordStatus,
-    isUserActive
+    isUserActive,
+    getUserStatsInfo,
+    getUsersFromIndicador,
+    getUsuariosByBulk
 }

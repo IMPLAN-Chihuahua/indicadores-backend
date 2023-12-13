@@ -17,8 +17,8 @@ module.exports = (sequelize, DataTypes) => {
     {
       id: {
         type: DataTypes.INTEGER,
+        autoIncrement: true,
         primaryKey: true,
-        autoIncrement: true
       },
 
       valor: {
@@ -45,16 +45,16 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: 'No aplica'
       },
 
-      fechaIngreso: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW
-      },
-
       anio: {
         type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: 0,
+      },
+
+      pushedBy: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: 1
       }
     },
     {

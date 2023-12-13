@@ -2,22 +2,25 @@ const stream = require('stream');
 const IndicadorService = require("../services/indicadorService")
 const { generateCSV, generateXLSX, generatePDF } = require("../services/fileService");
 const UsuarioService = require('../services/usuariosService');
-const { areConnected, createRelation } = require("../services/usuarioIndicadorService");
+const { areConnected } = require("../services/usuarioIndicadorService");
 const { getPagination } = require('../utils/pagination');
-const { FILE_PATH } = require('../middlewares/determinePathway')
+const { FILE_PATH, FRONT_PATH } = require('../middlewares/determinePathway');
+const { getImagePathLocation } = require('../utils/stringFormat');
+
 
 const getIndicador = async (req, res, next) => {
   const { pathway } = req;
   const { idIndicador, format } = req.matchedData;
   try {
     const indicador = await IndicadorService.getIndicador(idIndicador, pathway);
-    if (indicador === null) {
-      return res.status(404).send(`Indicador con id ${idIndicador} no encontrado`);
+    const hasConflict = indicador.activo === 'NO' || indicador?.modulo.activo === 'NO';
+    if (hasConflict && pathway !== FRONT_PATH) {
+      return res.status(409).json({ status: 409, message: `El indicador ${indicador.nombre} se encuentra inactivo` });
     }
     if (pathway === FILE_PATH) {
       return generateFile(format, res, indicador).catch(err => next(err));
     }
-    return (res.status(200).json({ data: indicador }))
+    return (res.status(200).json({ data: indicador, navigation: { prev: indicador.prev, next: indicador.next } }));
   } catch (err) {
     next(err)
   }
@@ -26,33 +29,33 @@ const getIndicador = async (req, res, next) => {
 const generateFile = async (format, res, indicador) => {
   const filename = `${indicador.nombre}.${format}`
   res.header('Content-disposition', 'attachment');
+  res.attachment(filename)
   switch (format) {
     case 'json':
       return (
         res.header('Content-Type', 'application/json'),
-        res.attachment(filename),
-        res.send(indicador));
+        res.send(indicador)
+      );
     case 'csv':
       const csvData = generateCSV(indicador);
       return (
         res.header('Content-Type', 'application/csv'),
-        res.attachment(filename),
-        res.send(csvData));
+        res.send(csvData)
+      );
     case 'xlsx':
       const content = await generateXLSX(indicador);
       const readStream = new stream.PassThrough();
       readStream.end(content);
       return (
         res.header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
-        res.attachment(filename),
         readStream.pipe(res)
       );
     case 'pdf':
       const doc = await generatePDF(indicador);
       return (
         res.header('Content-Type', 'application/pdf'),
-        res.attachment(filename),
-        res.send(doc));
+        res.send(doc)
+      );
     default:
       throw new Error('Invalid file format');
   }
@@ -60,11 +63,12 @@ const generateFile = async (format, res, indicador) => {
 
 const getIndicadores = async (req, res, next) => {
   const { pathway } = req;
-  const { page, perPage, order } = getPagination(req.matchedData);
+  const { page, perPage } = getPagination(req.matchedData);
   try {
     const { indicadores, total } = await IndicadorService.getIndicadores(page, perPage, req.matchedData, pathway);
+    const { count } = await IndicadorService.getInactiveIndicadores();
     const totalPages = Math.ceil(total / perPage);
-    return res.status(200).json({ page, perPage, total, totalPages, data: indicadores });
+    return res.status(200).json({ page, perPage, total, totalInactive: count, totalPages, data: indicadores });
   } catch (err) {
     next(err)
   }
@@ -84,10 +88,13 @@ const getIndicadoresFromUser = async (req, res, next) => {
 }
 
 const createIndicador = async (req, res, next) => {
+  const image = getImagePathLocation(req);
   try {
     const indicador = req.matchedData;
     indicador.createdBy = req.sub;
     indicador.updatedBy = req.sub;
+    indicador.owner = req.sub;
+    indicador.mapa = {...indicador?.mapa, ...image};
     const savedIndicador = await IndicadorService.createIndicador(indicador);
     return res.status(201).json({ data: savedIndicador });
   } catch (err) {
@@ -97,20 +104,11 @@ const createIndicador = async (req, res, next) => {
 
 const updateIndicador = async (req, res, next) => {
   try {
-    let urlImagen = '';
     const { idIndicador, ...indicador } = req.matchedData;
     const idUsuario = req.sub;
     const rol = req.rol || await UsuarioService.getRol(idUsuario);
 
-    urlImagen = req.file ? `/images/indicador/${req.file.filename}` : urlImagen;
-
-    let fields = {};
-    if (urlImagen) {
-      fields = { ...indicador, urlImagen };
-    }
-    else {
-      fields = { ...indicador };
-    }
+    fields = { ...indicador };
 
     let saved;
     if (rol === 'ADMIN') {
@@ -135,7 +133,6 @@ const updateIndicador = async (req, res, next) => {
 
 const updateIndicadorStatus = async (req, res, next) => {
   const { idIndicador } = req.matchedData;
-
   try {
     const updatedIndicador = await IndicadorService.updateIndicadorStatus(idIndicador);
     if (updatedIndicador) {
@@ -147,27 +144,17 @@ const updateIndicadorStatus = async (req, res, next) => {
   }
 };
 
-const setUsuariosToIndicador = async (req, res, next) => {
-  const { idIndicador, usuarios, desde, hasta } = req.matchedData;
-  const updatedBy = req.sub;
-  const createdBy = req.sub;
 
+const getUsersFromIndicador = async (req, res, next) => {
+  const { idIndicador } = req.params;
   try {
-    await createRelation(
-      [...usuarios],
-      [idIndicador],
-      {
-        fechaDesde: desde,
-        fechaHasta: hasta,
-        updatedBy,
-        createdBy
-      }
-    )
-    return res.sendStatus(201);
+    const usuarios = await UsuarioService.getUsersFromIndicador(idIndicador);
+    return res.status(200).json({ data: usuarios });
   } catch (err) {
-    next(err)
+    next(err);
   }
-}
+};
+
 
 module.exports = {
   getIndicadores,
@@ -176,5 +163,5 @@ module.exports = {
   createIndicador,
   updateIndicador,
   updateIndicadorStatus,
-  setUsuariosToIndicador
+  getUsersFromIndicador
 };

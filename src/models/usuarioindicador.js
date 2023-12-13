@@ -43,12 +43,12 @@ module.exports = (sequelize, DataTypes) => {
 
             fechaDesde: {
                 type: DataTypes.DATEONLY,
-                allowNull: false
+                allowNull: true
             },
 
             fechaHasta: {
                 type: DataTypes.DATEONLY,
-                allowNull: false
+                allowNull: true
             },
 
             createdBy: {
@@ -63,6 +63,15 @@ module.exports = (sequelize, DataTypes) => {
 
             activo: {
                 type: DataTypes.STRING(2),
+                allowNull: true,
+                defaultValue: 'SI',
+                validate: {
+                    isIn: [['SI', 'NO']]
+                }
+            },
+
+            expires: {
+                type: DataTypes.STRING,
                 allowNull: true,
                 defaultValue: 'SI',
                 validate: {

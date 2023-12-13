@@ -1,5 +1,7 @@
 const moduloService = require('../services/moduloService');
 const { Modulo } = require('../models');
+const logger = require('../config/logger');
+const { getImagePathLocation } = require('../utils/stringFormat');
 
 const getModulos = async (req, res, next) => {
   try {
@@ -12,33 +14,16 @@ const getModulos = async (req, res, next) => {
 
 
 const createModulo = async (req, res, next) => {
-  const {
-    temaIndicador,
-    observaciones,
-    activo,
-    codigo,
-    descripcion,
-    color,
-  } = req.matchedData;
-  let urlImagen = 'images/avatar.jpg';
-
-  urlImagen = req.file ? `images/${req.file.filename}` : urlImagen;
-
+  const values = req.matchedData;
+  const image = getImagePathLocation(req);
   try {
-    if (await moduloService.isTemaIndicadorAlreadyInUse(temaIndicador)) {
-      return res.status(400).json({
-        message: `El tema indicador ${temaIndicador} ya está en uso`,
+    if (await moduloService.isTemaIndicadorAlreadyInUse(values.temaIndicador)) {
+      return res.status(409).json({
+        status: 409,
+        message: `${values.temaIndicador} is already in use`,
       });
     }
-    const savedModulo = await moduloService.addModulo({
-      temaIndicador,
-      observaciones,
-      activo,
-      codigo,
-      urlImagen,
-      descripcion,
-      color,
-    });
+    const savedModulo = await moduloService.addModulo({ ...values, ...image });
     return res.status(201).json({ data: savedModulo });
   } catch (err) {
     next(err);
@@ -67,10 +52,10 @@ const getAllModulos = async (req, res, next) => {
 
 
 const editModulo = async (req, res, next) => {
-  const fields = req.matchedData;
-  const { idModulo } = req.matchedData;
+  const { idModulo, ...fields } = req.matchedData;
+  const image = getImagePathLocation(req);
   try {
-    const updatedModulo = await moduloService.updateModulo(idModulo, fields);
+    const updatedModulo = await moduloService.updateModulo(idModulo, { ...fields, ...image });
     if (updatedModulo) {
       return res.sendStatus(204);
     }
@@ -81,11 +66,11 @@ const editModulo = async (req, res, next) => {
 }
 
 
-const updateModuloStatus = async (req, res, next) => {
+const editUserStatus = async (req, res, next) => {
   const { idModulo } = req.matchedData;
   try {
-    const updatedEstado = await moduloService.updateModuloStatus(idModulo);
-    if (updatedEstado) {
+    const updated = await moduloService.updateModuloStatus(idModulo);
+    if (updated) {
       return res.sendStatus(204);
     }
     return res.sendStatus(400)
@@ -103,7 +88,7 @@ const getModulo = async (req, res, next) => {
       return res.sendStatus(404);
     }
     if (modulo.activo === 'NO') {
-      return res.sendStatus(204)
+      return res.status(409).json({status: 409, message: `El tema ${modulo.temaIndicador} se encuentra inactivo`});
     }
     return res.status(200).json({ data: { ...modulo.dataValues } });
   } catch (err) {
@@ -112,4 +97,4 @@ const getModulo = async (req, res, next) => {
 }
 
 
-module.exports = { getModulos, createModulo, editModulo, getAllModulos, updateModuloStatus, getModulo }
+module.exports = { getModulos, createModulo, editModulo, getAllModulos, updateModuloStatus: editUserStatus, getModulo }

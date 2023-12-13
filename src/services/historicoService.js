@@ -23,7 +23,6 @@ const getHistoricos = async (idIndicador, page, perPage, order, sortBy) => {
                 'ecuacion',
                 'descripcionEcuacion',
                 'createdAt',
-                'fechaIngreso'
             ]
         });
         return { historicos: result.rows, total: result.count };
@@ -36,18 +35,18 @@ const getHistoricosSorting = ({ sortBy, order }) => {
     const arrangement = [];
     arrangement.push([sortBy || 'id', order || 'ASC']);
     return arrangement;
-}
+};
 
 const deleteHistorico = async (idHistorico) => {
     try {
-        const response = Historico.destroy({
+        const response = await Historico.destroy({
             where: { id: idHistorico }
         });
         return response;
     } catch (err) {
         throw new Error(`Error al eliminar el historico: ${err.message}`);
     }
-}
+};
 
 const updateHistorico = async (idHistorico, historico) => {
     try {
@@ -61,8 +60,26 @@ const updateHistorico = async (idHistorico, historico) => {
     };
 };
 
+const createHistorico = async (idIndicador, historico) => {
+    try {
+        const response = await Historico.create({
+            idIndicador: idIndicador,
+            valor: historico.valor,
+            anio: historico.anio,
+            fuente: historico.fuente,
+            ecuacion: 'NAN',
+            descripcionEcuacion: 'NAN',
+            pushedBy: historico.idUsuario,
+        });
+        return response;
+    } catch (err) {
+        throw new Error(`Error al crear el historico: ${err.message}`);
+    }
+}
+
 module.exports = {
     getHistoricos,
     deleteHistorico,
-    updateHistorico
+    updateHistorico,
+    createHistorico,
 }

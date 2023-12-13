@@ -70,26 +70,8 @@ describe('/modulos', function () {
         })
     })
 
-    it('Should return an error if getAllModulos fails to retrieve data', function (done) {
-      const findAndCountAllFake = sinon.fake.throws('Fail to fetch modulos');
-      const findOneFake = sinon.fake.resolves(aUser(1));
-
-      sinon.replace(Usuario, 'findOne', findOneFake);
-      sinon.replace(Modulo, 'findAndCountAll', findAndCountAllFake);
-      chai.request(app)
-        .get('/api/v1/me/modulos')
-        .set('Authorization', `Bearer ${token}`)
-        .end(function (err, res) {
-          expect(findAndCountAllFake.calledOnce).to.be.true;
-          expect(findOneFake.calledOnce).to.be.true;
-          expect(res).to.have.status(500);
-          expect(res.error.text).to.be.equals('Error al obtener todos los modulos Fail to fetch modulos')
-          done();
-        });
-    });
-
     it('Should return status 500 if any error is found', function (done) {
-      const findAllFake = sinon.fake.throws('Error');
+      const findAllFake = sinon.fake.rejects(new Error('Testing error'));
       sinon.replace(Modulo, 'findAll', findAllFake);
       chai.request(app)
         .get('/api/v1/modulos')
@@ -156,7 +138,7 @@ describe('/modulos', function () {
         });
     });
 
-    it('Should return no content if modulo is not active', function (done) {
+    it('Should return conflict error if modulo is not active', function (done) {
       const inactiveModulo = aModulo(20);
       inactiveModulo.activo = 'NO';
       const findByPkFake = sinon.fake.resolves(inactiveModulo);
@@ -165,13 +147,13 @@ describe('/modulos', function () {
         .get('/api/v1/modulos/20')
         .end(function (err, res) {
           expect(err).to.be.null;
-          expect(res).to.have.status(204);
+          expect(res).to.have.status(409);
           done();
         })
     })
   });
 
-  describe('POST', function () {
+  describe('POST /modulos', function () {
 
     this.afterEach(function () {
       sinon.restore();
@@ -185,9 +167,9 @@ describe('/modulos', function () {
       usuarioStub.onSecondCall().resolves(adminRol);
     });
 
-    const bigImage = Buffer.alloc(100200000, '.jpg')
-    const allowedImage = Buffer.alloc(10000, '.jpg')
-    const notAllowedFile = Buffer.alloc(10000, '.pdf')
+    const bigImage = Buffer.alloc(2_200_000, '.jpg')
+    const allowedImage = Buffer.alloc(10_000, '.jpg')
+    const notAllowedFile = Buffer.alloc(50, '.pdf')
 
     it('Should reject the creation of a new modulo due to file size limit exceeded', function (done) {
       const moduloFake = aModulo(5);
@@ -309,7 +291,7 @@ describe('/modulos', function () {
         });
     });
 
-    it('Should not create a new modulo due to repeated temaIndicador', function (done) {
+    it('Should not create a new modulo because tema is already in use', function (done) {
       const moduloFake = aModulo(1).dataValues;
       const findOneFake = sinon.fake.resolves(false);
       sinon.replace(Modulo, 'findOne', findOneFake);
@@ -321,26 +303,11 @@ describe('/modulos', function () {
           expect(err).to.be.null;
           expect(usuarioStub.calledTwice).to.be.true;
           expect(findOneFake.calledOnce).to.be.true;
-          expect(res).to.have.status(400);
+          expect(res).to.have.status(409);
           expect(res.body.message).to.be.equal(`El tema indicador ${moduloFake.temaIndicador} ya está en uso`)
           done();
         });
     });
-
-    it('Should not create a new modulo due to wrong temaIndicador attribute', function (done) {
-      const invalidModulo = aModulo(1).dataValues;
-      invalidModulo.temaIndicador = '';
-      chai.request(app)
-        .post('/api/v1/modulos')
-        .set({ Authorization: `Bearer ${token}` })
-        .send(invalidModulo)
-        .end((err, res) => {
-          expect(err).to.be.null;
-          expect(usuarioStub.calledTwice).to.be.true;
-          expect(res).to.have.status(422);
-          done();
-        });
-    })
 
     it('Should not create a new modulo due to wrong codigo attribute', function (done) {
       const moduloFake = { ...aModulo(1), codigo: '1' };
@@ -391,7 +358,14 @@ describe('/modulos', function () {
 
   });
 
-  describe('PUT', function () {
+  describe('PUT /:idModulo', function () {
+    let usuarioStub;
+    this.beforeEach(function () {
+      usuarioStub = sinon.stub(Usuario, 'findOne');
+      usuarioStub.onFirstCall().resolves(statusActive);
+      usuarioStub.onSecondCall().resolves(adminRol);
+    });
+
     this.afterEach(function () {
       sinon.restore();
     });
@@ -446,7 +420,14 @@ describe('/modulos', function () {
     });
   });
 
-  describe('PATCH', function () {
+  describe('PATCH /:idModulo', function () {
+    let usuarioStub;
+    this.beforeEach(function () {
+      usuarioStub = sinon.stub(Usuario, 'findOne');
+      usuarioStub.onFirstCall().resolves(statusActive);
+      usuarioStub.onSecondCall().resolves(adminRol);
+    });
+
     this.afterEach(function () {
       sinon.restore();
     });

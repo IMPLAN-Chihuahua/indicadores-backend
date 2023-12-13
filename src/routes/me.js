@@ -2,27 +2,36 @@ const express = require('express');
 
 const router = express.Router();
 const {
-    getUserFromToken,
-    getUserFromId,
-    editUser } = require('../controllers/usuarioController');
+  getUserFromToken,
+  editUser,
+  getUserStats,
+} = require('../controllers/usuarioController');
 const { verifyJWT, verifyUserIsActive } = require('../middlewares/auth');
 
 const {
-    getIndicadoresFromUser,
-    getIndicador } = require('../controllers/indicadorController');
+  getIndicadoresFromUser,
+  getIndicador } = require('../controllers/indicadorController');
 const { getAllModulos } = require('../controllers/moduloController');
 
 const {
-    validate,
-    paramValidationRules,
-    paginationValidationRules,
-    filterModulosValidationRules,
-    sortModulosValidationRules,
-    updateValidationRules } = require('../middlewares/validator');
+  paginationValidationRules,
+  paramValidationRules,
+  validate,
+} = require('../middlewares/validator/generalValidator')
+
+const {
+  updateProfileValidationRules,
+} = require('../middlewares/validator/usuarioValidator')
+
+const {
+  filterModulosValidationRules,
+  sortModulosValidationRules,
+} = require('../middlewares/validator/moduloValidator')
 
 const { determinePathway, FRONT_PATH } = require('../middlewares/determinePathway');
 
 const { uploadImage } = require('../middlewares/fileUpload');
+const { DESTINATIONS } = require('../services/fileService');
 /**
  * @swagger
  *  /me:
@@ -41,17 +50,19 @@ const { uploadImage } = require('../middlewares/fileUpload');
  *        204:
  *          description: Not user was found with the given id
  *        401:
- *          description: Unauthorized request (not valid JWT in Authorization header)
+ *          $ref: '#/components/responses/Unauthorized'
  *        403:
- *          description: The request has an invalid or expired token. If the token has not expired and is valid, then the user might be inactive
- *        422:
- *          description: Unable to process request due to semantic errors in the body or param payload
+ *          $ref: '#/components/responses/Forbidden'
+ *        429:
+ *          $ref: '#/components/responses/TooManyRequests'
+ *        500:
+ *          $ref: '#/components/responses/InternalServerError'
  */
 
 router.route('/').get(
-    verifyJWT,
-    verifyUserIsActive,
-    getUserFromToken
+  verifyJWT,
+  verifyUserIsActive,
+  getUserFromToken
 );
 
 /**
@@ -63,40 +74,107 @@ router.route('/').get(
  *       tags: [Perfiles]
  *       security:
  *         - bearer: []
+ *       parameters:
+ *         - in: query
+ *           name: page
+ *           schema:
+ *             type: integer
+ *         - in: query
+ *           name: perPage
+ *           schema:
+ *             type: integer
+ *         - in: query
+ *           name: searchQuery
+ *           description: A search query to filter list of indicadores by nombre, definicion, codigo, or observaciones
+ *           required: false
+ *           schema:
+ *             type: string
  *       responses:
  *         200:
- *           description: A very friendly list of indicadores
+ *           description: List of indicadores
  *           content:
+ *             application/json:
+ *               schema: 
+ *                 type: object
+ *                 properties:
+ *                   page:
+ *                     type: integer
+ *                     example: 1
+ *                   perPage:
+ *                     type: integer
+ *                     example: 25
+ *                   total:
+ *                     type: integer
+ *                     example: 50
+ *                   totalPages:
+ *                     type: integer
+ *                     example: 2
+ *                   data:
+ *                     type: array
+ *                     items: 
+ *                       $ref: '#/components/schemas/Indicador'
+ *         404:
+ *           $ref: '#/components/responses/NotFound'
+ *         429:
+ *           $ref: '#/components/responses/TooManyRequests'
+ *         500:
+ *           $ref: '#/components/responses/InternalServerError'
+ */
+
+router.route('/indicadores').get(
+  verifyJWT,
+  verifyUserIsActive,
+  getIndicadoresFromUser
+);
+
+
+/**
+ * @swagger
+ *   /me/indicadores/{idIndicador}:
+ *     get:
+ *       summary: Get information about an indicador.
+ *       description: Retrieve indicador with given id.
+ *       tags: [Perfiles]
+ *       parameters:
+ *         - name: idIndicador
+ *           in: path
+ *           required: true
+ *           schema:
+ *             type: integer
+ *             format: int64
+ *             minimum: 1
+ *       responses:
+ *         200:
+ *           description: Indicador object
+ *           content: 
  *             application/json:
  *               schema:
  *                 $ref: '#/components/schemas/Indicador'
  *         404:
- *           description: Indicador or Modulo was not found
+ *           $ref: '#/components/responses/NotFound'
+ *         409:
+ *           $ref: '#/components/responses/Conflict'
  *         422:
- *           description: Unable to process request due to semantic errors
+ *           $ref: '#/components/responses/UnprocessableEntity'
+ *         429:
+ *           $ref: '#/components/responses/TooManyRequests'
+ *         500:
+ *           $ref: '#/components/responses/InternalServerError'
  */
-
-router.route('/indicadores').get(
-    verifyJWT,
-    verifyUserIsActive,
-    getIndicadoresFromUser
-);
-
-
 router.route('/indicadores/:idIndicador').get(
-    verifyJWT,
-    verifyUserIsActive,
-    paramValidationRules(),
-    validate,
-    determinePathway(FRONT_PATH),
-    getIndicador,
+  verifyJWT,
+  verifyUserIsActive,
+  paramValidationRules(),
+  validate,
+  determinePathway(FRONT_PATH),
+  getIndicador,
 );
 
 /**
  * @swagger
  *   /me/modulos:
  *     get:
- *       summary: Retrieves a list of modulos after pagination, sorting and filtering validation
+ *       summary: List of temas
  *       description: Retrieves a list of modulos from the database after pagination, sorting and filtering validation
  *       tags: [Perfiles]
  *       security:
@@ -144,37 +222,94 @@ router.route('/indicadores/:idIndicador').get(
  *             description: Search query
  *       responses:
  *         200:
- *           description: A very friendly list of modulos
+ *           description: List of modulos.
  *           content:
  *             application/json:
  *               schema:
- *                 $ref: '#/components/schemas/Modulo'
+ *                 type: object
+ *                 properties:
+ *                   page:
+ *                     type: integer
+ *                     example: 1
+ *                   perPage:
+ *                     type: integer
+ *                     example: 25
+ *                   total:
+ *                     type: integer
+ *                     example: 50
+ *                   totalPages:
+ *                     type: integer
+ *                     example: 2
+ *                   data:
+ *                     type: array
+ *                     items:
+ *                       $ref: '#/components/schemas/Modulo'
  *         403:
- *           description: The request has an invalid or expired token
+ *           $ref: '#/components/responses/Forbidden'
  *         404:
- *           description: Indicador or Modulo was not found
+ *           $ref: '#/components/responses/NotFound'
  *         422:
- *           description: Unable to process request due to semantic errors
+ *           $ref: '#/components/responses/UnprocessableEntity'
  */
 
 router.route('/modulos').get(
-    verifyJWT,
-    verifyUserIsActive,
-    paginationValidationRules(),
-    filterModulosValidationRules(),
-    sortModulosValidationRules(),
-    validate,
-    getAllModulos,
+  verifyJWT,
+  verifyUserIsActive,
+  paginationValidationRules(),
+  filterModulosValidationRules(),
+  sortModulosValidationRules(),
+  validate,
+  getAllModulos,
 );
 
 
+/**
+ * @swagger
+ *   /me:
+ *     patch:
+ *       summary: Update user
+ *       tags: [Perfiles]
+ *       requestBody:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Usuario'
+ *           multipart/form-data:
+ *             schema:
+ *               $ref: '#/components/schemas/Usuario'
+ *       responses:
+ *         204:
+ *           description: User updated successfully
+ *         400:
+ *           $ref: '#/components/responses/BadRequest'
+ *         401:
+ *           $ref: '#/components/responses/Unauthorized'
+ *         403:
+ *           $ref: '#/components/responses/Forbidden'
+ *         413:
+ *           $ref: '#/components/responses/PayloadTooLarge'
+ *         422:
+ *           $ref: '#/components/responses/UnprocessableEntity'
+ *         429:
+ *           $ref: '#/components/responses/TooManyRequests'
+ *         500:
+ *           $ref: '#/components/responses/InternalServerError'
+ */
 router.patch(
-    '/',
-    uploadImage('usuarios'),
-    updateValidationRules(),
-    validate,
-    verifyJWT,
-    editUser,
+  '/',
+  verifyJWT,
+  verifyUserIsActive,
+  uploadImage(DESTINATIONS.USUARIOS),
+  updateProfileValidationRules(),
+  validate,
+  editUser,
+)
+
+router.get(
+  '/stats/:idUser',
+  verifyJWT,
+  validate,
+  getUserStats,
 )
 
 module.exports = router;

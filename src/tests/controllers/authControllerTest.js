@@ -1,138 +1,131 @@
+const { generateToken } = require("../../middlewares/auth");
 const { expect } = require("chai");
 const { describe } = require("mocha");
-const chai = require("chai");
-const { app, server } = require("../../../app");
-const chaiHttp = require("chai-http");
-const { Usuario } = require("../../models");
+const proxyquire = require('proxyquire').noCallThru();
 const bcrypt = require("bcrypt");
 const { aUser } = require("../../utils/factories");
-chai.use(chaiHttp);
 const sinon = require("sinon");
 
-describe("auth controller", function () {
+describe("Auth controller", function () {
+
+  let req, res, next;
+  let statusStub, jsonStub;
+  let usuario;
 
   this.afterEach(function () {
     sinon.restore();
   });
 
-  it("Should success if credential is valid", function (done) {
-    const findOneFake = sinon.fake.resolves(aUser(1));
-    const compareFake = sinon.fake.resolves(true);
+  describe('login', function () {
+    let getUsuarioFake;
 
-    sinon.replace(Usuario, "findOne", findOneFake);
-    sinon.replace(bcrypt, "compare", compareFake);
-    chai
-      .request(app)
-      .post("/api/v1/auth/login")
-      .set("Accept", "application/json")
-      .set("Content-Type", "application/json")
-      .send({ correo: "johndoe@email.com", clave: "password" })
-      .end(function (err, res) {
-        expect(res).to.have.status(200);
-        expect(res.body).not.to.be.empty;
-        expect(res.body).to.be.an("object");
-        done();
-      });
-  });
+    this.beforeEach(function () {
+      next = sinon.spy();
+      usuario = { ...aUser(1), activo: 'SI' };
+      getUsuarioFake = sinon.stub();
+      statusStub = sinon.stub().returnsThis();
+      jsonStub = sinon.stub().returnsArg(0);
 
-  it("Should fail if user does not exist", function (done) {
-    const findOneFake = sinon.fake.resolves(null);
-    const compareFake = sinon.fake.resolves(true);
+      req = {
+        matchedData: {
+          correo: usuario.correo,
+          clave: usuario.clave
+        }
+      };
 
-    sinon.replace(Usuario, "findOne", findOneFake);
-    sinon.replace(bcrypt, "compare", compareFake);
-    chai
-      .request(app)
-      .post("/api/v1/auth/login")
-      .set("Accept", "application/json")
-      .set("Content-Type", "application/json")
-      .send({ correo: "johndoe@email.com", clave: "password" })
-      .end(function (err, res) {
-        expect(res.body.message).equal('Credenciales invalidas')
-        expect(res.body).not.to.be.empty;
-        expect(res.body).to.be.an("object");
-        done();
-      });
-  });
-  
-  it("Should fail if password is not valid", function (done) {
-    const findOneFake = sinon.fake.resolves(aUser(1));
-    const compareFake = sinon.fake.resolves(false);
+      res = {
+        status: statusStub,
+        json: jsonStub
+      };
+    });
 
-    sinon.replace(Usuario, "findOne", findOneFake);
-    sinon.replace(bcrypt, "compare", compareFake);
-    chai
-      .request(app)
-      .post("/api/v1/auth/login")
-      .set("Accept", "application/json")
-      .set("Content-Type", "application/json")
-      .send({ correo: "johndoe@email.com", clave: "password" })
-      .end(function (err, res) {
-        expect(res.body.message).equal('Credenciales invalidas')
-        expect(res.body).not.to.be.empty;
-        expect(res.body).to.be.an("object");
-        done();
-      });
-});
+    describe('When user exists', function () {
+      let auth;
 
+      this.beforeEach(function () {
+        getUsuarioFake = sinon.fake.resolves(usuario);
+        auth = proxyquire('../../controllers/authController', {
+          '../services/usuariosService': {
+            getUsuarioByCorreo: getUsuarioFake
+          }
+        })
+      })
 
-it("Should fail if user is disable", function (done) {
-    const findOneFakeDisable = sinon.fake.resolves({...aUser(1), activo:'NO'});
-    const compareFake = sinon.fake.resolves(true);
-    sinon.replace(Usuario, "findOne", findOneFakeDisable);
-    sinon.replace(bcrypt, "compare", compareFake);
-    chai
-      .request(app)
-      .post("/api/v1/auth/login")
-      .set("Accept", "application/json")
-      .set("Content-Type", "application/json")
-      .send({ correo: "johndoe@email.com", clave: "password" })
-      .end(function (err, res) {
-        expect(res.body.message).equal('La cuenta se encuentra deshabilitada')
-        expect(res.body).not.to.be.empty;
-        expect(res.body).to.be.an("object");
-        done();
+      it("Should return token", function () {
+        const compareFake = sinon.fake.resolves(true);
+        sinon.replace(bcrypt, 'compare', compareFake)
+
+        const expectedResponse = { token: generateToken({ sub: usuario.id }) }
+
+        return auth.login(req, res, next)
+          .then(() => {
+            expect(getUsuarioFake.calledOnceWith(usuario.correo)).to.be.true;
+            expect(compareFake.calledOnce).to.be.true;
+            expect(statusStub.calledOnceWith(200)).to.be.true;
+            expect(jsonStub.calledOnceWith(sinon.match(expectedResponse))).to.be.true;
+            expect(next.calledOnce).to.be.false;
+          })
       });
 
-});
 
-  it("Should fail", function (done) {
-    const findOneFakeDisable = sinon.fake.rejects(new Error('NA'));
-    const compareFake = sinon.fake.resolves(true);
-    sinon.replace(Usuario, "findOne", findOneFakeDisable);
-    sinon.replace(bcrypt, "compare", compareFake);
-    chai
-      .request(app)
-      .post("/api/v1/auth/login")
-      .set("Accept", "application/json")
-      .set("Content-Type", "application/json")
-      .send({ correo: "johndoe@email.com", clave: "password" })
-      .end(function (err, res) {
-        expect(res).to.have.status(500);
-        done();
+      it("Should fail because password is invalid", function () {
+        const compareFake = sinon.fake.resolves(false);
+        sinon.replace(bcrypt, 'compare', compareFake);
+
+        const expectedResponse = { message: "Credenciales invalidas" };
+
+        return auth.login(req, res, next)
+          .then(() => {
+            expect(getUsuarioFake.calledOnceWith(usuario.correo)).to.be.true;
+            expect(compareFake.calledOnce).to.be.true;
+            expect(statusStub.calledOnceWith(401)).to.be.true;
+            expect(jsonStub.calledOnceWith(sinon.match(expectedResponse))).to.be.true;
+            expect(next.calledOnce).to.be.false;
+          })
       });
+    });
 
-  });
+    describe('When user is not found or has invalid state', function () {
 
-  // it('Should generate an user token for password recovery', function(done) {
-  //   const findOneFake = sinon.fake.resolves(aUser(1));
-  //   const updateOneFake = sinon.fake.resolves(aUser(1));
-    
-  //   sinon.replace(Usuario, "findOne", findOneFake);
-  //   sinon.replace(Usuario, "update", updateOneFake);
-  //   this.timeout(1000000);
-  //   chai
-  //     .request(app)
-  //     .get("/api/v1/auth/password-reset")
-  //     .set("Accept", "application/json")
-  //     .set("Content-Type", "application/json")
-  //     .send({ correo: "mailer@mail.com" })
-  //     .end(function (err, res) {
-  //       expect(res).to.have.status(200);
-  //       expect(res.body).not.to.be.empty;
-  //       expect(res.body).to.be.an("object");
-  //       done();
-  //     });
-  // });
+      it("Should fail if user with given email is not found", function () {
+        getUsuarioFake = sinon.fake.resolves(null);
+        const { login } = proxyquire('../../controllers/authController', {
+          '../services/usuariosService': {
+            getUsuarioByCorreo: getUsuarioFake
+          }
+        });
+
+        const expectedResponse = { message: 'Credenciales invalidas' }
+        return login(req, res, next)
+          .then(() => {
+            expect(getUsuarioFake.calledOnce).to.be.true;
+            expect(statusStub.calledOnceWith(401)).to.be.true;
+            expect(jsonStub.calledOnceWith(sinon.match(expectedResponse))).to.be.true;
+            expect(next.calledOnce).to.be.false;
+          })
+
+      });
+    })
+
+    describe('When user exist but has invalid state', function () {
+      it("Should fail because user is not active", function () {
+        getUsuarioFake = sinon.fake.resolves({ usuario, activo: 'NO' });
+        const { login } = proxyquire('../../controllers/authController', {
+          '../services/usuariosService': {
+            getUsuarioByCorreo: getUsuarioFake
+          }
+        });
+
+        const expectedResponse = { message: "La cuenta se encuentra deshabilitada" }
+
+        return login(req, res, next)
+          .then(() => {
+            expect(statusStub.calledOnceWith(403)).to.be.true;
+            expect(jsonStub.calledOnceWith(sinon.match(expectedResponse))).to.be.true;
+            expect(getUsuarioFake.calledOnce).to.be.true;
+          });
+      });
+    })
+  })
 
 });

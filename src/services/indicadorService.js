@@ -9,10 +9,11 @@ const {
   Variable,
   sequelize,
   Sequelize,
-  CatalogoDetail
+  CatalogoDetail,
+  CatalogoDetailIndicador
 } = require("../models");
-const { toggleStatus, isObjEmpty } = require("../utils/objectUtils");
-
+const { toggleStatus } = require("../utils/objectUtils");
+const { createRelation } = require("./usuarioIndicadorService");
 const { Op } = Sequelize;
 
 const getIndicadores = async (page, perPage, matchedData, pathway) => {
@@ -30,9 +31,18 @@ const getIndicadores = async (page, perPage, matchedData, pathway) => {
 
     return { indicadores: result.rows, total: result.count };
   } catch (err) {
-    throw new Error(`Error al obtener indicadores: ${err.message}`);
+    throw err;
   }
 };
+
+const getInactiveIndicadores = async () => {
+  const indicadores = await Indicador.findAndCountAll({
+    where: { activo: 'NO' },
+    attributes: ["id", "nombre"],
+    raw: true
+  });
+  return indicadores;
+}
 
 const getDefinitionsForIndicadores = (pathway, queryParams) => {
   const attributes = defineAttributes(pathway, queryParams);
@@ -49,8 +59,8 @@ const getDefinitionsForIndicadores = (pathway, queryParams) => {
 };
 
 const defineAttributes = (pathway, matchedData) => {
-  const attributes = ["id", "nombre", "ultimoValorDisponible",
-    "anioUltimoValorDisponible", "tendenciaActual", "fuente", "createdBy", "updatedAt"];
+  const attributes = ["id", "nombre", "ultimoValorDisponible", "activo",
+    "anioUltimoValorDisponible", "tendenciaActual", "fuente", "createdBy", "updatedAt", "periodicidad", "owner"];
 
   switch (pathway) {
     case FILE_PATH:
@@ -65,17 +75,15 @@ const defineAttributes = (pathway, matchedData) => {
       return attributes;
     case FRONT_PATH:
       attributes.push(
-        "urlImagen",
         "definicion",
         "codigo",
-        "codigoObjeto",
+        "owner",
         "observaciones",
         "createdBy",
         "updatedBy",
         "idModulo",
         "createdAt",
-        "updatedAt",
-        "activo")
+        "updatedAt",)
       return attributes;
     default:
       throw new Error('Invalid pathway');
@@ -110,6 +118,7 @@ const defineWhere = (pathway, matchedData) => {
       where = {
         idModulo: matchedData.idModulo,
         ...filterIndicadorBy(matchedData),
+        ...getIndicadoresFilters(matchedData)
       };
       break;
     case FRONT_PATH:
@@ -127,19 +136,47 @@ const getIndicador = async (idIndicador, pathway) => {
   const includes = defineIncludesForAnIndicador(pathway);
   const attributes = defineAttributes(pathway);
   try {
-    const indicador = await Indicador.findOne({
+    let indicador = await Indicador.findOne({
       where: { id: idIndicador, },
       include: includes,
       attributes,
     });
     if (pathway !== FILE_PATH || indicador === null) {
+      const moduleId = indicador.modulo.id;
+      const { prevIndicador, nextIndicador } = await definePrevNextIndicadores(moduleId, idIndicador);
+      indicador['prev'] = prevIndicador;
+      indicador['next'] = nextIndicador;
       return indicador;
     }
+
     return { ...indicador.dataValues };
   } catch (err) {
-    throw new Error(`Error al obtener indicador ${idIndicador}\n${err.message}`)
+    throw err;
   }
 };
+
+const getIndicadoresFromTemaInteres = async (id) => {
+  const indicadores = await Indicador.findAll({
+    where: { idModulo: id },
+    attributes: ["id"],
+    raw: true
+  });
+  return indicadores;
+}
+
+const definePrevNextIndicadores = async (moduloId, idIndicador) => {
+  const indicadores = await getIndicadoresFromTemaInteres(moduloId);
+  const indicadorIndex = indicadores.findIndex(indicador => indicador.id === idIndicador);
+  const indicadoresSize = indicadores.length;
+
+  const prevIndex = indicadorIndex === 0 ? null : indicadorIndex - 1;
+  const nextIndex = indicadorIndex === indicadoresSize - 1 ? null : indicadorIndex + 1;
+
+  const prevIndicador = indicadores[prevIndex] === undefined ? null : indicadores[prevIndex].id;
+  const nextIndicador = indicadores[nextIndex] === undefined ? null : indicadores[nextIndex].id;
+
+  return { prevIndicador, nextIndicador };
+}
 
 const getIndicadoresFilters = (matchedData) => {
   const { searchQuery } = matchedData;
@@ -149,8 +186,6 @@ const getIndicadoresFilters = (matchedData) => {
         { nombre: { [Op.iLike]: `%${searchQuery}%` } },
         { definicion: { [Op.iLike]: `%${searchQuery}%` } },
         { codigo: { [Op.iLike]: `%${searchQuery}%` } },
-        { codigoObjeto: { [Op.iLike]: `%${searchQuery}%` } },
-        { tendenciaActual: { [Op.iLike]: `%${searchQuery}%` } },
         { observaciones: { [Op.iLike]: `%${searchQuery}%` } },
       ]
     };
@@ -161,7 +196,7 @@ const getIndicadoresFilters = (matchedData) => {
 
 const filterIndicadorBy = (matchedData) => {
   const { anioUltimoValorDisponible, tendenciaActual } = matchedData;
-  const filters = {};
+  const filters = { activo: 'SI' };
   if (anioUltimoValorDisponible) {
     filters.anioUltimoValorDisponible = anioUltimoValorDisponible;
   }
@@ -188,19 +223,38 @@ const getIncludesToCreateIndicador = (indicador) => {
 const createIndicador = async (indicador) => {
   const t = await sequelize.transaction();
   try {
-    const createdIndicador = await Indicador.create(indicador, {
+    const created = await Indicador.create(indicador, {
       ...getIncludesToCreateIndicador(indicador), transaction: t
     });
+    if (indicador.catalogos) {
+      const catalogos = indicador.catalogos.map(c => ({
+        idCatalogoDetail: c,
+        idIndicador: created.id
+      }))
+      createdCatalogos = await CatalogoDetailIndicador.bulkCreate(catalogos, {
+        transaction: t
+      });
+    }
+
+    createRelation(
+      [indicador.owner], [created.id], {
+      fechaDesde: new Date(),
+      fechaHasta: new Date(),
+      updatedBy: indicador.updatedBy,
+      createdBy: indicador.createdBy,
+      expires: 'NO'
+    }
+
+    )
 
     await t.commit();
-    return createdIndicador;
+    return created;
 
   } catch (err) {
     await t.rollback();
     throw new Error(`Error al crear indicador: ${err.message}`);
   }
 };
-
 
 const updateIndicadorStatus = async (id) => {
   try {
@@ -237,17 +291,7 @@ const defineIncludesForAnIndicador = (pathway, queryParams) => {
   return [
     ...includeBasicModels(),
     ...includeCatalogoFilters(queryParams),
-    ...includeHistorico(pathway)
-  ];
-}
-
-const includeBasicModels = () => {
-  return [
-    {
-      model: Modulo,
-      required: true,
-      attributes: ['id', 'temaIndicador', 'descripcion', 'color'],
-    },
+    ...includeHistorico(pathway),
     {
       model: Mapa,
       required: false,
@@ -256,18 +300,29 @@ const includeBasicModels = () => {
     {
       model: Formula,
       required: false,
-      attributes: ['ecuacion', 'descripcion'],
+      attributes: ['ecuacion', 'descripcion', 'isFormula'],
       include: [
         {
           model: Variable,
           required: false,
           attributes: [
             'nombre',
-            'nombreAtributo',
+            'descripcion',
             'dato',
+            'idUnidad',
           ],
         }
       ]
+    },
+  ];
+}
+
+const includeBasicModels = () => {
+  return [
+    {
+      model: Modulo,
+      required: true,
+      attributes: ['id', 'temaIndicador', 'descripcion', 'color', 'codigo', 'activo'],
     },
     {
       model: CatalogoDetail,
@@ -284,6 +339,7 @@ const includeBasicModels = () => {
 const includeHistorico = (pathway) => {
   switch (pathway) {
     case FRONT_PATH:
+      return [];
     case SITE_PATH:
       return [{
         model: Historico,
@@ -302,7 +358,7 @@ const includeHistorico = (pathway) => {
     default:
       throw new Error('Invalid pathway')
   };
-}
+};
 
 const includeCatalogoFilters = (queryParams) => {
   const inIds = [];
@@ -330,6 +386,23 @@ const includeCatalogoFilters = (queryParams) => {
       where: { idCatalogoDetail: [...inIds] },
     }
   }];
+};
+
+const getIdIndicadorRelatedTo = async (model, id) => {
+  try {
+    const indicador = await model.findOne({
+      where: { id },
+      attributes: [[sequelize.literal('"indicador"."id"'), "indicadorId"]],
+      include: {
+        model: Indicador,
+        attributes: []
+      },
+      raw: true
+    });
+    return indicador?.indicadorId;
+  } catch (err) {
+    throw err;
+  }
 }
 
 module.exports = {
@@ -338,4 +411,6 @@ module.exports = {
   createIndicador,
   updateIndicador,
   updateIndicadorStatus,
+  getInactiveIndicadores,
+  getIdIndicadorRelatedTo
 };

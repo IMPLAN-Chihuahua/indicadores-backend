@@ -1,9 +1,16 @@
-FROM node:16.16-alpine3.15
+FROM node:lts-alpine3.15
 
-# Install chromium for puppeter
-RUN apk update && apk upgrade && \
-  apk add --no-cache \
-  chromium
+RUN apk add --no-cache \
+      chromium \
+      nss \
+      freetype \
+      harfbuzz \
+      ca-certificates \
+      ttf-freefont
+
+# Puppeteer v13.5.0 works with Chromium 100.
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -13,13 +20,14 @@ WORKDIR /usr/src/app
 # where available (npm@5+)
 COPY package*.json ./
 
-RUN npm install
-# If you are building your code for production
-# RUN npm ci --only=production
+ENV NODE_ENV=production
+
+RUN npm ci --ommit=dev
 
 # Bundle app source
 COPY . .
 
 EXPOSE 8080
+
 CMD [ "node", "app.js" ]
 
