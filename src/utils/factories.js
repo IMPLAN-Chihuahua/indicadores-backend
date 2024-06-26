@@ -290,7 +290,17 @@ const usersToIndicador = () => ([
 			apellidoMaterno: faker.name.lastName(),
 		}
 	}
-])
+]);
+
+const aDimension = (id) => ({
+	id,
+	titulo: faker.lorem.words(Math.floor(Math.random() * 10) + 1),
+	descripcion: faker.lorem.paragraph(),
+	urlImagen: faker.image.imageUrl(),
+	color: faker.internet.color(),
+	createdAt: new Date(),
+	updatedAt: new Date()
+})
 
 module.exports = {
 	anIndicador,
@@ -311,4 +321,5 @@ module.exports = {
 	someHistoricos,
 	relationInfo,
 	usersToIndicador,
+	aDimension
 };
