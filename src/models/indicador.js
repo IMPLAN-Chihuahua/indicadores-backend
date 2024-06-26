@@ -112,6 +112,18 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.INTEGER,
                 allowNull: true,
                 defaultValue: 1
+            },
+
+            archive: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+                defaultValue: false
+            },
+
+            dimension: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                defaultValue: 1
             }
         },
         {
