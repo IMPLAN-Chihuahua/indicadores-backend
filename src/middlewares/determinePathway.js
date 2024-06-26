@@ -36,6 +36,10 @@ const determineModel = (req, res, next) => {
       req.model = 'modulo';
       next();
       break;
+    case 'dimensiones':
+      req.model = 'dimension';
+      next();
+      break;
     default:
       return res.status(403).send('Este módulo no tiene petición general de información.');
 
