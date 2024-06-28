@@ -51,6 +51,13 @@ const createIndicadorValidationRules = () => [
         .exists()
         .isInt().toInt(),
 
+    body('formula.isFormula')
+        .optional()
+        .isIn(['SI', 'NO']),
+
+    body('formula.isFormula')
+        .default('NO'),
+        
     body('formula.variables')
         .optional()
         .isArray()
