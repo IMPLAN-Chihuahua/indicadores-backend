@@ -27,7 +27,8 @@ const DESTINATIONS = {
   MODULOS: 'temas',
   INDICADORES: 'indicadores',
   USUARIOS: 'usuarios',
-  MAPAS: 'mapas'
+  MAPAS: 'mapas',
+  DIMENSIONES: 'dimensiones',
 }
 
 const getUniqueName = (file) => `${Date.now().toString()}.${file.originalname.split('.')[1]}`;
