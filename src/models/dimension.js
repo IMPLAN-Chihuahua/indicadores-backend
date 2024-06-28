@@ -4,6 +4,9 @@ const {
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
     class Dimension extends Model {
+        static associate(models) {
+            this.hasMany(models.Indicador, { foreignKey: 'idDimension' });
+        }
     };
     Dimension.init(
         {
