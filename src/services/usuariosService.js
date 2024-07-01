@@ -74,6 +74,7 @@ const isCorreoAlreadyInUse = async (correo) => {
 };
 
 const addSearchQueryIfPresent = (searchQuery) => {
+
     if (searchQuery && searchQuery !== '') {
         return {
             [Op.or]: [
@@ -88,11 +89,12 @@ const addSearchQueryIfPresent = (searchQuery) => {
 
 const getUsuarios = async (limit, offset, searchQuery) => {
     try {
+
         const result = await Usuario.scope('withoutPassword').findAndCountAll({
             limit,
             offset,
             where: { ...addSearchQueryIfPresent(searchQuery) },
-            order: [['updatedAt', 'DESC']],
+            order: [['updatedAt', 'asc']],
             include: [
                 {
                     model: Rol,
@@ -102,6 +104,7 @@ const getUsuarios = async (limit, offset, searchQuery) => {
             ],
 
         });
+
         const usuarios = result.rows;
         const total = result.count;
         return { usuarios, total };

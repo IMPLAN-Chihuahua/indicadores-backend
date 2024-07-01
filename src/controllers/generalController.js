@@ -9,14 +9,6 @@ const getInformation = async (req, res, next) => {
     const { sortBy, order } = req.matchedData;
     const { model } = req;
 
-    console.log('page', page)
-    console.log('perPage', perPage)
-    console.log('attributes', attributes)
-    console.log('where', where)
-    console.log('sortBy', sortBy)
-    console.log('order', order)
-    console.log('model', model)
-
     try {
         const { information, total } = await generalServices.getInformation(page, perPage, attributes, where, sortBy, order, model);
         const totalPages = Math.ceil(total / perPage);
