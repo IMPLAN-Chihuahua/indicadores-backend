@@ -23,12 +23,12 @@ const filterIndicadoresValidationRules = () => [
 const sortValidationRules = () => [
     query('sortBy')
         .optional()
-        .isIn(['id', 'nombre', 'anio', 'fuente', 'valor', 'periodicidad'])
-        .withMessage('orden debe ser ascendente o descendente'),
+        .isIn(['id', 'nombre', 'anio', 'fuente', 'valor', 'periodicidad', 'updatedAt']),
     query('order')
         .optional()
         .toUpperCase()
         .isIn(['ASC', 'DESC'])
+        .withMessage('orden debe ser ascendente o descendente'),
 ];
 
 const createIndicadorValidationRules = () => [
@@ -57,7 +57,7 @@ const createIndicadorValidationRules = () => [
 
     body('formula.isFormula')
         .default('NO'),
-        
+
     body('formula.variables')
         .optional()
         .isArray()
@@ -93,7 +93,7 @@ const createIndicadorValidationRules = () => [
 
     body('mapa.url')
         .optional()
-        .isURL()
+        .isURL(),
 ];
 
 const updateIndicadorValidationRules = () => [
@@ -109,10 +109,13 @@ const updateIndicadorValidationRules = () => [
         .toUpperCase()
         .isIn(['ASCENDENTE', 'DESCENDENTE']),
     body(['idOds', 'idCobertura',
-        'idUnidadMedida', 'idModulo',
+        'idUnidadMedida', 'idModulo', 'idDimension',
         'anioUltimoValorDisponible'])
         .optional()
-        .isInt().toInt()
+        .isInt().toInt(),
+
+    body('archive').optional().isBoolean(),
+    body('archive').default(false)
 ];
 
 module.exports = {

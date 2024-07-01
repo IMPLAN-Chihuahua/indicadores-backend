@@ -40,6 +40,7 @@ const express = require('express');
 const { getHistoricos, createHistorico } = require('../controllers/historicoController');
 const { createHistoricoValidationRules } = require('../middlewares/validator/historicoValidator');
 const { updateIndicadorCatalogos } = require('../middlewares/validator/catalogoValidator');
+const multer = require('multer');
 const router = express.Router();
 
 /**
@@ -313,9 +314,10 @@ router.route('/')
 router.route('/').post(
   verifyJWT,
   verifyUserIsActive,
+  multer().none(),
+  createIndicadorValidationRules(),
   uploadImage(DESTINATIONS.MAPAS),
   verifyUserHasRoles(['ADMIN', 'USER']),
-  createIndicadorValidationRules(),
   validate,
   createIndicador
 );
