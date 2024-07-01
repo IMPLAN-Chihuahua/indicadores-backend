@@ -2,7 +2,7 @@ const { generateToken } = require("../../middlewares/auth");
 const { expect } = require("chai");
 const { describe } = require("mocha");
 const proxyquire = require('proxyquire').noCallThru();
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const { aUser } = require("../../utils/factories");
 const sinon = require("sinon");
 

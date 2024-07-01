@@ -2,7 +2,6 @@ const { Dimension, Sequelize, Indicador } = require('../models');
 
 const countIndicadoresByDimension = async (req, res, next) => {
     try {
-        console.log('Dimensiosndasndjakdnakjdn')
         const result = await Dimension.findAll({
             attributes: [
                 'id',
@@ -21,7 +20,6 @@ const countIndicadoresByDimension = async (req, res, next) => {
             raw: true
         });
 
-        console.log('result');
         return res.status(200).json({
             data: result
         });
