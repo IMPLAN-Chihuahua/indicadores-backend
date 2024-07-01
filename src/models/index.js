@@ -14,13 +14,8 @@ const config = require(`${__dirname}/../config/config.js`)[env];
 const db = {};
 let sequelize;
 if (config.use_env_variable) {
-  console.log('if')
-  console.log(config);
-
   sequelize = new Sequelize(process.env[config.use_env_variable], config);
 } else {
-  console.log('else')
-  console.log(config.password)
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
 

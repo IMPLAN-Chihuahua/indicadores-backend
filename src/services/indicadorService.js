@@ -10,6 +10,7 @@ const {
   sequelize,
   Sequelize,
   CatalogoDetail,
+  Dimension,
   CatalogoDetailIndicador
 } = require("../models");
 const { toggleStatus } = require("../utils/objectUtils");
@@ -60,7 +61,7 @@ const getDefinitionsForIndicadores = (pathway, queryParams) => {
 
 const defineAttributes = (pathway, matchedData) => {
   const attributes = ["id", "nombre", "ultimoValorDisponible", "activo",
-    "anioUltimoValorDisponible", "tendenciaActual", "fuente", "createdBy", "updatedAt", "periodicidad", "owner"];
+    "anioUltimoValorDisponible", "tendenciaActual", "fuente", "createdBy", "updatedAt", "periodicidad", "owner", "archive"];
 
   switch (pathway) {
     case FILE_PATH:
@@ -323,6 +324,11 @@ const includeBasicModels = () => {
       model: Modulo,
       required: true,
       attributes: ['id', 'temaIndicador', 'descripcion', 'color', 'codigo', 'activo'],
+    },
+    {
+      model: Dimension,
+      required: true,
+      attributes: ['id', 'titulo', 'descripcion', 'urlImagen'],
     },
     {
       model: CatalogoDetail,
