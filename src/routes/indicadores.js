@@ -880,6 +880,7 @@ router.route('/:idIndicador/historicos')
     verifyUserIsActive,
     createHistoricoValidationRules(),
     validate,
+    verifyUserHasRoles(['USER', 'ADMIN']),
     createHistorico
   );
 
