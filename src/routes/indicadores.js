@@ -314,9 +314,8 @@ router.route('/')
 router.route('/').post(
   verifyJWT,
   verifyUserIsActive,
-  multer().none(),
-  createIndicadorValidationRules(),
   uploadImage(DESTINATIONS.MAPAS),
+  createIndicadorValidationRules(),
   verifyUserHasRoles(['ADMIN', 'USER']),
   validate,
   createIndicador

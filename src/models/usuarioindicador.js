@@ -58,12 +58,12 @@ module.exports = (sequelize, DataTypes) => {
 
             updatedBy: {
                 type: DataTypes.INTEGER,
-                allowNull: false,
+                allowNull: true,
             },
 
             activo: {
                 type: DataTypes.STRING(2),
-                allowNull: true,
+                allowNull: false,
                 defaultValue: 'SI',
                 validate: {
                     isIn: [['SI', 'NO']]
