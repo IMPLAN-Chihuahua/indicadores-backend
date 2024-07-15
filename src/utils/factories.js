@@ -1,5 +1,5 @@
 const faker = require('faker');
-const { Modulo, Indicador } = require('../models')
+const { Modulo, Indicador, Dimension, CatalogoDetail } = require('../models')
 
 
 const aDummyWithName = (id) => ({
@@ -10,50 +10,40 @@ const aDummyWithName = (id) => ({
 const aCodigo = () => `${faker.datatype.number(9)}${faker.datatype.number(9)}${faker.datatype.number(9)}`;
 const randomYear = () => faker.datatype.number({ 'min': 2000, 'max': new Date().getFullYear() });
 
-const anIndicador = (id) => ({
-	id,
-	nombre: `Test ${faker.random.word()}`,
-	definicion: faker.lorem.sentence(),
-	urlImagen: faker.image.imageUrl(),
-	modulo: aModulo(1),
-	ultimoValorDisponible: faker.datatype.number(),
-	idUnidadMedida: faker.datatype.number(10),
-	unidadMedida: faker.random.word(),
-	anioUltimoValorDisponible: randomYear(),
-	idCobertura: faker.datatype.number(10),
-	coberturaGeografica: faker.random.word(),
-	tendenciaActual: faker.datatype.boolean() ? "ASCENDENTE" : "DESCENDENTE",
-	tendenciaDeseada: faker.datatype.boolean() ? "ASCENDENTE" : "DESCENDENTE",
-	mapa: {
-		id: faker.datatype.number(10),
-		ubicacion: faker.random.word(),
-		url: faker.image.imageUrl()
-	},
-	formula: {
-		id: faker.datatype.number(10),
-		ecuacion: 'Z=x^2 + y^2',
-		descripcion: faker.lorem.sentence(),
-		variables: [{
-			dataValues: {
-				nombre: faker.random.word(),
-				descripcion: faker.random.word(),
-				dato: faker.datatype.number(),
-				Unidad: faker.random.word()
-			}
-		}]
-	},
-	historicos: [{
-		dataValues: {
-			anio: randomYear(),
-			valor: faker.datatype.number(),
-			fuente: faker.random.word()
-		},
-	}],
-	codigo: aCodigo(),
-	createdAt: new Date(),
-	createdBy: faker.datatype.number(9),
-	updatedAt: new Date(),
-});
+const anIndicador = (id, options) => {
+	let temaInteres = options?.temaInteres;
+	if (!options) {
+		temaInteres = aModulo(1)
+	}
+	const indicador = Indicador.build({
+		id: id || faker.datatype.number(100),
+		urlImagen: faker.image.imageUrl(),
+		codigo: aCodigo(),
+		nombre: `Indicador ${faker.random.word()}`,
+		definicion: faker.lorem.sentence(),
+		ultimoValorDisponible: faker.datatype.number(),
+		anioUltimoValorDisponible: randomYear(),
+		tendenciaActual: faker.datatype.boolean() ? "ASCENDENTE" : "DESCENDENTE",
+		tendenciaDeseada: faker.datatype.boolean() ? "ASCENDENTE" : "DESCENDENTE",
+		observaciones: faker.lorem.sentence(),
+		createdBy: faker.datatype.number(9),
+		updatedBy: faker.datatype.number(9),
+		activo: faker.datatype.boolean(),
+		fuente: faker.lorem.sentence(),
+		periodicidad: faker.datatype.number(12),
+		owner: faker.datatype.number(9),
+		archive: faker.datatype.boolean(),
+		updatedAt: new Date(),
+		createdAt: new Date(),
+		modulo: temaInteres,
+		dimension: null,
+		catalogos: [],
+	}, {
+		include: [Modulo, Dimension, { model: CatalogoDetail, as: 'catalogos' }]
+	})
+	indicador.validate()
+	return indicador;
+}
 
 const indicadorToCreate = () => {
 	const indicador = Indicador.build({
