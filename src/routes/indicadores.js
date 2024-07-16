@@ -375,12 +375,52 @@ router.get('/:idIndicador/historicos',
   getHistoricos
 );
 
+/**
+ * @swagger
+ *   /indicadores/{idIndicador}/formula:
+ *     get:
+ *       summary: Retrieves formula and variables from a given Indicador
+ *       tags: [Indicadores, Formulas]
+ *       security:
+ *         - bearer: []
+ *       parameters:
+ *         - in: path
+ *           name: idIndicador
+ *           required: true
+ *           schema:
+ *             type: integer
+ *             format: int64
+ *       responses:
+ *         200:
+ *           description: Equation, description and variables of an Indicador.
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/components/schemas/FormulaWithVariables'
+ *         401:
+ *           $ref: '#/components/responses/Unauthorized'
+ *         403:
+ *           $ref: '#/components/responses/Forbidden'
+ *         404:
+ *           $ref: '#/components/responses/NotFound'
+ *         422:
+ *           $ref: '#components/responses/UnprocessableEntity'
+ *         429:
+ *           $ref: '#components/responses/TooManyRequests'
+ *         500:
+ *           $ref: '#components/responses/InternalServerError'
+ */
+router.get('/:idIndicador/formula',
+  paramValidationRules(),
+  validate,
+  exists('idIndicador', 'Indicador'),
+  getFormulaOfIndicador
+)
+
 
 // PROTECTED ROUTES
-router.use(
-  verifyJWT,
-  verifyUserIsActive,
-)
+router.use(verifyJWT);
+router.use(verifyUserIsActive);
 
 // ADMIN ROUTES
 /**
@@ -630,50 +670,6 @@ router.patch('/:idIndicador',
   exists('idIndicador', 'Indicador'),
   updateIndicador
 );
-
-
-/**
- * @swagger
- *   /indicadores/{idIndicador}/formula:
- *     get:
- *       summary: Retrieves formula and variables from a given Indicador
- *       tags: [Indicadores, Formulas]
- *       security:
- *         - bearer: []
- *       parameters:
- *         - in: path
- *           name: idIndicador
- *           required: true
- *           schema:
- *             type: integer
- *             format: int64
- *       responses:
- *         200:
- *           description: Equation, description and variables of an Indicador.
- *           content:
- *             application/json:
- *               schema:
- *                 $ref: '#/components/schemas/FormulaWithVariables'
- *         401:
- *           $ref: '#/components/responses/Unauthorized'
- *         403:
- *           $ref: '#/components/responses/Forbidden'
- *         404:
- *           $ref: '#/components/responses/NotFound'
- *         422:
- *           $ref: '#components/responses/UnprocessableEntity'
- *         429:
- *           $ref: '#components/responses/TooManyRequests'
- *         500:
- *           $ref: '#components/responses/InternalServerError'
- */
-router.get('/:idIndicador/formula',
-  paramValidationRules(),
-  validate,
-  verifyUserHasRoles(['USER', 'ADMIN']),
-  exists('idIndicador', 'Indicador'),
-  getFormulaOfIndicador
-)
 
 /**
  * @swagger
