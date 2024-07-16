@@ -4,7 +4,12 @@
 
 const fs = require('fs');
 const path = require('path');
+const cls = require('cls-hooked');
+const namespace = cls.createNamespace('indicadores-namespace');
+
 const Sequelize = require('sequelize');
+Sequelize.useCLS(namespace)
+
 const logger = require('../config/logger');
 
 const basename = path.basename(__filename);
