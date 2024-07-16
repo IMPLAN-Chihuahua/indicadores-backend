@@ -10,14 +10,13 @@ const exists = (pathId, modelName) => async (req, res, next) => {
         [models.Sequelize.fn('COUNT', 'id'), 'count']
       ],
     })
-    if (result.count > 0) {
-      next();
-    } else {
+    if (result.count === 0) {
       return res.status(404).json({
         status: 404,
         message: `${modelName} with id ${id} was not found`
       });
     }
+    next();
   } catch (err) {
     next(err)
   }
