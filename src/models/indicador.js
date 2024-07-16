@@ -120,6 +120,24 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false,
                 defaultValue: false
             },
+
+            idModulo: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+                references: {
+                    model: 'Modulos',
+                    key: 'id'
+                },
+            },
+
+            idDimension: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                references: {
+                    model: 'Dimensions',
+                    key: 'id'
+                },
+            },
         },
         {
             sequelize,
