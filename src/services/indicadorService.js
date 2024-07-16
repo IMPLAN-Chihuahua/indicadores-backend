@@ -209,53 +209,64 @@ const filterIndicadorBy = (matchedData) => {
 
 const getIncludesToCreateIndicador = (indicador) => {
   const includes = [];
+
   if (indicador.formula) {
     includes.push({
       association: Indicador.associations.formula,
       include: [Formula.associations.variables]
     });
   }
+
   if (indicador.mapa) {
     includes.push(Indicador.associations.mapa);
   }
+
   return { include: includes };
 };
 
 const createIndicador = async (indicador) => {
-  const t = await sequelize.transaction();
+  const { catalogos, ...values } = indicador;
+
   try {
-    const created = await Indicador.create(indicador, {
-      ...getIncludesToCreateIndicador(indicador), transaction: t
-    });
-    if (indicador.catalogos) {
-      const catalogos = indicador.catalogos.map(c => ({
-        idCatalogoDetail: c,
-        idIndicador: created.id
-      }))
-      createdCatalogos = await CatalogoDetailIndicador.bulkCreate(catalogos, {
-        transaction: t
+    const result = await sequelize.transaction(async _t => {
+      const created = await Indicador.create(
+        values, {
+        ...getIncludesToCreateIndicador(values)
       });
-    }
 
-    createRelation(
-      [indicador.owner], [created.id], {
-      fechaDesde: new Date(),
-      fechaHasta: new Date(),
-      updatedBy: indicador.updatedBy,
-      createdBy: indicador.createdBy,
-      expires: 'NO'
-    }
+      if (catalogos && Array.isArray(catalogos) && catalogos.length > 0) {
+        await addCatalogosToIndicador(catalogos, created.id)
+      }
 
-    )
+      await assignIndicadorToUsuario(created.id, indicador.owner)
+      return created;
+    })
 
-    await t.commit();
-    return created;
-
+    return result;
   } catch (err) {
-    await t.rollback();
     throw new Error(`Error al crear indicador: ${err.message}`);
   }
 };
+
+const assignIndicadorToUsuario = (idIndicador, idUsuario) => {
+  return createRelation(
+    [idUsuario], [idIndicador], {
+    fechaDesde: null,
+    fechaHasta: null,
+    updatedBy: idUsuario,
+    createdBy: idUsuario,
+    expires: 'NO'
+  })
+}
+
+const addCatalogosToIndicador = async (catalogos, idIndicador) => {
+  const relation = catalogos.map(c => ({
+    idCatalogoDetail: c,
+    idIndicador
+  }))
+
+  return CatalogoDetailIndicador.bulkCreate(relation);
+}
 
 const updateIndicadorStatus = async (id) => {
   try {
