@@ -50,7 +50,6 @@ const getDefinitionsForIndicadores = (pathway, queryParams) => {
   const includes = defineIncludesForIndicadores(queryParams);
   const order = defineOrder(pathway, queryParams);
   const where = defineWhere(pathway, queryParams);
-
   return {
     attributes,
     includes,
@@ -83,6 +82,7 @@ const defineAttributes = (pathway, matchedData) => {
         "createdBy",
         "updatedBy",
         "idModulo",
+        'idDimension',
         "createdAt",
         "updatedAt",)
       return attributes;
@@ -114,19 +114,22 @@ const getIndicadoresSorting = ({ sortBy, order }) => {
 
 const defineWhere = (pathway, matchedData) => {
   let where = {};
+
   switch (pathway) {
     case SITE_PATH:
       where = {
         idModulo: matchedData.idModulo,
         ...filterIndicadorBy(matchedData),
-        ...getIndicadoresFilters(matchedData)
+        ...getIndicadoresFilters(matchedData),
       };
       break;
     case FRONT_PATH:
       where = {
-        ...getIndicadoresFilters(matchedData)
+        ...getIndicadoresFilters(matchedData),
+        ...advancedSearch(matchedData),
       }
       break;
+
     default:
       throw new Error('Invalid pathway')
   }
@@ -180,6 +183,7 @@ const definePrevNextIndicadores = async (moduloId, idIndicador) => {
 }
 
 const getIndicadoresFilters = (matchedData) => {
+
   const { searchQuery } = matchedData;
   if (searchQuery) {
     const filter = {
@@ -193,6 +197,25 @@ const getIndicadoresFilters = (matchedData) => {
     return filter;
   }
   return {};
+};
+
+const advancedSearch = (matchedData) => {
+  const { idDimensions, owner } = matchedData
+  let filter = {}
+
+  //idDimensions to array
+  const dimensionsArray = idDimensions ? idDimensions.split(',') : null;
+
+  if (idDimensions) {
+    filter.idDimension = dimensionsArray;
+  }
+
+  if (owner) {
+    filter.owner = owner;
+  }
+
+
+  return filter;
 };
 
 const filterIndicadorBy = (matchedData) => {
