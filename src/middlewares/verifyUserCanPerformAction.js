@@ -7,7 +7,7 @@ const verifyUserCanPerformActionOnIndicador = ({ indicadorPathId, relatedTo }) =
     const rol = req.rol || await getRol(req.sub)
 
     if (rol === 'ADMIN') {
-        next();
+        return next();
     }
 
     let idIndicador = req.matchedData[indicadorPathId];
@@ -22,7 +22,7 @@ const verifyUserCanPerformActionOnIndicador = ({ indicadorPathId, relatedTo }) =
         return res.status(403).send('No tienes permiso para realizar esta operación')
     }
 
-    next();
+    return next();
 }
 
 
