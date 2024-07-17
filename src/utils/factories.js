@@ -45,8 +45,10 @@ const anIndicador = (id, options) => {
 	return indicador;
 }
 
+// TODO: take into account express-validator rules
 const indicadorToCreate = () => {
 	const indicador = Indicador.build({
+		id: faker.datatype.number(),
 		nombre: faker.random.word(),
 		codigo: aCodigo(),
 		definicion: faker.lorem.sentence(),
@@ -57,6 +59,7 @@ const indicadorToCreate = () => {
 		observaciones: faker.random.words(10),
 		fuente: faker.internet.url(),
 		urlImagen: faker.image.avatar(),
+		idDimension: 1,
 		idModulo: 1
 	});
 	return indicador.dataValues;
