@@ -1,5 +1,7 @@
 /* eslint-disable no-use-before-define */
 const { SITE_PATH, FRONT_PATH, FILE_PATH } = require("../middlewares/determinePathway");
+
+const models = require("../models");
 const {
   Indicador,
   Modulo,
@@ -12,7 +14,7 @@ const {
   CatalogoDetail,
   Dimension,
   CatalogoDetailIndicador
-} = require("../models");
+} = models;
 const { toggleStatus } = require("../utils/objectUtils");
 const { createRelation } = require("./usuarioIndicadorService");
 const { Op } = Sequelize;
@@ -406,20 +408,16 @@ const includeCatalogoFilters = (queryParams) => {
 };
 
 const getIdIndicadorRelatedTo = async (model, id) => {
-  try {
-    const indicador = await model.findOne({
-      where: { id },
-      attributes: [[sequelize.literal('"indicador"."id"'), "indicadorId"]],
-      include: {
-        model: Indicador,
-        attributes: []
-      },
-      raw: true
-    });
-    return indicador?.indicadorId;
-  } catch (err) {
-    throw err;
-  }
+  const indicador = await models[model].findOne({
+    where: { id },
+    attributes: [[sequelize.literal('"indicador"."id"'), "indicadorId"]],
+    include: {
+      model: Indicador,
+      attributes: []
+    },
+    raw: true
+  });
+  return indicador?.indicadorId;
 }
 
 module.exports = {
