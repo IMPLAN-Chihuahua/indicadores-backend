@@ -39,10 +39,24 @@ const editDimension = async (req, res, next) => {
     } catch (err) {
         next(err);
     }
+};
 
+const getDimension = async (req, res, next) => {
+    const { idDimension } = req.matchedData;
+
+    try {
+        const dimension = await Dimension.findByPk(idDimension);
+        if (dimension === null) {
+            return res.sendStatus(404);
+        }
+        return res.status(200).json({ data: dimension });
+    } catch (err) {
+        next(err);
+    }
 }
 
 module.exports = {
     countIndicadoresByDimension,
-    editDimension
+    editDimension,
+    getDimension
 }
