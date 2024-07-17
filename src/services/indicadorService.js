@@ -60,7 +60,7 @@ const getDefinitionsForIndicadores = (pathway, queryParams) => {
 
 const defineAttributes = (pathway, matchedData) => {
   const attributes = ["id", "nombre", "ultimoValorDisponible", "activo",
-    "anioUltimoValorDisponible", "tendenciaActual", "fuente", "createdBy", "updatedAt", "periodicidad", "owner", "archive"];
+    "anioUltimoValorDisponible", "tendenciaActual", "fuente", "createdBy", "updatedAt", "periodicidad", "owner", "archive", "idDimension"];
 
   switch (pathway) {
     case FILE_PATH:
@@ -118,7 +118,6 @@ const defineWhere = (pathway, matchedData) => {
   switch (pathway) {
     case SITE_PATH:
       where = {
-        idModulo: matchedData.idModulo,
         ...filterIndicadorBy(matchedData),
         ...getIndicadoresFilters(matchedData),
       };
@@ -219,7 +218,7 @@ const advancedSearch = (matchedData) => {
 };
 
 const filterIndicadorBy = (matchedData) => {
-  const { anioUltimoValorDisponible, tendenciaActual } = matchedData;
+  const { anioUltimoValorDisponible, tendenciaActual, idModulo, idDimension } = matchedData;
   const filters = { activo: 'SI' };
   if (anioUltimoValorDisponible) {
     filters.anioUltimoValorDisponible = anioUltimoValorDisponible;
@@ -227,6 +226,15 @@ const filterIndicadorBy = (matchedData) => {
   if (tendenciaActual) {
     filters.tendenciaActual = tendenciaActual;
   }
+
+  if (idModulo) {
+    filters.idModulo = idModulo;
+  }
+
+  if (idDimension) {
+    filters.idDimension = idDimension;
+  }
+
   return filters;
 };
 
