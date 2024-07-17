@@ -1,13 +1,19 @@
-// PATCH de formula
-const express = require('express');
 const { updateFormula, addVariablesToFormula } = require('../controllers/formulaController');
 const { verifyUserHasRoles, verifyUserIsActive, verifyJWT } = require('../middlewares/auth');
 const { exists } = require('../middlewares/resourceExists');
 const { updateValidationRules } = require('../middlewares/validator/formulaValidator');
-const { paramValidationRules, validate, idValidation, joinRules } = require('../middlewares/validator/generalValidator');
+const { paramValidationRules, validate, idValidation } = require('../middlewares/validator/generalValidator');
 const { createVariableValidationRules, variablesChain } = require('../middlewares/validator/variableValidator');
-const router = express.Router();
+const { verifyUserCanPerformActionOnIndicador } = require('../middlewares/verifyUserCanPerformAction');
 
+
+const promisedRouter = require('express-promise-router');
+const router = promisedRouter();
+
+//PROTECTED ROUTES
+router.use(verifyJWT);
+router.use(verifyUserIsActive);
+router.use(verifyUserHasRoles(['USER', 'ADMIN']))
 /**
  * @swagger
  *   components:
@@ -81,10 +87,8 @@ router.route('/:idFormula')
     paramValidationRules(),
     updateValidationRules(),
     validate,
-    verifyJWT,
-    verifyUserIsActive,
-    verifyUserHasRoles(['USER', 'ADMIN']),
     exists('idFormula', 'Formula'),
+    verifyUserCanPerformActionOnIndicador({ relatedTo: { model: 'Formula', pathId: 'idFormula' } }),
     updateFormula
   );
 
@@ -135,10 +139,8 @@ router.route('/:idFormula/variables')
     variablesChain(),
     createVariableValidationRules(),
     validate,
-    verifyJWT,
-    verifyUserIsActive,
-    verifyUserHasRoles(['USER', 'ADMIN']),
     exists('idFormula', 'Formula'),
+    verifyUserCanPerformActionOnIndicador({ relatedTo: { model: 'Formula', pathId: 'idFormula' } }),
     addVariablesToFormula
   )
 

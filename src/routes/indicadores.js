@@ -713,6 +713,7 @@ router.post('/:idIndicador/formula',
   validate,
   verifyUserHasRoles(['ADMIN', 'USER']),
   exists('idIndicador', 'Indicador'),
+  verifyUserCanPerformActionOnIndicador({ indicadorPathId: 'idIndicador' }),
   createFormula
 )
 
@@ -756,6 +757,7 @@ router.post('/:idIndicador/mapa',
   mapaValidationRules(),
   validate,
   exists('idIndicador', 'Indicador'),
+  verifyUserCanPerformActionOnIndicador({ indicadorPathId: 'idIndicador' }),
   createMapa
 );
 
@@ -861,6 +863,7 @@ router.post('/:idIndicador/historicos',
   createHistoricoValidationRules(),
   validate,
   verifyUserHasRoles(['ADMIN', 'USER']),
+  verifyUserCanPerformActionOnIndicador({ indicadorPathId: 'idIndicador' }),
   createHistorico
 );
 
@@ -901,6 +904,7 @@ router.patch('/:idIndicador/catalogo',
   updateIndicadorCatalogos(),
   validate,
   verifyUserHasRoles(['ADMIN', 'USER']),
+  verifyUserCanPerformActionOnIndicador({ indicadorPathId: 'idIndicador' }),
   updateOrCreateCatalogFromIndicador,
 )
 

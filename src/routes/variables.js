@@ -4,7 +4,14 @@ const { verifyUserIsActive, verifyUserHasRoles, verifyJWT } = require('../middle
 const { exists } = require('../middlewares/resourceExists');
 const { idValidation, validate } = require('../middlewares/validator/generalValidator');
 const { updateVariableValidationRules } = require('../middlewares/validator/variableValidator');
-const router = express.Router();
+
+const promisedRouter = require('express-promise-router');
+const router = promisedRouter();
+
+// PROTECTED ROUTES
+router.use(verifyJWT)
+router.use(verifyUserIsActive)
+router.use(verifyUserHasRoles(['ADMIN', 'USER']),)
 
 /**
  * @swagger
@@ -88,9 +95,6 @@ router.route('/:idVariable')
     idValidation(),
     updateVariableValidationRules(),
     validate,
-    verifyJWT,
-    verifyUserIsActive,
-    verifyUserHasRoles(['USER', 'ADMIN']),
     exists('idVariable', 'Variable'),
     updateVariable
   );
@@ -134,9 +138,6 @@ router.route('/:idVariable')
   .delete(
     idValidation(),
     validate,
-    verifyJWT,
-    verifyUserIsActive,
-    verifyUserHasRoles(['USER', 'ADMIN']),
     exists('idVariable', 'Variable'),
     deleteVariable
   );
