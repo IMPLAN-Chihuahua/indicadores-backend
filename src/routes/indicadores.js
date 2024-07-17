@@ -36,11 +36,11 @@ const { getInformation } = require('../controllers/generalController');
 const { getMapaOfIndicador, createMapa } = require('../controllers/mapaController');
 const { mapaValidationRules } = require('../middlewares/validator/mapaValidator');
 
-const express = require('express');
 const { getHistoricos, createHistorico } = require('../controllers/historicoController');
 const { createHistoricoValidationRules } = require('../middlewares/validator/historicoValidator');
 const { updateIndicadorCatalogos } = require('../middlewares/validator/catalogoValidator');
-const router = express.Router();
+const promisedRouter = require('express-promise-router');
+const router = promisedRouter()
 
 
 // PUBLIC ROUTES
@@ -709,7 +709,7 @@ router.post('/:idIndicador/formula',
   idValidation(),
   createFormulaValidationRules(),
   validate,
-  verifyUserHasRoles(['USER', 'ADMIN']),
+  verifyUserHasRoles(['ADMIN', 'USER']),
   exists('idIndicador', 'Indicador'),
   createFormula
 )
@@ -749,7 +749,7 @@ router.post('/:idIndicador/formula',
  */
 router.post('/:idIndicador/mapa',
   idValidation(),
-  verifyUserHasRoles(['USER', 'ADMIN']),
+  verifyUserHasRoles(['ADMIN', 'USER']),
   uploadImage(DESTINATIONS.MAPAS),
   mapaValidationRules(),
   validate,
@@ -819,7 +819,7 @@ router.get('/info/general',
   paginationValidationRules(),
   generalSortValidationRules(),
   validate,
-  verifyUserHasRoles(['USER', 'ADMIN']),
+  verifyUserHasRoles(['ADMIN', 'USER']),
   getInformation,
 )
 
@@ -858,7 +858,7 @@ router.get('/info/general',
 router.post('/:idIndicador/historicos',
   createHistoricoValidationRules(),
   validate,
-  verifyUserHasRoles(['USER', 'ADMIN']),
+  verifyUserHasRoles(['ADMIN', 'USER']),
   createHistorico
 );
 
@@ -898,7 +898,7 @@ router.patch('/:idIndicador/catalogo',
   idValidation(),
   updateIndicadorCatalogos(),
   validate,
-  verifyUserHasRoles(['USER', 'ADMIN']),
+  verifyUserHasRoles(['ADMIN', 'USER']),
   updateOrCreateCatalogFromIndicador,
 )
 
