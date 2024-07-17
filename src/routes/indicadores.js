@@ -40,6 +40,7 @@ const { getHistoricos, createHistorico } = require('../controllers/historicoCont
 const { createHistoricoValidationRules } = require('../middlewares/validator/historicoValidator');
 const { updateIndicadorCatalogos } = require('../middlewares/validator/catalogoValidator');
 const promisedRouter = require('express-promise-router');
+const { verifyUserCanPerformActionOnIndicador } = require('../middlewares/verifyUserCanPerformAction');
 const router = promisedRouter()
 
 
@@ -668,6 +669,7 @@ router.patch('/:idIndicador',
   validate,
   verifyUserHasRoles(['ADMIN', 'USER']),
   exists('idIndicador', 'Indicador'),
+  verifyUserCanPerformActionOnIndicador({ indicadorPathId: 'idIndicador' }),
   updateIndicador
 );
 
