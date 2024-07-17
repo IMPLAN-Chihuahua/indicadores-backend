@@ -10,7 +10,7 @@ require('dotenv').config();
 
 chai.use(chaiHttp);
 const { expect } = chai;
-const { Indicador, Modulo, Usuario, Mapa,
+const { Indicador, Usuario, Mapa,
 	UsuarioIndicador, Formula } = require('../../models');
 const { anIndicador, aModulo, indicadorToCreate, aFormula,
 	aVariable, anHistorico, aMapa } = require('../../utils/factories');
@@ -18,13 +18,15 @@ const { app, server } = require('../../../app');
 const { generateToken } = require('../../middlewares/auth');
 
 
-describe('v1/indicadores', function () {
-	const SUB_ID = 1;
-	const validToken = generateToken({ sub: SUB_ID });
-	const validIndicador = indicadorToCreate();
-	const statusActive = { activo: 'SI' };
-	const adminRol = { rolValue: 'ADMIN' };
-	const userRol = { rolValue: 'USER' };
+describe.only('v1/indicadores', function () {
+
+	let findOneIndicador;
+	let findAllIndicadores;
+
+	this.beforeEach(function () {
+		findOneIndicador = sinon.stub(Indicador, 'findOne');
+		findAllIndicadores = sinon.stub(Indicador, 'findAll');
+	});
 
 	this.afterAll(function () {
 		server.close();
@@ -34,15 +36,7 @@ describe('v1/indicadores', function () {
 		sinon.restore();
 	})
 
-	describe.only('Public routes for /indicadores', function () {
-
-		let findOneIndicador;
-		let findAllIndicadores;
-		this.beforeEach(function () {
-			findOneIndicador = sinon.stub(Indicador, 'findOne');
-			findAllIndicadores = sinon.stub(Indicador, 'findAll');
-		});
-
+	describe('Public routes for /indicadores', function () {
 		describe('GET /indicadores/:idIndicador', function () {
 			this.beforeEach(function () {
 				stubExistsMiddleware(findOneIndicador, { exists: true });
@@ -111,51 +105,126 @@ describe('v1/indicadores', function () {
 			});
 		})
 
-		// describe('GET /indicadores/:id/usuarios')
-		// describe('GET /indicadores/:id/catalogos')
-		// describe('GET /indicadores/:id/mapa')
-		// describe('GET /indicadores/:id/historicos')
+		describe('GET /indicadores/:idIndicador/mapa', function () {
+			this.beforeEach(function () {
+				stubExistsMiddleware(findOneIndicador, { exists: true });
+			});
+
+			it('Should return the mapa of an indicador', function (done) {
+				const findOneMapa = sinon.fake.resolves(aMapa());
+				sinon.replace(Mapa, 'findOne', findOneMapa);
+
+				chai.request(app)
+					.get('/api/v1/indicadores/1/mapa')
+					.end((err, res) => {
+						expect(err).to.be.null;
+						expect(res).to.have.status(200);
+						expect(res.body).to.not.be.empty;
+						expect(findOneIndicador.calledOnce).to.be.true;
+						expect(findOneMapa.calledOnce).to.be.true;
+						done();
+					})
+			});
+
+			it('Should return no data when getting mapa because indicador does not have one', function (done) {
+				const findOneMapa = sinon.fake.resolves(null);
+				sinon.replace(Mapa, 'findOne', findOneMapa);
+
+				chai.request(app)
+					.get('/api/v1/indicadores/1/mapa')
+					.end((err, res) => {
+						expect(err).to.be.null;
+						expect(res).to.have.status(200);
+						expect(res.body.data).to.be.empty;
+						done();
+					})
+			});
+
+			it('Should fail to get mapa because indicador does not exist', function (done) {
+				stubExistsMiddleware(findOneIndicador, { exists: false });
+
+				chai.request(app)
+					.get('/api/v1/indicadores/1/mapa')
+					.end((err, res) => {
+						expect(err).to.be.null;
+						expect(res).to.have.status(404);
+						done();
+					})
+			})
+		})
+
 	})
 
-	describe.skip('Protected routes for /indicadores', function () {
+
+	describe('Protected routes for /indicadores', function () {
+		const SUB_ID = 1;
+		const validToken = generateToken({ sub: SUB_ID });
+		const validIndicador = indicadorToCreate();
+		const statusActive = { activo: 'SI' };
+		const adminRol = { rolValue: 'ADMIN' };
+		const userRol = { rolValue: 'USER' };
+
 		let findOneUsuario;
 
-		this.beforeEach(function () {
-			findOneUsuario = sinon.stub(Usuario, 'findOne')
-		});
-
 		describe('Actions that can be done ONLY by users with ADMIN role', function () {
-			this.beforeAll(function () {
-				sinon.restore()
+			this.beforeEach(function () {
 				findOneUsuario = sinon.stub(Usuario, 'findOne')
 				stubVerifyUserStatus(findOneUsuario, { isActive: true })
 				stubVerifyUserRol(findOneUsuario, { roles: ['ADMIN'] })
 			})
 
+			describe('PATCH /indicadores/:idIndicador/toggle-status', function () {
+				it('Should fail because indicador does not exist');
+				it('Should fail because user has invalid role');
+				it('Should toggle status of indicador');
+			})
+
+			describe('POST /indicadores/:idIndicador/usuarios', function () {
+				it('Should test createRelationUI controller')
+			})
+
+
+
 		})
 
 		describe('Actions that can be done by users with USER and ADMIN roles', function () {
-			this.beforeAll(function () {
-				sinon.restore()
-				findOneUsuario = sinon.stub(Usuario, 'findOne')
-				stubVerifyUserStatus(findOneUsuario, { isActive: true })
-				stubVerifyUserRol(findOneUsuario, { roles: ['USER'] })
-			});
+			this.beforeEach(function () {
+				findOneUsuario = sinon.stub(Usuario, 'findOne');
+
+				stubVerifyUserStatus(findOneUsuario, { isActive: true });
+				stubVerifyUserRol(findOneUsuario, { role: 'USER' });
+
+				stubExistsMiddleware(findOneIndicador, { exists: true })
+			})
+
+			describe('GET /indicadores', function () {
+				it('Should test getIndicadores')
+			})
 
 			describe('POST /indicadores', function () {
+				let createOneIndicador;
+				let bulkCreateUsuarioIndicador;
+
+				this.beforeEach(function () {
+					createOneIndicador = sinon.stub(Indicador, 'create');
+					bulkCreateUsuarioIndicador = sinon.stub(UsuarioIndicador, 'bulkCreate');
+				})
+
 				it('Should create an indicador successfully', function (done) {
 					const toCreate = indicadorToCreate();
-					const createFake = sinon.fake.resolves(toCreate)
-					sinon.replace(Indicador, 'create', createFake);
+					stubCreateIndicador(createOneIndicador, toCreate)
+					stubCreateUsuarioIndicadorRelation(bulkCreateUsuarioIndicador)
+
 					chai.request(app)
 						.post('/api/v1/indicadores')
 						.set({ Authorization: `Bearer ${validToken}` })
+						.type('form')
 						.send(toCreate)
-						.end(function (err, res) {
-							expect(findOneUsuario.calledTwice).to.be.true;
-							expect(createFake.calledOnce).to.be.true;
-							expect(res.body.data).to.not.be.undefined;
+						.end(function (_, res) {
+							expect(findOneUsuario.calledTwice, 'findOneUsuario').to.be.true;
+							expect(createOneIndicador.calledOnce, 'createOneIndicador').to.be.true;
 							expect(res).to.have.status(201);
+							expect(res.body.data).to.not.be.undefined;
 							expect(res.body.data).to.not.be.empty;
 							done();
 						});
@@ -166,17 +235,17 @@ describe('v1/indicadores', function () {
 					const formula = aFormula(1);
 					formula.variables = [aVariable(), aVariable()];
 					toCreate.formula = formula;
-					const createFake = sinon.fake.resolves(anIndicador(1));
-					sinon.replace(Indicador, 'create', createFake);
-					const bulkCreateRelations = sinon.fake.resolves(true);
-					sinon.replace(UsuarioIndicador, 'bulkCreate', bulkCreateRelations)
+
+					stubCreateIndicador(createOneIndicador, toCreate)
+					stubCreateUsuarioIndicadorRelation(bulkCreateUsuarioIndicador)
+
 					chai.request(app)
 						.post('/api/v1/indicadores')
 						.set({ Authorization: `Bearer ${validToken}` })
 						.send(toCreate)
 						.end(function (err, res) {
 							expect(findOneUsuario.calledTwice).to.be.true;
-							expect(bulkCreateRelations.calledOnce).to.be.true;
+							expect(bulkCreateUsuarioIndicador.calledOnce).to.be.true;
 							expect(err).to.be.null;
 							expect(res).to.have.status(201);
 							done()
@@ -187,14 +256,16 @@ describe('v1/indicadores', function () {
 					const indicador = indicadorToCreate();
 					const formula = aFormula(1);
 					const badVariable = aVariable();
-					badVariable.dato = 'not a number';
+					badVariable.anio = -1;
 					formula.variables = [badVariable];
 					indicador.formula = formula;
+
 					chai.request(app)
 						.post('/api/v1/indicadores')
 						.set({ Authorization: `Bearer ${validToken}` })
 						.send(indicador)
 						.end(function (err, res) {
+							console.log(res.body)
 							expect(err).to.be.null;
 							expect(res).to.have.status(422);
 							expect(res.body.errors).to.be.an('array');
@@ -205,17 +276,17 @@ describe('v1/indicadores', function () {
 				it('Should create an indicador with historicos', function (done) {
 					const toCreate = indicadorToCreate();
 					toCreate.historicos = [anHistorico()];
-					const createFake = sinon.fake.resolves(anIndicador(1));
-					sinon.replace(Indicador, 'create', createFake);
-					const bulkCreateRelations = sinon.fake.resolves(true);
-					sinon.replace(UsuarioIndicador, 'bulkCreate', bulkCreateRelations)
+
+					stubCreateIndicador(createOneIndicador, toCreate)
+					stubCreateUsuarioIndicadorRelation(bulkCreateUsuarioIndicador)
+
 					chai.request(app)
 						.post('/api/v1/indicadores')
 						.set({ Authorization: `Bearer ${validToken}` })
 						.send(toCreate)
 						.end(function (err, res) {
 							expect(findOneUsuario.calledTwice).to.be.true;
-							expect(bulkCreateRelations.calledOnce, 'relation').to.be.true;
+							expect(bulkCreateUsuarioIndicador.calledOnce, 'relation').to.be.true;
 							expect(err).to.be.null;
 							expect(res).to.have.status(201);
 							expect(createFake.calledOnce).to.be.true;
@@ -244,17 +315,17 @@ describe('v1/indicadores', function () {
 				it('Should create an indicador with a mapa', function (done) {
 					const toCreate = indicadorToCreate();
 					toCreate.mapa = aMapa();
-					const createFake = sinon.fake.resolves(anIndicador(1));
-					sinon.replace(Indicador, 'create', createFake);
-					const bulkCreateRelations = sinon.fake.resolves(true);
-					sinon.replace(UsuarioIndicador, 'bulkCreate', bulkCreateRelations)
+
+					stubCreateIndicador(createOneIndicador, toCreate)
+					stubCreateUsuarioIndicadorRelation(bulkCreateUsuarioIndicador)
+
 					chai.request(app)
 						.post('/api/v1/indicadores')
 						.set({ Authorization: `Bearer ${validToken}` })
 						.send(toCreate)
 						.end(function (err, res) {
 							expect(findOneUsuario.calledTwice).to.be.true;
-							expect(bulkCreateRelations.calledOnce, 'relation').to.be.true;
+							expect(bulkCreateUsuarioIndicador.calledOnce).to.be.true;
 							expect(err).to.be.null;
 							expect(res).to.have.status(201);
 							expect(createFake.calledOnce).to.be.true;
@@ -280,15 +351,16 @@ describe('v1/indicadores', function () {
 				});
 
 				it('Should fail to create indicador due to semantic errors', function (done) {
-					const { codigo, invalidIndicador } = indicadorToCreate();
+					const { codigo, ...invalidIndicador } = indicadorToCreate();
+
 					chai.request(app)
 						.post('/api/v1/indicadores')
 						.set({ Authorization: `Bearer ${validToken}` })
 						.send(invalidIndicador)
-						.end(function (err, res) {
+						.end((err, res) => {
 							expect(err).to.be.null;
 							expect(res).to.have.status(422);
-							expect(findOneUsuario.calledOnce).to.be.false;
+							expect(findOneUsuario.calledOnce).to.be.true;
 							expect(res.body.errors).to.be.an('Array').that.is.not.empty;
 							done();
 						});
@@ -318,21 +390,6 @@ describe('v1/indicadores', function () {
 						});
 				});
 
-				it('Should not create indicador because user has no permission', function (done) {
-					sinon.restore();
-					const accessRolUserFake = sinon.fake.resolves({ dataValues: { roles: 'NOT VALID' } });
-					sinon.replace(Usuario, 'findOne', accessRolUserFake);
-					chai.request(app)
-						.post('/api/v1/indicadores')
-						.set({ Authorization: `Bearer ${validToken}` })
-						.send(validIndicador)
-						.end(function (err, res) {
-							expect(accessRolUserFake.calledOnce).to.be.true;
-							expect(res).to.have.status(403);
-							done();
-						});
-				});
-
 				it('Should not create indicador because connection to DB failed', function (done) {
 					const createFake = sinon.fake.rejects(new Error('Connection to DB failed'));
 					sinon.replace(Indicador, 'create', createFake);
@@ -349,10 +406,93 @@ describe('v1/indicadores', function () {
 						})
 				});
 
-			});
+			})
 
 			describe('PATCH /indicadores/:idIndicador', function () {
-				it('Should update indicador successfully (admin rol)', function (done) {
+
+				let findOneUsuarioIndicador;
+
+				this.beforeEach(function () {
+					findOneUsuarioIndicador = sinon.stub(UsuarioIndicador, 'findOne')
+				})
+
+				it('Should fail to update indicador because user is not assigned to given indicador', function (done) {
+					stubverifyUserCanPerformActionOnIndicador(findOneUsuarioIndicador, { isAssignedToIndicador: false })
+
+					chai.request(app)
+						.patch('/api/v1/indicadores/1')
+						.set({ Authorization: `Bearer ${validToken}` })
+						.send(validIndicador)
+						.end((_err, res) => {
+							expect(findOneIndicador.calledOnce).to.be.true;
+							expect(findOneUsuario.calledTwice).to.be.true;
+							expect(findOneUsuarioIndicador.calledOnce).to.be.true;
+							expect(res).to.have.status(403);
+							expect(res.error.text).to.be.equal('No tienes permiso para realizar esta operación');
+							done();
+						});
+				});
+
+				it('Should fail to update indicador due to semantic errors', function (done) {
+					const invalidIndicador = indicadorToCreate();
+					invalidIndicador.tendenciaActual = 1;
+					invalidIndicador.codigo = 'not valid';
+					invalidIndicador.anioUltimoValorDisponible = 'not valid';
+					chai.request(app)
+						.patch('/api/v1/indicadores/1')
+						.set({ Authorization: `Bearer ${validToken}` })
+						.send(invalidIndicador)
+						.end(function (err, res) {
+							expect(res).to.have.status(422);
+							done();
+						});
+				});
+
+				it('Should fail to update indicador because token is not present', function (done) {
+					chai.request(app)
+						.patch('/api/v1/indicadores/1')
+						.send(validIndicador)
+						.end(function (err, res) {
+							expect(res).to.have.status(401);
+							done();
+						})
+				});
+
+				it('Should fail to update indicador because token is invalid', function (done) {
+					chai.request(app)
+						.patch('/api/v1/indicadores/1')
+						.set({ Authorization: 'Bearer notvalid' })
+						.send(validIndicador)
+						.end(function (err, res) {
+							expect(res).to.have.status(403);
+							done();
+						})
+				});
+
+				it('Should fail to update because connection to DB fails', function (done) {
+					stubverifyUserCanPerformActionOnIndicador(findOneUsuarioIndicador, { isAssignedToIndicador: true })
+
+					const updateIndicadorFake = sinon.fake.rejects(new Error('Connection to DB failed'));
+					sinon.replace(Indicador, 'update', updateIndicadorFake);
+
+					chai.request(app)
+						.patch('/api/v1/indicadores/1')
+						.set({ Authorization: `Bearer ${validToken}` })
+						.send(validIndicador)
+						.end(function (err, res) {
+							expect(res).to.have.status(500);
+							expect(updateIndicadorFake.calledOnce).to.be.true;
+							expect(findOneUsuario.calledTwice).to.be.true;
+							done();
+						});
+				});
+
+				it('Should fail to update indicador because user is not active')
+
+				it("Should update indicador even though user is not assigned to indicador, because user has 'ADMIN' role", function (done) {
+					stubverifyUserCanPerformActionOnIndicador(findOneUsuarioIndicador, { isAssignedToIndicador: false })
+					stubVerifyUserRol(findOneUsuario, { role: 'ADMIN' });
+
 					const updateIndicadorFake = sinon.fake.resolves(1);
 					sinon.replace(Indicador, 'update', updateIndicadorFake);
 					chai.request(app)
@@ -369,6 +509,8 @@ describe('v1/indicadores', function () {
 				});
 
 				it('Should update indicador successfully (user rol)', function (done) {
+					stubverifyUserCanPerformActionOnIndicador(findOneUsuarioIndicador, { isAssignedToIndicador: true })
+
 					const updateIndicadorFake = sinon.fake.resolves(1);
 					sinon.replace(Indicador, 'update', updateIndicadorFake);
 
@@ -384,347 +526,218 @@ describe('v1/indicadores', function () {
 						});
 				});
 
-				it('Should not update indicador due to semantic errors', function (done) {
-					const invalidIndicador = indicadorToCreate();
-					invalidIndicador.tendenciaActual = 1;
-					invalidIndicador.codigo = 'not valid';
-					invalidIndicador.anioUltimoValorDisponible = 'not valid';
+			})
+
+			describe('GET /indicadores/:idIndicador/formula', function () {
+				it('Should return formula and variables of an indicador', function (done) {
+					sinon.restore();
+					const formulaWithVariables = { ...aFormula(1), variables: [aVariable(1), aVariable(2)] }
+					const findOneFormula = sinon.fake.resolves({ dataValues: formulaWithVariables });
+					sinon.replace(Formula, 'findOne', findOneFormula);
+
+					const findOneIndicador = sinon.fake.resolves({ count: 1 });
+					sinon.replace(Indicador, 'findOne', findOneIndicador)
+
 					chai.request(app)
-						.patch('/api/v1/indicadores/1')
+						.get('/api/v1/indicadores/1/formula')
 						.set({ Authorization: `Bearer ${validToken}` })
-						.send(invalidIndicador)
-						.end(function (err, res) {
-							expect(res).to.have.status(422);
+						.end((err, res) => {
+							expect(findOneFormula.calledOnce, 'formula').to.be.true;
+							expect(findOneIndicador.calledOnce, 'indicador').to.be.true;
+							expect(err).to.be.null;
+							expect(res).to.have.status(200);
+							expect(res.body.data).to.not.be.empty;
+							expect(res.body.data.variables).to.be.an('array');
+							expect(res.body.data.variables).to.have.length(2)
+							expect(res.body.data.ecuacion).to.be.an('string');
+							expect(res.body.data.descripcion).to.be.an('string');
 							done();
 						});
+				})
+
+				it('Should return no data because indicador does not have formula', function (done) {
+					sinon.restore();
+					const findOneFormula = sinon.fake.resolves(null);
+					sinon.replace(Formula, 'findOne', findOneFormula);
+
+					const findOneIndicador = sinon.fake.resolves({ count: 1 });
+					sinon.replace(Indicador, 'findOne', findOneIndicador)
+
+					chai.request(app)
+						.get('/api/v1/indicadores/1/formula')
+						.set({ Authorization: `Bearer ${validToken}` })
+						.end((err, res) => {
+							expect(res).to.have.status(200);
+							expect(res.body.data).to.be.an('object').and.be.empty;
+							expect(findOneFormula.calledOnce).to.be.true;
+							expect(findOneIndicador.calledOnce).to.be.true;
+							done();
+						})
+				})
+			})
+
+			describe('POST /indicadores/:idIndicador/formula', function () {
+				it('Should test createformula')
+			})
+
+			describe('POST /indicadores/:id/mapa', function () {
+				const mapa = aMapa();
+
+				it('Should create a mapa for an indicador', done => {
+					const createFakeMapa = sinon.fake.resolves({ dataValues: mapa })
+					sinon.replace(Mapa, 'create', createFakeMapa);
+					chai.request(app)
+						.post('/api/v1/indicadores/1/mapa')
+						.set('Authorization', `Bearer ${validToken}`)
+						.type('form')
+						.field('ubicacion', mapa.ubicacion)
+						.field('url', mapa.url)
+						.attach('urlImagen', Buffer.alloc(500_000), 'image.jpg')
+						.end((err, res) => {
+							expect(res).to.have.status(201);
+							expect(createFakeMapa.calledOnce).to.be.true;
+							done();
+						})
 				});
 
-				it('Should not update indicador because token is not present', function (done) {
+				it('Should fail because JWT is not present', done => {
 					chai.request(app)
-						.patch('/api/v1/indicadores/1')
-						.send(validIndicador)
-						.end(function (err, res) {
+						.post('/api/v1/indicadores/1/mapa')
+						.type('form')
+						.field('ubicacion', mapa.ubicacion)
+						.end((err, res) => {
 							expect(res).to.have.status(401);
 							done();
 						})
 				});
 
-				it('Should not update indicador because token is invalid', function (done) {
+				it('Should fail because user is not assigned to the indicador', done => {
+					sinon.restore();
+					let findOneUsuario;
+					findOneUsuario = sinon.stub(Usuario, 'findOne')
+					findOneUsuario.onFirstCall().resolves(statusActive);
+					findOneUsuario.onSecondCall().resolves(userRol);
+
+					const findOneIndicador = sinon.fake.resolves({ count: 1 });
+					sinon.replace(Indicador, 'findOne', findOneIndicador);
+
+					const findOneRelation = sinon.fake.resolves({ count: 0 });
+					sinon.replace(UsuarioIndicador, 'findOne', findOneRelation);
+
 					chai.request(app)
-						.patch('/api/v1/indicadores/1')
-						.set({ Authorization: 'Bearer notvalid' })
-						.send(validIndicador)
-						.end(function (err, res) {
+						.post('/api/v1/indicadores/1/mapa')
+						.set('Authorization', `Bearer ${validToken}`)
+						.type('form')
+						.field('ubicacion', mapa.ubicacion)
+						.field('url', mapa.url)
+						.attach('urlImagen', Buffer.alloc(500_000), 'image.jpg')
+						.end((err, res) => {
 							expect(res).to.have.status(403);
+							expect(findOneUsuario.calledTwice).to.be.true;
+							expect(findOneIndicador.calledOnce).to.be.true;
+							expect(findOneRelation.calledOnce).to.be.true;
 							done();
 						})
 				});
 
-				it('Should not update indicador because user rol has no permission over other indicadores', function (done) {
+				it('Should fail because indicador does not exist', done => {
 					sinon.restore();
-					const findOneIndicador = sinon.fake.resolves({ count: 1 })
-					sinon.replace(Indicador, 'findOne', findOneIndicador);
-					const findOneUsuarioFake = sinon.stub(Usuario, 'findOne');
-					findOneUsuarioFake.onFirstCall().resolves(statusActive);
-					findOneUsuarioFake.onSecondCall().resolves(userRol)
-					const findOneUsuarioIndicadorFake = sinon.fake.resolves(0);
-					sinon.replace(UsuarioIndicador, 'findOne', findOneUsuarioIndicadorFake);
-					chai.request(app)
-						.patch('/api/v1/indicadores/2')
-						.set({ Authorization: `Bearer ${validToken}` })
-						.send(validIndicador)
-						.end(function (err, res) {
-							expect(err).to.be.null;
-							expect(res).to.have.status(403);
-							expect(findOneIndicador.calledOnce).to.be.true;
-							expect(findOneUsuarioFake.calledTwice).to.be.true;
-							expect(findOneUsuarioIndicadorFake.calledOnce).to.be.true;
-							expect(res.error.text).to.be.equal('No tiene permiso para actualizar este indicador');
-							done();
-						});
-				});
+					let findOneUsuario;
+					findOneUsuario = sinon.stub(Usuario, 'findOne')
+					findOneUsuario.onFirstCall().resolves(statusActive);
+					findOneUsuario.onSecondCall().resolves(adminRol);
 
-				it('Should not update because connection to DB fails', function (done) {
-					const updateIndicadorFake = sinon.fake.rejects(new Error('Connection to DB failed'));
-					sinon.replace(Indicador, 'update', updateIndicadorFake);
+					const findOneIndicadorFake = sinon.fake.resolves({ count: 0 });
+					sinon.replace(Indicador, 'findOne', findOneIndicadorFake);
 
 					chai.request(app)
-						.patch('/api/v1/indicadores/1')
-						.set({ Authorization: `Bearer ${validToken}` })
-						.send(validIndicador)
-						.end(function (err, res) {
-							expect(res).to.have.status(500);
-							expect(updateIndicadorFake.calledOnce).to.be.true;
+						.post('/api/v1/indicadores/1/mapa')
+						.set('Authorization', `Bearer ${validToken}`)
+						.type('form')
+						.field('ubicacion', mapa.ubicacion)
+						.field('url', mapa.url)
+						.attach('urlImagen', Buffer.alloc(500_000), 'image.jpg')
+						.end((err, res) => {
+							expect(res).to.have.status(404)
 							expect(findOneUsuario.calledTwice).to.be.true;
+							expect(findOneIndicadorFake.calledOnce, 'find one indicador fake').to.be.true;
 							done();
-						});
+						})
+
 				});
-			});
 
-
-			describe('GET /indicadores/:id/:resources', function () {
-				describe('GET /indicadores/:id/formula', function () {
-					it('Should return formula and variables of an indicador', function (done) {
-						sinon.restore();
-						const formulaWithVariables = { ...aFormula(1), variables: [aVariable(1), aVariable(2)] }
-						const findOneFormula = sinon.fake.resolves({ dataValues: formulaWithVariables });
-						sinon.replace(Formula, 'findOne', findOneFormula);
-
-						const findOneIndicador = sinon.fake.resolves({ count: 1 });
-						sinon.replace(Indicador, 'findOne', findOneIndicador)
-
-						chai.request(app)
-							.get('/api/v1/indicadores/1/formula')
-							.set({ Authorization: `Bearer ${validToken}` })
-							.end((err, res) => {
-								expect(findOneFormula.calledOnce, 'formula').to.be.true;
-								expect(findOneIndicador.calledOnce, 'indicador').to.be.true;
-								expect(err).to.be.null;
-								expect(res).to.have.status(200);
-								expect(res.body.data).to.not.be.empty;
-								expect(res.body.data.variables).to.be.an('array');
-								expect(res.body.data.variables).to.have.length(2)
-								expect(res.body.data.ecuacion).to.be.an('string');
-								expect(res.body.data.descripcion).to.be.an('string');
-								done();
-							});
-					})
-
-					it('Should return no data because indicador does not have formula', function (done) {
-						sinon.restore();
-						const findOneFormula = sinon.fake.resolves(null);
-						sinon.replace(Formula, 'findOne', findOneFormula);
-
-						const findOneIndicador = sinon.fake.resolves({ count: 1 });
-						sinon.replace(Indicador, 'findOne', findOneIndicador)
-
-						chai.request(app)
-							.get('/api/v1/indicadores/1/formula')
-							.set({ Authorization: `Bearer ${validToken}` })
-							.end((err, res) => {
-								expect(res).to.have.status(200);
-								expect(res.body.data).to.be.an('object').and.be.empty;
-								expect(findOneFormula.calledOnce).to.be.true;
-								expect(findOneIndicador.calledOnce).to.be.true;
-								done();
-							})
-					})
-				})
-
-				describe('GET /indicadores/:id/mapa', function () {
-					it('Should return the mapa of an indicador', function (done) {
-						sinon.restore();
-						const findOneIndicador = sinon.fake.resolves({ count: 1 });
-						sinon.replace(Indicador, 'findOne', findOneIndicador);
-
-						const findOneMapa = sinon.fake.resolves(aMapa());
-						sinon.replace(Mapa, 'findOne', findOneMapa);
-
-						chai.request(app)
-							.get('/api/v1/indicadores/1/mapa')
-							.end((err, res) => {
-								expect(err).to.be.null;
-								expect(res).to.have.status(200);
-								expect(res.body).to.not.be.empty;
-								expect(findOneIndicador.calledOnce).to.be.true;
-								expect(findOneMapa.calledOnce).to.be.true;
-								done();
-							})
-					});
-
-					it('Should return no data when getting mapa because indicador does not have one', function (done) {
-						sinon.restore();
-						const findOneIndicador = sinon.fake.resolves({ count: 1 });
-						sinon.replace(Indicador, 'findOne', findOneIndicador);
-
-						const findOneMapa = sinon.fake.resolves(null);
-						sinon.replace(Mapa, 'findOne', findOneMapa);
-
-						chai.request(app)
-							.get('/api/v1/indicadores/1/mapa')
-							.end((err, res) => {
-								expect(err).to.be.null;
-								expect(res).to.have.status(200);
-								expect(res.body.data).to.be.empty;
-								done();
-							})
-					});
-
-					it('Should fail to get mapa because indicador does not exist', function (done) {
-						sinon.restore();
-						const findOneIndicador = sinon.fake.resolves({ count: 0 });
-						sinon.replace(Indicador, 'findOne', findOneIndicador);
-
-						chai.request(app)
-							.get('/api/v1/indicadores/1/mapa')
-							.end((err, res) => {
-								expect(err).to.be.null;
-								expect(res).to.have.status(404);
-								done();
-							})
-					})
-				})
-			});
-
-
-
-			describe('POST /indicadores/:id/:resources', function () {
-				describe('POST /indicadores/:id/formula', function () {
-					it('Should create formula for an Indicador', function (done) {
-						const formula = aFormula(1);
-						const createFake = sinon.fake.resolves(formula);
-						sinon.replace(Formula, 'create', createFake);
-
-						chai.request(app)
-							.post('/api/v1/indicadores/1/formula')
-							.set('Authorization', `Bearer ${validToken}`)
-							.send(formula)
-							.end((err, res) => {
-								expect(err).to.be.null;
-								expect(res).to.have.status(201)
-								expect(createFake.calledOnce).to.be.true;
-								done();
-							})
-					});
-
-					it('Should create formula with variables for an Indicador', function (done) {
-						const formulaWithVariables = { ...aFormula(), variables: [aVariable(1), aVariable(2)] }
-						const createFake = sinon.fake.resolves(formulaWithVariables);
-						sinon.replace(Formula, 'create', createFake);
-						chai.request(app)
-							.post('/api/v1/indicadores/1/formula')
-							.set('Authorization', `Bearer ${validToken}`)
-							.send(formulaWithVariables)
-							.end((err, res) => {
-								expect(err).to.be.null;
-								expect(res).to.have.status(201)
-								expect(createFake.calledOnce).to.be.true;
-								done();
-							})
-					});
-
-					it('Should fail to create formula because indicador does not exist', function (done) {
-						sinon.restore();
-						const findOneIndicador = sinon.fake.resolves({ count: 0 });
-						sinon.replace(Indicador, 'findOne', findOneIndicador)
-
-						const formulaWithVariables = { ...aFormula(), variables: [aVariable(1)] }
-
-						chai.request(app)
-							.post('/api/v1/indicadores/1/formula')
-							.set('Authorization', `Bearer ${validToken}`)
-							.send(formulaWithVariables)
-							.end((err, res) => {
-								expect(err).to.be.null;
-								expect(res).to.have.status(404)
-								expect(findOneIndicador.calledOnce).to.be.true;
-								done();
-							})
-					})
-				})
-
-				describe('POST /indicadores/:id/mapa', () => {
-					const mapa = aMapa();
-
-					it('Should create a mapa for an indicador', done => {
-						const createFakeMapa = sinon.fake.resolves({ dataValues: mapa })
-						sinon.replace(Mapa, 'create', createFakeMapa);
-						chai.request(app)
-							.post('/api/v1/indicadores/1/mapa')
-							.set('Authorization', `Bearer ${validToken}`)
-							.type('form')
-							.field('ubicacion', mapa.ubicacion)
-							.field('url', mapa.url)
-							.attach('urlImagen', Buffer.alloc(500_000), 'image.jpg')
-							.end((err, res) => {
-								expect(res).to.have.status(201);
-								expect(createFakeMapa.calledOnce).to.be.true;
-								done();
-							})
-					});
-
-					it('Should fail because JWT is not present', done => {
-						chai.request(app)
-							.post('/api/v1/indicadores/1/mapa')
-							.type('form')
-							.field('ubicacion', mapa.ubicacion)
-							.end((err, res) => {
-								expect(res).to.have.status(401);
-								done();
-							})
-					});
-
-					it('Should fail because user is not assigned to the indicador', done => {
-						sinon.restore();
-						let findOneUsuario;
-						findOneUsuario = sinon.stub(Usuario, 'findOne')
-						findOneUsuario.onFirstCall().resolves(statusActive);
-						findOneUsuario.onSecondCall().resolves(userRol);
-
-						const findOneIndicador = sinon.fake.resolves({ count: 1 });
-						sinon.replace(Indicador, 'findOne', findOneIndicador);
-
-						const findOneRelation = sinon.fake.resolves({ count: 0 });
-						sinon.replace(UsuarioIndicador, 'findOne', findOneRelation);
-
-						chai.request(app)
-							.post('/api/v1/indicadores/1/mapa')
-							.set('Authorization', `Bearer ${validToken}`)
-							.type('form')
-							.field('ubicacion', mapa.ubicacion)
-							.field('url', mapa.url)
-							.attach('urlImagen', Buffer.alloc(500_000), 'image.jpg')
-							.end((err, res) => {
-								expect(res).to.have.status(403);
-								expect(findOneUsuario.calledTwice).to.be.true;
-								expect(findOneIndicador.calledOnce).to.be.true;
-								expect(findOneRelation.calledOnce).to.be.true;
-								done();
-							})
-					});
-
-					it('Should fail because indicador does not exist', done => {
-						sinon.restore();
-						let findOneUsuario;
-						findOneUsuario = sinon.stub(Usuario, 'findOne')
-						findOneUsuario.onFirstCall().resolves(statusActive);
-						findOneUsuario.onSecondCall().resolves(adminRol);
-
-						const findOneIndicadorFake = sinon.fake.resolves({ count: 0 });
-						sinon.replace(Indicador, 'findOne', findOneIndicadorFake);
-
-						chai.request(app)
-							.post('/api/v1/indicadores/1/mapa')
-							.set('Authorization', `Bearer ${validToken}`)
-							.type('form')
-							.field('ubicacion', mapa.ubicacion)
-							.field('url', mapa.url)
-							.attach('urlImagen', Buffer.alloc(500_000), 'image.jpg')
-							.end((err, res) => {
-								expect(res).to.have.status(404)
-								expect(findOneUsuario.calledTwice).to.be.true;
-								expect(findOneIndicadorFake.calledOnce, 'find one indicador fake').to.be.true;
-								done();
-							})
-
-					});
-
-					it('Should fail because request body has validation errors', done => {
-						chai.request(app)
-							.post('/api/v1/indicadores/1/mapa')
-							.set('Authorization', `Bearer ${validToken}`)
-							.type('form')
-							.field('ubicacion', mapa.ubicacion)
-							.field('url', 'not a URL pattern')
-							.attach('urlImagen', Buffer.alloc(1_000_000), 'image.jpg')
-							.end((err, res) => {
-								expect(res).to.have.status(422)
-								done();
-							})
-					});
-				})
+				it('Should fail because request body has validation errors', done => {
+					chai.request(app)
+						.post('/api/v1/indicadores/1/mapa')
+						.set('Authorization', `Bearer ${validToken}`)
+						.type('form')
+						.field('ubicacion', mapa.ubicacion)
+						.field('url', 'not a URL pattern')
+						.attach('urlImagen', Buffer.alloc(1_000_000), 'image.jpg')
+						.end((err, res) => {
+							expect(res).to.have.status(422)
+							done();
+						})
+				});
 			})
 
+			describe('GET /info/general', function () {
+				it('Should test getInformation endpoint')
+			})
+
+			describe('POST /indicadores/:id/formula', function () {
+				it('Should create formula for an Indicador', function (done) {
+					const formula = aFormula(1);
+					const createFake = sinon.fake.resolves(formula);
+					sinon.replace(Formula, 'create', createFake);
+
+					chai.request(app)
+						.post('/api/v1/indicadores/1/formula')
+						.set('Authorization', `Bearer ${validToken}`)
+						.send(formula)
+						.end((err, res) => {
+							expect(err).to.be.null;
+							expect(res).to.have.status(201)
+							expect(createFake.calledOnce).to.be.true;
+							done();
+						})
+				});
+
+				it('Should create formula with variables for an Indicador', function (done) {
+					const formulaWithVariables = { ...aFormula(), variables: [aVariable(1), aVariable(2)] }
+					const createFake = sinon.fake.resolves(formulaWithVariables);
+					sinon.replace(Formula, 'create', createFake);
+					chai.request(app)
+						.post('/api/v1/indicadores/1/formula')
+						.set('Authorization', `Bearer ${validToken}`)
+						.send(formulaWithVariables)
+						.end((err, res) => {
+							expect(err).to.be.null;
+							expect(res).to.have.status(201)
+							expect(createFake.calledOnce).to.be.true;
+							done();
+						})
+				});
+
+				it('Should fail to create formula because indicador does not exist', function (done) {
+					sinon.restore();
+					const findOneIndicador = sinon.fake.resolves({ count: 0 });
+					sinon.replace(Indicador, 'findOne', findOneIndicador)
+
+					const formulaWithVariables = { ...aFormula(), variables: [aVariable(1)] }
+
+					chai.request(app)
+						.post('/api/v1/indicadores/1/formula')
+						.set('Authorization', `Bearer ${validToken}`)
+						.send(formulaWithVariables)
+						.end((err, res) => {
+							expect(err).to.be.null;
+							expect(res).to.have.status(404)
+							expect(findOneIndicador.calledOnce).to.be.true;
+							done();
+						})
+				})
+			})
 		})
 	})
 
@@ -757,13 +770,13 @@ const stubVerifyUserStatus = (stub, options) => {
 	if (!options) {
 		isActive = true;
 	}
-	stub.onCall(0).resolves(isActive ? 'SI' : 'NO');
+	stub.onCall(0).resolves({ activo: isActive ? 'SI' : 'NO' });
 	return stub;
 }
 
 const stubVerifyUserRol = (stub, options) => {
-	const roles = options?.roles || [];
-	stub.onCall(1).resolves(roles)
+	const role = options?.role || [];
+	stub.onCall(1).resolves({ rolValue: role })
 }
 
 const getIndicadorWithTema = () => {
@@ -788,4 +801,56 @@ const getIndicadorWithInactiveTema = () => {
 	const indicador = anIndicador(1, { temaInteres })
 	indicador.activo = 'SI'
 	return indicador;
+}
+
+const stubCreateIndicador = (stub, values) => {
+	stub.onCall(0).resolves({ id: 1, ...values })
+	return stub;
+}
+
+const stubCreateUsuarioIndicadorRelation = (stub) => {
+	stub.onCall(0).resolves(true); // TODO: check what bulk create returns
+	return stub;
+}
+
+const stubverifyUserCanPerformActionOnIndicador = (stub, options) => {
+	let isAssignedToIndicador = true;
+	if (options) {
+		isAssignedToIndicador = options.isAssignedToIndicador;
+	}
+
+	stub.onCall(0).resolves({ count: isAssignedToIndicador ? 1 : 0 });
+}
+
+
+const getIndicadorDTO = () => {
+	const { nombre, codigo, definicion, ultimoValorDisponible, anioUltimoValorDisponible } = anIndicador();
+	const idModulo = 1;
+	const formula = aFormula()
+	formula.variables = [aVariable(1)]
+	/**
+	 * nombre', 'codigo', 'definicion', 'ultimoValorDisponible' -> exists
+	 * anioUltimoValorDisponible -> numeric
+	 * idModulo -> exists int
+	 * 
+	 * formula.ecuacion -> optional
+	 * formula.isFormula -> optional SI or NO
+	 * formula.variables -> is array
+	 * 
+	 * observaciones', 'formula.descripcion', 'historicos.*.fuente',
+		'formula.variables.*.descripcion', 'formula.variables.*.nombre',
+		'mapa.ubicacion', 'fuente -> optional string
+
+	 * periodicidad -> optional int	
+	 * 
+	 * 'historicos.*.anio', 'formula.variables.*.anio' -> valid year 
+	 * 'catalogos.*', 'formula.variables.*.idUnidad' -> is numeric
+	 * 
+	 * historicos.*.valor -> isNumeric
+	 * 
+	 * formula.variables.*.dato -> trim
+	 * 
+	 * mapa.url -> isURL
+	 */
+
 }
