@@ -16,6 +16,20 @@ const { anIndicador, aModulo, indicadorToCreate, aFormula,
 	aVariable, anHistorico, aMapa } = require('../../utils/factories');
 const { app, server } = require('../../../app');
 const { generateToken } = require('../../middlewares/auth');
+const {
+	stubVerifyUserStatus,
+	stubVerifyUserRol,
+	stubExistsMiddleware,
+	stubPrevAndNextIndicadores,
+	stubGetOneIndicador,
+	getIndicadorWithInactiveTema,
+	getIndicadorWithTema,
+	stubCreateUsuarioIndicadorRelation,
+	stubCreateIndicador,
+	getInactiveIndicadorWithTema,
+	stubverifyUserCanPerformActionOnIndicador,
+	getIndicadorDTO
+} = require('../utls/commonStubs');
 
 
 describe.only('v1/indicadores', function () {
@@ -220,7 +234,7 @@ describe.only('v1/indicadores', function () {
 						.set({ Authorization: `Bearer ${validToken}` })
 						.type('form')
 						.send(toCreate)
-						.end(function (_, res) {
+						.end(function (_err, res) {
 							expect(findOneUsuario.calledTwice, 'findOneUsuario').to.be.true;
 							expect(createOneIndicador.calledOnce, 'createOneIndicador').to.be.true;
 							expect(res).to.have.status(201);
@@ -243,16 +257,23 @@ describe.only('v1/indicadores', function () {
 						.post('/api/v1/indicadores')
 						.set({ Authorization: `Bearer ${validToken}` })
 						.send(toCreate)
-						.end(function (err, res) {
+						.end(function (_err, res) {
+							expect(res).to.have.status(201);
 							expect(findOneUsuario.calledTwice).to.be.true;
 							expect(bulkCreateUsuarioIndicador.calledOnce).to.be.true;
-							expect(err).to.be.null;
-							expect(res).to.have.status(201);
+							expect(createOneIndicador.calledOnce).to.be.true;
 							done()
 						});
 				});
 
-				it('Should fail to create an indicador with formula and variables', function (done) {
+				it.only('Should fail to create an indicador with formula and variables', function (done) {
+					const dto = getIndicadorDTO();
+					
+					for (const pair of dto.entries()) {
+						console.log(pair[0] + ', ' + pair[1]);
+					}
+
+
 					const indicador = indicadorToCreate();
 					const formula = aFormula(1);
 					const badVariable = aVariable();
@@ -263,9 +284,9 @@ describe.only('v1/indicadores', function () {
 					chai.request(app)
 						.post('/api/v1/indicadores')
 						.set({ Authorization: `Bearer ${validToken}` })
-						.send(indicador)
+						.type('form')
+						.send(dto)
 						.end(function (err, res) {
-							console.log(res.body)
 							expect(err).to.be.null;
 							expect(res).to.have.status(422);
 							expect(res.body.errors).to.be.an('array');
@@ -287,9 +308,9 @@ describe.only('v1/indicadores', function () {
 						.end(function (err, res) {
 							expect(findOneUsuario.calledTwice).to.be.true;
 							expect(bulkCreateUsuarioIndicador.calledOnce, 'relation').to.be.true;
+							expect(createOneIndicador.calledOnce).to.be.true;
 							expect(err).to.be.null;
 							expect(res).to.have.status(201);
-							expect(createFake.calledOnce).to.be.true;
 							done()
 						});
 				});
@@ -323,12 +344,11 @@ describe.only('v1/indicadores', function () {
 						.post('/api/v1/indicadores')
 						.set({ Authorization: `Bearer ${validToken}` })
 						.send(toCreate)
-						.end(function (err, res) {
+						.end(function (_err, res) {
+							expect(res).to.have.status(201);
 							expect(findOneUsuario.calledTwice).to.be.true;
 							expect(bulkCreateUsuarioIndicador.calledOnce).to.be.true;
-							expect(err).to.be.null;
-							expect(res).to.have.status(201);
-							expect(createFake.calledOnce).to.be.true;
+							expect(createOneIndicador.calledOnce).to.be.true;
 							done()
 						});
 				});
@@ -742,115 +762,3 @@ describe.only('v1/indicadores', function () {
 	})
 
 });
-
-
-const stubExistsMiddleware = (stub, options) => {
-	let exists = options?.exists;
-	if (!options) {
-		exists = true;
-	}
-	stub.onCall(0).resolves({ count: exists ? 1 : 0 });
-	return stub;
-}
-
-const stubGetOneIndicador = (stub, options) => {
-	const indicador = options?.indicador || anIndicador();
-	stub.onCall(1).resolves(indicador);
-}
-
-const stubPrevAndNextIndicadores = (stub, options) => {
-	const prev = options?.prev || { id: 2 };
-	const next = options?.next || { id: 4 };
-	stub.onCall(0).resolves([prev, next])
-	return stub;
-}
-
-const stubVerifyUserStatus = (stub, options) => {
-	let isActive = options?.isActive;
-	if (!options) {
-		isActive = true;
-	}
-	stub.onCall(0).resolves({ activo: isActive ? 'SI' : 'NO' });
-	return stub;
-}
-
-const stubVerifyUserRol = (stub, options) => {
-	const role = options?.role || [];
-	stub.onCall(1).resolves({ rolValue: role })
-}
-
-const getIndicadorWithTema = () => {
-	const temaInteres = aModulo(1);
-	temaInteres.activo = 'SI';
-	const indicador = anIndicador(1, temaInteres)
-	indicador.activo = 'SI'
-	return indicador;
-}
-
-const getInactiveIndicadorWithTema = () => {
-	const temaInteres = aModulo(1);
-	temaInteres.activo = 'SI';
-	const indicador = anIndicador(1, temaInteres)
-	indicador.activo = 'NO'
-	return indicador;
-}
-
-const getIndicadorWithInactiveTema = () => {
-	const temaInteres = aModulo(1)
-	temaInteres.activo = 'NO'
-	const indicador = anIndicador(1, { temaInteres })
-	indicador.activo = 'SI'
-	return indicador;
-}
-
-const stubCreateIndicador = (stub, values) => {
-	stub.onCall(0).resolves({ id: 1, ...values })
-	return stub;
-}
-
-const stubCreateUsuarioIndicadorRelation = (stub) => {
-	stub.onCall(0).resolves(true); // TODO: check what bulk create returns
-	return stub;
-}
-
-const stubverifyUserCanPerformActionOnIndicador = (stub, options) => {
-	let isAssignedToIndicador = true;
-	if (options) {
-		isAssignedToIndicador = options.isAssignedToIndicador;
-	}
-
-	stub.onCall(0).resolves({ count: isAssignedToIndicador ? 1 : 0 });
-}
-
-
-const getIndicadorDTO = () => {
-	const { nombre, codigo, definicion, ultimoValorDisponible, anioUltimoValorDisponible } = anIndicador();
-	const idModulo = 1;
-	const formula = aFormula()
-	formula.variables = [aVariable(1)]
-	/**
-	 * nombre', 'codigo', 'definicion', 'ultimoValorDisponible' -> exists
-	 * anioUltimoValorDisponible -> numeric
-	 * idModulo -> exists int
-	 * 
-	 * formula.ecuacion -> optional
-	 * formula.isFormula -> optional SI or NO
-	 * formula.variables -> is array
-	 * 
-	 * observaciones', 'formula.descripcion', 'historicos.*.fuente',
-		'formula.variables.*.descripcion', 'formula.variables.*.nombre',
-		'mapa.ubicacion', 'fuente -> optional string
-
-	 * periodicidad -> optional int	
-	 * 
-	 * 'historicos.*.anio', 'formula.variables.*.anio' -> valid year 
-	 * 'catalogos.*', 'formula.variables.*.idUnidad' -> is numeric
-	 * 
-	 * historicos.*.valor -> isNumeric
-	 * 
-	 * formula.variables.*.dato -> trim
-	 * 
-	 * mapa.url -> isURL
-	 */
-
-}
