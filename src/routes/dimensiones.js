@@ -1,6 +1,6 @@
 const express = require('express');
 const { generalFilterOptions, paramValidationRules, paginationValidationRules, generalSortValidationRules, validate } = require('../middlewares/validator/generalValidator');
-const { countIndicadoresByDimension, editDimension, getDimension } = require('../controllers/dimensionController');
+const { countIndicadoresByDimension, editDimension, getDimension, getModulosByDimension } = require('../controllers/dimensionController');
 const { verifyJWT, verifyUserIsActive, verifyUserHasRoles } = require('../middlewares/auth');
 const { uploadImage } = require('../middlewares/fileUpload');
 const { DESTINATIONS } = require('../services/fileService');
@@ -36,6 +36,12 @@ router.route('/indicadores')
         determinePathway(SITE_PATH),
         getIndicadores
     );
+
+router.get('/:idDimension/modulos',
+    paramValidationRules(),
+    validate,
+    getModulosByDimension
+);
 
 router.patch('/:idDimension',
     verifyJWT,

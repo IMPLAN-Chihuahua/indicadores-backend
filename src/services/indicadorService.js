@@ -18,6 +18,7 @@ const { createRelation } = require("./usuarioIndicadorService");
 const { Op } = Sequelize;
 
 const getIndicadores = async (page, perPage, matchedData, pathway) => {
+
   const { where, order, attributes, includes } = getDefinitionsForIndicadores(pathway, matchedData);
   try {
     const result = await Indicador.findAndCountAll({
@@ -120,6 +121,7 @@ const defineWhere = (pathway, matchedData) => {
       where = {
         ...filterIndicadorBy(matchedData),
         ...getIndicadoresFilters(matchedData),
+        ...advancedSearch(matchedData),
       };
       break;
     case FRONT_PATH:
@@ -199,18 +201,21 @@ const getIndicadoresFilters = (matchedData) => {
 };
 
 const advancedSearch = (matchedData) => {
-  const { idDimensions, owner } = matchedData
+  const { idDimensions, owner, modulos } = matchedData
   let filter = {}
 
-  //idDimensions to array
-  const dimensionsArray = idDimensions ? idDimensions.split(',') : null;
-
   if (idDimensions) {
+    const dimensionsArray = idDimensions ? idDimensions.split(',') : null;
     filter.idDimension = dimensionsArray;
   }
 
   if (owner) {
     filter.owner = owner;
+  }
+
+  if (modulos) {
+    const modulosArray = modulos ? modulos.split(',') : null;
+    filter.idModulo = modulosArray;
   }
 
 

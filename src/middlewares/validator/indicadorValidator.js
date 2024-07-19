@@ -21,7 +21,12 @@ const filterIndicadoresValidationRules = () => [
 
     query('idDimensions')
         .optional()
-        .isString()
+        .isString(),
+
+    query('modulos')
+        .optional()
+        .isString(),
+
 ];
 
 const sortValidationRules = () => [

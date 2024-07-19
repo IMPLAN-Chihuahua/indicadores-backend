@@ -1,4 +1,4 @@
-const { Dimension, Sequelize, Indicador } = require('../models');
+const { Dimension, Sequelize, Indicador, Modulo } = require('../models');
 
 const countIndicadoresByDimension = async (req, res, next) => {
     try {
@@ -53,10 +53,39 @@ const getDimension = async (req, res, next) => {
     } catch (err) {
         next(err);
     }
+};
+
+const getModulosByDimension = async (req, res, next) => {
+    const { idDimension } = req.matchedData;
+    try {
+        const modulos = await Modulo.findAll({
+            include: [
+                {
+                    model: Indicador,
+                    include: [
+                        {
+                            model: Dimension,
+                            attributes: []
+                        }
+                    ],
+                    attributes: []
+                }
+            ],
+            attributes: ['id', 'temaIndicador'],
+            where: {
+                '$indicadores.idDimension$': idDimension
+            },
+        })
+
+        return res.status(200).json({ data: modulos });
+    } catch (err) {
+        next(err);
+    }
 }
 
 module.exports = {
     countIndicadoresByDimension,
     editDimension,
-    getDimension
+    getDimension,
+    getModulosByDimension
 }
