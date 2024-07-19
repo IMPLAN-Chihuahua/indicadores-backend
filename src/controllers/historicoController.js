@@ -1,8 +1,6 @@
 const HistoricoService = require('../services/historicoService');
 const IndicadorService = require('../services/indicadorService')
 const { getPaginationHistoricos } = require('../utils/pagination');
-const { Historico } = require('../models');
-const { validate } = require('../services/authService');
 
 
 const getHistoricos = async (req, res, next) => {
@@ -25,62 +23,27 @@ const getHistoricos = async (req, res, next) => {
 };
 
 
-const deleteHistorico = async (req, res, next) => {
+const deleteHistorico = async (req, res, _next) => {
   const { idHistorico } = req.matchedData;
-  const idUsuario = req.sub;
-  const rol = req.rol;
-  try {
-    const idIndicador = await IndicadorService.getIdIndicadorRelatedTo(Historico, idHistorico)
-    return validate(
-      { rol, idUsuario, idIndicador },
-      async () => {
-        const deleted = await HistoricoService.deleteHistorico(idHistorico);
-        return deleted ? res.status(200).json({ message: 'Historico eliminado' }) : res.sendStatus(400);
-      },
-      () => res.status(403).send('No tienes permiso para eliminar este histórico')
-    )
-  } catch (err) {
-    next(err)
-  }
+  
+  await HistoricoService.deleteHistorico(idHistorico);
+  return res.status(200).json({ message: 'Historico eliminado' })
 };
 
 
 const updateHistorico = async (req, res, next) => {
   const { idHistorico, ...values } = req.matchedData;
-  const idUsuario = req.sub;
-  const rol = req.rol;
-  try {
-    const idIndicador = await IndicadorService.getIdIndicadorRelatedTo(Historico, idHistorico)
-    return validate(
-      { rol, idUsuario, idIndicador },
-      async () => {
-        const response = await HistoricoService.updateHistorico(idHistorico, values);
-        return response ? res.sendStatus(204) : res.sendStatus(400);
-      },
-      () => res.status(403).send('No tienes permiso para actualizar este histórico')
-    )
-  } catch (err) {
-    next(err)
-  };
+
+  await HistoricoService.updateHistorico(idHistorico, values);
+  return res.sendStatus(204);
 };
 
 
 const createHistorico = async (req, res, next) => {
   const { idIndicador, ...historico } = req.matchedData;
-  const idUsuario = req.sub;
-  const rol = req.rol;
-  try {
-    return validate(
-      { rol, idUsuario, idIndicador },
-      async () => {
-        const response = await HistoricoService.createHistorico(idIndicador, historico);
-        return res.status(201).json(response);
-      },
-      () => res.status(403).send('No tienes permiso para agregar un histórico a este indicador')
-    );
-  } catch (err) {
-    next(err)
-  }
+
+  const response = await HistoricoService.createHistorico(idIndicador, historico);
+  return res.status(201).json(response);
 }
 
 module.exports = {

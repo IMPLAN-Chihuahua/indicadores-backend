@@ -1,5 +1,4 @@
-const express = require('express');
-const router = express.Router();
+
 
 const {
 	paramValidationRules,
@@ -17,6 +16,17 @@ const {
 
 const { verifyJWT, verifyUserIsActive, verifyUserHasRoles } = require('../middlewares/auth');
 const { exists } = require('../middlewares/resourceExists');
+const { verifyUserCanPerformActionOnIndicador } = require('../middlewares/verifyUserCanPerformAction');
+
+
+const promisedRouter = require('express-promise-router')
+const router = promisedRouter();
+
+
+// PROTECTED ROUTES
+router.use(verifyJWT);
+router.use(verifyUserIsActive);
+router.use(verifyUserHasRoles(['USER', 'ADMIN']))
 
 /**
  * @swagger
@@ -52,16 +62,13 @@ const { exists } = require('../middlewares/resourceExists');
  *       500:
  *         $ref: '#/components/responses/InternalServerError'
  */
-router.route('/:idHistorico')
-	.delete(
-		verifyJWT,
-		verifyUserIsActive,
-    verifyUserHasRoles(['USER', 'ADMIN']),
-		paramValidationRules(),
-		validate,
-    exists('idHistorico', 'Historico'),
-		deleteHistorico
-	);
+router.delete('/:idHistorico',
+	paramValidationRules(),
+	validate,
+	exists('idHistorico', 'Historico'),
+	verifyUserCanPerformActionOnIndicador({ relatedTo: { model: 'Historico', pathId: 'idHistorico' } }),
+	deleteHistorico
+);
 
 /**
  * @swagger
@@ -102,16 +109,13 @@ router.route('/:idHistorico')
  *         500:
  *           $ref: '#/components/responses/InternalServerError'
  */
-router.route('/:idHistorico')
-	.patch(
-		verifyJWT,
-		verifyUserIsActive,
-    verifyUserHasRoles(['USER', 'ADMIN']),
-		updateHistoricoValidationRules(),
-		paramValidationRules(),
-		validate,
-    exists('idHistorico', 'Historico'),
-		updateHistorico
-	);
+router.patch('/:idHistorico',
+	updateHistoricoValidationRules(),
+	paramValidationRules(),
+	validate,
+	exists('idHistorico', 'Historico'),
+	verifyUserCanPerformActionOnIndicador({ relatedTo: { model: 'Historico', pathId: 'idHistorico' } }),
+	updateHistorico
+);
 
 module.exports = router;

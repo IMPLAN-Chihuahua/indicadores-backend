@@ -39,7 +39,15 @@ module.exports = (sequelize, DataTypes) => {
         validate: {
           isIn: [['SI', 'NO']]
         }
-      }
+      },
+      idIndicador: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'Indicador',
+            key: 'id'
+        },
+    },
     },
     {
       sequelize,

@@ -36,13 +36,15 @@ const { getInformation } = require('../controllers/generalController');
 const { getMapaOfIndicador, createMapa } = require('../controllers/mapaController');
 const { mapaValidationRules } = require('../middlewares/validator/mapaValidator');
 
-const express = require('express');
 const { getHistoricos, createHistorico } = require('../controllers/historicoController');
 const { createHistoricoValidationRules } = require('../middlewares/validator/historicoValidator');
 const { updateIndicadorCatalogos } = require('../middlewares/validator/catalogoValidator');
-const multer = require('multer');
-const router = express.Router();
+const promisedRouter = require('express-promise-router');
+const { verifyUserCanPerformActionOnIndicador } = require('../middlewares/verifyUserCanPerformAction');
+const router = promisedRouter()
 
+
+// PUBLIC ROUTES
 /**
  * @swagger
  *   components:
@@ -202,16 +204,320 @@ const router = express.Router();
  *         500:
  *           $ref: '#/components/responses/InternalServerError'
  */
-router.route('/:idIndicador')
-  .get(
-    idValidation(),
-    filterIndicadoresValidationRules(),
-    validate,
-    determinePathway(SITE_PATH),
-    exists('idIndicador', 'Indicador'),
-    getIndicador
-  );
+router.get('/:idIndicador',
+  idValidation(),
+  filterIndicadoresValidationRules(),
+  validate,
+  determinePathway(SITE_PATH),
+  exists('idIndicador', 'Indicador'),
+  getIndicador
+);
 
+
+/**
+ * @swagger
+ *   /indicadores/{idIndicador}/usuarios:
+ *     get:
+ *       summary: Return list of users assigned to an indicador
+ *       tags: [Indicadores, Usuarios]
+ *     parameters:
+ *       - in: path
+ *         name: idIndicador
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: List of users
+ *       422:
+ *         $ref: '#/components/responses/UnprocessableEntity'
+ *       429:
+ *         $ref: '#/components/responses/TooManyRequests'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
+router.get('/:idIndicador/usuarios',
+  paramValidationRules(),
+  validate,
+  exists('idIndicador', 'Indicador'),
+  getUsersFromIndicador
+)
+
+
+/**
+ * @swagger
+ *   /indicadores/{idIndicador}/catalogos:
+ *     get:
+ *       summary: Retrieve the catalogos associated to an indicador.
+ *       tags: [Indicadores]
+ *       security: 
+ *         - bearer: []
+ *       parameters:
+ *         - in: path
+ *           name: idIndicador
+ *           required: true
+ *           schema:
+ *             type: integer
+ *             format: int64
+ *       responses:
+ *         200:
+ *           description: List of catalogos.
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   data:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: integer
+ *                         idIndicador:
+ *                           type: integer
+ *                         idCatalogoDetail:
+ *                           type: integer
+ *                         descripcion: 
+ *                           type: string
+ *                         idCatalogo:
+ *                           type: integer
+ *         401:
+ *           $ref: '#/components/responses/Unauthorized'
+ *         403:
+ *           $ref: '#/components/responses/Forbidden'
+ *         422:
+ *           $ref: '#components/responses/UnprocessableEntity'
+ *         429:
+ *           $ref: '#components/responses/TooManyRequests'
+ *         500:
+ *           $ref: '#components/responses/InternalServerError'
+ */
+router.get('/:idIndicador/catalogos',
+  paramValidationRules(),
+  validate,
+  exists('idIndicador', 'Indicador'),
+  getCatalogosFromIndicador
+)
+
+
+/**
+ * @swagger
+ *   /indicadores/{idIndicador}/mapa:
+ *     get:
+ *       summary: Get mapa of indicador
+ *       tags: [Indicadores, Mapas]
+ *       parameters:
+ *         - in: path
+ *           name: idIndicador
+ *           required: true
+ *           schema:
+ *             type: integer
+ *             format: int64
+ *       responses:
+ *         200:
+ *           description: Mapa of indicador
+ *         422:
+ *           $ref: '#components/responses/UnprocessableEntity'
+ *         429:
+ *           $ref: '#components/responses/TooManyRequests'
+ *         500:
+ *           $ref: '#components/responses/InternalServerError'
+ */
+router.get('/:idIndicador/mapa',
+  idValidation(),
+  validate,
+  exists('idIndicador', 'Indicador'),
+  getMapaOfIndicador
+);
+
+
+/**
+ * @swagger
+ *   /indicadores/{idIndicador}/historicos:
+ *     get:
+ *       summary: Fetch historicos
+ *       description: Get a list of historicos from an indicador
+ *       tags: [Historicos, Indicadores]
+ *       security:
+ *         - bearer: []
+ *       parameters:
+ *         - name: idIndicador
+ *           in: path
+ *           required: true
+ *           description: The id of the indicador
+ *           schema:
+ *             type: integer
+ *             format: int64
+ *             minimum: 1
+ *       responses:
+ *         200:
+ *           description: List of historicos from an indicador
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/components/schemas/Historico'
+ *         400:
+ *           $ref: '#/components/responses/BadRequest'
+ *         404:
+ *           $ref: '#/components/responses/NotFound'
+ *         422:
+ *           $ref: '#/components/responses/UnprocessableEntity'
+ *         429:
+ *           $ref: '#/components/responses/TooManyRequests'
+ *         500:
+ *           $ref: '#/components/responses/InternalServerError'
+ */
+router.get('/:idIndicador/historicos',
+  paginationValidationRules(),
+  sortValidationRules(),
+  idValidation(),
+  validate,
+  getHistoricos
+);
+
+/**
+ * @swagger
+ *   /indicadores/{idIndicador}/formula:
+ *     get:
+ *       summary: Retrieves formula and variables from a given Indicador
+ *       tags: [Indicadores, Formulas]
+ *       security:
+ *         - bearer: []
+ *       parameters:
+ *         - in: path
+ *           name: idIndicador
+ *           required: true
+ *           schema:
+ *             type: integer
+ *             format: int64
+ *       responses:
+ *         200:
+ *           description: Equation, description and variables of an Indicador.
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/components/schemas/FormulaWithVariables'
+ *         401:
+ *           $ref: '#/components/responses/Unauthorized'
+ *         403:
+ *           $ref: '#/components/responses/Forbidden'
+ *         404:
+ *           $ref: '#/components/responses/NotFound'
+ *         422:
+ *           $ref: '#components/responses/UnprocessableEntity'
+ *         429:
+ *           $ref: '#components/responses/TooManyRequests'
+ *         500:
+ *           $ref: '#components/responses/InternalServerError'
+ */
+router.get('/:idIndicador/formula',
+  paramValidationRules(),
+  validate,
+  exists('idIndicador', 'Indicador'),
+  getFormulaOfIndicador
+)
+
+
+// PROTECTED ROUTES
+router.use(verifyJWT);
+router.use(verifyUserIsActive);
+
+// ADMIN ROUTES
+/**
+ * @swagger
+ *  /indicadores/{idIndicador}/toggle-status:
+ *  patch:
+ *    summary: Update status of indicador (if it was active, changes to inactive)
+ *    tags: [Indicadores]
+ *    security:
+ *      - bearer: []
+ *    parameters:
+ *      - in: path
+ *        name: idIndicador
+ *        required: true
+ *        schema:
+ *          type: integer
+ *    responses:
+ *      204:
+ *        description: Updated
+ *      401:
+ *        $ref: '#/components/responses/Unauthorized'
+ *      403:
+ *        $ref: '#/components/responses/Forbidden'
+ *      422:
+ *        $ref: '#components/responses/UnprocessableEntity'
+ *      429:
+ *        $ref: '#components/responses/TooManyRequests'
+ *      500:
+ *        $ref: '#components/responses/InternalServerError'
+ */
+router.patch('/:idIndicador/toggle-status',
+  paramValidationRules(),
+  validate,
+  verifyUserHasRoles(['ADMIN']),
+  exists('idIndicador', 'Indicador'),
+  updateIndicadorStatus
+);
+
+/**
+ * @swagger
+ *   /indicadores/{idIndicador}/usuarios:
+ *   post:
+ *     summary: Assign users to an indicador
+ *     description: Only ADMIN users can create associations between normal users and indicadores
+ *     tags: [Indicadores]
+ *     security:
+ *       - bearer: []
+ *     parameters:
+ *       - in: path
+ *         name: idIndicador
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               usuarios:
+ *                 type: array
+ *                 items:
+ *                   type: integer
+ *                 example: [1, 2, 3, 4, 5]
+ *               desde:
+ *                 type: string
+ *                 format: date
+ *               hasta:
+ *                 type: string
+ *                 format: date
+ *     responses:
+ *       201:
+ *         description: Operation was successful (users are assigned to an indicador)
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       422:
+ *         $ref: '#components/responses/UnprocessableEntity'
+ *       429:
+ *         $ref: '#components/responses/TooManyRequests'
+ *       500:
+ *         $ref: '#components/responses/InternalServerError'
+ */
+router.post('/:idIndicador/usuarios',
+  paramValidationRules(),
+  indicadorAssignUsuarioValidationRules(),
+  validate,
+  verifyUserHasRoles(['ADMIN']),
+  createRelationUI,
+);
+
+
+
+// USER ROUTES
 /**
  * @swagger
  *   /indicadores:
@@ -268,15 +574,15 @@ router.route('/:idIndicador')
  *         500:
  *           $ref: '#/components/responses/InternalServerError'
  */
-
-router.route('/')
-  .get(verifyJWT,
-    paginationValidationRules(),
-    sortValidationRules(),
-    filterIndicadoresValidationRules(),
-    validate,
-    determinePathway(FRONT_PATH),
-    getIndicadores);
+router.get('/',
+  paginationValidationRules(),
+  sortValidationRules(),
+  filterIndicadoresValidationRules(),
+  validate,
+  verifyUserHasRoles(['ADMIN', 'USER']),
+  determinePathway(FRONT_PATH),
+  getIndicadores
+);
 
 
 /**
@@ -311,13 +617,11 @@ router.route('/')
  *         500:
  *           $ref: '#/components/responses/InternalServerError'
  */
-router.route('/').post(
-  verifyJWT,
-  verifyUserIsActive,
+router.post('/',
   uploadImage(DESTINATIONS.MAPAS),
   createIndicadorValidationRules(),
-  verifyUserHasRoles(['ADMIN', 'USER']),
   validate,
+  verifyUserHasRoles(['ADMIN', 'USER']),
   createIndicador
 );
 
@@ -358,249 +662,16 @@ router.route('/').post(
  *         500:
  *           $ref: '#/components/responses/InternalServerError'
  */
-router.route('/:idIndicador')
-  .patch(
-    paramValidationRules(),
-    uploadImage(DESTINATIONS.INDICADORES),
-    updateIndicadorValidationRules(),
-    validate,
-    verifyJWT,
-    verifyUserIsActive,
-    exists('idIndicador', 'Indicador'),
-    updateIndicador
-  );
-
-/**
- * @swagger
- *  /indicadores/{idIndicador}/toggle-status:
- *  patch:
- *    summary: Update status of indicador (if it was active, changes to inactive)
- *    tags: [Indicadores]
- *    security:
- *      - bearer: []
- *    parameters:
- *      - in: path
- *        name: idIndicador
- *        required: true
- *        schema:
- *          type: integer
- *    responses:
- *      204:
- *        description: Updated
- *      401:
- *        $ref: '#/components/responses/Unauthorized'
- *      403:
- *        $ref: '#/components/responses/Forbidden'
- *      422:
- *        $ref: '#components/responses/UnprocessableEntity'
- *      429:
- *        $ref: '#components/responses/TooManyRequests'
- *      500:
- *        $ref: '#components/responses/InternalServerError'
- */
-router.route('/:idIndicador/toggle-status')
-  .patch(
-    verifyJWT,
-    verifyUserIsActive,
-    verifyUserHasRoles(['ADMIN']),
-    paramValidationRules(),
-    validate,
-    exists('idIndicador', 'Indicador'),
-    updateIndicadorStatus
-  );
-
-
-/**
- * @swagger
- *   /indicadores/{idIndicador}/usuarios:
- *   post:
- *     summary: Assign users to an indicador
- *     description: Only ADMIN users can create associations between normal users and indicadores
- *     tags: [Indicadores]
- *     security:
- *       - bearer: []
- *     parameters:
- *       - in: path
- *         name: idIndicador
- *         required: true
- *         schema:
- *           type: integer
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               usuarios:
- *                 type: array
- *                 items:
- *                   type: integer
- *                 example: [1, 2, 3, 4, 5]
- *               desde:
- *                 type: string
- *                 format: date
- *               hasta:
- *                 type: string
- *                 format: date
- *     responses:
- *       201:
- *         description: Operation was successful (users are assigned to an indicador)
- *       401:
- *         $ref: '#/components/responses/Unauthorized'
- *       403:
- *         $ref: '#/components/responses/Forbidden'
- *       422:
- *         $ref: '#components/responses/UnprocessableEntity'
- *       429:
- *         $ref: '#components/responses/TooManyRequests'
- *       500:
- *         $ref: '#components/responses/InternalServerError'
- */
-router.route('/:idIndicador/usuarios')
-  .post(
-    verifyJWT,
-    verifyUserIsActive,
-    verifyUserHasRoles(['ADMIN']),
-    paramValidationRules(),
-    indicadorAssignUsuarioValidationRules(),
-    validate,
-    createRelationUI,
-  );
-
-/**
- * @swagger
- *   /indicadores/{idIndicador}/usuarios:
- *     get:
- *       summary: Return list of users assigned to an indicador
- *       tags: [Indicadores, Usuarios]
- *     parameters:
- *       - in: path
- *         name: idIndicador
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: List of users
- *       422:
- *         $ref: '#/components/responses/UnprocessableEntity'
- *       429:
- *         $ref: '#/components/responses/TooManyRequests'
- *       500:
- *         $ref: '#/components/responses/InternalServerError'
- */
-router.route('/:idIndicador/usuarios')
-  .get(
-    paramValidationRules(),
-    validate,
-    exists('idIndicador', 'Indicador'),
-    getUsersFromIndicador
-  )
-
-/**
- * @swagger
- *   /indicadores/{idIndicador}/catalogos:
- *     get:
- *       summary: Retrieve the catalogos associated to an indicador.
- *       tags: [Indicadores]
- *       security: 
- *         - bearer: []
- *       parameters:
- *         - in: path
- *           name: idIndicador
- *           required: true
- *           schema:
- *             type: integer
- *             format: int64
- *       responses:
- *         200:
- *           description: List of catalogos.
- *           content:
- *             application/json:
- *               schema:
- *                 type: object
- *                 properties:
- *                   data:
- *                     type: array
- *                     items:
- *                       type: object
- *                       properties:
- *                         id:
- *                           type: integer
- *                         idIndicador:
- *                           type: integer
- *                         idCatalogoDetail:
- *                           type: integer
- *                         descripcion: 
- *                           type: string
- *                         idCatalogo:
- *                           type: integer
- *         401:
- *           $ref: '#/components/responses/Unauthorized'
- *         403:
- *           $ref: '#/components/responses/Forbidden'
- *         422:
- *           $ref: '#components/responses/UnprocessableEntity'
- *         429:
- *           $ref: '#components/responses/TooManyRequests'
- *         500:
- *           $ref: '#components/responses/InternalServerError'
- */
-router.route('/:idIndicador/catalogos')
-  .get(
-    paramValidationRules(),
-    validate,
-    exists('idIndicador', 'Indicador'),
-    getCatalogosFromIndicador
-  )
-
-
-/**
- * @swagger
- *   /indicadores/{idIndicador}/formula:
- *     get:
- *       summary: Retrieves formula and variables from a given Indicador
- *       tags: [Indicadores, Formulas]
- *       security:
- *         - bearer: []
- *       parameters:
- *         - in: path
- *           name: idIndicador
- *           required: true
- *           schema:
- *             type: integer
- *             format: int64
- *       responses:
- *         200:
- *           description: Equation, description and variables of an Indicador.
- *           content:
- *             application/json:
- *               schema:
- *                 $ref: '#/components/schemas/FormulaWithVariables'
- *         401:
- *           $ref: '#/components/responses/Unauthorized'
- *         403:
- *           $ref: '#/components/responses/Forbidden'
- *         404:
- *           $ref: '#/components/responses/NotFound'
- *         422:
- *           $ref: '#components/responses/UnprocessableEntity'
- *         429:
- *           $ref: '#components/responses/TooManyRequests'
- *         500:
- *           $ref: '#components/responses/InternalServerError'
- */
-router.route('/:idIndicador/formula')
-  .get(
-    paramValidationRules(),
-    validate,
-    verifyJWT,
-    verifyUserIsActive,
-    verifyUserHasRoles(['USER', 'ADMIN']),
-    exists('idIndicador', 'Indicador'),
-    getFormulaOfIndicador
-  )
+router.patch('/:idIndicador',
+  paramValidationRules(),
+  uploadImage(DESTINATIONS.INDICADORES),
+  updateIndicadorValidationRules(),
+  validate,
+  verifyUserHasRoles(['ADMIN', 'USER']),
+  exists('idIndicador', 'Indicador'),
+  verifyUserCanPerformActionOnIndicador({ indicadorPathId: 'idIndicador' }),
+  updateIndicador
+);
 
 /**
  * @swagger
@@ -636,48 +707,16 @@ router.route('/:idIndicador/formula')
  *         500:
  *           $ref: '#components/responses/InternalServerError'
  */
-router.route('/:idIndicador/formula')
-  .post(
-    idValidation(),
-    createFormulaValidationRules(),
-    validate,
-    verifyJWT,
-    verifyUserIsActive,
-    verifyUserHasRoles(['USER', 'ADMIN']),
-    exists('idIndicador', 'Indicador'),
-    createFormula
-  )
+router.post('/:idIndicador/formula',
+  idValidation(),
+  createFormulaValidationRules(),
+  validate,
+  verifyUserHasRoles(['ADMIN', 'USER']),
+  exists('idIndicador', 'Indicador'),
+  verifyUserCanPerformActionOnIndicador({ indicadorPathId: 'idIndicador' }),
+  createFormula
+)
 
-/**
- * @swagger
- *   /indicadores/{idIndicador}/mapa:
- *     get:
- *       summary: Get mapa of indicador
- *       tags: [Indicadores, Mapas]
- *       parameters:
- *         - in: path
- *           name: idIndicador
- *           required: true
- *           schema:
- *             type: integer
- *             format: int64
- *       responses:
- *         200:
- *           description: Mapa of indicador
- *         422:
- *           $ref: '#components/responses/UnprocessableEntity'
- *         429:
- *           $ref: '#components/responses/TooManyRequests'
- *         500:
- *           $ref: '#components/responses/InternalServerError'
- */
-router.route('/:idIndicador/mapa')
-  .get(
-    idValidation(),
-    validate,
-    exists('idIndicador', 'Indicador'),
-    getMapaOfIndicador
-  );
 
 /**
  * @swagger
@@ -711,18 +750,16 @@ router.route('/:idIndicador/mapa')
  *         500:
  *           $ref: '#components/responses/InternalServerError'
  */
-router.route('/:idIndicador/mapa')
-  .post(
-    verifyJWT,
-    verifyUserIsActive,
-    verifyUserHasRoles(['USER', 'ADMIN']),
-    idValidation(),
-    uploadImage(DESTINATIONS.MAPAS),
-    mapaValidationRules(),
-    validate,
-    exists('idIndicador', 'Indicador'),
-    createMapa
-  );
+router.post('/:idIndicador/mapa',
+  idValidation(),
+  verifyUserHasRoles(['ADMIN', 'USER']),
+  uploadImage(DESTINATIONS.MAPAS),
+  mapaValidationRules(),
+  validate,
+  exists('idIndicador', 'Indicador'),
+  verifyUserCanPerformActionOnIndicador({ indicadorPathId: 'idIndicador' }),
+  createMapa
+);
 
 
 /**
@@ -779,67 +816,16 @@ router.route('/:idIndicador/mapa')
  *         500:
  *           $ref: '#components/responses/InternalServerError'
  */
-router.route('/info/general')
-  .get
-  (
-    verifyJWT,
-    verifyUserIsActive,
-    verifyUserHasRoles(['USER', 'ADMIN']),
-    determineModel,
-    generalFilterOptions(),
-    paramValidationRules(),
-    paginationValidationRules(),
-    generalSortValidationRules(),
-    validate,
-    getInformation,
-  )
-
-/**
- * @swagger
- *   /indicadores/{idIndicador}/historicos:
- *     get:
- *       summary: Fetch historicos
- *       description: Get a list of historicos from an indicador
- *       tags: [Historicos, Indicadores]
- *       security:
- *         - bearer: []
- *       parameters:
- *         - name: idIndicador
- *           in: path
- *           required: true
- *           description: The id of the indicador
- *           schema:
- *             type: integer
- *             format: int64
- *             minimum: 1
- *       responses:
- *         200:
- *           description: List of historicos from an indicador
- *           content:
- *             application/json:
- *               schema:
- *                 $ref: '#/components/schemas/Historico'
- *         400:
- *           $ref: '#/components/responses/BadRequest'
- *         404:
- *           $ref: '#/components/responses/NotFound'
- *         422:
- *           $ref: '#/components/responses/UnprocessableEntity'
- *         429:
- *           $ref: '#/components/responses/TooManyRequests'
- *         500:
- *           $ref: '#/components/responses/InternalServerError'
- */
-router.route('/:idIndicador/historicos')
-  .get(
-    verifyJWT,
-    verifyUserIsActive,
-    paginationValidationRules(),
-    sortValidationRules(),
-    idValidation(),
-    validate,
-    getHistoricos
-  );
+router.get('/info/general',
+  determineModel,
+  generalFilterOptions(),
+  paramValidationRules(),
+  paginationValidationRules(),
+  generalSortValidationRules(),
+  validate,
+  verifyUserHasRoles(['ADMIN', 'USER']),
+  getInformation,
+)
 
 
 /**
@@ -873,15 +859,13 @@ router.route('/:idIndicador/historicos')
  *         500:
  *           $ref: '#/components/responses/InternalServerError'
  */
-router.route('/:idIndicador/historicos')
-  .post(
-    verifyJWT,
-    verifyUserIsActive,
-    createHistoricoValidationRules(),
-    validate,
-    verifyUserHasRoles(['USER', 'ADMIN']),
-    createHistorico
-  );
+router.post('/:idIndicador/historicos',
+  createHistoricoValidationRules(),
+  validate,
+  verifyUserHasRoles(['ADMIN', 'USER']),
+  verifyUserCanPerformActionOnIndicador({ indicadorPathId: 'idIndicador' }),
+  createHistorico
+);
 
 
 /**
@@ -915,14 +899,13 @@ router.route('/:idIndicador/historicos')
  *         500:
  *           $ref: '#/components/responses/InternalServerError'
  */
-router.route('/:idIndicador/catalogo')
-  .patch(
-    verifyJWT,
-    verifyUserIsActive,
-    idValidation(),
-    updateIndicadorCatalogos(),
-    validate,
-    updateOrCreateCatalogFromIndicador,
-  )
+router.patch('/:idIndicador/catalogo',
+  idValidation(),
+  updateIndicadorCatalogos(),
+  validate,
+  verifyUserHasRoles(['ADMIN', 'USER']),
+  verifyUserCanPerformActionOnIndicador({ indicadorPathId: 'idIndicador' }),
+  updateOrCreateCatalogFromIndicador,
+)
 
 module.exports = router;

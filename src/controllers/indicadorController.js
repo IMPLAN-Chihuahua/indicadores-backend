@@ -2,7 +2,6 @@ const stream = require('stream');
 const IndicadorService = require("../services/indicadorService")
 const { generateCSV, generateXLSX, generatePDF } = require("../services/fileService");
 const UsuarioService = require('../services/usuariosService');
-const { areConnected } = require("../services/usuarioIndicadorService");
 const { getPagination } = require('../utils/pagination');
 const { FILE_PATH, FRONT_PATH } = require('../middlewares/determinePathway');
 const { getImagePathLocation } = require('../utils/stringFormat');
@@ -89,46 +88,23 @@ const getIndicadoresFromUser = async (req, res, next) => {
 
 const createIndicador = async (req, res, next) => {
   const image = getImagePathLocation(req);
-  try {
-    const indicador = req.matchedData;
-    indicador.createdBy = req.sub;
-    indicador.updatedBy = req.sub;
-    indicador.owner = req.sub;
-    indicador.mapa = {...indicador?.mapa, ...image};
-    const savedIndicador = await IndicadorService.createIndicador(indicador);
-    return res.status(201).json({ data: savedIndicador });
-  } catch (err) {
-    next(err)
-  }
+  const indicador = req.matchedData;
+  indicador.createdBy = req.sub;
+  indicador.updatedBy = req.sub;
+  indicador.owner = req.sub;
+  indicador.mapa = { ...indicador?.mapa, ...image };
+  const savedIndicador = await IndicadorService.createIndicador(indicador);
+  return res.status(201).json({ data: savedIndicador });
+
 };
 
 const updateIndicador = async (req, res, next) => {
-  try {
-    const { idIndicador, ...indicador } = req.matchedData;
-    const idUsuario = req.sub;
-    const rol = req.rol || await UsuarioService.getRol(idUsuario);
+  const { idIndicador, ...indicador } = req.matchedData;
+  indicador.updatedBy = req.sub;
 
-    fields = { ...indicador };
+  await IndicadorService.updateIndicador(idIndicador, indicador);
 
-    let saved;
-    if (rol === 'ADMIN') {
-      saved = await IndicadorService.updateIndicador(idIndicador, fields);
-    } else {
-      const isAllowed = await areConnected(idUsuario, idIndicador);
-      if (!isAllowed) {
-        return res.status(403).send('No tiene permiso para actualizar este indicador');
-      }
-      saved = await IndicadorService.updateIndicador(idIndicador, indicador);
-    }
-
-    if (saved) {
-      return res.sendStatus(204);
-    }
-    return res.sendStatus(400);
-
-  } catch (err) {
-    next(err)
-  }
+  return res.sendStatus(204);
 };
 
 const updateIndicadorStatus = async (req, res, next) => {

@@ -7,41 +7,42 @@ const { TOKEN_SECRET } = process.env;
 const SALT_ROUNDS = 10;
 const TOKEN_EXPIRATION_TIME = '5h';
 
-// verifica que peticion tenga un token valido
+
 const verifyJWT = (req, res, next) => {
     const reqHeader = req.headers.authorization;
-    if (reqHeader) {
-        const bearerToken = reqHeader.split(' ')[1];
-        jwt.verify(bearerToken, TOKEN_SECRET, (err, decoded) => {
-            if (err) {
-                return res.status(403).send('Invalid or expired token');
-            }
-            req.sub = decoded.sub;
-            next();
-        });
-    } else {
-        // peticion no tiene datos en el header de authorization
+    if (!reqHeader) {
         return res.sendStatus(401);
     }
+
+    const bearerToken = reqHeader.split(' ')[1];
+    jwt.verify(bearerToken, TOKEN_SECRET, (err, decoded) => {
+        if (err) {
+            return res.status(403).send('Invalid or expired token');
+        }
+        
+        req.sub = decoded.sub;
+        next();
+    });
 };
 
 const verifyUserHasRoles = (roles) => async (req, res, next) => {
     const rol = await getRol(req.sub);
     const isAllowed = roles.includes(rol);
-    if (isAllowed) {
-        req.rol = rol;
-        next();
-    } else {
+    if (!isAllowed) {
         return res.status(403).send('No tiene permiso a realizar acciones en este recurso');
     }
+
+    req.rol = rol;
+    next();
 };
 
 const verifyUserIsActive = async (req, res, next) => {
-    if (await isUserActive(req.sub)) {
-        next();
-    } else {
+    const isActive = await isUserActive(req.sub);
+    if (!isActive) {
         return res.status(403).send('Esta cuenta se encuentra deshabilitada');
     }
+    
+    next();
 }
 
 const hashClave = (clave) => bcrypt.hash(clave, SALT_ROUNDS);

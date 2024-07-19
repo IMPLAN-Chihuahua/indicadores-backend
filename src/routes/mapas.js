@@ -2,11 +2,14 @@ const { uploadImage } = require('../middlewares/fileUpload');
 const { idValidation, validate } = require('../middlewares/validator/generalValidator');
 const { mapaValidationRules } = require('../middlewares/validator/mapaValidator');
 const { DESTINATIONS } = require('../services/fileService');
-const express = require('express');
 const { updateMapa } = require('../controllers/mapaController');
 const { exists } = require('../middlewares/resourceExists');
 const { verifyJWT, verifyUserIsActive, verifyUserHasRoles } = require('../middlewares/auth');
-const router = express.Router();
+const { verifyUserCanPerformActionOnIndicador } = require('../middlewares/verifyUserCanPerformAction');
+
+
+const promisedRouter = require('express-promise-router')
+const router = promisedRouter();
 
 
 /**
@@ -77,8 +80,9 @@ router.route('/:idMapa')
     mapaValidationRules(),
     validate,
     exists('idMapa', 'Mapa'),
+    verifyUserCanPerformActionOnIndicador({ relatedTo: { model: 'Mapa', pathId: 'idMapa' } }),
     updateMapa
-);
+  );
 
 
 module.exports = router;

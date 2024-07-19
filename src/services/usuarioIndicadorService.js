@@ -1,9 +1,10 @@
 /* eslint-disable no-restricted-syntax */
+const logger = require('../config/logger');
 const { UsuarioIndicador, Usuario, Indicador, sequelize, Sequelize } = require('../models');
 const { getInformation } = require('./generalServices');
 const { Op } = Sequelize;
 
-const areConnected = async (idUsuario, idIndicador) => {
+const isUsuarioAssignedToIndicador = async (idUsuario, idIndicador) => {
   try {
     const res = await UsuarioIndicador.findOne({
       where: {
@@ -44,7 +45,7 @@ const areConnected = async (idUsuario, idIndicador) => {
   }
 };
 
-const createRelation = async (usuarios, indicadores, options) => {
+const createRelation = async (usuarios, indicadores, relationOptions) => {
   const relations = [];
 
   for (const u of usuarios) {
@@ -52,12 +53,17 @@ const createRelation = async (usuarios, indicadores, options) => {
       relations.push({
         idUsuario: u,
         idIndicador: i,
-        ...options
+        ...relationOptions
       })
     }
   }
   try {
-    await UsuarioIndicador.bulkCreate(relations, { ignoreDuplicates: true, validate: true });
+    await UsuarioIndicador.bulkCreate(
+      relations,
+      {
+        ignoreDuplicates: true,
+        validate: true,
+      });
     return;
   } catch (err) {
     throw new Error(`Error al otorgar permisos ${err.message}`);
@@ -218,7 +224,7 @@ const getModelSelected = async (model, options) => {
 }
 
 module.exports = {
-  areConnected,
+  isUsuarioAssignedToIndicador,
   createRelation,
   getUsuariosIndicadores,
   getRelationUsers,

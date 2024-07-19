@@ -56,7 +56,15 @@ const createIndicadorValidationRules = () => [
         .custom(validYear)
         .toInt(),
 
+    body('periodicidad')
+        .isInt({ min: 1 })
+        .toInt(),
+
     body('idModulo')
+        .exists()
+        .isInt().toInt(),
+
+    body('idDimension')
         .exists()
         .isInt().toInt(),
 
@@ -80,11 +88,6 @@ const createIndicadorValidationRules = () => [
         .optional()
         .trim(),
 
-    body('periodicidad')
-        .optional()
-        .isInt({ min: 1 })
-        .toInt(),
-
     body(['historicos.*.anio', 'formula.variables.*.anio'])
         .optional()
         .isNumeric()
@@ -95,10 +98,14 @@ const createIndicadorValidationRules = () => [
         .isNumeric()
         .toInt(),
 
-    body(['historicos.*.valor', 'formula.variables.*.dato',])
+    body(['historicos.*.valor'])
         .optional()
         .isNumeric()
         .toFloat(),
+
+    body('formula.variables.*.dato')
+        .optional()
+        .trim(),
 
     body('mapa.url')
         .optional()

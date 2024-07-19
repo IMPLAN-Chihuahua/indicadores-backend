@@ -1,4 +1,4 @@
-const { areConnected } = require("./usuarioIndicadorService");
+const { isUsuarioAssignedToIndicador } = require("./usuarioIndicadorService");
 
 /**
  * Only users with ADMIN role can execute any action,
@@ -13,7 +13,7 @@ const { areConnected } = require("./usuarioIndicadorService");
  */
 const validate = async ({ rol, idUsuario, idIndicador }, onAllowed, onNotAllowed) => {
   try {
-    if (rol === 'ADMIN' || await areConnected(idUsuario, idIndicador)) {
+    if (rol === 'ADMIN' || await isUsuarioAssignedToIndicador(idUsuario, idIndicador)) {
       return onAllowed();
     }
     return onNotAllowed();
