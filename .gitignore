@@ -2,3 +2,5 @@ node_modules/
 .env
 .nyc_output/
 .vscode/
+.ash_history
+.npm/

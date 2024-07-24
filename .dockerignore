@@ -1,2 +1,9 @@
 node_modules
+npm-debug.log
+uploads/**/*.jpg
+uploads/**/*.png
+uploads/**/*.jpeg
+node_modules
 .git
+.ash_history
+.npm/
