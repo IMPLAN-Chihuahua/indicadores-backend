@@ -13,9 +13,9 @@ const {
   Sequelize,
   CatalogoDetail,
   Dimension,
-  CatalogoDetailIndicador
 } = models;
 const { toggleStatus } = require("../utils/objectUtils");
+const { updateOrCreateCatalogosFromIndicador, addCatalogosToIndicador } = require("./catalogosService");
 const { createRelation } = require("./usuarioIndicadorService");
 const { Op } = Sequelize;
 
@@ -245,34 +245,23 @@ const filterIndicadorBy = (matchedData) => {
   return filters;
 };
 
-const getIncludesToCreateIndicador = (indicador) => {
-  const includes = [];
-
-  if (indicador.formula) {
-    includes.push({
-      association: Indicador.associations.formula,
-      include: [Formula.associations.variables]
-    });
-  }
-
-  if (indicador.mapa) {
-    includes.push(Indicador.associations.mapa);
-  }
-
-  return { include: includes };
-};
-
 const createIndicador = async (indicador) => {
   const { catalogos, ...values } = indicador;
-
   try {
     const result = await sequelize.transaction(async _t => {
       const created = await Indicador.create(
-        values, {
-        ...getIncludesToCreateIndicador(values)
-      });
+        values,
+        {
+          include: [{
+            association: Indicador.associations.formula,
+            include: [Formula.associations.variables]
+          }, {
+            association: Indicador.associations.mapa
+          }]
+        }
+      );
 
-      if (catalogos && Array.isArray(catalogos) && catalogos.length > 0) {
+      if (catalogos) {
         await addCatalogosToIndicador(catalogos, created.id)
       }
 
@@ -297,14 +286,6 @@ const assignIndicadorToUsuario = (idIndicador, idUsuario) => {
   })
 }
 
-const addCatalogosToIndicador = async (catalogos, idIndicador) => {
-  const relation = catalogos.map(c => ({
-    idCatalogoDetail: c,
-    idIndicador
-  }))
-
-  return CatalogoDetailIndicador.bulkCreate(relation);
-}
 
 const updateIndicadorStatus = async (id) => {
   try {
@@ -322,9 +303,18 @@ const getIndicadorStatus = async (id) => {
 }
 
 const updateIndicador = async (id, indicador) => {
+  const { catalogos, ...values } = indicador;
+  
   try {
-    const affectedRows = await Indicador.update({ ...indicador }, { where: { id } });
-    return affectedRows > 0;
+    sequelize.transaction(async _t => {
+      if (catalogos) {
+        await updateOrCreateCatalogosFromIndicador(id, catalogos)
+      }
+
+      await Indicador.update(values, { where: { id } });
+    })
+
+    return;
   } catch (err) {
     throw new Error(`Error al actualizar indicador: ${err.message}`);
   }
@@ -463,5 +453,5 @@ module.exports = {
   updateIndicador,
   updateIndicadorStatus,
   getInactiveIndicadores,
-  getIdIndicadorRelatedTo
+  getIdIndicadorRelatedTo,
 };

@@ -41,6 +41,7 @@ const { createHistoricoValidationRules } = require('../middlewares/validator/his
 const { updateIndicadorCatalogos } = require('../middlewares/validator/catalogoValidator');
 const promisedRouter = require('express-promise-router');
 const { verifyUserCanPerformActionOnIndicador } = require('../middlewares/verifyUserCanPerformAction');
+const { param } = require('express-validator');
 const router = promisedRouter()
 
 
@@ -663,8 +664,7 @@ router.post('/',
  *           $ref: '#/components/responses/InternalServerError'
  */
 router.patch('/:idIndicador',
-  paramValidationRules(),
-  uploadImage(DESTINATIONS.INDICADORES),
+  param('idIndicador').isInt().toInt(),
   updateIndicadorValidationRules(),
   validate,
   verifyUserHasRoles(['ADMIN', 'USER']),

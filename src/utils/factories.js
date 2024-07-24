@@ -288,7 +288,7 @@ const usersToIndicador = () => ([
 const aDimension = (id) => ({
 	id,
 	titulo: faker.lorem.words(Math.floor(Math.random() * 10) + 1),
-	descripcion: faker.lorem.paragraph(),
+	descripcion: faker.lorem.sentence(),
 	urlImagen: faker.image.imageUrl(),
 	color: faker.internet.color(),
 	createdAt: new Date(),

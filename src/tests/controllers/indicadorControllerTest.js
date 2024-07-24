@@ -32,7 +32,7 @@ const {
 } = require('../utls/commonStubs');
 
 
-describe.only('v1/indicadores', function () {
+describe('v1/indicadores', function () {
 
 	let findOneIndicador;
 	let findAllIndicadores;
@@ -266,7 +266,7 @@ describe.only('v1/indicadores', function () {
 						});
 				});
 
-				it.only('Should fail to create an indicador with formula and variables', function (done) {
+				it('Should fail to create an indicador with formula and variables', function (done) {
 					const dto = getIndicadorDTO();
 					
 					for (const pair of dto.entries()) {

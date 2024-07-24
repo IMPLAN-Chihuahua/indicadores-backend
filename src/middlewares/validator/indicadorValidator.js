@@ -113,23 +113,45 @@ const createIndicadorValidationRules = () => [
 ];
 
 const updateIndicadorValidationRules = () => [
-    body(['codigo', 'codigoObjeto'])
+    body([
+        'codigo',
+        'codigoObjeto'
+    ])
         .optional()
         .isLength({ max: 3 })
         .matches(/\d{3}$/),
-    body(['activo', 'definicion', 'fuente', 'nombre', 'observaciones', 'owner', 'periodicidad', 'ultimoValorDisponible', 'updatedBy'])
+    body([
+        'activo',
+        'definicion',
+        'fuente',
+        'nombre',
+        'observaciones',
+        'owner',
+        'periodicidad',
+        'ultimoValorDisponible',
+        'updatedBy'
+    ])
         .optional()
         .trim(),
     body('tendenciaActual')
         .optional()
         .toUpperCase()
         .isIn(['ASCENDENTE', 'DESCENDENTE']),
-    body(['idOds', 'idCobertura',
-        'idUnidadMedida', 'idModulo', 'idDimension',
-        'anioUltimoValorDisponible'])
+    body([
+        'idOds',
+        'idCobertura',
+        'idUnidadMedida',
+        'idModulo',
+        'idDimension',
+        'anioUltimoValorDisponible'
+    ])
         .optional()
         .isInt().toInt(),
-
+    body([
+        'catalogos.*.id',
+    ])
+        .isInt()
+        .toInt(),
     body('archive').optional().isBoolean(),
     body('archive').default(false)
 ];

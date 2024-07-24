@@ -5,9 +5,10 @@ const { hashClave } = require('../middlewares/auth');
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     const usuarios = [];
+    const clave = await hashClave('password')
     usuarios.push({
       correo: 'johndoe@email.com',
-      clave: await hashClave('password'),
+      clave,
       nombres: 'John',
       apellidoPaterno: 'Doe',
       descripcion: 'Usuario de sistema de indicadores',
@@ -24,7 +25,7 @@ module.exports = {
       const lastName = faker.name.lastName();
       usuarios.push({
         correo: faker.internet.email(firstName, lastName),
-        clave: faker.internet.password(),
+        clave,
         nombres: `${firstName} ${lastName}`,
         apellidoPaterno: firstName,
         apellidoMaterno: lastName,
