@@ -11,19 +11,25 @@ module.exports = {
       indicadores.push({
         id: i + 1,
         urlImagen: faker.image.imageUrl(),
-        nombre: `Test ${faker.random.word()}`,
         codigo,
+        nombre: `Indicador ${faker.random.word()}`,
+        definicion: faker.lorem.sentence(),
+        observaciones: faker.lorem.sentence(),
         ultimoValorDisponible: faker.datatype.number(),
         anioUltimoValorDisponible: randomYear(),
         createdBy: 1,
         updatedBy: 1,
+        activo: 'SI',
+        fuente: faker.random.word(5),
+        periodicidad: faker.datatype.number(15),
+        owner: 1,
+        archive: false,
         idModulo: 1,
+        idDimension: 1,
         createdAt: date,
         updatedAt: date,
         tendenciaActual: i % 2 === 0 ? "ASCENDENTE" : "DESCENDENTE",
         tendenciaDeseada: i % 2 === 0 ? "ASCENDENTE" : "DESCENDENTE",
-        definicion: faker.lorem.sentence(),
-        fuente: faker.random.word(5)
       });
     }
     await queryInterface.bulkInsert("Indicadores", indicadores, {});
