@@ -11,8 +11,11 @@ const {
   Variable,
   sequelize,
   Sequelize,
+  Catalogo,
   CatalogoDetail,
+  CatalogoDetailIndicador,
   Dimension,
+  IndicadorObjetivo
 } = models;
 const { toggleStatus } = require("../utils/objectUtils");
 const { updateOrCreateCatalogosFromIndicador, addCatalogosToIndicador } = require("./catalogosService");
@@ -63,7 +66,7 @@ const getDefinitionsForIndicadores = (pathway, queryParams) => {
 
 const defineAttributes = (pathway, matchedData) => {
   const attributes = ["id", "nombre", "ultimoValorDisponible", "activo",
-    "anioUltimoValorDisponible", "tendenciaActual", "fuente", "createdBy", "updatedAt", "periodicidad", "owner", "archive", "idDimension"];
+    "anioUltimoValorDisponible", "tendenciaActual", "fuente", "createdBy", "updatedAt", "periodicidad", "owner", "archive",];
 
   switch (pathway) {
     case FILE_PATH:
@@ -85,7 +88,6 @@ const defineAttributes = (pathway, matchedData) => {
         "createdBy",
         "updatedBy",
         "idModulo",
-        'idDimension',
         "createdAt",
         "updatedAt",)
       return attributes;
@@ -206,10 +208,10 @@ const advancedSearch = (matchedData) => {
   const { idDimensions, owner, modulos } = matchedData
   let filter = {}
 
-  if (idDimensions) {
-    const dimensionsArray = idDimensions ? idDimensions.split(',') : null;
-    filter.idDimension = dimensionsArray;
-  }
+  // if (idDimensions) {
+  //   const dimensionsArray = idDimensions ? idDimensions.split(',') : null;
+  //   filter.idDimension = dimensionsArray;
+  // }
 
   if (owner) {
     filter.owner = owner;
@@ -238,9 +240,9 @@ const filterIndicadorBy = (matchedData) => {
     filters.idModulo = idModulo;
   }
 
-  if (idDimension) {
-    filters.idDimension = idDimension;
-  }
+  // if (idDimension) {
+  //   filters.idDimension = idDimension;
+  // }
 
   return filters;
 };
@@ -366,15 +368,22 @@ const includeBasicModels = () => {
     },
     {
       model: Dimension,
+      as: 'objetivos',
       required: true,
-      attributes: ['id', 'titulo', 'descripcion', 'urlImagen'],
+      attributes: ['id', 'titulo'],
+      through: {
+        as: 'more',
+        model: IndicadorObjetivo,
+        attributes: ['destacado']
+      }
     },
     {
       model: CatalogoDetail,
-      required: false,
       as: 'catalogos',
-      attributes: ['id', 'nombre', 'idCatalogo'],
+      required: false,
+      include: Catalogo,
       through: {
+        model: CatalogoDetailIndicador,
         attributes: [],
       },
     },
