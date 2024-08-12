@@ -304,7 +304,7 @@ const getIndicadorStatus = async (id) => {
 
 const updateIndicador = async (id, indicador) => {
   const { catalogos, ...values } = indicador;
-  
+
   try {
     sequelize.transaction(async _t => {
       if (catalogos) {
@@ -446,6 +446,32 @@ const getIdIndicadorRelatedTo = async (model, id) => {
   return indicador?.indicadorId;
 }
 
+const getRandomIndicador = async (idTema) => {
+  const indicadores = await Indicador.findAll({
+    where: { idModulo: idTema, activo: 'SI' },
+    attributes: ["id"],
+    raw: true
+  });
+
+  const indicadorId = indicadores[Math.floor(Math.random() * indicadores.length)];
+
+  const indicador = await Indicador.findOne({
+    where: { id: indicadorId.id },
+    include: [
+      {
+        model: Dimension,
+        attributes: ["titulo"]
+      },
+      {
+        model: Modulo,
+        attributes: ["urlImagen"]
+      }
+    ],
+  });
+
+  return indicador;
+}
+
 module.exports = {
   getIndicadores,
   getIndicador,
@@ -454,4 +480,5 @@ module.exports = {
   updateIndicadorStatus,
   getInactiveIndicadores,
   getIdIndicadorRelatedTo,
+  getRandomIndicador
 };

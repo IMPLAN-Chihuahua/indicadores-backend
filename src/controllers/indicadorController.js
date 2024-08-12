@@ -131,6 +131,16 @@ const getUsersFromIndicador = async (req, res, next) => {
   }
 };
 
+const getRandomIndicador = async (req, res, next) => {
+  const { idModulo } = req.params;
+  try {
+    const indicador = await IndicadorService.getRandomIndicador(idModulo);
+    return res.status(200).json({ data: indicador });
+  } catch (err) {
+    next(err);
+  }
+}
+
 
 module.exports = {
   getIndicadores,
@@ -139,5 +149,6 @@ module.exports = {
   createIndicador,
   updateIndicador,
   updateIndicadorStatus,
-  getUsersFromIndicador
+  getUsersFromIndicador,
+  getRandomIndicador
 };

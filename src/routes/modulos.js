@@ -3,7 +3,7 @@ const express = require('express');
 const moduloRouter = express.Router();
 const indicadorRouter = express.Router({ mergeParams: true });
 const { getModulos, createModulo, editModulo, updateModuloStatus, getModulo } = require('../controllers/moduloController');
-const { getIndicadores } = require('../controllers/indicadorController');
+const { getIndicadores, getRandomIndicador } = require('../controllers/indicadorController');
 
 const {
     filterIndicadoresValidationRules,
@@ -459,6 +459,15 @@ moduloRouter
         generalSortValidationRules(),
         validate,
         getInformation,
+    )
+
+
+moduloRouter.route('/:idModulo/randomIndicador')
+    .get(
+        paramValidationRules(),
+        validate,
+        determinePathway(SITE_PATH),
+        getRandomIndicador
     )
 
 
