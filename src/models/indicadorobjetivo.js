@@ -42,7 +42,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     indexes: [{
-      name: 'indicadorObjetivoIdx',
+      name: 'indicadorObjetivo_unique',
       fields: ['idIndicador', 'idObjetivo'],
       type: 'UNIQUE',
     }],
