@@ -6,7 +6,6 @@ module.exports = (sequelize, DataTypes) => {
     class Indicador extends Model {
         static associate(models) {
             this.belongsTo(models.Modulo, { foreignKey: 'idModulo' });
-            this.belongsTo(models.Dimension, { foreignKey: 'idDimension' });
             this.belongsToMany(models.Usuario, { through: models.UsuarioIndicador, foreignKey: 'idIndicador' });
             this.belongsToMany(models.CatalogoDetail, {
                 through: models.CatalogoDetailIndicador,
@@ -21,6 +20,12 @@ module.exports = (sequelize, DataTypes) => {
             this.hasOne(models.Formula, { foreignKey: 'idIndicador' });
             this.hasMany(models.Historico, { foreignKey: 'idIndicador' });
             this.hasOne(models.Mapa, { foreignKey: 'idIndicador' });
+
+            this.belongsToMany(models.Dimension, {
+                through: models.IndicadorObjetivo,
+                foreignKey: 'idIndicador',
+                as: 'objetivos'
+            })
         }
     };
     Indicador.init(
@@ -126,15 +131,6 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: true,
                 references: {
                     model: 'Modulos',
-                    key: 'id'
-                },
-            },
-
-            idDimension: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                references: {
-                    model: 'Dimensions',
                     key: 'id'
                 },
             },

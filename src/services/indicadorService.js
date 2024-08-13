@@ -11,8 +11,11 @@ const {
   Variable,
   sequelize,
   Sequelize,
+  Catalogo,
   CatalogoDetail,
+  CatalogoDetailIndicador,
   Dimension,
+  IndicadorObjetivo
 } = models;
 const { toggleStatus } = require("../utils/objectUtils");
 const { updateOrCreateCatalogosFromIndicador, addCatalogosToIndicador } = require("./catalogosService");
@@ -39,6 +42,94 @@ const getIndicadores = async (page, perPage, matchedData, pathway) => {
   }
 };
 
+const findAllIndicadoresInDimension = async ({ page, perPage, searchQuery, filters }) => {
+  const { idObjetivo, destacado = false, offset } = filters;
+  try {
+    const result = await Indicador.findAll({
+      limit: perPage,
+      offset: offset || (page - 1) * perPage,
+      attributes: [
+        'id',
+        'nombre',
+        'tendenciaActual',
+        'ultimoValorDisponible',
+        'anioUltimoValorDisponible'
+      ],
+      where: {
+        activo: 'SI'
+      },
+      include: [
+        {
+          model: Modulo,
+          required: true,
+          attributes: ['id', 'temaIndicador', 'descripcion', 'color', 'codigo', 'activo'],
+        },
+        {
+          model: CatalogoDetail,
+          as: 'catalogos',
+          required: false,
+          include: Catalogo,
+          through: {
+            model: CatalogoDetailIndicador,
+            attributes: [],
+          },
+        },
+        {
+          model: Dimension,
+          as: 'objetivos',
+          required: true,
+          attributes: [
+            'id',
+            'titulo',
+            [sequelize.literal('"objetivos->more"."destacado"'), 'destacado']
+          ],
+          where: {
+            id: idObjetivo,
+          },
+          through: {
+            as: 'more',
+            model: IndicadorObjetivo,
+            attributes: [],
+            where: {
+              destacado
+            }
+          },
+        }
+      ],
+    });
+    return result;
+  } catch (err) {
+    throw err;
+  }
+}
+
+
+const countIndicadoresInDimension = async ({ filters, searchQuery }) => {
+  const { idObjetivo, destacado } = filters;
+  const count = await Indicador.count({
+    where: {
+      activo: 'SI',
+    },
+    include: [{
+      model: Dimension,
+      as: 'objetivos',
+      where: {
+        id: idObjetivo,
+        
+      },
+      through: {
+        as: 'more',
+        model: IndicadorObjetivo,
+        attributes: [],
+        where: {
+          destacado
+        }
+      },
+    }]
+  })
+  return count;
+}
+
 const getInactiveIndicadores = async () => {
   const indicadores = await Indicador.findAndCountAll({
     where: { activo: 'NO' },
@@ -63,7 +154,7 @@ const getDefinitionsForIndicadores = (pathway, queryParams) => {
 
 const defineAttributes = (pathway, matchedData) => {
   const attributes = ["id", "nombre", "ultimoValorDisponible", "activo",
-    "anioUltimoValorDisponible", "tendenciaActual", "fuente", "createdBy", "updatedAt", "periodicidad", "owner", "archive", "idDimension"];
+    "anioUltimoValorDisponible", "tendenciaActual", "fuente", "createdBy", "updatedAt", "periodicidad", "owner", "archive",];
 
   switch (pathway) {
     case FILE_PATH:
@@ -85,7 +176,6 @@ const defineAttributes = (pathway, matchedData) => {
         "createdBy",
         "updatedBy",
         "idModulo",
-        'idDimension',
         "createdAt",
         "updatedAt",)
       return attributes;
@@ -206,10 +296,10 @@ const advancedSearch = (matchedData) => {
   const { idDimensions, owner, modulos } = matchedData
   let filter = {}
 
-  if (idDimensions) {
-    const dimensionsArray = idDimensions ? idDimensions.split(',') : null;
-    filter.idDimension = dimensionsArray;
-  }
+  // if (idDimensions) {
+  //   const dimensionsArray = idDimensions ? idDimensions.split(',') : null;
+  //   filter.idDimension = dimensionsArray;
+  // }
 
   if (owner) {
     filter.owner = owner;
@@ -238,9 +328,9 @@ const filterIndicadorBy = (matchedData) => {
     filters.idModulo = idModulo;
   }
 
-  if (idDimension) {
-    filters.idDimension = idDimension;
-  }
+  // if (idDimension) {
+  //   filters.idDimension = idDimension;
+  // }
 
   return filters;
 };
@@ -366,15 +456,22 @@ const includeBasicModels = () => {
     },
     {
       model: Dimension,
+      as: 'objetivos',
       required: true,
-      attributes: ['id', 'titulo', 'descripcion', 'urlImagen'],
+      attributes: ['id', 'titulo'],
+      through: {
+        as: 'more',
+        model: IndicadorObjetivo,
+        attributes: ['destacado']
+      }
     },
     {
       model: CatalogoDetail,
-      required: false,
       as: 'catalogos',
-      attributes: ['id', 'nombre', 'idCatalogo'],
+      required: false,
+      include: Catalogo,
       through: {
+        model: CatalogoDetailIndicador,
         attributes: [],
       },
     },
@@ -480,5 +577,7 @@ module.exports = {
   updateIndicadorStatus,
   getInactiveIndicadores,
   getIdIndicadorRelatedTo,
+  findAllIndicadoresInDimension,
+  countIndicadoresInDimension,
   getRandomIndicador
 };

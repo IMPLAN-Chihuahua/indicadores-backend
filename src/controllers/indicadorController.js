@@ -5,6 +5,7 @@ const UsuarioService = require('../services/usuariosService');
 const { getPagination } = require('../utils/pagination');
 const { FILE_PATH, FRONT_PATH } = require('../middlewares/determinePathway');
 const { getImagePathLocation } = require('../utils/stringFormat');
+const { countIndicadoresByDimension } = require('./dimensionController');
 
 
 const getIndicador = async (req, res, next) => {
@@ -71,6 +72,33 @@ const getIndicadores = async (req, res, next) => {
   } catch (err) {
     next(err)
   }
+}
+
+
+const getIndicadoresOfObjetivo = async (req, res, next) => {
+  const { page, perPage, searchQuery, ...filters } = req.matchedData;
+  let indicadores = []
+  let total = 0;
+  const destacados = await IndicadorService.findAllIndicadoresInDimension({
+    page: 1,
+    perPage: 3,
+    filters: { destacado: true, idObjetivo: filters.idObjetivo }
+  });
+  const destacadosCount = await IndicadorService.countIndicadoresInDimension({ filters: { idObjetivo: filters.idObjetivo, destacado: true } })
+
+  const _perPage = perPage - destacados.length;
+  const _indicadores = await IndicadorService.findAllIndicadoresInDimension({ page, perPage: _perPage, filters: { ...filters, destacado: false }, searchQuery });
+  const indicadoresCount = await IndicadorService.countIndicadoresInDimension({ filters: { idObjetivo: filters.idObjetivo, destacado: false } })
+  
+  indicadores = [...destacados, ..._indicadores];
+  total = indicadoresCount + destacadosCount;
+  return res.status(200).json({
+    data: indicadores,
+    total: total,
+    page,
+    perPage,
+    totalPages: Math.ceil(total / perPage)
+  })
 }
 
 const getIndicadoresFromUser = async (req, res, next) => {
@@ -150,5 +178,6 @@ module.exports = {
   updateIndicador,
   updateIndicadorStatus,
   getUsersFromIndicador,
+  getIndicadoresOfObjetivo,
   getRandomIndicador
 };

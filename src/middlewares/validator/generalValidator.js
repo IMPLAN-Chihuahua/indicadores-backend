@@ -11,11 +11,13 @@ const paginationValidationRules = () => [
             }
             return true;
         }),
+    query('page').default(1),
+    query('perPage').default(25)
 ];
 
 const paramValidationRules = () => [
     param(['idModulo', 'idIndicador', 'idUser', 'idOds', 'idCobertura',
-        'idUnidadMedida', 'idCatalogo', 'idHistorico', 'idFormula', 'idRelacion', 'idDimension'])
+        'idUnidadMedida', 'idCatalogo', 'idHistorico', 'idFormula', 'idRelacion', 'idDimension', 'idObjetivo'])
         .optional()
         .isInt().withMessage('Field must be an integer number')
         .toInt()

@@ -5,7 +5,10 @@ const {
 module.exports = (sequelize, DataTypes) => {
     class Dimension extends Model {
         static associate(models) {
-            this.hasMany(models.Indicador, { foreignKey: 'idDimension' });
+            this.belongsToMany(models.Indicador, {
+                through: models.IndicadorObjetivo,
+                foreignKey: 'idObjetivo',
+            })
         }
     };
     Dimension.init(

@@ -1,4 +1,5 @@
-const { Dimension, Sequelize, Indicador, Modulo } = require('../models');
+const { QueryTypes } = require('sequelize');
+const { Dimension, Sequelize, Indicador, Modulo, IndicadorObjetivo, sequelize } = require('../models');
 
 const countIndicadoresByDimension = async (req, res, next) => {
     try {
@@ -54,37 +55,26 @@ const getDimension = async (req, res, next) => {
     }
 };
 
-const getModulosByDimension = async (req, res, next) => {
-    const { idDimension } = req.matchedData;
-    try {
-        const modulos = await Modulo.findAll({
-            include: [
-                {
-                    model: Indicador,
-                    include: [
-                        {
-                            model: Dimension,
-                            attributes: []
-                        }
-                    ],
-                    attributes: []
-                }
-            ],
-            attributes: ['id', 'temaIndicador'],
-            where: {
-                '$indicadores.idDimension$': idDimension
-            },
-        })
+const getTemasInObjetivo = async (req, res, next) => {
+    const { idObjetivo, page, perPage } = req.matchedData;
+    const temas = await sequelize.query(`
+            SELECT m."id", m."temaIndicador" FROM "Modulos" m
+            INNER JOIN "Indicadores" i on i."idModulo" = m."id"
+            INNER JOIN "IndicadorObjetivos" io on io."idIndicador" = i."id"
+            WHERE io."idObjetivo" = :idObjetivo
+            GROUP BY m."id", m."temaIndicador"`, {
+        replacements: {
+            idObjetivo
+        },
+        type: QueryTypes.SELECT
+    })
 
-        return res.status(200).json({ data: modulos });
-    } catch (err) {
-        next(err);
-    }
+    return res.status(200).json({ data: temas });
 }
 
 module.exports = {
     countIndicadoresByDimension,
     editDimension,
     getDimension,
-    getModulosByDimension
+    getTemasInObjetivo
 }

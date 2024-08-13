@@ -1,20 +1,22 @@
 const express = require('express');
 const { generalFilterOptions, paramValidationRules, paginationValidationRules, generalSortValidationRules, validate } = require('../middlewares/validator/generalValidator');
-const { countIndicadoresByDimension, editDimension, getDimension, getModulosByDimension } = require('../controllers/dimensionController');
+const { countIndicadoresByDimension, editDimension, getDimension, getTemasInObjetivo } = require('../controllers/dimensionController');
 const { verifyJWT, verifyUserIsActive, verifyUserHasRoles } = require('../middlewares/auth');
 const { uploadImage } = require('../middlewares/fileUpload');
 const { DESTINATIONS } = require('../services/fileService');
 const { updateDimensionValidationRules } = require('../middlewares/validator/dimensionValidator');
 const { exists } = require('../middlewares/resourceExists');
 
-const { getIndicadores } = require('../controllers/indicadorController');
+const { getIndicadores, getIndicadoresOfObjetivo } = require('../controllers/indicadorController');
 const {
     filterIndicadoresValidationRules,
     sortValidationRules,
 } = require('../middlewares/validator/indicadorValidator')
 const { determinePathway, SITE_PATH, determineModel } = require('../middlewares/determinePathway');
+const { default: PromiseRouter } = require('express-promise-router');
+const { param } = require('express-validator');
 
-const router = express.Router();
+const router = PromiseRouter();
 
 router.get('/info/general',
     determineModel,
@@ -23,10 +25,10 @@ router.get('/info/general',
     paginationValidationRules(),
     generalSortValidationRules(),
     validate,
-    countIndicadoresByDimension
+    
 );
 
-router.route('/indicadores')
+router.route('/:idObjetivo/indicadores')
     .get(
         paginationValidationRules(),
         paramValidationRules(),
@@ -34,13 +36,13 @@ router.route('/indicadores')
         filterIndicadoresValidationRules(),
         validate,
         determinePathway(SITE_PATH),
-        getIndicadores
+        getIndicadoresOfObjetivo
     );
 
-router.get('/:idDimension/modulos',
+router.get('/:idObjetivo/temas',
     paramValidationRules(),
     validate,
-    getModulosByDimension
+    getTemasInObjetivo
 );
 
 router.patch('/:idDimension',
