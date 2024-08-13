@@ -7,7 +7,7 @@ const { DESTINATIONS } = require('../services/fileService');
 const { updateDimensionValidationRules } = require('../middlewares/validator/dimensionValidator');
 const { exists } = require('../middlewares/resourceExists');
 
-const { getIndicadores } = require('../controllers/indicadorController');
+const { getIndicadores, getIndicadoresOfObjetivo } = require('../controllers/indicadorController');
 const {
     filterIndicadoresValidationRules,
     sortValidationRules,
@@ -25,10 +25,10 @@ router.get('/info/general',
     paginationValidationRules(),
     generalSortValidationRules(),
     validate,
-    countIndicadoresByDimension
+    
 );
 
-router.route('/indicadores')
+router.route('/:idObjetivo/indicadores')
     .get(
         paginationValidationRules(),
         paramValidationRules(),
@@ -36,7 +36,7 @@ router.route('/indicadores')
         filterIndicadoresValidationRules(),
         validate,
         determinePathway(SITE_PATH),
-        getIndicadores
+        getIndicadoresOfObjetivo
     );
 
 router.get('/:idObjetivo/temas',
