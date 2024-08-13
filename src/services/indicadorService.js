@@ -42,6 +42,94 @@ const getIndicadores = async (page, perPage, matchedData, pathway) => {
   }
 };
 
+const findAllIndicadoresInDimension = async ({ page, perPage, searchQuery, filters }) => {
+  const { idObjetivo, destacado = false, offset } = filters;
+  try {
+    const result = await Indicador.findAll({
+      limit: perPage,
+      offset: offset || (page - 1) * perPage,
+      attributes: [
+        'id',
+        'nombre',
+        'tendenciaActual',
+        'ultimoValorDisponible',
+        'anioUltimoValorDisponible'
+      ],
+      where: {
+        activo: 'SI'
+      },
+      include: [
+        {
+          model: Modulo,
+          required: true,
+          attributes: ['id', 'temaIndicador', 'descripcion', 'color', 'codigo', 'activo'],
+        },
+        {
+          model: CatalogoDetail,
+          as: 'catalogos',
+          required: false,
+          include: Catalogo,
+          through: {
+            model: CatalogoDetailIndicador,
+            attributes: [],
+          },
+        },
+        {
+          model: Dimension,
+          as: 'objetivos',
+          required: true,
+          attributes: [
+            'id',
+            'titulo',
+            [sequelize.literal('"objetivos->more"."destacado"'), 'destacado']
+          ],
+          where: {
+            id: idObjetivo,
+          },
+          through: {
+            as: 'more',
+            model: IndicadorObjetivo,
+            attributes: [],
+            where: {
+              destacado
+            }
+          },
+        }
+      ],
+    });
+    return result;
+  } catch (err) {
+    throw err;
+  }
+}
+
+
+const countIndicadoresInDimension = async ({ filters, searchQuery }) => {
+  const { idObjetivo, destacado } = filters;
+  const count = await Indicador.count({
+    where: {
+      activo: 'SI',
+    },
+    include: [{
+      model: Dimension,
+      as: 'objetivos',
+      where: {
+        id: idObjetivo,
+        
+      },
+      through: {
+        as: 'more',
+        model: IndicadorObjetivo,
+        attributes: [],
+        where: {
+          destacado
+        }
+      },
+    }]
+  })
+  return count;
+}
+
 const getInactiveIndicadores = async () => {
   const indicadores = await Indicador.findAndCountAll({
     where: { activo: 'NO' },
@@ -306,7 +394,7 @@ const getIndicadorStatus = async (id) => {
 
 const updateIndicador = async (id, indicador) => {
   const { catalogos, ...values } = indicador;
-  
+
   try {
     sequelize.transaction(async _t => {
       if (catalogos) {
@@ -463,4 +551,6 @@ module.exports = {
   updateIndicadorStatus,
   getInactiveIndicadores,
   getIdIndicadorRelatedTo,
+  findAllIndicadoresInDimension,
+  countIndicadoresInDimension
 };
