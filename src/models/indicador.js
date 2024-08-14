@@ -97,9 +97,9 @@ module.exports = (sequelize, DataTypes) => {
             },
 
             activo: {
-                type: DataTypes.STRING,
+                type: DataTypes.BOOLEAN,
                 allowNull: false,
-                defaultValue: 'SI'
+                defaultValue: true
             },
 
             fuente: {
