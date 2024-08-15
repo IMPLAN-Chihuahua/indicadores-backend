@@ -174,7 +174,7 @@ describe('v1/indicadores', function () {
 		const SUB_ID = 1;
 		const validToken = generateToken({ sub: SUB_ID });
 		const validIndicador = indicadorToCreate();
-		const statusActive = { activo: 'SI' };
+		const statusActive = { activo: true };
 		const adminRol = { rolValue: 'ADMIN' };
 		const userRol = { rolValue: 'USER' };
 
