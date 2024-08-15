@@ -21,7 +21,7 @@ const getIndicador = async (req, res, next) => {
     if (pathway === FILE_PATH) {
       return generateFile(format, res, indicador).catch(err => next(err));
     }
-    
+
     return (res.status(200).json({ data: indicador, navigation: { prev: indicador.prev, next: indicador.next } }));
   } catch (err) {
     next(err)
@@ -91,7 +91,7 @@ const getIndicadoresOfObjetivo = async (req, res, next) => {
   const _perPage = perPage - destacados.length;
   const _indicadores = await IndicadorService.findAllIndicadoresInDimension({ page, perPage: _perPage, filters: { ...filters, destacado: false }, searchQuery });
   const indicadoresCount = await IndicadorService.countIndicadoresInDimension({ filters: { idObjetivo: filters.idObjetivo, destacado: false } })
-  
+
   indicadores = [...destacados, ..._indicadores];
   total = indicadoresCount + destacadosCount;
   return res.status(200).json({
@@ -139,15 +139,8 @@ const updateIndicador = async (req, res, next) => {
 
 const updateIndicadorStatus = async (req, res, next) => {
   const { idIndicador } = req.matchedData;
-  try {
-    const updatedIndicador = await IndicadorService.updateIndicadorStatus(idIndicador);
-    if (updatedIndicador) {
-      return res.sendStatus(204);
-    }
-    return res.sendStatus(400);
-  } catch (err) {
-    next(err)
-  }
+  await IndicadorService.updateIndicadorStatus(idIndicador);
+  return res.sendStatus(204);
 };
 
 

@@ -1,15 +1,10 @@
 const express = require('express');
-
-const moduloRouter = express.Router();
-const indicadorRouter = express.Router({ mergeParams: true });
 const { getModulos, createModulo, editModulo, updateModuloStatus, getModulo } = require('../controllers/moduloController');
 const { getIndicadores, getRandomIndicador } = require('../controllers/indicadorController');
-
 const {
     filterIndicadoresValidationRules,
     sortValidationRules,
 } = require('../middlewares/validator/indicadorValidator')
-
 const {
     paginationValidationRules,
     paramValidationRules,
@@ -17,7 +12,6 @@ const {
     generalFilterOptions,
     generalSortValidationRules,
 } = require('../middlewares/validator/generalValidator')
-
 const {
     createModuloValidationRules,
     updateModuloValidationRules,
@@ -28,6 +22,10 @@ const { determinePathway, SITE_PATH, determineModel } = require('../middlewares/
 const { exists } = require('../middlewares/resourceExists');
 const { DESTINATIONS } = require('../services/fileService');
 const { getInformation } = require('../controllers/generalController');
+
+
+const moduloRouter = express.Router();
+const indicadorRouter = express.Router({ mergeParams: true });
 
 /**
  * @swagger
@@ -196,7 +194,7 @@ moduloRouter.route('/')
  *           $ref: '#/components/responses/InternalServerError'
  *
  */
-
+// TODO: Validate tema is active
 indicadorRouter.route('/')
     .get(
         paramValidationRules(),

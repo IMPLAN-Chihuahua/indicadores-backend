@@ -379,9 +379,8 @@ const assignIndicadorToUsuario = (idIndicador, idUsuario) => {
 
 const updateIndicadorStatus = async (id) => {
   try {
-    const isActivo = toggleStatus(await getIndicadorStatus(id));
-    const affectedRows = await Indicador.update({ activo: isActivo }, { where: { id } });
-    return affectedRows > 0;
+    const prevActivo = await getIndicadorStatus(id);
+    await Indicador.update({ activo: !prevActivo }, { where: { id } });
   } catch (err) {
     throw new Error(`Error al actualizar indicador: ${err.message}`);
   }
