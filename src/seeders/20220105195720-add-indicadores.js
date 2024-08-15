@@ -19,7 +19,7 @@ module.exports = {
         anioUltimoValorDisponible: randomYear(),
         createdBy: 1,
         updatedBy: 1,
-        activo: 'SI',
+        activo: true,
         fuente: faker.random.word(5),
         periodicidad: faker.datatype.number(15),
         owner: 1,

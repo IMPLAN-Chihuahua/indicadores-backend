@@ -40,7 +40,7 @@ const getIndicadorWithTema = () => {
     const temaInteres = aModulo(1);
     temaInteres.activo = 'SI';
     const indicador = anIndicador(1, temaInteres)
-    indicador.activo = 'SI'
+    indicador.activo = true
     return indicador;
 }
 
@@ -48,7 +48,7 @@ const getInactiveIndicadorWithTema = () => {
     const temaInteres = aModulo(1);
     temaInteres.activo = 'SI';
     const indicador = anIndicador(1, temaInteres)
-    indicador.activo = 'NO'
+    indicador.activo = false
     return indicador;
 }
 
@@ -56,7 +56,7 @@ const getIndicadorWithInactiveTema = () => {
     const temaInteres = aModulo(1)
     temaInteres.activo = 'NO'
     const indicador = anIndicador(1, { temaInteres })
-    indicador.activo = 'SI'
+    indicador.activo = true
     return indicador;
 }
 

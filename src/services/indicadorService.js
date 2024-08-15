@@ -56,7 +56,7 @@ const findAllIndicadoresInDimension = async ({ page, perPage, searchQuery, filte
         'anioUltimoValorDisponible'
       ],
       where: {
-        activo: 'SI'
+        activo: true
       },
       include: [
         {
@@ -108,7 +108,7 @@ const countIndicadoresInDimension = async ({ filters, searchQuery }) => {
   const { idObjetivo, destacado } = filters;
   const count = await Indicador.count({
     where: {
-      activo: 'SI',
+      activo: true,
     },
     include: [{
       model: Dimension,
@@ -132,7 +132,7 @@ const countIndicadoresInDimension = async ({ filters, searchQuery }) => {
 
 const getInactiveIndicadores = async () => {
   const indicadores = await Indicador.findAndCountAll({
-    where: { activo: 'NO' },
+    where: { activo: false },
     attributes: ["id", "nombre"],
     raw: true
   });
@@ -316,7 +316,7 @@ const advancedSearch = (matchedData) => {
 
 const filterIndicadorBy = (matchedData) => {
   const { anioUltimoValorDisponible, tendenciaActual, idModulo, idDimension } = matchedData;
-  const filters = { activo: 'SI' };
+  const filters = { activo: true };
   if (anioUltimoValorDisponible) {
     filters.anioUltimoValorDisponible = anioUltimoValorDisponible;
   }
@@ -545,7 +545,7 @@ const getIdIndicadorRelatedTo = async (model, id) => {
 
 const getRandomIndicador = async (idTema) => {
   const indicadores = await Indicador.findAll({
-    where: { idModulo: idTema, activo: 'SI' },
+    where: { idModulo: idTema, activo: true },
     attributes: ["id"],
     raw: true
   });
