@@ -36,10 +36,9 @@ const anIndicador = (id, options) => {
 		updatedAt: new Date(),
 		createdAt: new Date(),
 		modulo: temaInteres,
-		dimension: null,
 		catalogos: [],
 	}, {
-		include: [Modulo, Dimension, { model: CatalogoDetail, as: 'catalogos' }]
+		include: [Modulo, { model: Dimension, as: 'objetivos' }, { model: CatalogoDetail, as: 'catalogos' }]
 	})
 	indicador.validate()
 	return indicador;
