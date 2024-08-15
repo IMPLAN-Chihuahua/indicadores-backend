@@ -121,7 +121,6 @@ const updateIndicadorValidationRules = () => [
         .isLength({ max: 3 })
         .matches(/\d{3}$/),
     body([
-        'activo',
         'definicion',
         'fuente',
         'nombre',
@@ -133,6 +132,12 @@ const updateIndicadorValidationRules = () => [
     ])
         .optional()
         .trim(),
+    body([
+        'activo',
+    ])
+        .optional()
+        .isBoolean()
+        .toBoolean(),
     body('tendenciaActual')
         .optional()
         .toUpperCase()
