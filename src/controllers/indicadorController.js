@@ -13,13 +13,15 @@ const getIndicador = async (req, res, next) => {
   const { idIndicador, format } = req.matchedData;
   try {
     const indicador = await IndicadorService.getIndicador(idIndicador, pathway);
-    const hasConflict = indicador.activo === 'NO' || indicador?.modulo.activo === 'NO';
-    if (hasConflict && pathway !== FRONT_PATH) {
+
+    if (!indicador.activo && pathway !== FRONT_PATH) {
       return res.status(409).json({ status: 409, message: `El indicador ${indicador.nombre} se encuentra inactivo` });
     }
+
     if (pathway === FILE_PATH) {
       return generateFile(format, res, indicador).catch(err => next(err));
     }
+    
     return (res.status(200).json({ data: indicador, navigation: { prev: indicador.prev, next: indicador.next } }));
   } catch (err) {
     next(err)
