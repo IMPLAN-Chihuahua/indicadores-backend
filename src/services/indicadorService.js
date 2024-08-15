@@ -115,7 +115,7 @@ const countIndicadoresInDimension = async ({ filters, searchQuery }) => {
       as: 'objetivos',
       where: {
         id: idObjetivo,
-        
+
       },
       through: {
         as: 'more',
@@ -557,6 +557,7 @@ const getRandomIndicador = async (idTema) => {
     include: [
       {
         model: Dimension,
+        as: "objetivos",
         attributes: ["titulo"]
       },
       {

@@ -3,23 +3,35 @@ const { Dimension, Sequelize, Indicador, Modulo, IndicadorObjetivo, sequelize } 
 
 const countIndicadoresByDimension = async (req, res, next) => {
     try {
-        const result = await Dimension.findAll({
-            attributes: [
-                'id',
-                'titulo',
-                'descripcion',
-                'urlImagen',
-                'color',
-                [Sequelize.fn('COUNT', Sequelize.col('indicadores.id')), 'indicadoresCount']
-            ],
+
+        const result = await IndicadorObjetivo.findAll({
+            attributes: [[Sequelize.fn('COUNT', Sequelize.col('idIndicador')), 'indicadoresCount']],
             include: [{
-                model: Indicador,
-                attributes: []
+                model: Dimension,
+                attributes: ['id', 'titulo', 'descripcion', 'urlImagen', 'color'],
             }],
-            group: ['Dimension.id'],
-            order: [['id']],
-            raw: true
-        });
+            group: ['idObjetivo', 'dimension.id'],
+            order: [['idObjetivo']],
+        })
+
+
+        // const result = await Dimension.findAll({
+        //     attributes: [
+        //         'id',
+        //         'titulo',
+        //         'descripcion',
+        //         'urlImagen',
+        //         'color',
+        //         [Sequelize.fn('COUNT', Sequelize.col('indicadores.id')), 'indicadoresCount']
+        //     ],
+        //     include: [{
+        //         model: Indicador,
+        //         attributes: []
+        //     }],
+        //     group: ['Dimension.id'],
+        //     order: [['id']],
+        //     raw: true
+        // });
 
         return res.status(200).json({
             data: result
