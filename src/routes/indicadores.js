@@ -90,9 +90,8 @@ const router = promisedRouter()
  *             type: string
  *             description: Observations, comments or remarks.
  *           activo:
- *             type: string
+ *             type: boolean
  *             description: Is indicador active?
- *             enum: [SI, NO]
  *           fuente:
  *             type: string
  *             description: Where does the information come from?
@@ -164,7 +163,7 @@ const router = promisedRouter()
  *             example: 1
  *           activo:
  *             type: string
- *             description: Is this relation active?
+ *             description: Is Usuario still assigned to an indicador?
  *             example: 'SI'
  *           expires:
  *             type: string
