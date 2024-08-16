@@ -106,7 +106,7 @@ const aUser = (id) => ({
 });
 
 const aTema = (id) => {
-	const Tema = Tema.build({
+	const tema = Tema.build({
 		id,
 		codigo: aCodigo(),
 		temaIndicador: faker.company.bsNoun(),
@@ -116,8 +116,8 @@ const aTema = (id) => {
 		color: '#ffffff',
 		descripcion: faker.lorem.paragraph(),
 	});
-	Tema.validate();
-	return Tema;
+	tema.validate();
+	return tema;
 }
 
 const aRol = (id) => ({

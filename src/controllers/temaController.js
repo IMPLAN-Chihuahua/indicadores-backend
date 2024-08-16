@@ -82,15 +82,17 @@ const editUserStatus = async (req, res, next) => {
 
 const getTema = async (req, res, next) => {
   const { idTema } = req.matchedData;
+
   try {
-    const Tema = await Tema.findByPk(idTema);
-    if (Tema === null) {
+    const tema = await Tema.findByPk(idTema);
+
+    if (tema === null) {
       return res.sendStatus(404);
     }
-    if (Tema.activo === 'NO') {
-      return res.status(409).json({ status: 409, message: `El tema ${Tema.temaIndicador} se encuentra inactivo` });
+    if (tema.activo === 'NO') {
+      return res.status(409).json({ status: 409, message: `El tema ${tema.temaIndicador} se encuentra inactivo` });
     }
-    return res.status(200).json({ data: { ...Tema.dataValues } });
+    return res.status(200).json({ data: { ...tema.dataValues } });
   } catch (err) {
     next(err);
   }

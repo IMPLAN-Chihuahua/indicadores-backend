@@ -123,12 +123,12 @@ const getAllTemasFilters = (matchedData) => {
 
 const updateTemaStatus = async (id) => {
     try {
-        const Tema = await Tema.findOne({
+        const tema = await Tema.findOne({
             where: { id },
             attributes: ['activo'],
         });
-        const nuevoEstado = Tema.activo === 'SI' ? 'NO' : 'SI';
-        const updatedTema = await Tema.update(
+        const nuevoEstado = tema.activo === 'SI' ? 'NO' : 'SI';
+        const updatedTema = await tema.update(
             { activo: nuevoEstado },
             { where: { id } }
         );
