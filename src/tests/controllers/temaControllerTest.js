@@ -192,7 +192,6 @@ describe('/temas', function () {
         .get('/api/v1/temas/notvalid/indicadores')
         .end(function (err, res) {
           expect(res).to.have.status(422);
-          console.log(res.body)
           done();
         })
     });
