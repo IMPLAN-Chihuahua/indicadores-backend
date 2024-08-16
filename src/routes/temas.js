@@ -1,8 +1,8 @@
 const express = require('express');
 
-const moduloRouter = express.Router();
+const temaRouter = express.Router();
 const indicadorRouter = express.Router({ mergeParams: true });
-const { getModulos, createModulo, editModulo, updateModuloStatus, getModulo } = require('../controllers/moduloController');
+const { getTemas, createTema, editTema, updateTemaStatus, getTema } = require('../controllers/temaController');
 const { getIndicadores, getRandomIndicador } = require('../controllers/indicadorController');
 
 const {
@@ -19,9 +19,9 @@ const {
 } = require('../middlewares/validator/generalValidator')
 
 const {
-    createModuloValidationRules,
-    updateModuloValidationRules,
-} = require('../middlewares/validator/moduloValidator')
+    createTemaValidationRules,
+    updateTemaValidationRules,
+} = require('../middlewares/validator/temaValidator')
 const { verifyJWT, verifyUserIsActive, verifyUserHasRoles } = require('../middlewares/auth');
 const { uploadImage } = require('../middlewares/fileUpload');
 const { determinePathway, SITE_PATH, determineModel } = require('../middlewares/determinePathway');
@@ -33,7 +33,7 @@ const { getInformation } = require('../controllers/generalController');
  * @swagger
  *   components:
  *     schemas:
- *       Modulo:
+ *       Tema:
  *         type: object
  *         properties:
  *           id:
@@ -52,7 +52,7 @@ const { getInformation } = require('../controllers/generalController');
  *           observaciones:
  *             type: string
  *             description: Observations, comments or remarks.
- *             example: Modulo de accesibilidad ciclista, definido por la norma ISO/IEC 9126-1:2015
+ *             example: Tema de accesibilidad ciclista, definido por la norma ISO/IEC 9126-1:2015
  *           activo:
  *             $ref: '#/components/schemas/Status'
  *           urlImagen:
@@ -70,19 +70,19 @@ const { getInformation } = require('../controllers/generalController');
  *             format: date-time
  *             readOnly: true
  */
-moduloRouter.use('/:idModulo/indicadores', indicadorRouter);
+temaRouter.use('/:idTema/indicadores', indicadorRouter);
 
 
 /**
  * @swagger
- *   /modulos:
+ *   /temas:
  *     get:
  *       summary: Retrieves a list of modules
  *       description: Retrieves a list of modules from the database
- *       tags: [Modulos]
+ *       tags: [Temas]
  *       responses:
  *         200:
- *           description: List of topics (modulos).
+ *           description: List of topics (temas).
  *           content:
  *             application/json:
  *               schema:
@@ -91,26 +91,26 @@ moduloRouter.use('/:idModulo/indicadores', indicadorRouter);
  *                   data:
  *                     type: array
  *                     items:
- *                       $ref: '#/components/schemas/Modulo'
+ *                       $ref: '#/components/schemas/Tema'
  *                     description: List of modules
  *         429:
  *           $ref: '#/components/responses/TooManyRequests'
  *         500:
  *           $ref: '#/components/responses/InternalServerError'
  */
-moduloRouter.route('/')
-    .get(getModulos);
+temaRouter.route('/')
+    .get(getTemas);
 
 
 /**
  * @swagger
- *   /modulos/{idModulo}/indicadores:
+ *   /temas/{idTema}/indicadores:
  *     get:
  *       summary: Retrieves a list of indicadores after validation
  *       description: Retrieves a list of indicadores from the database after pagination validation
- *       tags: [Modulos]
+ *       tags: [Temas]
  *       parameters:
- *         - name: idModulo
+ *         - name: idTema
  *           in: path
  *           required: true
  *           schema:
@@ -204,7 +204,7 @@ indicadorRouter.route('/')
         filterIndicadoresValidationRules(),
         sortValidationRules(),
         validate,
-        exists('idModulo', 'Modulo'),
+        exists('idTema', 'Tema'),
         determinePathway(SITE_PATH),
         getIndicadores
     );
@@ -212,25 +212,25 @@ indicadorRouter.route('/')
 
 /**
  * @swagger
- * /modulos:
+ * /temas:
  *   post:
  *     summary: Creates a new module
- *     tags: [Modulos]
+ *     tags: [Temas]
  *     security:
  *       - bearer: []
  *     requestBody:
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Modulo'
+ *             $ref: '#/components/schemas/Tema'
  *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/Modulo'
+ *             $ref: '#/components/schemas/Tema'
  *     responses:
  *       201:
  *         description: Module created successfully.
  *       409:
- *         description: Unable to create new modulo (temaIndicador is already in use).
+ *         description: Unable to create new Tema (temaIndicador is already in use).
  *         content:
  *           application/json:
  *             schema:
@@ -250,26 +250,26 @@ indicadorRouter.route('/')
  *         $ref: '#components/responses/InternalServerError'
  */
 
-moduloRouter.route('/')
+temaRouter.route('/')
     .post(
         verifyJWT,
         verifyUserIsActive,
         verifyUserHasRoles(['ADMIN']),
-        uploadImage(DESTINATIONS.MODULOS),
-        createModuloValidationRules(),
+        uploadImage(DESTINATIONS.TEMASS),
+        createTemaValidationRules(),
         validate,
-        createModulo
+        createTema
     );
 
 
 /**
  * @swagger
- *   /modulos/{idModulo}:
+ *   /temas/{idTema}:
  *     put:
  *      summary: Updates a module with given parameters
- *      tags: [Modulos]
+ *      tags: [Temas]
  *      parameters:
- *        - name: idModulo
+ *        - name: idTema
  *          in: path
  *          required: true
  *          schema:
@@ -283,7 +283,7 @@ moduloRouter.route('/')
  *        content:
  *          application/json:
  *            schema:
- *              $ref: '#/components/schemas/Modulo'
+ *              $ref: '#/components/schemas/Tema'
  *      responses:
  *        204:
  *          description: Module updated successfully
@@ -300,30 +300,30 @@ moduloRouter.route('/')
  *
  */
 
-moduloRouter.route('/:idModulo')
+temaRouter.route('/:idTema')
     .put(
         verifyJWT,
         verifyUserIsActive,
         verifyUserHasRoles(['ADMIN']),
-        uploadImage(DESTINATIONS.MODULOS),
-        updateModuloValidationRules(),
+        uploadImage(DESTINATIONS.TEMASS),
+        updateTemaValidationRules(),
         validate,
-        exists('idModulo', 'Modulo'),
-        editModulo
+        exists('idTema', 'Tema'),
+        editTema
     );
 
 
 /**
  * @swagger
- *   /modulos/{idModulo}/toggle-status:
+ *   /temas/{idTema}/toggle-status:
  *     post:
  *       summary: Toggles the status of a tema (active/inactive)
  *       description: Update tema status, if it is active it will change to inactive.
- *       tags: [Modulos]
+ *       tags: [Temas]
  *       security:
  *         - bearer: []
  *       parameters:
- *         - name: idModulo
+ *         - name: idTema
  *           in: path
  *           required: true
  *           schema:
@@ -346,35 +346,35 @@ moduloRouter.route('/:idModulo')
  *           $ref: '#components/responses/InternalServerError'
  */
 
-moduloRouter.route('/:idModulo/toggle-status')
+temaRouter.route('/:idTema/toggle-status')
     .post(
         verifyJWT,
         verifyUserIsActive,
         verifyUserHasRoles(['ADMIN']),
         paramValidationRules(),
         validate,
-        updateModuloStatus
+        updateTemaStatus
     );
 
 
 /**
  * @swagger
- *   /modulos/{idModulo}:
+ *   /temas/{idTema}:
  *     get:
- *       summary: Retrieves information about a tema (modulo)
- *       tags: [Modulos]
+ *       summary: Retrieves information about a tema (Tema)
+ *       tags: [Temas]
  *       parameters:
- *         - name: idModulo
+ *         - name: idTema
  *           in: path
  *           required: true
  *           schema:
  *             type: integer
  *             format: int64
  *             minimum: 1
- *             description: Identifier of a modulo
+ *             description: Identifier of a Tema
  *       responses:
  *         200:
- *           description: A modulo object with public fields
+ *           description: A Tema object with public fields
  *         404:
  *           $ref: '#components/responses/NotFound'
  *         422:
@@ -384,20 +384,20 @@ moduloRouter.route('/:idModulo/toggle-status')
  *         500:
  *           $ref: '#components/responses/InternalServerError'
  */
-moduloRouter.route('/:idModulo')
+temaRouter.route('/:idTema')
     .get(
         paramValidationRules(),
         validate,
-        getModulo
+        getTema
     );
 
 
 /**
  * @swagger
- *   /modulos/info/general:
+ *   /temas/info/general:
  *     get:
- *       summary: Retrieve general information about Modulos.
- *       tags: [Modulos]
+ *       summary: Retrieve general information about Temas.
+ *       tags: [Temas]
  *       parameters:
  *         - in: query
  *           name: page
@@ -428,11 +428,11 @@ moduloRouter.route('/:idModulo')
  *         - bearer: []
  *       responses:
  *         200:
- *           description: General information about Modulos.
+ *           description: General information about Temas.
  *           content:
  *             application/json:
  *               schema:
- *                 $ref: '#/components/schemas/Modulo'
+ *                 $ref: '#/components/schemas/Tema'
  *         401:
  *           $ref: '#/components/responses/Unauthorized'
  *         403:
@@ -446,7 +446,7 @@ moduloRouter.route('/:idModulo')
  *         500:
  *           $ref: '#components/responses/InternalServerError'
  */
-moduloRouter
+temaRouter
     .route('/info/general')
     .get(
         verifyJWT,
@@ -462,7 +462,7 @@ moduloRouter
     )
 
 
-moduloRouter.route('/:idModulo/randomIndicador')
+temaRouter.route('/:idTema/randomIndicador')
     .get(
         paramValidationRules(),
         validate,
@@ -471,4 +471,4 @@ moduloRouter.route('/:idModulo/randomIndicador')
     )
 
 
-module.exports = moduloRouter;
+module.exports = temaRouter;

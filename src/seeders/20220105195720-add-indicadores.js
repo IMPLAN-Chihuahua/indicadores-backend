@@ -24,7 +24,7 @@ module.exports = {
         periodicidad: faker.datatype.number(15),
         owner: 1,
         archive: false,
-        idModulo: 1,
+        idTema: 1,
         idDimension: 1,
         createdAt: date,
         updatedAt: date,

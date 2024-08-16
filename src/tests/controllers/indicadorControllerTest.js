@@ -12,7 +12,7 @@ chai.use(chaiHttp);
 const { expect } = chai;
 const { Indicador, Usuario, Mapa,
 	UsuarioIndicador, Formula } = require('../../models');
-const { anIndicador, aModulo, indicadorToCreate, aFormula,
+const { anIndicador, aTema, indicadorToCreate, aFormula,
 	aVariable, anHistorico, aMapa } = require('../../utils/factories');
 const { app, server } = require('../../../app');
 const { generateToken } = require('../../middlewares/auth');
@@ -268,7 +268,7 @@ describe('v1/indicadores', function () {
 
 				it('Should fail to create an indicador with formula and variables', function (done) {
 					const dto = getIndicadorDTO();
-					
+
 					for (const pair of dto.entries()) {
 						console.log(pair[0] + ', ' + pair[1]);
 					}

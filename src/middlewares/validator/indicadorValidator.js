@@ -23,7 +23,7 @@ const filterIndicadoresValidationRules = () => [
         .optional()
         .isString(),
 
-    query('modulos')
+    query('temas')
         .optional()
         .isString(),
 
@@ -60,7 +60,7 @@ const createIndicadorValidationRules = () => [
         .isInt({ min: 1 })
         .toInt(),
 
-    body('idModulo')
+    body('idTema')
         .exists()
         .isInt().toInt(),
 
@@ -141,7 +141,7 @@ const updateIndicadorValidationRules = () => [
         'idOds',
         'idCobertura',
         'idUnidadMedida',
-        'idModulo',
+        'idTema',
         'idDimension',
         'anioUltimoValorDisponible'
     ])

@@ -29,7 +29,7 @@ const createRelationUI = async (req, res, next) => {
                     createdBy,
                     expires
                 });
-        } else if (relationType === 'modulos') {
+        } else if (relationType === 'temas') {
             const indicadores = await UsuarioIndicadorService.createRelationWithModules(id);
             const indicadoresId = indicadores.map(indicador => indicador.id);
             await UsuarioIndicadorService.createRelation(

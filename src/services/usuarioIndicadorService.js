@@ -174,11 +174,11 @@ const getAllRelationsFilters = (matchedData) => {
   return {};
 };
 
-const createRelationWithModules = async (idModulo) => {
+const createRelationWithModules = async (idTema) => {
   try {
     const indicadoresID = await Indicador.findAll({
       where: {
-        idModulo
+        idTema
       },
       attributes: ['id']
     });

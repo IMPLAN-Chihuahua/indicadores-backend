@@ -13,7 +13,7 @@ const getIndicador = async (req, res, next) => {
   const { idIndicador, format } = req.matchedData;
   try {
     const indicador = await IndicadorService.getIndicador(idIndicador, pathway);
-    const hasConflict = indicador.activo === 'NO' || indicador?.modulo.activo === 'NO';
+    const hasConflict = indicador.activo === 'NO' || indicador?.Tema.activo === 'NO';
     if (hasConflict && pathway !== FRONT_PATH) {
       return res.status(409).json({ status: 409, message: `El indicador ${indicador.nombre} se encuentra inactivo` });
     }
@@ -89,7 +89,7 @@ const getIndicadoresOfObjetivo = async (req, res, next) => {
   const _perPage = perPage - destacados.length;
   const _indicadores = await IndicadorService.findAllIndicadoresInDimension({ page, perPage: _perPage, filters: { ...filters, destacado: false }, searchQuery });
   const indicadoresCount = await IndicadorService.countIndicadoresInDimension({ filters: { idObjetivo: filters.idObjetivo, destacado: false } })
-  
+
   indicadores = [...destacados, ..._indicadores];
   total = indicadoresCount + destacadosCount;
   return res.status(200).json({
@@ -160,9 +160,9 @@ const getUsersFromIndicador = async (req, res, next) => {
 };
 
 const getRandomIndicador = async (req, res, next) => {
-  const { idModulo } = req.params;
+  const { idTema } = req.params;
   try {
-    const indicador = await IndicadorService.getRandomIndicador(idModulo);
+    const indicador = await IndicadorService.getRandomIndicador(idTema);
     return res.status(200).json({ data: indicador });
   } catch (err) {
     next(err);

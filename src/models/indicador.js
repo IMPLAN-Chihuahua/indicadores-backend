@@ -5,7 +5,7 @@ const {
 module.exports = (sequelize, DataTypes) => {
     class Indicador extends Model {
         static associate(models) {
-            this.belongsTo(models.Modulo, { foreignKey: 'idModulo' });
+            this.belongsTo(models.Tema, { foreignKey: 'idTema' });
             this.belongsToMany(models.Usuario, { through: models.UsuarioIndicador, foreignKey: 'idIndicador' });
             this.belongsToMany(models.CatalogoDetail, {
                 through: models.CatalogoDetailIndicador,
@@ -126,11 +126,11 @@ module.exports = (sequelize, DataTypes) => {
                 defaultValue: false
             },
 
-            idModulo: {
+            idTema: {
                 type: DataTypes.INTEGER,
                 allowNull: true,
                 references: {
-                    model: 'Modulos',
+                    model: 'Temas',
                     key: 'id'
                 },
             },

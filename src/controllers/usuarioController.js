@@ -145,11 +145,11 @@ const setIndicadoresToUsuario = async (req, res, next) => {
 const getUserStats = async (req, res, next) => {
   const { idUser } = req.params;
   try {
-    const { indicadores, indicadoresAsignados, modulos, modulosInactivos, usuarios, usuariosInactivos } = await getUserStatsInfo(idUser);
+    const { indicadores, indicadoresAsignados, temas, temasInactivos, usuarios, usuariosInactivos } = await getUserStatsInfo(idUser);
 
     return res.status(200).json({
       indicadoresCount: [{ indicadores, indicadoresAsignados }],
-      modulosCount: [{ modulos, modulosInactivos }],
+      temasCount: [{ temas, temasInactivos }],
       usuarios: [{ usuarios, usuariosInactivos }]
     });
   } catch (err) {

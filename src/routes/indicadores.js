@@ -107,9 +107,9 @@ const router = promisedRouter()
  *             type: integer
  *             description: Identifier of the user who updated this indicador.
  *             example: 1
- *           idModulo:
+ *           idTema:
  *             type: integer
- *             description: Modulo (topic) related to the indicador.
+ *             description: Tema (topic) related to the indicador.
  *             writeOnly: true
  *             example: 1
  *       Historico:

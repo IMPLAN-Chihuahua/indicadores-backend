@@ -37,7 +37,7 @@ const relationTypeValidationRules = () => [
 
     query('relationType')
         .optional()
-        .isIn(['usuarios', 'indicadores', 'modulos'])
+        .isIn(['usuarios', 'indicadores', 'temas'])
         .withMessage('relationType must be usuarios or indicadores')
 ]
 

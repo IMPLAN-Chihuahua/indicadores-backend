@@ -1,5 +1,5 @@
 const { QueryTypes } = require('sequelize');
-const { Dimension, Sequelize, Indicador, Modulo, IndicadorObjetivo, sequelize } = require('../models');
+const { Dimension, Sequelize, Indicador, Tema, IndicadorObjetivo, sequelize } = require('../models');
 
 const countIndicadoresByDimension = async (req, res, next) => {
     try {
@@ -42,7 +42,7 @@ const countIndicadoresByDimension = async (req, res, next) => {
 };
 
 const editDimension = async (req, res, next) => {
-    const { idModulo, ...fields } = req.matchedData;
+    const { idTema, ...fields } = req.matchedData;
     const image = getImagePathLocation(req);
 
     try {
@@ -70,8 +70,8 @@ const getDimension = async (req, res, next) => {
 const getTemasInObjetivo = async (req, res, next) => {
     const { idObjetivo, page, perPage } = req.matchedData;
     const temas = await sequelize.query(`
-            SELECT m."id", m."temaIndicador" FROM "Modulos" m
-            INNER JOIN "Indicadores" i on i."idModulo" = m."id"
+            SELECT m."id", m."temaIndicador" FROM "Temas" m
+            INNER JOIN "Indicadores" i on i."idTema" = m."id"
             INNER JOIN "IndicadorObjetivos" io on io."idIndicador" = i."id"
             WHERE io."idObjetivo" = :idObjetivo
             GROUP BY m."id", m."temaIndicador"`, {

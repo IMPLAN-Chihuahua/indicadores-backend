@@ -10,13 +10,13 @@ require('dotenv').config();
 chai.use(chaiHttp);
 const { expect } = chai;
 const { app, server } = require('../../../app');
-const { Modulo, Usuario } = require('../../models');
-const { aModulo, aUser } = require('../../utils/factories');
+const { Tema, Usuario } = require('../../models');
+const { aTema, aUser } = require('../../utils/factories');
 const fileUpload = require('../../middlewares/fileUpload');
 const { generateToken } = require('../../middlewares/auth');
 
 
-describe('/modulos', function () {
+describe('/temas', function () {
   const token = generateToken({ sub: 1 });
   const statusActive = { activo: 'SI' };
 
@@ -24,7 +24,7 @@ describe('/modulos', function () {
   const userRol = { roles: 'USER' };
 
   describe('GET', function () {
-    const modulosFake = [aModulo(1), aModulo(2), aModulo(3)];
+    const temasFake = [aTema(1), aTema(2), aTema(3)];
 
     afterEach(function () {
       sinon.restore();
@@ -34,32 +34,32 @@ describe('/modulos', function () {
       server.close();
     });
 
-    it('Should return a list of Modulos', function (done) {
-      const findAllFake = sinon.fake.resolves(modulosFake);
-      const countFake = sinon.fake.resolves(modulosFake.length);
+    it('Should return a list of Temas', function (done) {
+      const findAllFake = sinon.fake.resolves(temasFake);
+      const countFake = sinon.fake.resolves(temasFake.length);
 
-      sinon.replace(Modulo, 'count', countFake);
-      sinon.replace(Modulo, 'findAll', findAllFake);
+      sinon.replace(Tema, 'count', countFake);
+      sinon.replace(Tema, 'findAll', findAllFake);
       chai.request(app)
-        .get('/api/v1/modulos')
+        .get('/api/v1/temas')
         .end(function (err, res) {
           expect(res).to.have.status(200);
           expect(findAllFake.calledOnce).to.be.true;
-          expect(res.body.data).to.have.lengthOf(modulosFake.length);
+          expect(res.body.data).to.have.lengthOf(temasFake.length);
           done();
         })
     });
 
-    it('Should return a list of Modulos with pagination', function (done) {
-      const findAndCountAllFake = sinon.fake.resolves({ rows: modulosFake, count: modulosFake.length });
-      const countFake = sinon.fake.resolves(modulosFake.length);
+    it('Should return a list of Temas with pagination', function (done) {
+      const findAndCountAllFake = sinon.fake.resolves({ rows: temasFake, count: temasFake.length });
+      const countFake = sinon.fake.resolves(temasFake.length);
       const findOneFake = sinon.fake.resolves(aUser(1));
 
       sinon.replace(Usuario, 'findOne', findOneFake);
-      sinon.replace(Modulo, 'count', countFake);
-      sinon.replace(Modulo, 'findAndCountAll', findAndCountAllFake);
+      sinon.replace(Tema, 'count', countFake);
+      sinon.replace(Tema, 'findAndCountAll', findAndCountAllFake);
       chai.request(app)
-        .get('/api/v1/me/modulos')
+        .get('/api/v1/me/temas')
         .set('Authorization', `Bearer ${token}`)
         .end(function (err, res) {
           expect(findAndCountAllFake.calledOnce).to.be.true;
@@ -72,9 +72,9 @@ describe('/modulos', function () {
 
     it('Should return status 500 if any error is found', function (done) {
       const findAllFake = sinon.fake.rejects(new Error('Testing error'));
-      sinon.replace(Modulo, 'findAll', findAllFake);
+      sinon.replace(Tema, 'findAll', findAllFake);
       chai.request(app)
-        .get('/api/v1/modulos')
+        .get('/api/v1/temas')
         .end(function (err, res) {
           expect(findAllFake.calledOnce).to.be.true;
           expect(res).to.have.status(500);
@@ -83,7 +83,7 @@ describe('/modulos', function () {
     });
   });
 
-  describe('GET /:idModulo', function () {
+  describe('GET /:idTema', function () {
     afterEach(function () {
       sinon.restore();
     });
@@ -92,13 +92,13 @@ describe('/modulos', function () {
       server.close();
     });
 
-    it('Should return a modulo', function (done) {
-      const dummyModulo = aModulo(1);
-      dummyModulo.activo = 'SI'
-      const findByPkFake = sinon.fake.resolves(dummyModulo)
-      sinon.replace(Modulo, 'findByPk', findByPkFake);
+    it('Should return a Tema', function (done) {
+      const dummyTema = aTema(1);
+      dummyTema.activo = 'SI'
+      const findByPkFake = sinon.fake.resolves(dummyTema)
+      sinon.replace(Tema, 'findByPk', findByPkFake);
       chai.request(app)
-        .get('/api/v1/modulos/1')
+        .get('/api/v1/temas/1')
         .end(function (err, res) {
           expect(err).to.be.null;
           expect(res).to.have.status(200);
@@ -114,9 +114,9 @@ describe('/modulos', function () {
         });
     })
 
-    it('Should fail to return a modulo due to an invalid id', function (done) {
+    it('Should fail to return a Tema due to an invalid id', function (done) {
       chai.request(app)
-        .get('/api/v1/modulos/notvalid')
+        .get('/api/v1/temas/notvalid')
         .end(function (err, res) {
           expect(err).to.be.null;
           expect(res).to.have.status(422);
@@ -125,11 +125,11 @@ describe('/modulos', function () {
         })
     })
 
-    it('Should return not found if modulo does not exist', function (done) {
+    it('Should return not found if Tema does not exist', function (done) {
       const findByPkFake = sinon.fake.resolves(null);
-      sinon.replace(Modulo, 'findByPk', findByPkFake);
+      sinon.replace(Tema, 'findByPk', findByPkFake);
       chai.request(app)
-        .get('/api/v1/modulos/1000')
+        .get('/api/v1/temas/1000')
         .end(function (err, res) {
           expect(err).to.be.null;
           expect(res).to.have.status(404);
@@ -138,13 +138,13 @@ describe('/modulos', function () {
         });
     });
 
-    it('Should return conflict error if modulo is not active', function (done) {
-      const inactiveModulo = aModulo(20);
-      inactiveModulo.activo = 'NO';
-      const findByPkFake = sinon.fake.resolves(inactiveModulo);
-      sinon.replace(Modulo, 'findByPk', findByPkFake);
+    it('Should return conflict error if Tema is not active', function (done) {
+      const inactiveTema = aTema(20);
+      inactiveTema.activo = 'NO';
+      const findByPkFake = sinon.fake.resolves(inactiveTema);
+      sinon.replace(Tema, 'findByPk', findByPkFake);
       chai.request(app)
-        .get('/api/v1/modulos/20')
+        .get('/api/v1/temas/20')
         .end(function (err, res) {
           expect(err).to.be.null;
           expect(res).to.have.status(409);
@@ -153,14 +153,14 @@ describe('/modulos', function () {
     })
   });
 
-  describe.skip('GET /modulo/:id/indicadores', function () {
-    it('Should return indicadores of :idModulo', function (done) {
+  describe.skip('GET /Tema/:id/indicadores', function () {
+    it('Should return indicadores of :idTema', function (done) {
       const findOneTema = sinon.fake.resolves({ count: 1 })
       const findAndCountIndicadores = sinon.fake.resolves({ rows: indicadoresList, count: indicadoresList.length });
-      sinon.replace(Modulo, 'findOne', findOneTema);
+      sinon.replace(Tema, 'findOne', findOneTema);
       sinon.replace(Indicador, 'findAndCountAll', findAndCountIndicadores);
       chai.request(app)
-        .get('/api/v1/modulos/1/indicadores')
+        .get('/api/v1/temas/1/indicadores')
         .end(function (err, res) {
           expect(err).to.be.null;
           expect(findOneTema.calledOnce).to.be.true;
@@ -174,11 +174,11 @@ describe('/modulos', function () {
         });
     });
 
-    it('Should return status code 404 if :idModulo does not exist', function (done) {
+    it('Should return status code 404 if :idTema does not exist', function (done) {
       const findOneFake = sinon.fake.resolves({ count: 0 });
-      sinon.replace(Modulo, 'findOne', findOneFake);
+      sinon.replace(Tema, 'findOne', findOneFake);
       chai.request(app)
-        .get('/api/v1/modulos/1/indicadores')
+        .get('/api/v1/temas/1/indicadores')
         .end(function (err, res) {
           expect(findOneFake.calledOnce).to.be.true;
           expect(res.error).to.exist;
@@ -187,9 +187,9 @@ describe('/modulos', function () {
         });
     });
 
-    it('Should return status code 422 with invalid :idModulo', function (done) {
+    it('Should return status code 422 with invalid :idTema', function (done) {
       chai.request(app)
-        .get('/api/v1/modulos/notvalid/indicadores')
+        .get('/api/v1/temas/notvalid/indicadores')
         .end(function (err, res) {
           expect(res).to.have.status(422);
           console.log(res.body)
@@ -202,9 +202,9 @@ describe('/modulos', function () {
       const findOneFake = sinon.fake.resolves({ count: 1 });
       const perPage = indicadoresList.length;
       sinon.replace(Indicador, 'findAndCountAll', findAndCountAllFake);
-      sinon.replace(Modulo, 'findOne', findOneFake);
+      sinon.replace(Tema, 'findOne', findOneFake);
       chai.request(app)
-        .get('/api/v1/modulos/1/indicadores')
+        .get('/api/v1/temas/1/indicadores')
         .query({ perPage })
         .end(function (err, res) {
           expect(findAndCountAllFake.calledTwice, 'find indicadores').to.be.true;
@@ -223,10 +223,10 @@ describe('/modulos', function () {
       const rows = [indicadoresList[0], indicadoresList[1]];
       const findAndCountAllFake = sinon.fake.resolves({ rows, count: rows.length });
       const findOneFake = sinon.fake.resolves({ count: 1 });
-      sinon.replace(Modulo, 'findOne', findOneFake);
+      sinon.replace(Tema, 'findOne', findOneFake);
       sinon.replace(Indicador, 'findAndCountAll', findAndCountAllFake)
       chai.request(app)
-        .get('/api/v1/modulos/1/indicadores')
+        .get('/api/v1/temas/1/indicadores')
         .query({ anioUltimoValorDisponible: 2019, page: 1, perPage: 2 })
         .end(function (err, res) {
           expect(findAndCountAllFake.calledTwice).to.be.true;
@@ -245,14 +245,14 @@ describe('/modulos', function () {
       const rows = [indicadoresList[0], indicadoresList[1]];
       const findAndCountAllFake = sinon.fake.resolves({ rows, count: rows.length });
       const findOneFake = sinon.fake.resolves({ count: 1 });
-      sinon.replace(Modulo, 'findOne', findOneFake);
+      sinon.replace(Tema, 'findOne', findOneFake);
       sinon.replace(Indicador, 'findAndCountAll', findAndCountAllFake)
       chai.request(app)
-        .get('/api/v1/modulos/1/indicadores')
+        .get('/api/v1/temas/1/indicadores')
         .query({ tendenciaActual: 'DESCENDENTE' })
         .end(function (err, res) {
           expect(findAndCountAllFake.calledTwice, 'find indicadores').to.be.true;
-          expect(findOneFake.calledOnce, 'find modulo').to.be.true;
+          expect(findOneFake.calledOnce, 'find Tema').to.be.true;
           expect(res).to.have.status(200);
           expect(res.body.data).to.be.an('array').that.is.not.empty;
           expect(res.body.data[0].tendenciaActual).to.be.equals('DESCENDENTE');
@@ -260,11 +260,11 @@ describe('/modulos', function () {
         });
     });
 
-    it('Should return not found if :idModulo does not exist', function (done) {
+    it('Should return not found if :idTema does not exist', function (done) {
       const findOneFake = sinon.fake.resolves({ count: 0 });
-      sinon.replace(Modulo, 'findOne', findOneFake);
+      sinon.replace(Tema, 'findOne', findOneFake);
       chai.request(app)
-        .get('/api/v1/modulos/1/indicadores')
+        .get('/api/v1/temas/1/indicadores')
         .end(function (err, res) {
           expect(findOneFake.calledOnce).to.be.true;
           expect(res).to.have.status(404);
@@ -281,10 +281,10 @@ describe('/modulos', function () {
       sinon.replace(Indicador, 'findAndCountAll', findAndCountAllFake);
 
       const findOneFake = sinon.fake.resolves({ count: 1 });
-      sinon.replace(Modulo, 'findOne', findOneFake);
+      sinon.replace(Tema, 'findOne', findOneFake);
 
       chai.request(app)
-        .get('/api/v1/modulos/1/indicadores')
+        .get('/api/v1/temas/1/indicadores')
         .query({ idOds: 1 })
         .end(function (err, res) {
           expect(findAndCountAllFake.calledTwice).to.be.true;
@@ -297,7 +297,7 @@ describe('/modulos', function () {
 
     it('Should not process request if indicadores is filtered by an invalid idOds', function (done) {
       chai.request(app)
-        .get('/api/v1/modulos/1/indicadores')
+        .get('/api/v1/temas/1/indicadores')
         .query({ idOds: 'undefinedId' })
         .end(function (err, res) {
           expect(res).to.have.status(422);
@@ -314,10 +314,10 @@ describe('/modulos', function () {
       sinon.replace(Indicador, 'findAndCountAll', findAndCountAllFake);
 
       const findOneFake = sinon.fake.resolves({ count: 1 });
-      sinon.replace(Modulo, 'findOne', findOneFake);
+      sinon.replace(Tema, 'findOne', findOneFake);
 
       chai.request(app)
-        .get('/api/v1/modulos/1/indicadores')
+        .get('/api/v1/temas/1/indicadores')
         .query({ sortBy: 'nombre', order: 'asc' })
         .end(function (err, res) {
           expect(findAndCountAllFake.calledTwice).to.be.true;
@@ -331,7 +331,7 @@ describe('/modulos', function () {
 
     it.skip('Should fail to return list due to invalid sortby and order values', function (done) {
       chai.request(app)
-        .get('/api/v1/modulos/1/indicadores')
+        .get('/api/v1/temas/1/indicadores')
         .query({ sortBy: 'invalid', order: 'invalid' })
         .end(function (err, res) {
           expect(res).to.have.status(422);
@@ -340,7 +340,7 @@ describe('/modulos', function () {
     })
   });
 
-  describe('POST /modulos', function () {
+  describe('POST /temas', function () {
 
     this.afterEach(function () {
       sinon.restore();
@@ -358,9 +358,9 @@ describe('/modulos', function () {
     const allowedImage = Buffer.alloc(10_000, '.jpg')
     const notAllowedFile = Buffer.alloc(50, '.pdf')
 
-    it('Should reject the creation of a new modulo due to file size limit exceeded', function (done) {
-      const moduloFake = aModulo(5);
-      const createModuloFake = sinon.fake.resolves(moduloFake);
+    it('Should reject the creation of a new Tema due to file size limit exceeded', function (done) {
+      const temaFake = aTema(5);
+      const createTemaFake = sinon.fake.resolves(temaFake);
       const findOneFake = sinon.fake.resolves(null);
 
       const fileUploadFake = sinon.fake.resolves({
@@ -371,18 +371,18 @@ describe('/modulos', function () {
       });
 
       sinon.replace(fileUpload, 'uploadImage', fileUploadFake);
-      sinon.replace(Modulo, 'create', createModuloFake);
-      sinon.replace(Modulo, 'findOne', findOneFake);
+      sinon.replace(Tema, 'create', createTemaFake);
+      sinon.replace(Tema, 'findOne', findOneFake);
       chai.request(app)
-        .post('/api/v1/modulos')
+        .post('/api/v1/temas')
         .set('Authorization', `Bearer ${token}`)
         .type('form')
-        .field('temaIndicador', moduloFake.temaIndicador)
-        .field('id', moduloFake.id)
-        .field('codigo', moduloFake.codigo)
-        .field('activo', moduloFake.activo)
-        .field('observaciones', moduloFake.observaciones)
-        .field('color', moduloFake.color)
+        .field('temaIndicador', temaFake.temaIndicador)
+        .field('id', temaFake.id)
+        .field('codigo', temaFake.codigo)
+        .field('activo', temaFake.activo)
+        .field('observaciones', temaFake.observaciones)
+        .field('color', temaFake.color)
         .attach('urlImagen', bigImage, 'bigImage.jpg')
         .end(function (err, res) {
           expect(res).to.have.status(413);
@@ -390,22 +390,22 @@ describe('/modulos', function () {
         });
     });
 
-    it('Should reject the creation of a new modulo due to not allowed file type', function (done) {
-      const moduloFake = aModulo(5);
-      const createModuloFake = sinon.fake.resolves(moduloFake);
+    it('Should reject the creation of a new Tema due to not allowed file type', function (done) {
+      const temaFake = aTema(5);
+      const createTemaFake = sinon.fake.resolves(temaFake);
       const findOneFake = sinon.fake.resolves(null);
-      sinon.replace(Modulo, 'create', createModuloFake);
-      sinon.replace(Modulo, 'findOne', findOneFake);
+      sinon.replace(Tema, 'create', createTemaFake);
+      sinon.replace(Tema, 'findOne', findOneFake);
       chai.request(app)
-        .post('/api/v1/modulos')
+        .post('/api/v1/temas')
         .set('Authorization', `Bearer ${token}`)
         .type('form')
-        .field('temaIndicador', moduloFake.temaIndicador)
-        .field('id', moduloFake.id)
-        .field('codigo', moduloFake.codigo)
-        .field('activo', moduloFake.activo)
-        .field('observaciones', moduloFake.observaciones)
-        .field('color', moduloFake.color)
+        .field('temaIndicador', temaFake.temaIndicador)
+        .field('id', temaFake.id)
+        .field('codigo', temaFake.codigo)
+        .field('activo', temaFake.activo)
+        .field('observaciones', temaFake.observaciones)
+        .field('color', temaFake.color)
         .attach('urlImagen', notAllowedFile, 'samplePDF.pdf')
         .end(function (err, res) {
           expect(res).to.have.status(422);
@@ -413,13 +413,13 @@ describe('/modulos', function () {
         });
     });
 
-    it('Should create a new modulo with an image', function (done) {
-      const moduloFake = aModulo(5).dataValues;
-      const createModuloFake = sinon.fake.resolves(moduloFake);
-      sinon.replace(Modulo, 'create', createModuloFake);
+    it('Should create a new Tema with an image', function (done) {
+      const temaFake = aTema(5).dataValues;
+      const createTemaFake = sinon.fake.resolves(temaFake);
+      sinon.replace(Tema, 'create', createTemaFake);
 
       const findOneFake = sinon.fake.resolves(null);
-      sinon.replace(Modulo, 'findOne', findOneFake);
+      sinon.replace(Tema, 'findOne', findOneFake);
 
       const fileUploadFake = sinon.fake.resolves({
         filename: 'allowedImage.jpg',
@@ -430,19 +430,19 @@ describe('/modulos', function () {
       sinon.replace(fileUpload, 'uploadImage', fileUploadFake);
 
       chai.request(app)
-        .post('/api/v1/modulos')
+        .post('/api/v1/temas')
         .set('Authorization', `Bearer ${token}`)
         .type('form')
-        .field('temaIndicador', moduloFake.temaIndicador)
-        .field('codigo', moduloFake.codigo)
-        .field('activo', moduloFake.activo)
-        .field('observaciones', moduloFake.observaciones)
-        .field('color', moduloFake.color)
-        .field('descripcion', moduloFake.descripcion)
+        .field('temaIndicador', temaFake.temaIndicador)
+        .field('codigo', temaFake.codigo)
+        .field('activo', temaFake.activo)
+        .field('observaciones', temaFake.observaciones)
+        .field('color', temaFake.color)
+        .field('descripcion', temaFake.descripcion)
         .attach('urlImagen', allowedImage, 'avatar.jpg')
         .end(function (err, res) {
           expect(err).to.be.null
-          expect(createModuloFake.calledOnce, 'called create fake').to.be.true;
+          expect(createTemaFake.calledOnce, 'called create fake').to.be.true;
           expect(usuarioStub.calledTwice).to.be.true;
           expect(res).to.have.status(201);
           expect(res.body.data).to.have.property('temaIndicador');
@@ -456,73 +456,73 @@ describe('/modulos', function () {
         });
     });
 
-    it('Should create a new modulo', function (done) {
-      const moduloFake = aModulo(1).dataValues;
-      const createModuloFake = sinon.fake.resolves(moduloFake);
-      sinon.replace(Modulo, 'create', createModuloFake);
+    it('Should create a new Tema', function (done) {
+      const temaFake = aTema(1).dataValues;
+      const createTemaFake = sinon.fake.resolves(temaFake);
+      sinon.replace(Tema, 'create', createTemaFake);
 
       const findOneFake = sinon.fake.resolves(null);
-      sinon.replace(Modulo, 'findOne', findOneFake);
+      sinon.replace(Tema, 'findOne', findOneFake);
 
       chai.request(app)
-        .post('/api/v1/modulos')
+        .post('/api/v1/temas')
         .set({ Authorization: `Bearer ${token}` })
-        .send({ ...moduloFake })
+        .send({ ...temaFake })
         .end((err, res) => {
           expect(err).to.be.null;
           expect(res).to.have.status(201);
           expect(usuarioStub.calledTwice).to.be.true;
-          expect(createModuloFake.calledOnce).to.be.true;
+          expect(createTemaFake.calledOnce).to.be.true;
           expect(findOneFake.calledOnce).to.be.true;
           done();
         });
     });
 
-    it('Should not create a new modulo because tema is already in use', function (done) {
-      const moduloFake = aModulo(1).dataValues;
+    it('Should not create a new Tema because tema is already in use', function (done) {
+      const temaFake = aTema(1).dataValues;
       const findOneFake = sinon.fake.resolves(false);
-      sinon.replace(Modulo, 'findOne', findOneFake);
+      sinon.replace(Tema, 'findOne', findOneFake);
       chai.request(app)
-        .post('/api/v1/modulos')
+        .post('/api/v1/temas')
         .set({ Authorization: `Bearer ${token}` })
-        .send({ ...moduloFake })
+        .send({ ...temaFake })
         .end((err, res) => {
           expect(err).to.be.null;
           expect(usuarioStub.calledTwice).to.be.true;
           expect(findOneFake.calledOnce).to.be.true;
           expect(res).to.have.status(409);
-          expect(res.body.message).to.be.equal(`El tema indicador ${moduloFake.temaIndicador} ya está en uso`)
+          expect(res.body.message).to.be.equal(`El tema indicador ${temaFake.temaIndicador} ya está en uso`)
           done();
         });
     });
 
-    it('Should not create a new modulo due to wrong codigo attribute', function (done) {
-      const moduloFake = { ...aModulo(1), codigo: '1' };
-      const createModuloFake = sinon.fake.resolves(moduloFake);
+    it('Should not create a new Tema due to wrong codigo attribute', function (done) {
+      const temaFake = { ...aTema(1), codigo: '1' };
+      const createTemaFake = sinon.fake.resolves(temaFake);
       const findOneFake = sinon.fake.resolves(true);
-      sinon.replace(Modulo, 'create', createModuloFake);
-      sinon.replace(Modulo, 'findOne', findOneFake);
+      sinon.replace(Tema, 'create', createTemaFake);
+      sinon.replace(Tema, 'findOne', findOneFake);
       chai.request(app)
-        .post('/api/v1/modulos')
+        .post('/api/v1/temas')
         .set({ Authorization: `Bearer ${token}` })
-        .send(moduloFake)
+        .send(temaFake)
         .end((err, res) => {
           expect(res).to.have.status(422);
           done();
         });
     })
 
-    it('Should not create a new modulo due to internal error', function (done) {
-      const moduloFake = aModulo(1).dataValues;
-      const createModuloFake = sinon.fake.throws('Error');
-      sinon.replace(Modulo, 'create', createModuloFake);
+    it('Should not create a new Tema due to internal error', function (done) {
+      const temaFake = aTema(1).dataValues;
+      const createTemaFake = sinon.fake.throws('Error');
+      sinon.replace(Tema, 'create', createTemaFake);
       const findOneFake = sinon.fake.rejects(null);
-      sinon.replace(Modulo, 'findOne', findOneFake);
+      sinon.replace(Tema, 'findOne', findOneFake);
 
       chai.request(app)
-        .post('/api/v1/modulos')
+        .post('/api/v1/temas')
         .set({ Authorization: `Bearer ${token}` })
-        .send(moduloFake)
+        .send(temaFake)
         .end((err, res) => {
           expect(usuarioStub.calledTwice, 'usuario stub').to.be.true;
           expect(res).to.have.status(500);
@@ -531,12 +531,12 @@ describe('/modulos', function () {
     });
 
     it('Should restrict a module creation due to invalid token', function (done) {
-      const createModuloFake = sinon.fake.rejects(aModulo(1));
+      const createTemaFake = sinon.fake.rejects(aTema(1));
       const findOneFake = sinon.fake.resolves(null);
-      sinon.replace(Modulo, 'create', createModuloFake);
-      sinon.replace(Modulo, 'findOne', findOneFake);
+      sinon.replace(Tema, 'create', createTemaFake);
+      sinon.replace(Tema, 'findOne', findOneFake);
       chai.request(app)
-        .post('/api/v1/modulos')
+        .post('/api/v1/temas')
         .end((err, res) => {
           expect(res).to.have.status(401);
           done();
@@ -545,7 +545,7 @@ describe('/modulos', function () {
 
   });
 
-  describe('PUT /:idModulo', function () {
+  describe('PUT /:idTema', function () {
     let usuarioStub;
     this.beforeEach(function () {
       usuarioStub = sinon.stub(Usuario, 'findOne');
@@ -561,14 +561,14 @@ describe('/modulos', function () {
       server.close();
     });
 
-    it('Should edit a modulo', function (done) {
-      const moduloFake = aModulo(1);
-      const editModuloFake = sinon.fake.resolves(true);
-      sinon.replace(Modulo, 'update', editModuloFake);
+    it('Should edit a Tema', function (done) {
+      const temaFake = aTema(1);
+      const editTemaFake = sinon.fake.resolves(true);
+      sinon.replace(Tema, 'update', editTemaFake);
       chai.request(app)
-        .put('/api/v1/modulos/1')
+        .put('/api/v1/temas/1')
         .set({ Authorization: `Bearer ${token}` })
-        .send(moduloFake)
+        .send(temaFake)
         .end((err, res) => {
           expect(res).to.have.status(204);
           expect(res.body.data).to.not.be.null;
@@ -576,14 +576,14 @@ describe('/modulos', function () {
         });
     });
 
-    it('Should not edit a modulo -bad request', function (done) {
-      const moduloFake = aModulo(1);
-      const editModuloFake = sinon.fake.resolves(moduloFake);
-      sinon.replace(Modulo, 'update', editModuloFake);
+    it('Should not edit a Tema -bad request', function (done) {
+      const temaFake = aTema(1);
+      const editTemaFake = sinon.fake.resolves(temaFake);
+      sinon.replace(Tema, 'update', editTemaFake);
 
       chai.request(app)
-        .put('/api/v1/modulos/1')
-        .send(moduloFake)
+        .put('/api/v1/temas/1')
+        .send(temaFake)
         .set({ Authorization: `Bearer ${token}` })
         .end((err, res) => {
           expect(res).to.have.status(400);
@@ -591,23 +591,23 @@ describe('/modulos', function () {
         });
     });
 
-    it('Should not edit a modulo due to internal errors', function (done) {
-      const moduloFake = aModulo(1).dataValues;
-      const editModuloFake = sinon.fake.rejects(new Error('Error'));
-      sinon.replace(Modulo, 'update', editModuloFake);
+    it('Should not edit a Tema due to internal errors', function (done) {
+      const temaFake = aTema(1).dataValues;
+      const editTemaFake = sinon.fake.rejects(new Error('Error'));
+      sinon.replace(Tema, 'update', editTemaFake);
       chai.request(app)
-        .put('/api/v1/modulos/1')
+        .put('/api/v1/temas/1')
         .set({ Authorization: `Bearer ${token}` })
-        .send({ ...moduloFake })
+        .send({ ...temaFake })
         .end((err, res) => {
-          expect(editModuloFake.calledOnce, 'update modulo').to.be.true;
+          expect(editTemaFake.calledOnce, 'update Tema').to.be.true;
           expect(res).to.have.status(500);
           done();
         });
     });
   });
 
-  describe('PATCH /:idModulo', function () {
+  describe('PATCH /:idTema', function () {
     let usuarioStub;
     this.beforeEach(function () {
       usuarioStub = sinon.stub(Usuario, 'findOne');
@@ -623,14 +623,14 @@ describe('/modulos', function () {
       server.close();
     });
 
-    it('Should edit a given modulo status', function (done) {
-      const moduloFake = aModulo(1);
-      const findOneFake = sinon.fake.resolves(moduloFake);
+    it('Should edit a given Tema status', function (done) {
+      const temaFake = aTema(1);
+      const findOneFake = sinon.fake.resolves(temaFake);
       const editOneFake = sinon.fake.resolves(true);
-      sinon.replace(Modulo, 'findOne', findOneFake);
-      sinon.replace(Modulo, 'update', editOneFake);
+      sinon.replace(Tema, 'findOne', findOneFake);
+      sinon.replace(Tema, 'update', editOneFake);
       chai.request(app)
-        .patch('/api/v1/modulos/1')
+        .patch('/api/v1/temas/1')
         .set({ Authorization: `Bearer ${token}` })
         .end((err, res) => {
           expect(res).to.have.status(204);
@@ -639,14 +639,14 @@ describe('/modulos', function () {
         });
     });
 
-    it('Should not edit a given modulo status -bad request', function (done) {
-      const moduloFake = aModulo(1);
-      const findOneFake = sinon.fake.resolves(moduloFake);
+    it('Should not edit a given Tema status -bad request', function (done) {
+      const temaFake = aTema(1);
+      const findOneFake = sinon.fake.resolves(temaFake);
       const editOneFake = sinon.fake.resolves(false);
-      sinon.replace(Modulo, 'findOne', findOneFake);
-      sinon.replace(Modulo, 'update', editOneFake);
+      sinon.replace(Tema, 'findOne', findOneFake);
+      sinon.replace(Tema, 'update', editOneFake);
       chai.request(app)
-        .patch('/api/v1/modulos/1')
+        .patch('/api/v1/temas/1')
         .set({ Authorization: `Bearer ${token}` })
         .end((err, res) => {
           expect(res).to.have.status(400);
@@ -654,14 +654,14 @@ describe('/modulos', function () {
         });
     });
 
-    it('Should not edit a given modulo status due to internal errors', function (done) {
-      const moduloFake = aModulo(1);
-      const findOneFake = sinon.fake.resolves(moduloFake);
+    it('Should not edit a given Tema status due to internal errors', function (done) {
+      const temaFake = aTema(1);
+      const findOneFake = sinon.fake.resolves(temaFake);
       const editOneFake = sinon.fake.throws('Error');
-      sinon.replace(Modulo, 'findOne', findOneFake);
-      sinon.replace(Modulo, 'update', editOneFake);
+      sinon.replace(Tema, 'findOne', findOneFake);
+      sinon.replace(Tema, 'update', editOneFake);
       chai.request(app)
-        .patch('/api/v1/modulos/1')
+        .patch('/api/v1/temas/1')
         .set({ Authorization: `Bearer ${token}` })
         .end((err, res) => {
           expect(res).to.have.status(500);
