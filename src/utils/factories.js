@@ -111,7 +111,7 @@ const aTema = (id) => {
 		codigo: aCodigo(),
 		temaIndicador: faker.company.bsNoun(),
 		observaciones: faker.lorem.words(20),
-		activo: faker.datatype.boolean() ? 'SI' : 'NO',
+		activo: faker.datatype.boolean(),
 		urlImagen: faker.image.imageUrl(),
 		color: '#ffffff',
 		descripcion: faker.lorem.paragraph(),

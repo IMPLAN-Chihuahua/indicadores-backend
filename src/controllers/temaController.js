@@ -89,7 +89,7 @@ const getTema = async (req, res, next) => {
     if (tema === null) {
       return res.sendStatus(404);
     }
-    if (tema.activo === 'NO') {
+    if (tema.activo === false) {
       return res.status(409).json({ status: 409, message: `El tema ${tema.temaIndicador} se encuentra inactivo` });
     }
     return res.status(200).json({ data: { ...tema.dataValues } });

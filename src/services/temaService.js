@@ -5,7 +5,7 @@ const getTemas = async () => {
     try {
         const temas = await Tema.findAll({
             where: {
-                activo: 'SI'
+                activo: true
             },
             attributes: [
                 'id',
@@ -91,7 +91,7 @@ const getAllTemas = async (page, perPage, matchedData) => {
 
 const countTemas = async () => {
     try {
-        const inactiveCount = await Tema.count({ where: { activo: 'NO' } });
+        const inactiveCount = await Tema.count({ where: { activo: false } });
         return inactiveCount;
     } catch (err) {
         throw new Error(`Error al contar temas ${err.message}`);
@@ -113,7 +113,6 @@ const getAllTemasFilters = (matchedData) => {
                 { temaIndicador: { [Op.iLike]: `%${searchQuery}%` } },
                 { codigo: { [Op.iLike]: `%${searchQuery}%` } },
                 { observaciones: { [Op.iLike]: `%${searchQuery}%` } },
-                { activo: { [Op.iLike]: `%${searchQuery}%` } }
             ]
         }
         return filter;
@@ -127,7 +126,7 @@ const updateTemaStatus = async (id) => {
             where: { id },
             attributes: ['activo'],
         });
-        const nuevoEstado = tema.activo === 'SI' ? 'NO' : 'SI';
+        const nuevoEstado = tema.activo === true ? false : true;
         const updatedTema = await tema.update(
             { activo: nuevoEstado },
             { where: { id } }

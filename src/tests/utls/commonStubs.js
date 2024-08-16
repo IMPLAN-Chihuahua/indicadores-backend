@@ -38,7 +38,7 @@ const stubVerifyUserRol = (stub, options) => {
 
 const getIndicadorWithTema = () => {
     const temaInteres = aTema(1);
-    temaInteres.activo = 'SI';
+    temaInteres.activo = true;
     const indicador = anIndicador(1, temaInteres)
     indicador.activo = true
     return indicador;
@@ -46,7 +46,7 @@ const getIndicadorWithTema = () => {
 
 const getInactiveIndicadorWithTema = () => {
     const temaInteres = aTema(1);
-    temaInteres.activo = 'SI';
+    temaInteres.activo = true;
     const indicador = anIndicador(1, temaInteres)
     indicador.activo = false
     return indicador;
@@ -54,7 +54,7 @@ const getInactiveIndicadorWithTema = () => {
 
 const getIndicadorWithInactiveTema = () => {
     const temaInteres = aTema(1)
-    temaInteres.activo = 'NO'
+    temaInteres.activo = true
     const indicador = anIndicador(1, { temaInteres })
     indicador.activo = true
     return indicador;

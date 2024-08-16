@@ -39,12 +39,9 @@ module.exports = (sequelize, DataTypes) => {
       },
 
       activo: {
-        type: DataTypes.STRING(2),
-        allowNull: true,
-        defaultValue: 'SI',
-        validate: {
-          isIn: [['SI', 'NO']]
-        }
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true
       },
 
       urlImagen: {

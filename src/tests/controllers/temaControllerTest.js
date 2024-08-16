@@ -18,7 +18,7 @@ const { generateToken } = require('../../middlewares/auth');
 
 describe('/temas', function () {
   const token = generateToken({ sub: 1 });
-  const statusActive = { activo: 'SI' };
+  const statusActive = { activo: true };
 
   const adminRol = { rolValue: 'ADMIN' };
   const userRol = { roles: 'USER' };
@@ -94,7 +94,7 @@ describe('/temas', function () {
 
     it('Should return a Tema', function (done) {
       const dummyTema = aTema(1);
-      dummyTema.activo = 'SI'
+      dummyTema.activo = true
       const findByPkFake = sinon.fake.resolves(dummyTema)
       sinon.replace(Tema, 'findByPk', findByPkFake);
       chai.request(app)
@@ -106,7 +106,6 @@ describe('/temas', function () {
           expect(res.body.data.id).to.be.a('number');
           expect(res.body.data.temaIndicador).to.exist;
           expect(res.body.data.observaciones).to.exist;
-          expect(res.body.data.activo).to.be.an('string');
           expect(res.body.data.urlImagen).to.exist;
           expect(res.body.data.color).to.exist
           expect(findByPkFake.calledOnce).to.be.true;

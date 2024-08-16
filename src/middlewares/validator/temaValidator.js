@@ -25,8 +25,7 @@ const createTemaValidationRules = () => [
 
     body('activo')
         .optional()
-        .toUpperCase()
-        .isIn(['SI', 'NO'])
+        .isBoolean()
         .withMessage('Estado invalido'),
 
     body('temaIndicador')

@@ -14,7 +14,7 @@ const getIndicador = async (req, res, next) => {
   try {
     const indicador = await IndicadorService.getIndicador(idIndicador, pathway);
     if (indicador.activo && pathway !== FRONT_PATH) {
-      const hasConflict = indicador.activo === false || indicador?.Tema.activo === 'NO';
+      const hasConflict = indicador.activo === false || indicador?.Tema.activo === false;
       if (hasConflict && pathway !== FRONT_PATH) {
         return res.status(409).json({ status: 409, message: `El indicador ${indicador.nombre} se encuentra inactivo` });
       }

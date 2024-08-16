@@ -275,7 +275,7 @@ const getUserStatsInfo = async (id) => {
         const temasCount = await Tema.count({});
         const temasInactivosCount = await Tema.count({
             where: {
-                activo: 'NO'
+                activo: false
             }
         });
 
