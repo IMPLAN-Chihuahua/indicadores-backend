@@ -1,5 +1,5 @@
 const faker = require("faker");
-const { aModulo, anIndicador, aVariable } = require("../../utils/factories");
+const { aTema, anIndicador, aVariable } = require("../../utils/factories");
 
 const stubExistsMiddleware = (stub, options) => {
     let exists = options?.exists;
@@ -37,7 +37,7 @@ const stubVerifyUserRol = (stub, options) => {
 }
 
 const getIndicadorWithTema = () => {
-    const temaInteres = aModulo(1);
+    const temaInteres = aTema(1);
     temaInteres.activo = 'SI';
     const indicador = anIndicador(1, temaInteres)
     indicador.activo = true
@@ -45,7 +45,7 @@ const getIndicadorWithTema = () => {
 }
 
 const getInactiveIndicadorWithTema = () => {
-    const temaInteres = aModulo(1);
+    const temaInteres = aTema(1);
     temaInteres.activo = 'SI';
     const indicador = anIndicador(1, temaInteres)
     indicador.activo = false
@@ -53,7 +53,7 @@ const getInactiveIndicadorWithTema = () => {
 }
 
 const getIndicadorWithInactiveTema = () => {
-    const temaInteres = aModulo(1)
+    const temaInteres = aTema(1)
     temaInteres.activo = 'NO'
     const indicador = anIndicador(1, { temaInteres })
     indicador.activo = true
@@ -92,16 +92,16 @@ const getIndicadorDTO = () => {
     fd.append('ultimoValorDisponible', ultimoValorDisponible);
     fd.append('anioUltimoValorDisponible', -10);
     fd.append('periodicidad', periodicidad);
-    fd.append('idModulo', faker.datatype.number(10));
+    fd.append('idTema', faker.datatype.number(10));
 
-    const idModulo = 1;
-    const formula = aModulo()
+    const idTema = 1;
+    const formula = aTema()
     formula.variables = [aVariable(1)]
     /**
      * nombre', 'codigo', 'definicion', 'ultimoValorDisponible' -> exists
      * anioUltimoValorDisponible -> numeric
      * periodicidad -> int	
-     * idModulo -> exists int
+     * idTema -> exists int
      * 
      * formula.ecuacion -> optional
      * formula.isFormula -> optional SI or NO

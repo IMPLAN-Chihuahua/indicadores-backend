@@ -15,18 +15,21 @@ const getIndicador = async (req, res, next) => {
     const indicador = await IndicadorService.getIndicador(idIndicador, pathway);
 
     if (!indicador.activo && pathway !== FRONT_PATH) {
-      return res.status(409).json({ status: 409, message: `El indicador ${indicador.nombre} se encuentra inactivo` });
-    }
+      const hasConflict = indicador.activo === 'NO' || indicador?.Tema.activo === 'NO';
+      if (hasConflict && pathway !== FRONT_PATH) {
+        return res.status(409).json({ status: 409, message: `El indicador ${indicador.nombre} se encuentra inactivo` });
+      }
 
-    if (pathway === FILE_PATH) {
-      return generateFile(format, res, indicador).catch(err => next(err));
-    }
+      if (pathway === FILE_PATH) {
+        return generateFile(format, res, indicador).catch(err => next(err));
+      }
 
-    return (res.status(200).json({ data: indicador, navigation: { prev: indicador.prev, next: indicador.next } }));
+      return (res.status(200).json({ data: indicador, navigation: { prev: indicador.prev, next: indicador.next } }));
+    }
   } catch (err) {
     next(err)
   }
-};
+}
 
 const generateFile = async (format, res, indicador) => {
   const filename = `${indicador.nombre}.${format}`
@@ -155,14 +158,14 @@ const getUsersFromIndicador = async (req, res, next) => {
 };
 
 const getRandomIndicador = async (req, res, next) => {
-  const { idModulo } = req.params;
+  const { idTema } = req.params;
   try {
-    const indicador = await IndicadorService.getRandomIndicador(idModulo);
+    const indicador = await IndicadorService.getRandomIndicador(idTema);
     return res.status(200).json({ data: indicador });
   } catch (err) {
     next(err);
   }
-}
+};
 
 
 module.exports = {
@@ -174,5 +177,5 @@ module.exports = {
   updateIndicadorStatus,
   getUsersFromIndicador,
   getIndicadoresOfObjetivo,
-  getRandomIndicador
-};
+  getRandomIndicador,
+}

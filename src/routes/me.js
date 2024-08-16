@@ -11,7 +11,7 @@ const { verifyJWT, verifyUserIsActive } = require('../middlewares/auth');
 const {
   getIndicadoresFromUser,
   getIndicador } = require('../controllers/indicadorController');
-const { getAllModulos } = require('../controllers/moduloController');
+const { getAllTemas } = require('../controllers/temaController');
 
 const {
   paginationValidationRules,
@@ -24,9 +24,9 @@ const {
 } = require('../middlewares/validator/usuarioValidator')
 
 const {
-  filterModulosValidationRules,
-  sortModulosValidationRules,
-} = require('../middlewares/validator/moduloValidator')
+  filterTemasValidationRules,
+  sortTemasValidationRules,
+} = require('../middlewares/validator/temaValidator')
 
 const { determinePathway, FRONT_PATH } = require('../middlewares/determinePathway');
 
@@ -172,10 +172,10 @@ router.route('/indicadores/:idIndicador').get(
 
 /**
  * @swagger
- *   /me/modulos:
+ *   /me/temas:
  *     get:
  *       summary: List of temas
- *       description: Retrieves a list of modulos from the database after pagination, sorting and filtering validation
+ *       description: Retrieves a list of temas from the database after pagination, sorting and filtering validation
  *       tags: [Perfiles]
  *       security:
  *         - bearer: []
@@ -222,7 +222,7 @@ router.route('/indicadores/:idIndicador').get(
  *             description: Search query
  *       responses:
  *         200:
- *           description: List of modulos.
+ *           description: List of temas.
  *           content:
  *             application/json:
  *               schema:
@@ -243,7 +243,7 @@ router.route('/indicadores/:idIndicador').get(
  *                   data:
  *                     type: array
  *                     items:
- *                       $ref: '#/components/schemas/Modulo'
+ *                       $ref: '#/components/schemas/Tema'
  *         403:
  *           $ref: '#/components/responses/Forbidden'
  *         404:
@@ -252,14 +252,14 @@ router.route('/indicadores/:idIndicador').get(
  *           $ref: '#/components/responses/UnprocessableEntity'
  */
 
-router.route('/modulos').get(
+router.route('/temas').get(
   verifyJWT,
   verifyUserIsActive,
   paginationValidationRules(),
-  filterModulosValidationRules(),
-  sortModulosValidationRules(),
+  filterTemasValidationRules(),
+  sortTemasValidationRules(),
   validate,
-  getAllModulos,
+  getAllTemas,
 );
 
 

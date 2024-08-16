@@ -4,9 +4,9 @@ const { aCodigo } = require('../utils/factories');
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    const modulos = [];
+    const temas = [];
     for (let i = 0; i < 20; i++) {
-      modulos.push(
+      temas.push(
         {
           temaIndicador: faker.random.word() + (i + 100),
           observaciones: faker.random.words(5),
@@ -20,11 +20,11 @@ module.exports = {
         }
       );
     }
-    
-    await queryInterface.bulkInsert('Modulos', modulos, {});
+
+    await queryInterface.bulkInsert('Temas', temas, {});
   },
 
   down: async (queryInterface, Sequelize) => {
-     await queryInterface.bulkDelete('Modulos', null, {});
+    await queryInterface.bulkDelete('Temas', null, {});
   }
 };

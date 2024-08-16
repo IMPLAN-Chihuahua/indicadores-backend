@@ -3,17 +3,17 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Modulo extends Model {
+  class Tema extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.hasMany(models.Indicador, { foreignKey: 'idModulo' });
+      this.hasMany(models.Indicador, { foreignKey: 'idTema' });
     }
   };
-  Modulo.init(
+  Tema.init(
     {
       id: {
         type: DataTypes.INTEGER,
@@ -66,10 +66,10 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       name: {
-        singular: 'modulo',
-        plural: 'modulos'
+        singular: 'Tema',
+        plural: 'temas'
       },
-      modelName: 'Modulo',
+      modelName: 'Tema',
       timestamps: true,
       scopes: {
         withoutActivo: {
@@ -79,5 +79,5 @@ module.exports = (sequelize, DataTypes) => {
         }
       }
     });
-  return Modulo;
+  return Tema;
 };
