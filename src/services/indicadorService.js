@@ -46,7 +46,7 @@ const getIndicadores = async (page, perPage, matchedData, pathway) => {
 
 const findAllIndicadores = async (args) => {
   const { page, perPage = 25, offset, searchQuery, ...filters } = args;
-  const { idObjetivo, destacado = false, activo = true } = filters;
+  const { idObjetivo, destacado = false, activo = true, temas = [] } = filters;
 
   return Indicador.findAll({
     limit: perPage,
@@ -93,6 +93,9 @@ const findAllIndicadores = async (args) => {
         model: Tema,
         required: true,
         attributes: ['id', 'temaIndicador', 'color', 'codigo'],
+        where: {
+          ...(temas.length > 0 && { id: temas })
+        }
       },
       {
         model: Dimension,
