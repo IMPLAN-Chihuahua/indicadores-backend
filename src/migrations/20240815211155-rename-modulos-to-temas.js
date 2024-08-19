@@ -6,8 +6,7 @@ module.exports = {
     const t = await queryInterface.sequelize.transaction();
 
     try {
-      await queryInterface.renameTable('Temas', 'Temas', { transaction: t });
-
+      await queryInterface.renameTable('Modulos', 'Temas', { transaction: t });
       await t.commit();
     } catch (err) {
       await t.rollback();
@@ -25,7 +24,7 @@ module.exports = {
     const t = await queryInterface.sequelize.transaction();
 
     try {
-      await queryInterface.renameTable('Temas', 'Temas', { transaction: t });
+      await queryInterface.renameTable('Temas', 'Modulos', { transaction: t });
 
       await t.commit();
     } catch (err) {
