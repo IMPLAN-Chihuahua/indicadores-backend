@@ -79,21 +79,40 @@ const getIndicadores = async (req, res, next) => {
 
 const getIndicadoresOfObjetivo = async (req, res, next) => {
   const { page, perPage, searchQuery, ...filters } = req.matchedData;
+
   let indicadores = []
+  let destacados = []
   let total = 0;
-  const destacados = await IndicadorService.findAllIndicadoresInDimension({
-    page: 1,
-    perPage: 3,
-    filters: { destacado: true, idObjetivo: filters.idObjetivo }
+  let offset = (page - 1) * perPage;
+
+  const destacadosCount = await IndicadorService.countIndicadores({ searchQuery, destacado: true, ...filters })
+
+  if (page === 1) {
+    destacados = await IndicadorService.findAllIndicadores({
+      destacado: true,
+      perPage: IndicadorService.LIMIT_NUMBER_INDICADORES_PER_DIMENSION,
+      searchQuery,
+      offset: 0,
+      ...filters
+    });
+  }
+
+  if (page > 1) {
+    offset -= perPage - destacadosCount;
+  }
+
+  const noDestacados = await IndicadorService.findAllIndicadores({
+    destacado: false,
+    offset,
+    perPage: page === 1 ? perPage - destacadosCount : perPage,
+    searchQuery,
+    ...filters,
   });
-  const destacadosCount = await IndicadorService.countIndicadoresInDimension({ filters: { idObjetivo: filters.idObjetivo, destacado: true } })
 
-  const _perPage = perPage - destacados.length;
-  const _indicadores = await IndicadorService.findAllIndicadoresInDimension({ page, perPage: _perPage, filters: { ...filters, destacado: false }, searchQuery });
-  const indicadoresCount = await IndicadorService.countIndicadoresInDimension({ filters: { idObjetivo: filters.idObjetivo, destacado: false } })
-
-  indicadores = [...destacados, ..._indicadores];
+  indicadores = [...destacados, ...noDestacados]
+  const indicadoresCount = await IndicadorService.countIndicadores({ searchQuery, destacado: false, ...filters })
   total = indicadoresCount + destacadosCount;
+
   return res.status(200).json({
     data: indicadores,
     total: total,
