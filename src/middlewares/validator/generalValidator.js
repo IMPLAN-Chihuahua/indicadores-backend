@@ -16,7 +16,7 @@ const paginationValidationRules = () => [
 ];
 
 const paramValidationRules = () => [
-    param(['idModulo', 'idIndicador', 'idUser', 'idOds', 'idCobertura',
+    param(['idTema', 'idIndicador', 'idUser', 'idOds', 'idCobertura',
         'idUnidadMedida', 'idCatalogo', 'idHistorico', 'idFormula', 'idRelacion', 'idDimension', 'idObjetivo'])
         .optional()
         .isInt().withMessage('Field must be an integer number')
@@ -88,7 +88,7 @@ const generalSortValidationRules = () => [
 ];
 
 const idValidation = () => {
-    return param(['idModulo', 'idIndicador', 'idUser', 'idOds', 'idCobertura',
+    return param(['idTema', 'idIndicador', 'idUser', 'idOds', 'idCobertura',
         'idUnidadMedida', 'idCatalogo', 'idHistorico', 'idFormula', 'idVariable',
         'idMapa'])
         .optional()

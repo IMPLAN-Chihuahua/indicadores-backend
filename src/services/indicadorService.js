@@ -4,7 +4,7 @@ const { SITE_PATH, FRONT_PATH, FILE_PATH } = require("../middlewares/determinePa
 const models = require("../models");
 const {
   Indicador,
-  Modulo,
+  Tema,
   Historico,
   Mapa,
   Formula,
@@ -89,6 +89,11 @@ const findAllIndicadores = async (args) => {
         },
       },
       ...filterByCatalogos(filters),
+      {
+        model: Tema,
+        required: true,
+        attributes: ['id', 'temaIndicador', 'color', 'codigo'],
+      },
       {
         model: Dimension,
         as: 'objetivos',
@@ -181,7 +186,7 @@ const defineAttributes = (pathway, matchedData) => {
       return attributes;
     case SITE_PATH:
       if (matchedData) {
-        attributes.push("createdAt", "updatedAt", "idModulo")
+        attributes.push("createdAt", "updatedAt", "idTema")
       } else {
         attributes.push("definicion", "urlImagen")
       }
@@ -194,7 +199,7 @@ const defineAttributes = (pathway, matchedData) => {
         "observaciones",
         "createdBy",
         "updatedBy",
-        "idModulo",
+        "idTema",
         "createdAt",
         "updatedAt",)
       return attributes;
@@ -257,9 +262,11 @@ const getIndicador = async (idIndicador, pathway) => {
       include: includes,
       attributes,
     });
+
     if (pathway !== FILE_PATH || indicador === null) {
-      const moduleId = indicador.modulo.id;
-      const { prevIndicador, nextIndicador } = await definePrevNextIndicadores(moduleId, idIndicador);
+      console.log(indicador)
+      const temaID = indicador.Tema.id;
+      const { prevIndicador, nextIndicador } = await definePrevNextIndicadores(temaID, idIndicador);
       indicador['prev'] = prevIndicador;
       indicador['next'] = nextIndicador;
       return indicador;
@@ -273,15 +280,15 @@ const getIndicador = async (idIndicador, pathway) => {
 
 const getIndicadoresFromTemaInteres = async (id) => {
   const indicadores = await Indicador.findAll({
-    where: { idModulo: id },
+    where: { idTema: id },
     attributes: ["id"],
     raw: true
   });
   return indicadores;
 }
 
-const definePrevNextIndicadores = async (moduloId, idIndicador) => {
-  const indicadores = await getIndicadoresFromTemaInteres(moduloId);
+const definePrevNextIndicadores = async (temaId, idIndicador) => {
+  const indicadores = await getIndicadoresFromTemaInteres(temaId);
   const indicadorIndex = indicadores.findIndex(indicador => indicador.id === idIndicador);
   const indicadoresSize = indicadores.length;
 
@@ -312,21 +319,16 @@ const getIndicadoresFilters = (matchedData) => {
 };
 
 const advancedSearch = (matchedData) => {
-  const { idDimensions, owner, modulos } = matchedData
-  let filter = {}
-
-  // if (idDimensions) {
-  //   const dimensionsArray = idDimensions ? idDimensions.split(',') : null;
-  //   filter.idDimension = dimensionsArray;
-  // }
+  const { idDimensions, owner, temas } = matchedData
+  let filter = {};
 
   if (owner) {
     filter.owner = owner;
   }
 
-  if (modulos) {
-    const modulosArray = modulos ? modulos.split(',') : null;
-    filter.idModulo = modulosArray;
+  if (temas) {
+    const temasArray = temas ? temas.split(',') : null;
+    filter.idTema = temasArray;
   }
 
 
@@ -334,7 +336,7 @@ const advancedSearch = (matchedData) => {
 };
 
 const filterIndicadoresBy = (matchedData) => {
-  const { anioUltimoValorDisponible, tendenciaActual, idModulo, idDimension } = matchedData;
+  const { anioUltimoValorDisponible, tendenciaActual } = matchedData;
   const filters = { activo: true };
   if (anioUltimoValorDisponible) {
     filters.anioUltimoValorDisponible = anioUltimoValorDisponible;
@@ -342,14 +344,6 @@ const filterIndicadoresBy = (matchedData) => {
   if (tendenciaActual) {
     filters.tendenciaActual = tendenciaActual;
   }
-
-  if (idModulo) {
-    filters.idModulo = idModulo;
-  }
-
-  // if (idDimension) {
-  //   filters.idDimension = idDimension;
-  // }
 
   return filters;
 };
@@ -468,7 +462,7 @@ const defineIncludesForAnIndicador = (pathway, queryParams) => {
 const includeBasicModels = () => {
   return [
     {
-      model: Modulo,
+      model: Tema,
       required: true,
       attributes: ['id', 'temaIndicador', 'descripcion', 'color', 'codigo', 'activo'],
     },
@@ -478,8 +472,8 @@ const includeBasicModels = () => {
       required: true,
       attributes: ['id', 'titulo'],
       through: {
-        as: 'more',
         model: IndicadorObjetivo,
+        as: 'more',
         attributes: ['destacado']
       }
     },
@@ -563,7 +557,7 @@ const getIdIndicadorRelatedTo = async (model, id) => {
 
 const getRandomIndicador = async (idTema) => {
   const indicadores = await Indicador.findAll({
-    where: { idModulo: idTema, activo: true },
+    where: { idTema: idTema, activo: true },
     attributes: ["id"],
     raw: true
   });
@@ -575,10 +569,11 @@ const getRandomIndicador = async (idTema) => {
     include: [
       {
         model: Dimension,
+        as: "objetivos",
         attributes: ["titulo"]
       },
       {
-        model: Modulo,
+        model: Tema,
         attributes: ["urlImagen"]
       }
     ],

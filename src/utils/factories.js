@@ -1,5 +1,5 @@
 const faker = require('faker');
-const { Modulo, Indicador, Dimension, CatalogoDetail } = require('../models')
+const { Tema, Indicador, Dimension, CatalogoDetail } = require('../models')
 
 
 const aDummyWithName = (id) => ({
@@ -13,7 +13,7 @@ const randomYear = () => faker.datatype.number({ 'min': 2000, 'max': new Date().
 const anIndicador = (id, options) => {
 	let temaInteres = options?.temaInteres;
 	if (!options) {
-		temaInteres = aModulo(1)
+		temaInteres = aTema(1)
 	}
 	const indicador = Indicador.build({
 		id: id || faker.datatype.number(100),
@@ -35,10 +35,11 @@ const anIndicador = (id, options) => {
 		archive: faker.datatype.boolean(),
 		updatedAt: new Date(),
 		createdAt: new Date(),
-		modulo: temaInteres,
 		catalogos: [],
+		Tema: temaInteres,
+		dimension: null,
 	}, {
-		include: [Modulo, { model: Dimension, as: 'objetivos' }, { model: CatalogoDetail, as: 'catalogos' }]
+		include: [Tema, Dimension, { model: CatalogoDetail, as: 'catalogos' }]
 	})
 	indicador.validate()
 	return indicador;
@@ -59,7 +60,7 @@ const indicadorToCreate = () => {
 		fuente: faker.internet.url(),
 		urlImagen: faker.image.avatar(),
 		idDimension: 1,
-		idModulo: 1
+		idTema: 1
 	});
 	return indicador.dataValues;
 }
@@ -104,19 +105,19 @@ const aUser = (id) => ({
 	requestedPasswordChange: id % 2 === 0 ? 'SI' : 'NO',
 });
 
-const aModulo = (id) => {
-	const modulo = Modulo.build({
+const aTema = (id) => {
+	const tema = Tema.build({
 		id,
 		codigo: aCodigo(),
 		temaIndicador: faker.company.bsNoun(),
 		observaciones: faker.lorem.words(20),
-		activo: faker.datatype.boolean() ? 'SI' : 'NO',
+		activo: faker.datatype.boolean(),
 		urlImagen: faker.image.imageUrl(),
 		color: '#ffffff',
 		descripcion: faker.lorem.paragraph(),
 	});
-	modulo.validate();
-	return modulo;
+	tema.validate();
+	return tema;
 }
 
 const aRol = (id) => ({
@@ -297,7 +298,7 @@ const aDimension = (id) => ({
 module.exports = {
 	anIndicador,
 	aUser,
-	aModulo,
+	aTema,
 	aDummyWithName,
 	aRol,
 	indicadorToCreate,

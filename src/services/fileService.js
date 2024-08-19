@@ -24,7 +24,7 @@ const s3 = new S3Client({
 });
 
 const DESTINATIONS = {
-  MODULOS: 'temas',
+  TEMASS: 'temas',
   INDICADORES: 'indicadores',
   USUARIOS: 'usuarios',
   MAPAS: 'mapas',
@@ -108,7 +108,7 @@ const getFromCatalogos = (catalogos = [], id) => {
 const generateXLSX = (indicador) => {
   let baseFile = "./src/templates/indicador.xlsx";
   let workBook = new Excel.Workbook();
-  const fields = ['nombre', 'modulo', 'tendenciaActual', 'ultimoValorDisponible',
+  const fields = ['nombre', 'Tema', 'tendenciaActual', 'ultimoValorDisponible',
     'medida', 'anioUltimoValorDisponible', 'cobertura', 'ecuacion', 'variables', 'historicos']
   return workBook.xlsx
     .readFile(baseFile)
@@ -119,7 +119,7 @@ const generateXLSX = (indicador) => {
       for (const field of fields) {
         let initialRow = 2;
         let value = indicador[field];
-        if (field === 'modulo') {
+        if (field === 'Tema') {
           value = indicador[field].dataValues.temaIndicador;
         } else if (field === 'medida') {
           value = getFromCatalogos(indicador['catalogos'], UNIDAD_ID)?.dataValues.nombre || 'NA';
@@ -189,14 +189,14 @@ const generatePDF = async (indicador) => {
   handlebars.registerHelper('valueIsNull', (str) => str === null);
   handlebars.registerHelper('hasHistoricos', (historicos) => historicos.length > 0);
   handlebars.registerHelper('hasFormula', (formula) => typeof formula !== undefined || formula !== null)
-  handlebars.registerHelper('calculateTopPx', (modulo) => {
-    const top = (parseInt(modulo.id) - 1) * 35;
+  handlebars.registerHelper('calculateTopPx', (Tema) => {
+    const top = (parseInt(Tema.id) - 1) * 35;
     return `
     <style>
       .tematica__id {
         width: 28px;
         height: 28px;
-        background: ${modulo.color};
+        background: ${Tema.color};
         color: white;
         display: flex;
         justify-content: center;
@@ -208,7 +208,7 @@ const generatePDF = async (indicador) => {
       }
     </style>
     <div class="tematica__id">
-      ${modulo.codigo}
+      ${Tema.codigo}
     </div>   
     `;
   })

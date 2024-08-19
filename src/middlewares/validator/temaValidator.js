@@ -1,12 +1,12 @@
 const { query, param, body } = require('express-validator');
 
-const filterModulosValidationRules = () => [
+const filterTemasValidationRules = () => [
     query(['searchQuery'])
         .optional()
         .trim().escape()
 ];
 
-const sortModulosValidationRules = () => [
+const sortTemasValidationRules = () => [
     query('sortBy')
         .optional()
         .isIn(['id', 'codigo', 'temaIndicador', 'createdAt', 'updatedAt', 'urlImagen', 'color', 'observaciones', 'activo'])
@@ -18,15 +18,14 @@ const sortModulosValidationRules = () => [
         .withMessage('orden debe ser ascendente o descendente')
 ];
 
-const createModuloValidationRules = () => [
+const createTemaValidationRules = () => [
     body('codigo')
         .exists()
         .withMessage('El codigo es obligatorio'),
 
     body('activo')
         .optional()
-        .toUpperCase()
-        .isIn(['SI', 'NO'])
+        .isBoolean()
         .withMessage('Estado invalido'),
 
     body('temaIndicador')
@@ -49,10 +48,10 @@ const createModuloValidationRules = () => [
         .withMessage('Solo colores en hexadecimal')
 ];
 
-const updateModuloValidationRules = () => [
-    param(['idModulo'])
+const updateTemaValidationRules = () => [
+    param(['idTema'])
         .exists()
-        .withMessage('por favor agrega un id de modulo')
+        .withMessage('por favor agrega un id de Tema')
         .isInt()
         .withMessage('Field must be an integer number')
         .toInt(),
@@ -90,9 +89,9 @@ const updateModuloValidationRules = () => [
 ]
 
 module.exports = {
-    filterModulosValidationRules,
-    sortModulosValidationRules,
-    createModuloValidationRules,
-    updateModuloValidationRules
+    filterTemasValidationRules,
+    sortTemasValidationRules,
+    createTemaValidationRules,
+    updateTemaValidationRules
 
 }

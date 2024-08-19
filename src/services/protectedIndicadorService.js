@@ -2,7 +2,7 @@
 const { SITE_PATH, FRONT_PATH, FILE_PATH } = require("../middlewares/determinePathway");
 const {
     Indicador,
-    Modulo,
+    Tema,
     Historico,
     Mapa,
     Formula,

@@ -25,7 +25,7 @@ router.get('/info/general',
     paginationValidationRules(),
     generalSortValidationRules(),
     validate,
-    
+    countIndicadoresByDimension
 );
 
 router.route('/:idObjetivo/indicadores')

@@ -32,8 +32,8 @@ const determineModel = (req, res, next) => {
       req.model = 'usuario';
       next();
       break;
-    case 'modulos':
-      req.model = 'modulo';
+    case 'temas':
+      req.model = 'Tema';
       next();
       break;
     case 'dimensiones':

@@ -28,7 +28,7 @@ describe('Indicador service', function () {
     it('Should return a list of indicadores and the total number of them', function () {
       const findAndCountAllFake = sinon.fake.resolves({ rows: indicadores, count: indicadores.length });
       sinon.replace(Indicador, 'findAndCountAll', findAndCountAllFake);
-      return IndicadorService.getIndicadores(1, 15, { idModulo: 15 }, SITE_PATH)
+      return IndicadorService.getIndicadores(1, 15, { idTema: 15 }, SITE_PATH)
         .then(res => {
           expect(findAndCountAllFake.calledOnce).to.be.true;
           expect(res.indicadores).to.be.an('array').that.is.not.empty;
@@ -50,7 +50,7 @@ describe('Indicador service', function () {
     it('Should reject promise if an error occurs', function () {
       const findAndCountAllFake = sinon.fake.rejects(new Error());
       sinon.replace(Indicador, 'findAndCountAll', findAndCountAllFake);
-      return IndicadorService.getIndicadores(1, 15, { idModulo: 15 }, SITE_PATH)
+      return IndicadorService.getIndicadores(1, 15, { idTema: 15 }, SITE_PATH)
         .catch(err => {
           expect(findAndCountAllFake.calledOnce).to.be.true;
           expect(err).to.not.be.null;

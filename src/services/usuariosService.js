@@ -1,5 +1,5 @@
 const logger = require('../config/logger');
-const { Usuario, Rol, Indicador, Sequelize, sequelize, UsuarioIndicador, Modulo } = require('../models');
+const { Usuario, Rol, Indicador, Sequelize, sequelize, UsuarioIndicador, Tema } = require('../models');
 
 const { Op } = Sequelize;
 
@@ -272,10 +272,10 @@ const getUserStatsInfo = async (id) => {
                 idUsuario: id,
             }
         });
-        const modulosCount = await Modulo.count({});
-        const modulosInactivosCount = await Modulo.count({
+        const temasCount = await Tema.count({});
+        const temasInactivosCount = await Tema.count({
             where: {
-                activo: 'NO'
+                activo: false
             }
         });
 
@@ -289,8 +289,8 @@ const getUserStatsInfo = async (id) => {
         return {
             indicadores: (indicadorCount - usuarioIndicadorCount),
             indicadoresAsignados: (usuarioIndicadorCount),
-            modulos: (modulosCount - modulosInactivosCount),
-            modulosInactivos: modulosInactivosCount,
+            temas: (temasCount - temasInactivosCount),
+            temasInactivos: temasInactivosCount,
             usuarios: (usuariosCount - usuariosInactivosCount),
             usuariosInactivos: usuariosInactivosCount
         }

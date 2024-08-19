@@ -1,11 +1,11 @@
-const { Modulo, Sequelize, Indicador } = require('../models');
+const { Tema, Sequelize, Indicador } = require('../models');
 const { Op } = Sequelize;
 
-const getModulos = async () => {
+const getTemas = async () => {
     try {
-        const modulos = await Modulo.findAll({
+        const temas = await Tema.findAll({
             where: {
-                activo: 'SI'
+                activo: true
             },
             attributes: [
                 'id',
@@ -20,39 +20,39 @@ const getModulos = async () => {
                 model: Indicador,
                 attributes: []
             }],
-            group: ['Modulo.id'],
+            group: ['Tema.id'],
             order: [['id']],
             raw: true
         });
-        return modulos;
+        return temas;
     } catch (err) {
-        throw new Error(`Error al obtener modulos ${err.message}`);
+        throw new Error(`Error al obtener temas ${err.message}`);
     }
 };
 
-const addModulo = async (modulo) => {
+const addTema = async (Tema) => {
     try {
-        const created = await Modulo.create(modulo);
+        const created = await Tema.create(Tema);
         return created;
     } catch (err) {
-        throw new Error(`Error al crear modulo ${err.message}`);
+        throw new Error(`Error al crear Tema ${err.message}`);
     }
 };
 
-const updateModulo = async (id, values) => {
+const updateTema = async (id, values) => {
     try {
-        const affectedRows = await Modulo.update({ ...values },
+        const affectedRows = await Tema.update({ ...values },
             { where: { id } }
         );
         return affectedRows > 0;
     } catch (err) {
-        throw new Error(`Error al actualizar modulo ${err.message}`);
+        throw new Error(`Error al actualizar Tema ${err.message}`);
     }
 };
 
 const isTemaIndicadorAlreadyInUse = async (temaIndicador) => {
     try {
-        const existingTema = await Modulo.findOne({
+        const existingTema = await Tema.findOne({
             attributes: ['temaIndicador'],
             where: { temaIndicador }
         });
@@ -62,11 +62,11 @@ const isTemaIndicadorAlreadyInUse = async (temaIndicador) => {
     }
 };
 
-const getAllModulos = async (page, perPage, matchedData) => {
+const getAllTemas = async (page, perPage, matchedData) => {
     try {
-        const result = await Modulo.findAndCountAll({
-            where: getAllModulosFilters(matchedData),
-            order: getModulosSorting(matchedData),
+        const result = await Tema.findAndCountAll({
+            where: getAllTemasFilters(matchedData),
+            order: getTemasSorting(matchedData),
             limit: perPage,
             offset: (page - 1) * perPage,
             attributes: [
@@ -82,30 +82,30 @@ const getAllModulos = async (page, perPage, matchedData) => {
                 'descripcion'
             ],
         });
-        const inactiveModulos = await countModulos();
-        return { modulos: result.rows, total: result.count, totalInactivos: inactiveModulos };
+        const inactiveTemas = await countTemas();
+        return { temas: result.rows, total: result.count, totalInactivos: inactiveTemas };
     } catch (err) {
-        throw new Error(`Error al obtener todos los modulos ${err.message}`);
+        throw new Error(`Error al obtener todos los temas ${err.message}`);
     }
 };
 
-const countModulos = async () => {
+const countTemas = async () => {
     try {
-        const inactiveCount = await Modulo.count({ where: { activo: 'NO' } });
+        const inactiveCount = await Tema.count({ where: { activo: false } });
         return inactiveCount;
     } catch (err) {
-        throw new Error(`Error al contar modulos ${err.message}`);
+        throw new Error(`Error al contar temas ${err.message}`);
     }
 }
 
 
-const getModulosSorting = ({ sortBy, order }) => {
+const getTemasSorting = ({ sortBy, order }) => {
     const arrangement = [];
     arrangement.push([sortBy || 'id', order || 'ASC']);
     return arrangement;
 };
 
-const getAllModulosFilters = (matchedData) => {
+const getAllTemasFilters = (matchedData) => {
     const { searchQuery } = matchedData;
     if (searchQuery) {
         const filter = {
@@ -113,7 +113,6 @@ const getAllModulosFilters = (matchedData) => {
                 { temaIndicador: { [Op.iLike]: `%${searchQuery}%` } },
                 { codigo: { [Op.iLike]: `%${searchQuery}%` } },
                 { observaciones: { [Op.iLike]: `%${searchQuery}%` } },
-                { activo: { [Op.iLike]: `%${searchQuery}%` } }
             ]
         }
         return filter;
@@ -121,29 +120,29 @@ const getAllModulosFilters = (matchedData) => {
     return {};
 };
 
-const updateModuloStatus = async (id) => {
+const updateTemaStatus = async (id) => {
     try {
-        const modulo = await Modulo.findOne({
+        const tema = await Tema.findOne({
             where: { id },
             attributes: ['activo'],
         });
-        const nuevoEstado = modulo.activo === 'SI' ? 'NO' : 'SI';
-        const updatedModulo = await Modulo.update(
+        const nuevoEstado = tema.activo === true ? false : true;
+        const updatedTema = await tema.update(
             { activo: nuevoEstado },
             { where: { id } }
         );
-        return updatedModulo > 0;
+        return updatedTema > 0;
     } catch (err) {
         throw new Error(`Error al buscar el módulo ${err.message}`);
     }
 }
 
 module.exports = {
-    getModulos,
-    countModulos,
-    addModulo,
+    getTemas,
+    countTemas,
+    addTema,
     isTemaIndicadorAlreadyInUse,
-    updateModulo,
-    getAllModulos,
-    updateModuloStatus
+    updateTema,
+    getAllTemas,
+    updateTemaStatus
 }
