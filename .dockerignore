@@ -7,3 +7,5 @@ node_modules
 .git
 .ash_history
 .npm/
+.env
+
