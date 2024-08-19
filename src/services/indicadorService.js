@@ -1,6 +1,6 @@
 /* eslint-disable no-use-before-define */
+const { QueryTypes, where } = require("sequelize");
 const { SITE_PATH, FRONT_PATH, FILE_PATH } = require("../middlewares/determinePathway");
-
 const models = require("../models");
 const {
   Indicador,
@@ -17,10 +17,11 @@ const {
   Dimension,
   IndicadorObjetivo
 } = models;
-const { toggleStatus } = require("../utils/objectUtils");
 const { updateOrCreateCatalogosFromIndicador, addCatalogosToIndicador } = require("./catalogosService");
 const { createRelation } = require("./usuarioIndicadorService");
 const { Op } = Sequelize;
+
+const LIMIT_NUMBER_INDICADORES_PER_DIMENSION = 5;
 
 const getIndicadores = async (page, perPage, matchedData, pathway) => {
 
@@ -42,87 +43,110 @@ const getIndicadores = async (page, perPage, matchedData, pathway) => {
   }
 };
 
-const findAllIndicadoresInDimension = async ({ page, perPage, searchQuery, filters }) => {
-  const { idObjetivo, destacado = false, offset } = filters;
-  try {
-    const result = await Indicador.findAll({
-      limit: perPage,
-      offset: offset || (page - 1) * perPage,
-      attributes: [
-        'id',
-        'nombre',
-        'tendenciaActual',
-        'ultimoValorDisponible',
-        'anioUltimoValorDisponible'
-      ],
-      where: {
-        activo: true
+
+const findAllIndicadores = async (args) => {
+  const { page, perPage = 25, offset, searchQuery, ...filters } = args;
+  const { idObjetivo, destacado = false, activo = true } = filters;
+
+  return Indicador.findAll({
+    limit: perPage,
+    offset: offset !== undefined ? offset : (page - 1) * perPage,
+    attributes: [
+      'id',
+      'nombre',
+      'tendenciaActual',
+      'ultimoValorDisponible',
+      'anioUltimoValorDisponible',
+      'updatedAt'
+    ],
+    where: {
+      activo,
+      ...(searchQuery && filterIndicadoresBySearchQuery(searchQuery)),
+      ...filterIndicadoresBy(filters)
+    },
+    order: [
+      ['updatedAt', 'desc'],
+      ['id', 'asc']
+    ],
+    include: [
+      {
+        model: CatalogoDetail,
+        as: 'catalogos',
+        attributes: [
+          'id',
+          'nombre',
+          'idCatalogo',
+          [sequelize.literal('"catalogos->catalogo"."nombre"'), '_catalogo']
+        ],
+        required: false,
+        include: {
+          model: Catalogo,
+          attributes: []
+        },
+        through: {
+          model: CatalogoDetailIndicador,
+          attributes: [],
+        },
       },
-      include: [
-        {
-          model: Tema,
-          required: true,
-          attributes: ['id', 'temaIndicador', 'descripcion', 'color', 'codigo', 'activo'],
+      ...filterByCatalogos(filters),
+      {
+        model: Tema,
+        required: true,
+        attributes: ['id', 'temaIndicador', 'color', 'codigo'],
+      },
+      {
+        model: Dimension,
+        as: 'objetivos',
+        required: true,
+        attributes: ['id', [sequelize.literal('"objetivos->more"."destacado"'), 'destacado']],
+        where: {
+          ...(idObjetivo !== undefined && { id: idObjetivo }),
         },
-        {
-          model: CatalogoDetail,
-          as: 'catalogos',
-          required: false,
-          include: Catalogo,
-          through: {
-            model: CatalogoDetailIndicador,
-            attributes: [],
-          },
-        },
-        {
-          model: Dimension,
-          as: 'objetivos',
-          required: true,
-          attributes: [
-            'id',
-            'titulo',
-            [sequelize.literal('"objetivos->more"."destacado"'), 'destacado']
-          ],
+        through: {
+          as: 'more',
+          model: IndicadorObjetivo,
+          attributes: [],
           where: {
-            id: idObjetivo,
-          },
-          through: {
-            as: 'more',
-            model: IndicadorObjetivo,
-            attributes: [],
-            where: {
-              destacado
-            }
-          },
-        }
-      ],
-    });
-    return result;
-  } catch (err) {
-    throw err;
+            destacado
+          }
+        },
+      }
+    ],
+  });
+
+}
+
+const filterIndicadoresBySearchQuery = (str) => {
+  return {
+    [Op.or]: [
+      { nombre: { [Op.iLike]: `%${str}%` } },
+      { definicion: { [Op.iLike]: `%${str}%` } },
+      { codigo: { [Op.iLike]: `%${str}%` } },
+    ]
   }
 }
 
 
-const countIndicadoresInDimension = async ({ filters, searchQuery }) => {
-  const { idObjetivo, destacado } = filters;
+const countIndicadores = async ({ searchQuery, ...filters }) => {
+  const { idObjetivo, destacado, } = filters;
+
   const count = await Indicador.count({
     where: {
       activo: true,
+      ...(searchQuery && filterIndicadoresBySearchQuery(searchQuery))
     },
     include: [{
       model: Dimension,
       as: 'objetivos',
       where: {
-        id: idObjetivo,
-
+        ...(idObjetivo && { id: idObjetivo })
       },
       through: {
         as: 'more',
         model: IndicadorObjetivo,
         attributes: [],
         where: {
-          destacado
+          ...(destacado !== undefined && { destacado })
         }
       },
     }]
@@ -211,7 +235,7 @@ const defineWhere = (pathway, matchedData) => {
   switch (pathway) {
     case SITE_PATH:
       where = {
-        ...filterIndicadorBy(matchedData),
+        ...filterIndicadoresBy(matchedData),
         ...getIndicadoresFilters(matchedData),
         ...advancedSearch(matchedData),
       };
@@ -296,12 +320,7 @@ const getIndicadoresFilters = (matchedData) => {
 
 const advancedSearch = (matchedData) => {
   const { idDimensions, owner, temas } = matchedData
-  let filter = {}
-
-  // if (idDimensions) {
-  //   const dimensionsArray = idDimensions ? idDimensions.split(',') : null;
-  //   filter.idDimension = dimensionsArray;
-  // }
+  let filter = {};
 
   if (owner) {
     filter.owner = owner;
@@ -316,8 +335,8 @@ const advancedSearch = (matchedData) => {
   return filter;
 };
 
-const filterIndicadorBy = (matchedData) => {
-  const { anioUltimoValorDisponible, tendenciaActual, idTema, idDimension } = matchedData;
+const filterIndicadoresBy = (matchedData) => {
+  const { anioUltimoValorDisponible, tendenciaActual } = matchedData;
   const filters = { activo: true };
   if (anioUltimoValorDisponible) {
     filters.anioUltimoValorDisponible = anioUltimoValorDisponible;
@@ -325,14 +344,6 @@ const filterIndicadorBy = (matchedData) => {
   if (tendenciaActual) {
     filters.tendenciaActual = tendenciaActual;
   }
-
-  if (idTema) {
-    filters.idTema = idTema;
-  }
-
-  // if (idDimension) {
-  //   filters.idDimension = idDimension;
-  // }
 
   return filters;
 };
@@ -414,14 +425,14 @@ const updateIndicador = async (id, indicador) => {
 const defineIncludesForIndicadores = (queryParams) => {
   return [
     ...includeBasicModels(),
-    ...includeCatalogoFilters(queryParams),
+    ...filterByCatalogos(queryParams),
   ];
 };
 
 const defineIncludesForAnIndicador = (pathway, queryParams) => {
   return [
     ...includeBasicModels(),
-    ...includeCatalogoFilters(queryParams),
+    ...filterByCatalogos(queryParams),
     ...includeHistorico(pathway),
     {
       model: Mapa,
@@ -461,8 +472,8 @@ const includeBasicModels = () => {
       required: true,
       attributes: ['id', 'titulo'],
       through: {
-        as: 'more',
         model: IndicadorObjetivo,
+        as: 'more',
         attributes: ['destacado']
       }
     },
@@ -503,17 +514,17 @@ const includeHistorico = (pathway) => {
   };
 };
 
-const includeCatalogoFilters = (queryParams) => {
+const filterByCatalogos = (catalogos) => {
   const inIds = [];
-  const { idOds, idCobertura, idUnidadMedida } = queryParams || {};
-  if (idOds) {
-    inIds.push(idOds);
+  const { ods, cobertura, medida } = catalogos || {};
+  if (ods) {
+    inIds.push(ods);
   }
-  if (idCobertura) {
-    inIds.push(idCobertura);
+  if (cobertura) {
+    inIds.push(cobertura);
   }
-  if (idUnidadMedida) {
-    inIds.push(idUnidadMedida);
+  if (medida) {
+    inIds.push(medida);
   }
   if (inIds.length === 0) {
     return [];
@@ -523,7 +534,7 @@ const includeCatalogoFilters = (queryParams) => {
     model: CatalogoDetail,
     required: true,
     as: 'catalogosFilters',
-    attributes: ['id', 'nombre', 'idCatalogo'],
+    attributes: [],
     through: {
       attributes: [],
       where: { idCatalogoDetail: [...inIds] },
@@ -579,7 +590,8 @@ module.exports = {
   updateIndicadorStatus,
   getInactiveIndicadores,
   getIdIndicadorRelatedTo,
-  findAllIndicadoresInDimension,
-  countIndicadoresInDimension,
-  getRandomIndicador
+  findAllIndicadores,
+  countIndicadores,
+  getRandomIndicador,
+  LIMIT_NUMBER_INDICADORES_PER_DIMENSION
 };

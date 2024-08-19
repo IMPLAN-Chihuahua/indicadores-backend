@@ -33,7 +33,7 @@
     "pg": "^8.8.0",
     "pg-hstore": "^2.3.4",
     "puppeteer": "^19.4.0",
-    "sequelize": "^6.26.0",
+    "sequelize": "^6.37.3",
     "swagger-jsdoc": "^6.2.5",
     "swagger-ui-express": "^4.6.0",
     "winston": "^3.8.2"
