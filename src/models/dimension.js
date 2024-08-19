@@ -41,6 +41,17 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: true,
                 defaultValue: '#ffffff'
             },
+
+            alias: {
+                type: DataTypes.STRING,
+                allowNull: true
+            },
+
+            summary: {
+                type: DataTypes.TEXT,
+                allowNull: true
+            }
+
         },
         {
             sequelize,
