@@ -536,7 +536,6 @@ const filterByCatalogos = (catalogos) => {
     return [];
   }
 
-  return inIds;
   return [{
     model: CatalogoDetail,
     required: true,
