@@ -240,8 +240,8 @@ const getIndicador = async (idIndicador, pathway) => {
     });
 
     if (pathway !== FILE_PATH || indicador === null) {
-      console.log(indicador)
       const temaID = indicador.Tema.id;
+
       const { prevIndicador, nextIndicador } = await definePrevNextIndicadores(temaID, idIndicador);
       indicador['prev'] = prevIndicador;
       indicador['next'] = nextIndicador;
