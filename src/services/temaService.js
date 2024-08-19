@@ -30,9 +30,9 @@ const getTemas = async () => {
     }
 };
 
-const addTema = async (Tema) => {
+const addTema = async (tema) => {
     try {
-        const created = await Tema.create(Tema);
+        const created = await Tema.create(tema);
         return created;
     } catch (err) {
         throw new Error(`Error al crear Tema ${err.message}`);
@@ -124,14 +124,18 @@ const updateTemaStatus = async (id) => {
     try {
         const tema = await Tema.findOne({
             where: { id },
-            attributes: ['activo'],
+            attributes: ['activo', 'id'],
         });
+
         const nuevoEstado = tema.activo === true ? false : true;
+
         const updatedTema = await tema.update(
             { activo: nuevoEstado },
             { where: { id } }
         );
-        return updatedTema > 0;
+
+        return updatedTema;
+
     } catch (err) {
         throw new Error(`Error al buscar el módulo ${err.message}`);
     }
