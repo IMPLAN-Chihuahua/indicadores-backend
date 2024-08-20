@@ -5,27 +5,50 @@ const {
 module.exports = (sequelize, DataTypes) => {
     class Indicador extends Model {
         static associate(models) {
-            this.belongsTo(models.Tema, { foreignKey: 'idTema' });
+            this.belongsTo(models.Tema, {
+                foreignKey: 'idTema'
+            });
+
+            this.belongsTo(models.Cobertura, {
+                foreignKey: 'idCobertura'
+            });
+
+            this.belongsTo(models.ODS, {
+                foreignKey: 'idODS'
+            })
+
             this.belongsToMany(models.Usuario, { through: models.UsuarioIndicador, foreignKey: 'idIndicador' });
+
             this.belongsToMany(models.CatalogoDetail, {
                 through: models.CatalogoDetailIndicador,
                 foreignKey: 'idIndicador',
                 as: 'catalogos'
-            })
+            });
+
             this.belongsToMany(models.CatalogoDetail, {
                 through: models.CatalogoDetailIndicador,
                 foreignKey: 'idIndicador',
                 as: 'catalogosFilters'
-            })
+            });
+
             this.hasOne(models.Formula, { foreignKey: 'idIndicador' });
+
             this.hasMany(models.Historico, { foreignKey: 'idIndicador' });
+
             this.hasOne(models.Mapa, { foreignKey: 'idIndicador' });
 
             this.belongsToMany(models.Dimension, {
                 through: models.IndicadorObjetivo,
                 foreignKey: 'idIndicador',
                 as: 'objetivos'
-            })
+            });
+
+            this.belongsToMany(models.Meta, {
+                through: models.IndicadorMeta,
+                foreignKey: 'idIndicador',
+                as: 'metas'
+            });
+
         }
     };
     Indicador.init(
@@ -133,6 +156,15 @@ module.exports = (sequelize, DataTypes) => {
                     model: 'Temas',
                     key: 'id'
                 },
+            },
+
+            idCobertura: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+                references: {
+                    model: 'Cobertura',
+                    key: 'id'
+                }
             },
         },
         {
