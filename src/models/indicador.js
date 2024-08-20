@@ -62,6 +62,11 @@ module.exports = (sequelize, DataTypes) => {
                 defaultValue: -1
             },
 
+            adornment: {
+                type: DataTypes.STRING,
+                allowNull: true
+            },
+
             unidadMedida: {
                 type: DataTypes.STRING,
                 allowNull: false,
