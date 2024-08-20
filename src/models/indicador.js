@@ -80,9 +80,20 @@ module.exports = (sequelize, DataTypes) => {
             },
 
             ultimoValorDisponible: {
+                type: DataTypes.DOUBLE,
+                allowNull: false,
+                defaultValue: -1
+            },
+
+            adornment: {
+                type: DataTypes.STRING,
+                allowNull: true
+            },
+
+            unidadMedida: {
                 type: DataTypes.STRING,
                 allowNull: false,
-                defaultValue: 'NA'
+                defaultValue: ''
             },
 
             anioUltimoValorDisponible: {

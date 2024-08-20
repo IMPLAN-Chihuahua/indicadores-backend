@@ -56,6 +56,8 @@ const findAllIndicadores = async (args) => {
       'nombre',
       'tendenciaActual',
       'ultimoValorDisponible',
+      'adornment',
+      'unidadMedida',
       'anioUltimoValorDisponible',
       'updatedAt'
     ],
