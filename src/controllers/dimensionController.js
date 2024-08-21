@@ -69,12 +69,12 @@ const getDimension = async (req, res, next) => {
 
 const getTemasInObjetivo = async (req, res, next) => {
     const { idObjetivo, page, perPage } = req.matchedData;
-    const temas = await sequelize.query(`
-            SELECT m."id", m."temaIndicador" FROM "Temas" m
-            INNER JOIN "Indicadores" i on i."idTema" = m."id"
-            INNER JOIN "IndicadorObjetivos" io on io."idIndicador" = i."id"
-            WHERE io."idObjetivo" = :idObjetivo
-            GROUP BY m."id", m."temaIndicador"`, {
+    const temas = await sequelize.query(
+        'SELECT m."id", m."temaIndicador" FROM "Temas" m ' +
+        'INNER JOIN "Indicadores" i on i."idTema" = m."id" ' +
+        'INNER JOIN "IndicadorObjetivos" io on io."idIndicador" = i."id" ' +
+        'WHERE io."idObjetivo" = :idObjetivo ' +
+        'GROUP BY m."id", m."temaIndicador"', {
         replacements: {
             idObjetivo
         },
