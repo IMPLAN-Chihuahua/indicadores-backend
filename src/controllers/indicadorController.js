@@ -13,6 +13,7 @@ const getIndicador = async (req, res, next) => {
   const { idIndicador, format } = req.matchedData;
   try {
     const indicador = await IndicadorService.getIndicador(idIndicador, pathway);
+    // TODO: validate if temas related to indicador are not active
     if (!indicador.activo && pathway !== FRONT_PATH) {
       return res.status(409).json({ status: 409, message: `El indicador ${indicador.nombre} se encuentra inactivo` });
     }
@@ -20,7 +21,7 @@ const getIndicador = async (req, res, next) => {
     if (pathway === FILE_PATH) {
       return generateFile(format, res, indicador).catch(err => next(err));
     }
-    
+
     return (res.status(200).json({ data: indicador, navigation: { prev: indicador.prev, next: indicador.next } }));
 
   } catch (err) {
@@ -85,7 +86,7 @@ const getIndicadoresOfObjetivo = async (req, res, next) => {
   let offset = (page - 1) * perPage;
 
   const destacadosCount = await IndicadorService.countIndicadores({ searchQuery, destacado: true, ...filters })
-  
+
   if (page === 1) {
     destacados = await IndicadorService.findAllIndicadores({
       destacado: true,
@@ -99,7 +100,7 @@ const getIndicadoresOfObjetivo = async (req, res, next) => {
   if (page > 1) {
     offset -= destacadosCount;
   }
-  
+
   const noDestacados = await IndicadorService.findAllIndicadores({
     destacado: false,
     offset,
