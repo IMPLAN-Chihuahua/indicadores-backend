@@ -13,19 +13,17 @@ const getIndicador = async (req, res, next) => {
   const { idIndicador, format } = req.matchedData;
   try {
     const indicador = await IndicadorService.getIndicador(idIndicador, pathway);
-
-    if (indicador.activo) {
-      const hasConflict = indicador.activo === false || indicador?.Tema.activo === false;
-
-      if (hasConflict && pathway !== FRONT_PATH) {
-        return res.status(409).json({ status: 409, message: `El indicador ${indicador.nombre} se encuentra inactivo` });
-      }
-
-      if (pathway === FILE_PATH) {
-        return generateFile(format, res, indicador).catch(err => next(err));
-      }
-      return (res.status(200).json({ data: indicador, navigation: { prev: indicador.prev, next: indicador.next } }));
+    // TODO: validate if temas related to indicador are not active
+    if (!indicador.activo && pathway !== FRONT_PATH) {
+      return res.status(409).json({ status: 409, message: `El indicador ${indicador.nombre} se encuentra inactivo` });
     }
+
+    if (pathway === FILE_PATH) {
+      return generateFile(format, res, indicador).catch(err => next(err));
+    }
+
+    return (res.status(200).json({ data: indicador, navigation: { prev: indicador.prev, next: indicador.next } }));
+
   } catch (err) {
     next(err)
   }
@@ -83,20 +81,38 @@ const getIndicadores = async (req, res, next) => {
 const getIndicadoresOfObjetivo = async (req, res, next) => {
   const { page, perPage, searchQuery, ...filters } = req.matchedData;
   let indicadores = []
+  let destacados = []
   let total = 0;
-  const destacados = await IndicadorService.findAllIndicadoresInDimension({
-    page: 1,
-    perPage: 3,
-    filters: { destacado: true, idObjetivo: filters.idObjetivo }
+  let offset = (page - 1) * perPage;
+
+  const destacadosCount = await IndicadorService.countIndicadores({ searchQuery, destacado: true, ...filters })
+
+  if (page === 1) {
+    destacados = await IndicadorService.findAllIndicadores({
+      destacado: true,
+      perPage: IndicadorService.LIMIT_NUMBER_INDICADORES_PER_DIMENSION,
+      searchQuery,
+      offset: 0,
+      ...filters
+    });
+  }
+
+  if (page > 1) {
+    offset -= destacadosCount;
+  }
+
+  const noDestacados = await IndicadorService.findAllIndicadores({
+    destacado: false,
+    offset,
+    perPage: page === 1 ? perPage - destacadosCount : perPage,
+    searchQuery,
+    ...filters,
   });
-  const destacadosCount = await IndicadorService.countIndicadoresInDimension({ filters: { idObjetivo: filters.idObjetivo, destacado: true } })
 
-  const _perPage = perPage - destacados.length;
-  const _indicadores = await IndicadorService.findAllIndicadoresInDimension({ page, perPage: _perPage, filters: { ...filters, destacado: false }, searchQuery });
-  const indicadoresCount = await IndicadorService.countIndicadoresInDimension({ filters: { idObjetivo: filters.idObjetivo, destacado: false } })
-
-  indicadores = [...destacados, ..._indicadores];
+  indicadores = [...destacados, ...noDestacados]
+  const indicadoresCount = await IndicadorService.countIndicadores({ searchQuery, destacado: false, ...filters })
   total = indicadoresCount + destacadosCount;
+
   return res.status(200).json({
     data: indicadores,
     total: total,

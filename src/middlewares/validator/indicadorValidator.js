@@ -2,7 +2,7 @@ const { check, validationResult, query, param, matchedData, body } = require('ex
 const { validYear } = require('./generalValidator');
 
 const filterIndicadoresValidationRules = () => [
-    query(['anioUltimoValorDisponible', 'idOds', 'idCobertura', 'idUnidadMedida', 'idDimension', 'owner'])
+    query(['anioUltimoValorDisponible', 'ods', 'cobertura', 'medida', 'idDimension', 'owner', 'tema'])
         .optional()
         .isInt().withMessage('Field must be an integer number')
         .toInt()
@@ -17,16 +17,17 @@ const filterIndicadoresValidationRules = () => [
         .toUpperCase()
         .isIn(['ASCENDENTE', 'DESCENDENTE', 'NO APLICA']),
     query('searchQuery')
-        .optional(),
+        .optional()
+        .trim(),
 
     query('idDimensions')
         .optional()
         .isString(),
 
-    query('temas')
+    query('temas.*')
         .optional()
-        .isString(),
-
+        .isInt()
+        .toInt()
 ];
 
 const sortValidationRules = () => [

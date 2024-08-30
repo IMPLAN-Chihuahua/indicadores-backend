@@ -23,7 +23,7 @@ RUN --mount=type=bind,source=package.json,target=package.json \
 ENV NODE_ENV=development
 COPY --chown=node:node . .
 USER node
-CMD npm run dev
+CMD ["npm", "run", "dev"]
 
 
 FROM base AS prod
@@ -35,6 +35,6 @@ ENV NODE_ENV=production
 COPY --chown=node:node . .
 USER node
 HEALTHCHECK --interval=1m --timeout=3s --retries=5 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:8080 || exit 1
-CMD npm run start
+    CMD ["wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080", "||", "exit", "1"]
+CMD ["npm", "run", "start"]
 
