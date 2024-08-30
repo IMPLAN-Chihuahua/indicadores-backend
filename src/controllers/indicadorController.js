@@ -79,14 +79,13 @@ const getIndicadores = async (req, res, next) => {
 
 const getIndicadoresOfObjetivo = async (req, res, next) => {
   const { page, perPage, searchQuery, ...filters } = req.matchedData;
-
   let indicadores = []
   let destacados = []
   let total = 0;
   let offset = (page - 1) * perPage;
 
   const destacadosCount = await IndicadorService.countIndicadores({ searchQuery, destacado: true, ...filters })
-
+  
   if (page === 1) {
     destacados = await IndicadorService.findAllIndicadores({
       destacado: true,
@@ -98,9 +97,9 @@ const getIndicadoresOfObjetivo = async (req, res, next) => {
   }
 
   if (page > 1) {
-    offset -= perPage - destacadosCount;
+    offset -= destacadosCount;
   }
-
+  
   const noDestacados = await IndicadorService.findAllIndicadores({
     destacado: false,
     offset,
