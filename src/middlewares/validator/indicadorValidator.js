@@ -24,12 +24,10 @@ const filterIndicadoresValidationRules = () => [
         .optional()
         .isString(),
 
-    query('temas')
+    query('temas.*')
         .optional()
-        .isString()
-        .customSanitizer(value => {
-            return value.split(',').map(v => parseInt(v))
-        })
+        .isInt()
+        .toInt()
 ];
 
 const sortValidationRules = () => [
