@@ -133,7 +133,7 @@ const filterIndicadoresBySearchQuery = (str) => {
 
 
 const countIndicadores = async ({ searchQuery, ...filters }) => {
-  const { idObjetivo, destacado, } = filters;
+  const { idObjetivo, destacado, temas} = filters;
 
   const count = await Indicador.count({
     where: {
@@ -154,6 +154,13 @@ const countIndicadores = async ({ searchQuery, ...filters }) => {
           ...(destacado !== undefined && { destacado })
         }
       },
+    }, {
+      model: Tema,
+      required: true,
+      attributes: ['id', 'temaIndicador', 'color', 'codigo'],
+      where: {
+        ...(temas && temas.length > 0 && { id: temas })
+      }
     }]
   })
   return count;
