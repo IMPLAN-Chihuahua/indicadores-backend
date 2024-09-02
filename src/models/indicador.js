@@ -13,10 +13,6 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: 'idCobertura'
             });
 
-            this.belongsTo(models.ODS, {
-                foreignKey: 'idODS'
-            })
-
             this.belongsToMany(models.Usuario, { through: models.UsuarioIndicador, foreignKey: 'idIndicador' });
 
             this.belongsToMany(models.CatalogoDetail, {
