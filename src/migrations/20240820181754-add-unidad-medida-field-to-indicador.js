@@ -38,12 +38,6 @@ module.exports = {
         });
       }
 
-      await queryInterface.sequelize.query(`
-        UPDATE "Indicadores" SET "adornment" = '%' WHERE "unidadMedida" ILIKE '%Porcentaje%'
-      `, {
-        transaction
-      })
-
       await transaction.commit();
     } catch (err) {
       console.log(err)

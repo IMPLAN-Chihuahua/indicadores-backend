@@ -64,6 +64,7 @@ const generateFile = async (format, res, indicador) => {
   }
 }
 
+// TODO: fix pagination when filters are applied
 const getIndicadores = async (req, res, next) => {
   const { pathway } = req;
   const { page, perPage } = getPagination(req.matchedData);

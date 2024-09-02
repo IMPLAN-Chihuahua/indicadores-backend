@@ -27,8 +27,9 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: 'No aplica'
       },
 
+      // TODO: Add migration to change datatype 
       descripcion: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         defaultValue: 'No aplica'
       },
 
