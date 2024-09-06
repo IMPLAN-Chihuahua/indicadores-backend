@@ -1,10 +1,10 @@
 const { query, param, body } = require('express-validator');
 
 
-const updateDimensionValidationRules = () => [
-    param(['idDimension'])
+const updateObjetivoalidationRules = () => [
+    param(['idObjetivo'])
         .exists()
-        .withMessage('por favor agrega un id de dimension')
+        .withMessage('por favor agrega un id de objetivo')
         .isInt()
         .withMessage('Field must be an integer number')
         .toInt(),
@@ -28,5 +28,5 @@ const updateDimensionValidationRules = () => [
 ]
 
 module.exports = {
-    updateDimensionValidationRules
+    updateObjetivoalidationRules
 }

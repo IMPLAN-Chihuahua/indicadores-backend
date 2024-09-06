@@ -14,14 +14,15 @@ const {
   Catalogo,
   CatalogoDetail,
   CatalogoDetailIndicador,
-  Dimension,
-  IndicadorObjetivo
+  Objetivo,
+  IndicadorObjetivo,
+  IndicadorTema,
 } = models;
 const { updateOrCreateCatalogosFromIndicador, addCatalogosToIndicador } = require("./catalogosService");
 const { createRelation } = require("./usuarioIndicadorService");
 const { Op } = Sequelize;
 
-const LIMIT_NUMBER_INDICADORES_PER_DIMENSION = 5;
+const LIMIT_NUMBER_INDICADORES_PER_OBJETIVO = 5;
 
 const getIndicadores = async (page, perPage, matchedData, pathway) => {
 
@@ -100,7 +101,7 @@ const findAllIndicadores = async (args) => {
         }
       },
       {
-        model: Dimension,
+        model: Objetivo,
         as: 'objetivos',
         required: true,
         attributes: ['id', [sequelize.literal('"objetivos->more"."destacado"'), 'destacado']],
@@ -133,7 +134,7 @@ const filterIndicadoresBySearchQuery = (str) => {
 
 
 const countIndicadores = async ({ searchQuery, ...filters }) => {
-  const { idObjetivo, destacado, temas} = filters;
+  const { idObjetivo, destacado, temas } = filters;
 
   const count = await Indicador.count({
     where: {
@@ -141,7 +142,7 @@ const countIndicadores = async ({ searchQuery, ...filters }) => {
       ...(searchQuery && filterIndicadoresBySearchQuery(searchQuery))
     },
     include: [{
-      model: Dimension,
+      model: Objetivo,
       as: 'objetivos',
       where: {
         ...(idObjetivo && { id: idObjetivo })
@@ -190,7 +191,7 @@ const getDefinitionsForIndicadores = (pathway, queryParams) => {
 
 const defineAttributes = (pathway, matchedData) => {
   const attributes = ["id", "nombre", "ultimoValorDisponible", "activo",
-    "anioUltimoValorDisponible", "tendenciaActual", "fuente", "createdBy", "updatedAt", "periodicidad", "owner", "archive", "adornment"];
+    "anioUltimoValorDisponible", "tendenciaActual", "fuente", "createdBy", "updatedAt", "periodicidad", "owner", "archive", "adornment", "unidadMedida"];
 
   switch (pathway) {
     case FILE_PATH:
@@ -276,7 +277,7 @@ const getIndicador = async (idIndicador, pathway) => {
     });
 
     if (pathway !== FILE_PATH || indicador === null) {
-      const temaID = indicador.Tema.id;
+      const temaID = 3;
 
       const { prevIndicador, nextIndicador } = await definePrevNextIndicadores(temaID, idIndicador);
       indicador['prev'] = prevIndicador;
@@ -331,7 +332,7 @@ const getIndicadoresFilters = (matchedData) => {
 };
 
 const advancedSearch = (matchedData) => {
-  const { idDimensions, owner, temas } = matchedData
+  const { idObjetivo, owner, temas } = matchedData
   let filter = {};
 
   if (owner) {
@@ -477,9 +478,12 @@ const includeBasicModels = () => {
       model: Tema,
       required: true,
       attributes: ['id', 'temaIndicador', 'descripcion', 'color', 'codigo', 'activo'],
+      through: {
+        model: IndicadorTema,
+      }
     },
     {
-      model: Dimension,
+      model: Objetivo,
       as: 'objetivos',
       required: true,
       attributes: ['id', 'titulo'],
@@ -580,7 +584,7 @@ const getRandomIndicador = async (idTema) => {
     where: { id: indicadorId.id },
     include: [
       {
-        model: Dimension,
+        model: Objetivo,
         as: "objetivos",
         attributes: ["titulo"]
       },
@@ -605,5 +609,5 @@ module.exports = {
   findAllIndicadores,
   countIndicadores,
   getRandomIndicador,
-  LIMIT_NUMBER_INDICADORES_PER_DIMENSION
+  LIMIT_NUMBER_INDICADORES_PER_OBJETIVO
 };

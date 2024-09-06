@@ -5,10 +5,6 @@ const {
 module.exports = (sequelize, DataTypes) => {
     class Indicador extends Model {
         static associate(models) {
-            this.belongsTo(models.Tema, {
-                foreignKey: 'idTema'
-            });
-
             this.belongsTo(models.Cobertura, {
                 foreignKey: 'idCobertura'
             });
@@ -33,10 +29,15 @@ module.exports = (sequelize, DataTypes) => {
 
             this.hasOne(models.Mapa, { foreignKey: 'idIndicador' });
 
-            this.belongsToMany(models.Dimension, {
+            this.belongsToMany(models.Objetivo, {
                 through: models.IndicadorObjetivo,
                 foreignKey: 'idIndicador',
                 as: 'objetivos'
+            });
+
+            this.belongsToMany(models.Tema, {
+                through: models.IndicadorTema,
+                foreignKey: 'idIndicador'
             });
 
             this.belongsToMany(models.Meta, {

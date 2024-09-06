@@ -5,7 +5,6 @@ const UsuarioService = require('../services/usuariosService');
 const { getPagination } = require('../utils/pagination');
 const { FILE_PATH, FRONT_PATH } = require('../middlewares/determinePathway');
 const { getImagePathLocation } = require('../utils/stringFormat');
-const { countIndicadoresByDimension } = require('./dimensionController');
 
 
 const getIndicador = async (req, res, next) => {
@@ -91,7 +90,7 @@ const getIndicadoresOfObjetivo = async (req, res, next) => {
   if (page === 1) {
     destacados = await IndicadorService.findAllIndicadores({
       destacado: true,
-      perPage: IndicadorService.LIMIT_NUMBER_INDICADORES_PER_DIMENSION,
+      perPage: IndicadorService.LIMIT_NUMBER_INDICADORES_PER_OBJETIVO,
       searchQuery,
       offset: 0,
       ...filters

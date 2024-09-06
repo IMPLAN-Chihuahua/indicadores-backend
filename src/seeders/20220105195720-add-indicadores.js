@@ -25,7 +25,7 @@ module.exports = {
         owner: 1,
         archive: false,
         idTema: 1,
-        idDimension: 1,
+        idObjetivo: 1,
         createdAt: date,
         updatedAt: date,
         tendenciaActual: i % 2 === 0 ? "ASCENDENTE" : "DESCENDENTE",

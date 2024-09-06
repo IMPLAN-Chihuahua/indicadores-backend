@@ -1,10 +1,10 @@
 const express = require('express');
 const { generalFilterOptions, paramValidationRules, paginationValidationRules, generalSortValidationRules, validate } = require('../middlewares/validator/generalValidator');
-const { countIndicadoresByDimension, editDimension, getDimension, getTemasInObjetivo } = require('../controllers/dimensionController');
+const { countIndicadoresByObjetivo, editObjetivo, getObjetivo, getTemasInObjetivo } = require('../controllers/objetivoController');
 const { verifyJWT, verifyUserIsActive, verifyUserHasRoles } = require('../middlewares/auth');
 const { uploadImage } = require('../middlewares/fileUpload');
 const { DESTINATIONS } = require('../services/fileService');
-const { updateDimensionValidationRules } = require('../middlewares/validator/dimensionValidator');
+const { updateObjetivoalidationRules } = require('../middlewares/validator/objetivoValidator');
 const { exists } = require('../middlewares/resourceExists');
 
 const { getIndicadores, getIndicadoresOfObjetivo } = require('../controllers/indicadorController');
@@ -25,7 +25,7 @@ router.get('/info/general',
     paginationValidationRules(),
     generalSortValidationRules(),
     validate,
-    countIndicadoresByDimension
+    countIndicadoresByObjetivo
 );
 
 router.route('/:idObjetivo/indicadores')
@@ -45,21 +45,21 @@ router.get('/:idObjetivo/temas',
     getTemasInObjetivo
 );
 
-router.patch('/:idDimension',
+router.patch('/:idObjetivo',
     verifyJWT,
     verifyUserIsActive,
     verifyUserHasRoles(['ADMIN']),
-    uploadImage(DESTINATIONS.DIMENSIONES),
-    updateDimensionValidationRules(),
+    uploadImage(DESTINATIONS.OBJETIVOS),
+    updateObjetivoalidationRules(),
     validate,
-    exists('idDimension', 'Dimension'),
-    editDimension
+    exists('idObjetivo', 'Objetivo'),
+    editObjetivo
 );
 
-router.get('/:idDimension',
+router.get('/:idObjetivo',
     paramValidationRules(),
     validate,
-    getDimension
+    getObjetivo
 )
 
 

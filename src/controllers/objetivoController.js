@@ -1,37 +1,18 @@
 const { QueryTypes } = require('sequelize');
-const { Dimension, Sequelize, Indicador, Tema, IndicadorObjetivo, sequelize } = require('../models');
+const { Objetivo, Sequelize, Indicador, Tema, IndicadorObjetivo, sequelize } = require('../models');
 
-const countIndicadoresByDimension = async (req, res, next) => {
+const countIndicadoresByObjetivo = async (req, res, next) => {
     try {
 
         const result = await IndicadorObjetivo.findAll({
             attributes: [[Sequelize.fn('COUNT', Sequelize.col('idIndicador')), 'indicadoresCount']],
             include: [{
-                model: Dimension,
+                model: Objetivo,
                 attributes: ['id', 'titulo', 'descripcion', 'urlImagen', 'color'],
             }],
-            group: ['idObjetivo', 'dimension.id'],
+            group: ['idObjetivo', 'objetivo.id'],
             order: [['idObjetivo']],
         })
-
-
-        // const result = await Dimension.findAll({
-        //     attributes: [
-        //         'id',
-        //         'titulo',
-        //         'descripcion',
-        //         'urlImagen',
-        //         'color',
-        //         [Sequelize.fn('COUNT', Sequelize.col('indicadores.id')), 'indicadoresCount']
-        //     ],
-        //     include: [{
-        //         model: Indicador,
-        //         attributes: []
-        //     }],
-        //     group: ['Dimension.id'],
-        //     order: [['id']],
-        //     raw: true
-        // });
 
         return res.status(200).json({
             data: result
@@ -41,12 +22,12 @@ const countIndicadoresByDimension = async (req, res, next) => {
     }
 };
 
-const editDimension = async (req, res, next) => {
+const editObjetivo = async (req, res, next) => {
     const { idTema, ...fields } = req.matchedData;
     const image = getImagePathLocation(req);
 
     try {
-        const updateDimension = 1;
+        const updateObjetivo = 1;
 
         return res.sendStatus(204);
     } catch (err) {
@@ -54,14 +35,14 @@ const editDimension = async (req, res, next) => {
     }
 };
 
-const getDimension = async (req, res, next) => {
-    const { idDimension } = req.matchedData;
+const getObjetivo = async (req, res, next) => {
+    const { idObjetivo } = req.matchedData;
     try {
-        const dimension = await Dimension.findByPk(idDimension);
-        if (dimension === null) {
+        const objetivo = await Objetivo.findByPk(idObjetivo);
+        if (objetivo === null) {
             return res.sendStatus(404);
         }
-        return res.status(200).json({ data: dimension });
+        return res.status(200).json({ data: objetivo });
     } catch (err) {
         next(err);
     }
@@ -85,8 +66,8 @@ const getTemasInObjetivo = async (req, res, next) => {
 }
 
 module.exports = {
-    countIndicadoresByDimension,
-    editDimension,
-    getDimension,
+    countIndicadoresByObjetivo,
+    editObjetivo,
+    getObjetivo,
     getTemasInObjetivo
 }

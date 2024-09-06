@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     class IndicadorMeta extends Model {
         static associate(models) {
             this.belongsTo(models.Indicador, { foreignKey: 'idIndicador', targetKey: 'id' });
-            this.belongsTo(models.Dimension, { foreignKey: 'idMeta', targetKey: 'id' });
+            this.belongsTo(models.Objetivo, { foreignKey: 'idMeta', targetKey: 'id' });
         }
     }
 

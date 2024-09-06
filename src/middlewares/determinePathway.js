@@ -36,8 +36,8 @@ const determineModel = (req, res, next) => {
       req.model = 'Tema';
       next();
       break;
-    case 'dimensiones':
-      req.model = 'dimension';
+    case 'objetivos':
+      req.model = 'objetivo';
       next();
       break;
     default:

@@ -3,7 +3,7 @@ const {
     Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-    class Dimension extends Model {
+    class Objetivo extends Model {
         static associate(models) {
             this.belongsToMany(models.Indicador, {
                 through: models.IndicadorObjetivo,
@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
             })
         }
     };
-    Dimension.init(
+    Objetivo.init(
         {
             id: {
                 type: DataTypes.INTEGER,
@@ -56,11 +56,11 @@ module.exports = (sequelize, DataTypes) => {
         {
             sequelize,
             name: {
-                singular: 'dimension',
-                plural: 'dimensions'
+                singular: 'objetivo',
+                plural: 'objetivos'
             },
-            modelName: 'Dimension',
+            modelName: 'Objetivo',
             timestamps: true,
         });
-    return Dimension;
+    return Objetivo;
 };

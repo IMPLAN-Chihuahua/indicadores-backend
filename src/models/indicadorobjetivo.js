@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       this.belongsTo(models.Indicador, { foreignKey: 'idIndicador', targetKey: 'id' });
-      this.belongsTo(models.Dimension, { foreignKey: 'idObjetivo', targetKey: 'id' });
+      this.belongsTo(models.Objetivo, { foreignKey: 'idObjetivo', targetKey: 'id' });
     }
   }
   IndicadorObjetivo.init({
@@ -32,7 +32,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'Dimensions',
+        model: 'Objetivos',
         key: 'id'
       }
     },

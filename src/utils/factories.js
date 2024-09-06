@@ -1,5 +1,5 @@
 const faker = require('faker');
-const { Tema, Indicador, Dimension, CatalogoDetail } = require('../models')
+const { Tema, Indicador, Objetivo, CatalogoDetail } = require('../models')
 
 
 const aDummyWithName = (id) => ({
@@ -37,9 +37,9 @@ const anIndicador = (id, options) => {
 		createdAt: new Date(),
 		catalogos: [],
 		Tema: temaInteres,
-		dimension: null,
+		objetivo: null,
 	}, {
-		include: [Tema, Dimension, { model: CatalogoDetail, as: 'catalogos' }]
+		include: [Tema, Objetivo, { model: CatalogoDetail, as: 'catalogos' }]
 	})
 	indicador.validate()
 	return indicador;
@@ -59,7 +59,7 @@ const indicadorToCreate = () => {
 		observaciones: faker.random.words(10),
 		fuente: faker.internet.url(),
 		urlImagen: faker.image.avatar(),
-		idDimension: 1,
+		idObjetivo: 1,
 		idTema: 1
 	});
 	return indicador.dataValues;
@@ -285,7 +285,7 @@ const usersToIndicador = () => ([
 	}
 ]);
 
-const aDimension = (id) => ({
+const anObjetivo = (id) => ({
 	id,
 	titulo: faker.lorem.words(Math.floor(Math.random() * 10) + 1),
 	descripcion: faker.lorem.sentence(),
@@ -314,5 +314,5 @@ module.exports = {
 	someHistoricos,
 	relationInfo,
 	usersToIndicador,
-	aDimension
+	anObjetivo
 };
