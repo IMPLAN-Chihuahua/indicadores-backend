@@ -48,6 +48,16 @@ const getObjetivo = async (req, res, next) => {
     }
 };
 
+const getObjetivos = async (req, res, next) => {
+    try {
+        const objetivos = await Objetivo.findAll();
+
+        return res.status(200).json({ data: objetivos });
+    } catch (err) {
+        next(err);
+    }
+}
+
 const getTemasInObjetivo = async (req, res, next) => {
     const { idObjetivo, page, perPage } = req.matchedData;
     const temas = await sequelize.query(
@@ -69,5 +79,6 @@ module.exports = {
     countIndicadoresByObjetivo,
     editObjetivo,
     getObjetivo,
-    getTemasInObjetivo
+    getTemasInObjetivo,
+    getObjetivos
 }

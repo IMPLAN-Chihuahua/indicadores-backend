@@ -15,8 +15,19 @@ const {
 const { determinePathway, SITE_PATH, determineModel } = require('../middlewares/determinePathway');
 const { default: PromiseRouter } = require('express-promise-router');
 const { param } = require('express-validator');
+const { getInformation } = require('../controllers/generalController');
 
 const router = PromiseRouter();
+
+router.get('/',
+    determineModel,
+    generalFilterOptions(),
+    paramValidationRules(),
+    paginationValidationRules(),
+    generalSortValidationRules(),
+    validate,
+    getInformation
+);
 
 router.get('/info/general',
     determineModel,
