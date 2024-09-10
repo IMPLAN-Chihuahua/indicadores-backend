@@ -158,6 +158,19 @@ const updateIndicadorValidationRules = () => [
     ])
         .isInt()
         .toInt(),
+    body('temas')
+        .optional()
+        .isArray()
+        .customSanitizer(temas => temas.map(t => {
+            return typeof t === 'string' ? JSON.parse(t) : t
+        })),
+    body('objetivos')
+        .optional()
+        .isArray()
+        .customSanitizer(objetivos => objetivos.map(t => {
+            return typeof t === 'string' ? JSON.parse(t) : t
+        })),
+
     body('archive').optional().isBoolean(),
     body('archive').default(false)
 ];
