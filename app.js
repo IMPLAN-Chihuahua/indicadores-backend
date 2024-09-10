@@ -87,8 +87,7 @@ app.use('/api/v1/formulas', require('./src/routes/formulas'));
 app.use('/api/v1/variables', require('./src/routes/variables'));
 app.use('/api/v1/relation', require('./src/routes/usuariosIndicadores'));
 app.use('/api/v1/mapas', require('./src/routes/mapas'));
-//TODO change route to objetivos
-app.use('/api/v1/dimensiones', require('./src/routes/objetivos'));
+app.use('/api/v1/objetivos', require('./src/routes/objetivos'));
 
 if (process.env.NODE_ENV !== 'production') {
   app.use('/uploads', (_, res, next) => {
