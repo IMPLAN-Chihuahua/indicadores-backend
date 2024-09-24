@@ -2,14 +2,14 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class IndicadorMeta extends Model {
+    class IndicadorMetas extends Model {
         static associate(models) {
             this.belongsTo(models.Indicador, { foreignKey: 'idIndicador', targetKey: 'id' });
-            this.belongsTo(models.Objetivo, { foreignKey: 'idMeta', targetKey: 'id' });
+            this.belongsTo(models.Metas, { foreignKey: 'idMeta', targetKey: 'id' });
         }
     }
 
-    IndicadorMeta.init({
+    IndicadorMetas.init({
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
             }
         },
 
-        idObjetivo: {
+        idMeta: {
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
@@ -41,9 +41,9 @@ module.exports = (sequelize, DataTypes) => {
             type: 'UNIQUE',
         }],
         sequelize,
-        modelName: 'IndicadorMeta',
+        modelName: 'IndicadorMetas',
     });
 
-    return IndicadorMeta;
+    return IndicadorMetas;
 
 }

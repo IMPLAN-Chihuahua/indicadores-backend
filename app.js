@@ -88,6 +88,7 @@ app.use('/api/v1/variables', require('./src/routes/variables'));
 app.use('/api/v1/relation', require('./src/routes/usuariosIndicadores'));
 app.use('/api/v1/mapas', require('./src/routes/mapas'));
 app.use('/api/v1/objetivos', require('./src/routes/objetivos'));
+app.use('/api/v1/ods', require('./src/routes/ods'));
 
 if (process.env.NODE_ENV !== 'production') {
   app.use('/uploads', (_, res, next) => {

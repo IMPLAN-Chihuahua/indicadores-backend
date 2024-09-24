@@ -2,15 +2,15 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class ODS extends Model {
+    class Ods extends Model {
         static associate(models) {
-            this.hasMany(models.Meta, {
-                foreignKey: 'idODS'
+            this.hasMany(models.Metas, {
+                foreignKey: 'idOds'
             });
         }
     };
 
-    ODS.init({
+    Ods.init({
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
@@ -46,9 +46,9 @@ module.exports = (sequelize, DataTypes) => {
                 singular: 'ods',
                 plural: 'odss',
             },
-            modelName: 'ODS',
+            modelName: 'Ods',
             timestamps: true,
         });
 
-    return ODS;
+    return Ods;
 }

@@ -170,6 +170,12 @@ const updateIndicadorValidationRules = () => [
         .customSanitizer(objetivos => objetivos.map(t => {
             return typeof t === 'string' ? JSON.parse(t) : t
         })),
+    body('metas')
+        .optional()
+        .isArray()
+        .customSanitizer(metas => metas.map(t => {
+            return typeof t === 'string' ? JSON.parse(t) : t
+        })),
 
     body('archive').optional().isBoolean(),
     body('archive').default(false)

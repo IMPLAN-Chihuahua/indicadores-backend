@@ -2,20 +2,20 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class Meta extends Model {
+    class Metas extends Model {
         static associate(models) {
             this.belongsToMany(models.Indicador, {
-                through: models.IndicadorMeta,
+                through: models.IndicadorMetas,
                 foreignKey: 'idMeta',
             })
 
-            this.belongsTo(models.ODS, {
-                foreignKey: 'idODS'
+            this.belongsTo(models.Ods, {
+                foreignKey: 'idOds'
             })
         }
     };
 
-    Meta.init({
+    Metas.init({
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true
         },
 
-        idODS: {
+        idOds: {
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
@@ -48,9 +48,9 @@ module.exports = (sequelize, DataTypes) => {
             singular: 'meta',
             plural: 'metas'
         },
-        modelName: 'Meta',
+        modelName: 'Metas',
         timestamps: true,
     })
 
-    return Meta;
+    return Metas;
 }

@@ -40,6 +40,10 @@ const determineModel = (req, res, next) => {
       req.model = 'objetivo';
       next();
       break;
+    case 'ods':
+      req.model = 'ods';
+      next();
+      break;
     default:
       return res.status(403).send('Este módulo no tiene petición general de información.');
 

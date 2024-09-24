@@ -40,8 +40,8 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: 'idIndicador'
             });
 
-            this.belongsToMany(models.Meta, {
-                through: models.IndicadorMeta,
+            this.belongsToMany(models.Metas, {
+                through: models.IndicadorMetas,
                 foreignKey: 'idIndicador',
                 as: 'metas'
             });
