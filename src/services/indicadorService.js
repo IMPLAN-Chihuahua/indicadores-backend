@@ -22,6 +22,7 @@ const { updateOrCreateCatalogosFromIndicador, addCatalogosToIndicador } = requir
 const { createRelation } = require("./usuarioIndicadorService");
 const { updateIndicadorTemas } = require("./indicadorTemasService");
 const { updateIndicadorObjetivos } = require("./indicadorObjetivosService");
+const { updateIndicadorMetas } = require("./indicadorMetasService");
 const { Op } = Sequelize;
 
 const LIMIT_NUMBER_INDICADORES_PER_OBJETIVO = 5;
@@ -420,8 +421,7 @@ const getIndicadorStatus = async (id) => {
 }
 
 const updateIndicador = async (id, indicador) => {
-  const { catalogos, temas, objetivos, ...values } = indicador;
-
+  const { catalogos, temas, objetivos, metas, ...values } = indicador;
 
   try {
     sequelize.transaction(async _t => {
@@ -437,6 +437,10 @@ const updateIndicador = async (id, indicador) => {
       if (objetivos) {
         const objetivosIds = objetivos.map(objetivo => objetivo.id);
         await updateIndicadorObjetivos(id, objetivosIds);
+      }
+
+      if (metas) {
+        await updateIndicadorMetas(id, metas);
       }
 
       await Indicador.update(values, { where: { id } });

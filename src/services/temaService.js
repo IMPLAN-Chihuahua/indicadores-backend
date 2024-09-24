@@ -2,10 +2,6 @@ const { Tema, Sequelize, Indicador, IndicadorTema } = require('../models');
 const { Op } = Sequelize;
 
 const getTemas = async () => {
-    console.log('### bitch i said what i said')
-    console.log('### bitch i said what i said')
-    console.log('### bitch i said what i said')
-    console.log('### bitch i said what i said')
     try {
         const temas = await Tema.findAll({
             where: {
