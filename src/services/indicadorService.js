@@ -17,12 +17,13 @@ const {
   Objetivo,
   IndicadorObjetivo,
   IndicadorTema,
+  Cobertura,
+  Ods
 } = models;
 const { updateOrCreateCatalogosFromIndicador, addCatalogosToIndicador } = require("./catalogosService");
 const { createRelation } = require("./usuarioIndicadorService");
 const { updateIndicadorTemas } = require("./indicadorTemasService");
 const { updateIndicadorObjetivos } = require("./indicadorObjetivosService");
-const { updateIndicadorMetas } = require("./indicadorMetasService");
 const { Op } = Sequelize;
 
 const LIMIT_NUMBER_INDICADORES_PER_OBJETIVO = 5;
@@ -61,6 +62,8 @@ const findAllIndicadores = async (args) => {
       'tendenciaActual',
       'ultimoValorDisponible',
       'adornment',
+      'idCobertura',
+      'idOds',
       'unidadMedida',
       'anioUltimoValorDisponible',
       'updatedAt'
@@ -102,6 +105,11 @@ const findAllIndicadores = async (args) => {
         where: {
           ...(temas.length > 0 && { id: temas })
         }
+      },
+      {
+        model: Cobertura,
+        required: false,
+        attributes: ['id', 'tipo'],
       },
       {
         model: Objetivo,
@@ -194,7 +202,7 @@ const getDefinitionsForIndicadores = (pathway, queryParams) => {
 
 const defineAttributes = (pathway, matchedData) => {
   const attributes = ["id", "nombre", "ultimoValorDisponible", "activo",
-    "anioUltimoValorDisponible", "tendenciaActual", "fuente", "createdBy", "updatedAt", "periodicidad", "owner", "archive", "adornment", "unidadMedida"];
+    "anioUltimoValorDisponible", "tendenciaActual", "fuente", "createdBy", "updatedAt", "periodicidad", "owner", "archive", "adornment", "unidadMedida", "idCobertura", "idOds"];
 
   switch (pathway) {
     case FILE_PATH:
@@ -280,11 +288,7 @@ const getIndicador = async (idIndicador, pathway) => {
     });
 
     if (pathway !== FILE_PATH || indicador === null) {
-      const temaID = 3;
 
-      const { prevIndicador, nextIndicador } = await definePrevNextIndicadores(temaID, idIndicador);
-      indicador['prev'] = prevIndicador;
-      indicador['next'] = nextIndicador;
       return indicador;
     }
 
@@ -421,7 +425,7 @@ const getIndicadorStatus = async (id) => {
 }
 
 const updateIndicador = async (id, indicador) => {
-  const { catalogos, temas, objetivos, metas, ...values } = indicador;
+  const { catalogos, temas, objetivos, ...values } = indicador;
 
   try {
     sequelize.transaction(async _t => {
@@ -437,10 +441,6 @@ const updateIndicador = async (id, indicador) => {
       if (objetivos) {
         const objetivosIds = objetivos.map(objetivo => objetivo.id);
         await updateIndicadorObjetivos(id, objetivosIds);
-      }
-
-      if (metas) {
-        await updateIndicadorMetas(id, metas);
       }
 
       await Indicador.update(values, { where: { id } });
@@ -509,6 +509,12 @@ const includeBasicModels = () => {
         as: 'more',
         attributes: ['destacado']
       }
+    },
+    {
+      model: Ods,
+      as: 'ods',
+      required: true,
+      attributes: ['id', 'titulo', 'descripcion'],
     },
     {
       model: CatalogoDetail,

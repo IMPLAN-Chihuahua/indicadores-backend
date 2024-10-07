@@ -44,6 +44,10 @@ const determineModel = (req, res, next) => {
       req.model = 'ods';
       next();
       break;
+    case 'coberturas':
+      req.model = 'cobertura';
+      next();
+      break;
     default:
       return res.status(403).send('Este módulo no tiene petición general de información.');
 

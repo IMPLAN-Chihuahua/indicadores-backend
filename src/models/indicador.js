@@ -9,6 +9,10 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: 'idCobertura'
             });
 
+            this.belongsTo(models.Ods, {
+                foreignKey: 'idOds'
+            });
+
             this.belongsToMany(models.Usuario, { through: models.UsuarioIndicador, foreignKey: 'idIndicador' });
 
             this.belongsToMany(models.CatalogoDetail, {
@@ -39,13 +43,6 @@ module.exports = (sequelize, DataTypes) => {
                 through: models.IndicadorTema,
                 foreignKey: 'idIndicador'
             });
-
-            this.belongsToMany(models.Metas, {
-                through: models.IndicadorMetas,
-                foreignKey: 'idIndicador',
-                as: 'metas'
-            });
-
         }
     };
     Indicador.init(
