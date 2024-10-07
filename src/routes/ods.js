@@ -24,7 +24,7 @@ router.get('/',
     getInformation
 );
 
-router.get('/metas/:idOds',
+router.get('/metas',
     idValidation(),
     paginationValidationRules(),
     generalSortValidationRules(),
