@@ -48,7 +48,6 @@ const getIndicadores = async (page, perPage, matchedData, pathway) => {
   }
 };
 
-
 const findAllIndicadores = async (args) => {
   const { page, perPage = 25, offset, searchQuery, ...filters } = args;
   const { idObjetivo, destacado = false, activo = true, temas = [] } = filters;
@@ -408,7 +407,6 @@ const assignIndicadorToUsuario = (idIndicador, idUsuario) => {
     expires: 'NO'
   })
 }
-
 
 const updateIndicadorStatus = async (id) => {
   try {

@@ -11,7 +11,6 @@ const {
 } = require('../middlewares/validator/generalValidator');
 const { determineModel } = require('../middlewares/determinePathway');
 const { getInformation } = require('../controllers/generalController');
-const { getMetasFromOds } = require('../controllers/odsController');
 
 
 router.get('/',
@@ -23,13 +22,5 @@ router.get('/',
     validate,
     getInformation
 );
-
-router.get('/metas',
-    idValidation(),
-    paginationValidationRules(),
-    generalSortValidationRules(),
-    validate,
-    getMetasFromOds
-)
 
 module.exports = router;

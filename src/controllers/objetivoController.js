@@ -1,21 +1,30 @@
 const { QueryTypes } = require('sequelize');
 const { Objetivo, Sequelize, Indicador, Tema, IndicadorObjetivo, sequelize } = require('../models');
+const IndicadorService = require('../services/indicadorService');
 
 const countIndicadoresByObjetivo = async (req, res, next) => {
     try {
-
         const result = await IndicadorObjetivo.findAll({
             attributes: [[Sequelize.fn('COUNT', Sequelize.col('idIndicador')), 'indicadoresCount']],
             include: [{
                 model: Objetivo,
-                attributes: ['id', 'titulo', 'descripcion', 'urlImagen', 'color'],
+                attributes: ['id', 'titulo', 'descripcion', 'urlImagen', 'color', 'summary'],
             }],
             group: ['idObjetivo', 'objetivo.id'],
             order: [['idObjetivo']],
         })
 
+        const destacados = await IndicadorService.findAllIndicadores({
+            destacado: true,
+            perPage: 6,
+            // searchQuery,
+            offset: 0,
+            // ...filters
+        });
+
         return res.status(200).json({
-            data: result
+            data: result,
+            destacados
         });
     } catch (err) {
         next(err);
