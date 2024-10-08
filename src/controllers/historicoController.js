@@ -25,7 +25,7 @@ const getHistoricos = async (req, res, next) => {
 
 const deleteHistorico = async (req, res, _next) => {
   const { idHistorico } = req.matchedData;
-  
+
   await HistoricoService.deleteHistorico(idHistorico);
   return res.status(200).json({ message: 'Historico eliminado' })
 };
@@ -41,8 +41,8 @@ const updateHistorico = async (req, res, next) => {
 
 const createHistorico = async (req, res, next) => {
   const { idIndicador, ...historico } = req.matchedData;
-
-  const response = await HistoricoService.createHistorico(idIndicador, historico);
+  const idUser = req.sub;
+  const response = await HistoricoService.createHistorico(idIndicador, historico, idUser);
   return res.status(201).json(response);
 }
 
