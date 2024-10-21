@@ -125,11 +125,11 @@ const getIndicadoresOfObjetivo = async (req, res, _next) => {
   indicadores = [...destacados, ...noDestacados]
 
   return res.status(200).json({
-    data: indicadores,
-    total,
     page,
     perPage,
-    totalPages: Math.ceil(total / perPage)
+    total,
+    totalPages: Math.ceil(total / perPage),
+    data: indicadores,
   })
 }
 
