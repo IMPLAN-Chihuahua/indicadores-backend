@@ -3,11 +3,11 @@ const { check, validationResult, query, param, matchedData, body } = require('ex
 const paginationValidationRules = () => [
     query(['page', 'perPage'])
         .optional()
-        .isInt().withMessage('Field must be an integer number')
+        .isInt().withMessage('Campo debe ser entero')
         .toInt()
         .custom((value) => {
             if (value < 1) {
-                throw new Error('valor debe ser mayor a 0');
+                throw new Error('El valor del campo debe ser mayor a 0');
             }
             return true;
         }),
@@ -15,11 +15,12 @@ const paginationValidationRules = () => [
     query('perPage').default(25)
 ];
 
+
 const paramValidationRules = () => [
     param(['idTema', 'idIndicador', 'idUser', 'idOds', 'idCobertura',
         'idUnidadMedida', 'idCatalogo', 'idHistorico', 'idFormula', 'idRelacion', 'idObjetivo', 'idObjetivo'])
         .optional()
-        .isInt().withMessage('Field must be an integer number')
+        .isInt().withMessage('Campo debe ser entero')
         .toInt()
         .custom((value) => {
             if (value < 1) {
@@ -111,6 +112,15 @@ const formatDocsValidation = () => {
 
 const joinRules = (...rules) => [rules]
 
+
+const searchQueryRule = () => {
+    return query('searchQuery')
+        .optional()
+        .trim()
+        .escape()
+}
+
+
 module.exports = {
     paginationValidationRules,
     paramValidationRules,
@@ -121,4 +131,5 @@ module.exports = {
     formatDocsValidation,
     generalFilterOptions,
     generalSortValidationRules,
+    searchQueryRule
 }

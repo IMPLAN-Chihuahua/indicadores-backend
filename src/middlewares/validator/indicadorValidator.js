@@ -16,11 +16,12 @@ const filterIndicadoresValidationRules = () => [
         .optional()
         .toUpperCase()
         .isIn(['ASCENDENTE', 'DESCENDENTE', 'NO APLICA']),
+
     query('searchQuery')
         .optional()
         .trim(),
 
-    query('idObjetivos')
+    query(['idObjetivos', 'objetivos.*'])
         .optional()
         .isString(),
 
@@ -29,6 +30,35 @@ const filterIndicadoresValidationRules = () => [
         .isInt()
         .toInt()
 ];
+
+
+const publicFiltersRules = () => [
+    query(['temas.*', 'ods.*', 'coberturas.*', 'objetivos.*'])
+        .optional()
+        .isInt()
+        .toInt()
+]
+
+const privateFilterRules = () => [
+    query(['temas.*', 'ods.*', 'coberturas.*', 'objetivos.*', 'usuarios.*',])
+        .optional()
+        .isInt()
+        .toInt(),
+
+    query(['idTema', 'idUsuario', 'owner'])
+        .optional()
+        .isInt()
+        .toInt(),
+        
+    query('activo')
+        .optional()
+        .isBoolean()
+        .toBoolean(),
+    query('searchQuery')
+        .optional()
+        .trim()
+]
+
 
 const sortValidationRules = () => [
     query('sortBy')
@@ -186,5 +216,7 @@ module.exports = {
     filterIndicadoresValidationRules,
     sortValidationRules,
     createIndicadorValidationRules,
-    updateIndicadorValidationRules
+    updateIndicadorValidationRules,
+    publicFiltersRules,
+    privateFilterRules
 };
