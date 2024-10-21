@@ -1,9 +1,10 @@
 const stream = require('stream');
+const PublicIndicadorService = require('../services/publicIndicadorService');
+const PrivateIndicadorService = require('../services/privateIndicadorService');
 const IndicadorService = require("../services/indicadorService")
 const { generateCSV, generateXLSX, generatePDF } = require("../services/fileService");
 const UsuarioService = require('../services/usuariosService');
-const { getPagination } = require('../utils/pagination');
-const { FILE_PATH, FRONT_PATH } = require('../middlewares/determinePathway');
+const { FILE_PATH, FRONT_PATH, SITE_PATH } = require('../middlewares/determinePathway');
 const { getImagePathLocation } = require('../utils/stringFormat');
 
 
@@ -63,59 +64,69 @@ const generateFile = async (format, res, indicador) => {
   }
 }
 
-// TODO: fix pagination when filters are applied
-const getIndicadores = async (req, res, next) => {
-  const { pathway } = req;
-  const { page, perPage } = getPagination(req.matchedData);
-  try {
-    const { indicadores, total } = await IndicadorService.getIndicadores(page, perPage, req.matchedData, pathway);
-    const { count } = await IndicadorService.getInactiveIndicadores();
-    const totalPages = Math.ceil(total / perPage);
-    return res.status(200).json({ page, perPage, total, totalInactive: count, totalPages, data: indicadores });
-  } catch (err) {
-    next(err)
-  }
+
+const getIndicadores = async (req, res, _next) => {
+  const { page, perPage, searchQuery, ...filters } = req.matchedData;
+  const indicadores = await PrivateIndicadorService.getIndicadores({
+    ...filters,
+    page,
+    perPage,
+    searchQuery,
+  })
+
+  const total = await PrivateIndicadorService.countIndicadores({
+    ...filters,
+    searchQuery,
+  })
+
+  return res.status(200).json({
+    page,
+    perPage,
+    total,
+    totalPages: Math.ceil(total / perPage),
+    data: indicadores
+  });
 }
 
 
-const getIndicadoresOfObjetivo = async (req, res, next) => {
+const getIndicadoresOfObjetivo = async (req, res, _next) => {
   const { page, perPage, searchQuery, ...filters } = req.matchedData;
   let indicadores = []
   let destacados = []
   let total = 0;
   let offset = (page - 1) * perPage;
 
-  const destacadosCount = await IndicadorService.countIndicadores({ searchQuery, destacado: true, ...filters })
+  const destacadosCount = await PublicIndicadorService.countIndicadores({ ...filters, searchQuery, destacado: true })
+  const indicadoresCount = await PublicIndicadorService.countIndicadores({ ...filters, searchQuery, destacado: false })
+  total = indicadoresCount + destacadosCount;
 
   if (page === 1) {
-    destacados = await IndicadorService.findAllIndicadores({
-      destacado: true,
+    destacados = await PublicIndicadorService.getIndicadores({
+      ...filters,
       perPage: IndicadorService.LIMIT_NUMBER_INDICADORES_PER_OBJETIVO,
-      searchQuery,
       offset: 0,
-      ...filters
-    });
+      searchQuery,
+      destacado: true,
+    })
   }
 
   if (page > 1) {
     offset -= destacadosCount;
   }
 
-  const noDestacados = await IndicadorService.findAllIndicadores({
-    destacado: false,
+  const noDestacados = await PublicIndicadorService.getIndicadores({
+    ...filters,
     offset,
     perPage: page === 1 ? perPage - destacadosCount : perPage,
     searchQuery,
-    ...filters,
+    destacado: false,
   });
 
   indicadores = [...destacados, ...noDestacados]
-  const indicadoresCount = await IndicadorService.countIndicadores({ searchQuery, destacado: false, ...filters })
-  total = indicadoresCount + destacadosCount;
 
   return res.status(200).json({
     data: indicadores,
-    total: total,
+    total,
     page,
     perPage,
     totalPages: Math.ceil(total / perPage)
