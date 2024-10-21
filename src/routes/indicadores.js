@@ -1,12 +1,14 @@
 const {
   indicadorAssignUsuarioValidationRules
 } = require('../middlewares/validator/usuarioIndicadorValidator')
+const IndicadorValidator = require('../middlewares/validator/indicadorValidator')
 const {
   filterIndicadoresValidationRules,
   sortValidationRules,
   createIndicadorValidationRules,
   updateIndicadorValidationRules,
 } = require('../middlewares/validator/indicadorValidator')
+const GeneralValidator = require('../middlewares/validator/generalValidator')
 const {
   paginationValidationRules,
   paramValidationRules,
@@ -44,9 +46,8 @@ const { verifyUserCanPerformActionOnIndicador } = require('../middlewares/verify
 const { param } = require('express-validator');
 const router = promisedRouter()
 
-
-// PUBLIC ROUTES
 /**
+ * INDICADOR SCHEMA 
  * @swagger
  *   components:
  *     schemas:
@@ -171,6 +172,8 @@ const router = promisedRouter()
  *             example: 'SI'
  */
 
+
+// PUBLIC ROUTES
 /**
  * @swagger
  *   /indicadores/{idIndicador}:
@@ -518,69 +521,11 @@ router.post('/:idIndicador/usuarios',
 
 
 // USER ROUTES
-/**
- * @swagger
- *   /indicadores:
- *     get:
- *       summary: Retrieve list of indicadores
- *       tags: [Indicadores]
- *       security:
- *         - bearer: []
- *       parameters:
- *         - in: query
- *           name: page
- *           schema:
- *             type: integer
- *         - in: query
- *           name: perPage
- *           schema:
- *             type: integer
- *         - in: query
- *           name: searchQuery
- *           description: A search query to filter list of indicadores by nombre, definicion, codigo, or observaciones
- *           required: false
- *           schema:
- *             type: string
- *       responses:
- *         200:
- *           description: List of indicadores
- *           content:
- *             application/json:
- *               schema: 
- *                 type: object
- *                 properties:
- *                   page:
- *                     type: integer
- *                     example: 1
- *                   perPage:
- *                     type: integer
- *                     example: 25
- *                   total:
- *                     type: integer
- *                     example: 50
- *                   totalPages:
- *                     type: integer
- *                     example: 2
- *                   data:
- *                     type: array
- *                     items: 
- *                       $ref: '#/components/schemas/Indicador'
- *         401:
- *           $ref: '#/components/responses/Unauthorized'
- *         422:
- *           $ref: '#/components/responses/UnprocessableEntity'
- *         429:
- *           $ref: '#/components/responses/TooManyRequests'
- *         500:
- *           $ref: '#/components/responses/InternalServerError'
- */
 router.get('/',
-  paginationValidationRules(),
-  sortValidationRules(),
-  filterIndicadoresValidationRules(),
-  validate,
-  verifyUserHasRoles(['ADMIN', 'USER']),
-  determinePathway(FRONT_PATH),
+  GeneralValidator.paginationValidationRules(),
+  GeneralValidator.searchQueryRule(),
+  IndicadorValidator.privateFilterRules(),
+  validate, 
   getIndicadores
 );
 
