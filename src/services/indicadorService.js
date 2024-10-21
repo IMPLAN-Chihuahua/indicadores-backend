@@ -18,27 +18,53 @@ const {
   IndicadorObjetivo,
   IndicadorTema,
   Cobertura,
-  Ods
+  Ods,
+  UsuarioIndicador,
+  Usuario
 } = models;
 const { updateOrCreateCatalogosFromIndicador, addCatalogosToIndicador } = require("./catalogosService");
 const { createRelation } = require("./usuarioIndicadorService");
 const { updateIndicadorTemas } = require("./indicadorTemasService");
 const { updateIndicadorObjetivos } = require("./indicadorObjetivosService");
+const { updateIndicadorMetas } = require("./indicadorMetasService");
+const PublicIndicadorService = require("./publicIndicadorService");
 const { Op } = Sequelize;
 
 const LIMIT_NUMBER_INDICADORES_PER_OBJETIVO = 5;
 
-const getIndicadores = async (page, perPage, matchedData, pathway) => {
 
-  const { where, order, attributes, includes } = getDefinitionsForIndicadores(pathway, matchedData);
+// Sorting logic for list
+const getIndicadoresSorting = ({ sortBy, order }) => {
+  const arrangement = [];
+  arrangement.push([sortBy || "id", order || "ASC"]);
+  return arrangement;
+};
+
+
+const getInactiveIndicadores = async () => {
+  const indicadores = await Indicador.findAndCountAll({
+    where: { activo: false },
+    attributes: ["id", "nombre"],
+    raw: true
+  });
+  return indicadores;
+}
+
+
+/**
+ * @deprecated
+ */
+const getIndicadores = async ({ page, perPage, filters }) => {
+  const { where, order, attributes, include } = getDefinitionsForIndicadores(pathway, filters);
+  const p = new PublicIndicadorService();
   try {
     const result = await Indicador.findAndCountAll({
       limit: perPage,
       offset: (page - 1) * perPage,
       where,
       order,
-      include: includes,
-      attributes: attributes,
+      include,
+      attributes,
       distinct: true
     });
 
@@ -48,6 +74,10 @@ const getIndicadores = async (page, perPage, matchedData, pathway) => {
   }
 };
 
+
+/**
+ * @deprecated
+ */
 const findAllIndicadores = async (args) => {
   const { page, perPage = 25, offset, searchQuery, ...filters } = args;
   const { idObjetivo, destacado = false, activo = true, temas = [] } = filters;
@@ -106,11 +136,6 @@ const findAllIndicadores = async (args) => {
         }
       },
       {
-        model: Cobertura,
-        required: false,
-        attributes: ['id', 'tipo'],
-      },
-      {
         model: Objetivo,
         as: 'objetivos',
         required: true,
@@ -132,6 +157,10 @@ const findAllIndicadores = async (args) => {
 
 }
 
+
+/**
+ * @deprecated
+ */
 const filterIndicadoresBySearchQuery = (str) => {
   return {
     [Op.or]: [
@@ -143,8 +172,12 @@ const filterIndicadoresBySearchQuery = (str) => {
 }
 
 
+/**
+ * 
+ * @deprecated
+ */
 const countIndicadores = async ({ searchQuery, ...filters }) => {
-  const { idObjetivo, destacado, temas } = filters;
+  const { idObjetivo, destacado = null, temas } = filters;
 
   const count = await Indicador.count({
     where: {
@@ -162,7 +195,7 @@ const countIndicadores = async ({ searchQuery, ...filters }) => {
         model: IndicadorObjetivo,
         attributes: [],
         where: {
-          ...(destacado !== undefined && { destacado })
+          ...(destacado !== null && { destacado })
         }
       },
     }, {
@@ -177,35 +210,56 @@ const countIndicadores = async ({ searchQuery, ...filters }) => {
   return count;
 }
 
-const getInactiveIndicadores = async () => {
-  const indicadores = await Indicador.findAndCountAll({
-    where: { activo: false },
-    attributes: ["id", "nombre"],
-    raw: true
-  });
-  return indicadores;
-}
 
-const getDefinitionsForIndicadores = (pathway, queryParams) => {
-  const attributes = defineAttributes(pathway, queryParams);
-  const includes = defineIncludesForIndicadores(queryParams);
-  const order = defineOrder(pathway, queryParams);
-  const where = defineWhere(pathway, queryParams);
+/**
+ * 
+ * @deprecated
+ */
+const getDefinitionsForIndicadores = (sourceType, args) => {
+  const attributes = getAttributesForIndicadores(sourceType)
+  const filters = getFiltersForIndicadores(args);
+  const order = defineOrder(sourceType, args);
+  const where = defineWhere(sourceType, args);
+
   return {
     attributes,
-    includes,
+    filters,
     order,
     where,
   };
 };
 
+
+
+/**
+ * 
+ * @deprecated
+ */
 const defineAttributes = (pathway, matchedData) => {
-  const attributes = ["id", "nombre", "ultimoValorDisponible", "activo",
-    "anioUltimoValorDisponible", "tendenciaActual", "fuente", "createdBy", "updatedAt", "periodicidad", "owner", "archive", "adornment", "unidadMedida", "idCobertura", "idOds"];
+  const attributes = [
+    "id",
+    "nombre",
+    "ultimoValorDisponible",
+    "activo",
+    "anioUltimoValorDisponible",
+    "tendenciaActual",
+    "fuente",
+    "createdBy",
+    "updatedAt",
+    "periodicidad",
+    "owner",
+    "archive",
+    "adornment",
+    "unidadMedida",
+    "idCobertura",
+    "idOds"
+  ];
 
   switch (pathway) {
     case FILE_PATH:
-      attributes.push("definicion", "urlImagen")
+      attributes.push(
+        "definicion",
+      )
       return attributes;
     case SITE_PATH:
       if (matchedData) {
@@ -216,6 +270,7 @@ const defineAttributes = (pathway, matchedData) => {
       return attributes;
     case FRONT_PATH:
       attributes.push(
+        "activo",
         "definicion",
         "codigo",
         "owner",
@@ -231,6 +286,38 @@ const defineAttributes = (pathway, matchedData) => {
   }
 };
 
+
+/**
+ * 
+ * @deprecated
+ * @param {*} sourceRequest where does the requests come from? public (Chihuahua Metrica) or private (Admin app) sources
+ */
+const getAttributesForIndicadores = (sourceRequest) => {
+  return [
+    'id',
+    'nombre',
+    'tendenciaActual',
+    'ultimoValorDisponible',
+    'adornment',
+    'unidadMedida',
+    'anioUltimoValorDisponible',
+    'updatedAt'
+  ];
+  return [
+    'id',
+    'nombre',
+    'tendenciaActual',
+    'ultimoValorDisponible',
+    'definicion',
+    'adornment',
+    'unidadMedida',
+    'anioUltimoValorDisponible',
+    'updatedAt',
+    'createdAt'
+  ]
+}
+
+
 const defineOrder = (pathway, matchedData) => {
   const order = [];
   switch (pathway) {
@@ -245,13 +332,11 @@ const defineOrder = (pathway, matchedData) => {
   };
 };
 
-// Sorting logic for list
-const getIndicadoresSorting = ({ sortBy, order }) => {
-  const arrangement = [];
-  arrangement.push([sortBy || "id", order || "ASC"]);
-  return arrangement;
-};
 
+/**
+ * 
+ * @deprecated
+ */
 const defineWhere = (pathway, matchedData) => {
   let where = {};
 
@@ -276,6 +361,11 @@ const defineWhere = (pathway, matchedData) => {
   return where;
 };
 
+
+/**
+ * 
+ * @deprecated
+ */
 const getIndicador = async (idIndicador, pathway) => {
   const includes = defineIncludesForAnIndicador(pathway);
   const attributes = defineAttributes(pathway);
@@ -288,6 +378,9 @@ const getIndicador = async (idIndicador, pathway) => {
 
     if (pathway !== FILE_PATH || indicador === null) {
 
+      //const { prevIndicador, nextIndicador } = await definePrevNextIndicadores(temaID, idIndicador);
+      indicador['prev'] = 2;
+      indicador['next'] = 3;
       return indicador;
     }
 
@@ -297,6 +390,11 @@ const getIndicador = async (idIndicador, pathway) => {
   }
 };
 
+
+/**
+ * 
+ * @deprecated
+ */
 const getIndicadoresFromTemaInteres = async (id) => {
   const indicadores = await Indicador.findAll({
     where: { idTema: id },
@@ -306,22 +404,17 @@ const getIndicadoresFromTemaInteres = async (id) => {
   return indicadores;
 }
 
-const definePrevNextIndicadores = async (temaId, idIndicador) => {
-  const indicadores = await getIndicadoresFromTemaInteres(temaId);
-  const indicadorIndex = indicadores.findIndex(indicador => indicador.id === idIndicador);
-  const indicadoresSize = indicadores.length;
-
-  const prevIndex = indicadorIndex === 0 ? null : indicadorIndex - 1;
-  const nextIndex = indicadorIndex === indicadoresSize - 1 ? null : indicadorIndex + 1;
-
-  const prevIndicador = indicadores[prevIndex] === undefined ? null : indicadores[prevIndex].id;
-  const nextIndicador = indicadores[nextIndex] === undefined ? null : indicadores[nextIndex].id;
-
-  return { prevIndicador, nextIndicador };
+// TODO: use this function in controller
+const definePrevNextIndicadores = async (idIndicador) => {
+  throw new Error('Not implemented yet')
 }
 
-const getIndicadoresFilters = (matchedData) => {
 
+/**
+ * 
+ * @deprecated
+ */
+const getIndicadoresFilters = (matchedData) => {
   const { searchQuery } = matchedData;
   if (searchQuery) {
     const filter = {
@@ -337,6 +430,8 @@ const getIndicadoresFilters = (matchedData) => {
   return {};
 };
 
+
+/**@deprecated */
 const advancedSearch = (matchedData) => {
   const { idObjetivo, owner, temas } = matchedData
   let filter = {};
@@ -354,6 +449,8 @@ const advancedSearch = (matchedData) => {
   return filter;
 };
 
+
+/**@deprecated */
 const filterIndicadoresBy = (matchedData) => {
   const { anioUltimoValorDisponible, tendenciaActual } = matchedData;
   const filters = { activo: true };
@@ -366,6 +463,8 @@ const filterIndicadoresBy = (matchedData) => {
 
   return filters;
 };
+
+
 
 const createIndicador = async (indicador) => {
   const { catalogos, ...values } = indicador;
@@ -395,6 +494,14 @@ const createIndicador = async (indicador) => {
   } catch (err) {
     throw new Error(`Error al crear indicador: ${err.message}`);
   }
+};
+
+
+/**@deprecated */
+const getFiltersForIndicadores = (queryParams) => {
+  return [
+    ...includeBasicModels(),
+  ];
 };
 
 const assignIndicadorToUsuario = (idIndicador, idUsuario) => {
@@ -450,17 +557,11 @@ const updateIndicador = async (id, indicador) => {
   }
 };
 
-const defineIncludesForIndicadores = (queryParams) => {
-  return [
-    ...includeBasicModels(),
-    ...filterByCatalogos(queryParams),
-  ];
-};
 
+/**@deprecated */
 const defineIncludesForAnIndicador = (pathway, queryParams) => {
   return [
     ...includeBasicModels(),
-    ...filterByCatalogos(queryParams),
     ...includeHistorico(pathway),
     {
       model: Mapa,
@@ -487,6 +588,8 @@ const defineIncludesForAnIndicador = (pathway, queryParams) => {
   ];
 }
 
+
+/**@deprecated */
 const includeBasicModels = () => {
   return [
     {
@@ -527,6 +630,8 @@ const includeBasicModels = () => {
   ]
 };
 
+
+/**@deprecated */
 const includeHistorico = (pathway) => {
   switch (pathway) {
     case FRONT_PATH:
@@ -551,6 +656,8 @@ const includeHistorico = (pathway) => {
   };
 };
 
+
+/** @deprecated */
 const filterByCatalogos = (catalogos) => {
   const inIds = [];
   const { ods, cobertura, medida } = catalogos || {};
@@ -578,6 +685,7 @@ const filterByCatalogos = (catalogos) => {
     }
   }];
 };
+
 
 const getIdIndicadorRelatedTo = async (model, id) => {
   const indicador = await models[model].findOne({
@@ -619,16 +727,129 @@ const getRandomIndicador = async (idTema) => {
   return indicador;
 }
 
+
+
+const includeAndFilterByObjetivos = (filterValues, attributes = []) => {
+  const { idObjetivo = null, destacado = null, objetivos = [] } = filterValues;
+
+  const ids = [idObjetivo, ...objetivos].filter(o => o);
+
+  return {
+    model: Objetivo,
+    as: 'objetivos',
+    required: true,
+    ...(attributes.length > 0 && { attributes }),
+    where: {
+      ...(ids.length > 0 && {
+        id: [idObjetivo, ...objetivos]
+      })
+    },
+    through: {
+      as: 'more',
+      model: IndicadorObjetivo,
+      attributes: [],
+      ...(destacado !== null && {
+        where: { destacado }
+      })
+    },
+  };
+}
+
+
+const includeAndFilterByTemas = (filterValues, attributes = []) => {
+  const { idTema = null, temas = [] } = filterValues;
+
+  const ids = [idTema, ...temas].filter(t => t);
+
+  return {
+    model: Tema,
+    required: true,
+    ...(attributes.length > 0 && { attributes }),
+    ...(ids.length > 0 && {
+      where: {
+        id: ids
+      }
+    }),
+
+    through: {
+      model: IndicadorTema,
+      attributes: [],
+    }
+  };
+}
+
+
+const includeAndFilterByUsuarios = (filterValues, attributes = []) => {
+  const { idUsuario = null, usuarios = [] } = filterValues || {};
+
+  const ids = [idUsuario, ...usuarios].filter(u => u);
+
+  return {
+    model: Usuario,
+    required: true,
+    ...(attributes.length > 0 && { attributes }),
+    ...(ids.length > 0 && {
+      where: {
+        id: ids
+      },
+    }),
+    through: {
+      model: UsuarioIndicador,
+      attributes: [],
+    }
+  }
+}
+
+
+const includeAndFilterByODS = (filterValues, attributes = []) => {
+  const { ods = [] } = filterValues || {};
+
+  return {
+    model: Ods,
+    required: false,
+    ...(attributes.length > 0 && { attributes }),
+    ...(ods.length > 0 && {
+      where: {
+        id: ods
+      }
+    })
+  };
+}
+
+
+const includeAndFilterByCobertura = (filterValues, attributes = []) => {
+  const { coberturas = [] } = filterValues || {};
+  return {
+    model: Cobertura,
+    required: true,
+    ...(attributes.length > 0 && { attributes }),
+    ...(coberturas.length > 0 && {
+      where: {
+        id: {
+          [Op.in]: coberturas
+        }
+      }
+    })
+  };
+}
+
+
 module.exports = {
-  getIndicadores,
-  getIndicador,
   createIndicador,
   updateIndicador,
   updateIndicadorStatus,
   getInactiveIndicadores,
   getIdIndicadorRelatedTo,
+  getRandomIndicador,
+  definePrevNextIndicadores,
+  LIMIT_NUMBER_INDICADORES_PER_OBJETIVO,
+  getIndicadores,
+  getIndicador,
   findAllIndicadores,
   countIndicadores,
-  getRandomIndicador,
-  LIMIT_NUMBER_INDICADORES_PER_OBJETIVO
+  includeAndFilterByObjetivos,
+  includeAndFilterByTemas,
+  includeAndFilterByODS,
+  includeAndFilterByCobertura,
+  includeAndFilterByUsuarios
 };
