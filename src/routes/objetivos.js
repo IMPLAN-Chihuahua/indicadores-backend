@@ -41,12 +41,11 @@ router.get('/info/general',
 
 router.route('/:idObjetivo/indicadores')
     .get(
+        param('idObjetivo').isInt().toInt(),
         paginationValidationRules(),
-        paramValidationRules(),
         sortValidationRules(),
         filterIndicadoresValidationRules(),
         validate,
-        determinePathway(SITE_PATH),
         getIndicadoresOfObjetivo
     );
 
