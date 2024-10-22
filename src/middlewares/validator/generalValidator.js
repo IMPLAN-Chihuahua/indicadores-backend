@@ -40,6 +40,7 @@ const errorFormatter = ({ location, msg, param: paramFormatter }) => `${location
 
 const validate = (req, res, next) => {
     const errors = validationResult(req).formatWith(errorFormatter);
+    console.log(errors.array({ onlyFirstError: true }));
     if (errors.isEmpty()) {
         req.matchedData = matchedData(req);
         return next();

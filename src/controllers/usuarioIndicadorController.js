@@ -3,51 +3,75 @@ const ProtectedIndicadorService = require('../services/protectedIndicadorService
 const { getUsuariosByBulk } = require('../services/usuariosService');
 
 const createRelationUI = async (req, res, next) => {
-    const { relationIds, desde, hasta, id, relationType, expires } = req.matchedData;
+    const { ids, idIndicador } = req.matchedData;
     const updatedBy = req.sub;
     const createdBy = req.sub;
+
     try {
-        if (relationType === 'usuarios') {
-            await UsuarioIndicadorService.createRelation(
-                [...relationIds],
-                [id],
-                {
-                    fechaDesde: desde ? desde : null,
-                    fechaHasta: hasta ? hasta : null,
-                    updatedBy,
-                    createdBy,
-                    expires
-                });
-        } else if (relationType === 'indicadores') {
-            await UsuarioIndicadorService.createRelation(
-                [id],
-                [...relationIds],
-                {
-                    fechaDesde: desde ? desde : null,
-                    fechaHasta: hasta ? hasta : null,
-                    updatedBy,
-                    createdBy,
-                    expires
-                });
-        } else if (relationType === 'temas') {
-            const indicadores = await UsuarioIndicadorService.createRelationWithModules(id);
-            const indicadoresId = indicadores.map(indicador => indicador.id);
-            await UsuarioIndicadorService.createRelation(
-                [...relationIds],
-                indicadoresId,
-                {
-                    fechaDesde: desde ? desde : null,
-                    fechaHasta: hasta ? hasta : null,
-                    updatedBy,
-                    createdBy,
-                    expires
-                });
-        }
+
+        await UsuarioIndicadorService.createRelationUsersToIndicador(
+            ids,
+            idIndicador,
+            {
+                updatedBy,
+                createdBy
+            }
+        );
+
+        // if (relationType === 'usuarios') {
+        //     await UsuarioIndicadorService.createRelation(
+        //         [...relationIds],
+        //         [id],
+        //         {
+        //             fechaDesde: desde ? desde : null,
+        //             fechaHasta: hasta ? hasta : null,
+        //             updatedBy,
+        //             createdBy,
+        //             expires
+        //         });
+        // } else if (relationType === 'indicadores') {
+        //     await UsuarioIndicadorService.createRelation(
+        //         [id],
+        //         [...relationIds],
+        //         {
+        //             fechaDesde: desde ? desde : null,
+        //             fechaHasta: hasta ? hasta : null,
+        //             updatedBy,
+        //             createdBy,
+        //             expires
+        //         });
+        // } else if (relationType === 'temas') {
+        //     const indicadores = await UsuarioIndicadorService.createRelationWithModules(id);
+        //     const indicadoresId = indicadores.map(indicador => indicador.id);
+        //     await UsuarioIndicadorService.createRelation(
+        //         [...relationIds],
+        //         indicadoresId,
+        //         {
+        //             fechaDesde: desde ? desde : null,
+        //             fechaHasta: hasta ? hasta : null,
+        //             updatedBy,
+        //             createdBy,
+        //             expires
+        //         });
+        // }
         return res.sendStatus(201);
 
     } catch (err) {
         next(err)
     }
+    return 1;
+};
+
+const changeOwner = async (req, res, next) => {
+    const { idUsuario, idIndicador } = req.matchedData;
+    const updatedBy = req.sub;
+    try {
+        await UsuarioIndicadorService.changeOwner(idUsuario, idIndicador, updatedBy);
+        return res.sendStatus(204);
+    } catch (err) {
+        next(err);
+    }
+    return res.sendStatus(204);
 };
 
 const getRelationInformation = async (data) => {
@@ -80,7 +104,7 @@ const getIndicadoresRelations = async (req, res, next) => {
 
 const getRelationUsers = async (req, res, next) => {
     const { idIndicador } = req.matchedData;
-    const attributes = ['nombre']
+    const attributes = ['nombre', 'owner']
 
     const page = req.matchedData.page || 1;
     const perPage = req.matchedData.perPage || 25;
@@ -90,9 +114,9 @@ const getRelationUsers = async (req, res, next) => {
 
         const totalPages = Math.ceil(total / perPage);
 
-        const { nombre } = await ProtectedIndicadorService.getIndicador(idIndicador, attributes);
+        const { nombre, owner } = await ProtectedIndicadorService.getIndicador(idIndicador, attributes);
 
-        return res.status(200).json({ data, page, perPage, total, totalPages, nombre });
+        return res.status(200).json({ data, page, perPage, total, totalPages, nombre, owner });
     } catch (err) {
         next(err);
     }
@@ -110,13 +134,14 @@ const getUsuarios = async (req, res, next) => {
 };
 
 const deleteRelation = async (req, res, next) => {
-    const { idRelacion } = req.matchedData;
+    const { ids } = req.query;
     try {
-        await UsuarioIndicadorService.deleteRelation(idRelacion);
+        await UsuarioIndicadorService.deleteRelation(ids);
         return res.sendStatus(204);
     } catch (err) {
         next(err);
     }
+    return res.sendStatus(204);
 };
 
 const updateRelation = async (req, res, next) => {
@@ -142,4 +167,5 @@ module.exports = {
     getUsuarios,
     deleteRelation,
     updateRelation,
+    changeOwner,
 }

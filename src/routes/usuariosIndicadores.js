@@ -5,13 +5,15 @@ const {
     paramValidationRules,
     validate,
     paginationValidationRules,
+    idValidation,
 } = require('../middlewares/validator/generalValidator')
 
 const {
     sortValidationRules,
-    relationTypeValidationRules,
     relationAssignValidationRules,
     filterRelationValidationRules,
+    userRelationAssignationValidationRules,
+    changeOwnerValidationRules,
 } = require('../middlewares/validator/usuarioIndicadorValidator')
 
 const { verifyJWT, verifyUserIsActive, verifyUserHasRoles } = require('../middlewares/auth');
@@ -22,6 +24,7 @@ const {
     getUsuarios,
     deleteRelation,
     updateRelation,
+    changeOwner
 } = require('../controllers/usuarioIndicadorController');
 
 
@@ -149,12 +152,12 @@ router.get(
  *           $ref: '#/components/responses/InternalServerError'
  */
 
-router.post('/create',
+router.post('/create/:idIndicador',
     verifyJWT,
     verifyUserIsActive,
     verifyUserHasRoles(['ADMIN']),
+    idValidation(),
     relationAssignValidationRules(),
-    relationTypeValidationRules(),
     validate,
     createRelationUI,
 );
@@ -278,14 +281,25 @@ router.get(
  */
 
 router.delete(
-    '/:idRelacion',
+    '/',
     verifyJWT,
     verifyUserIsActive,
     verifyUserHasRoles(['ADMIN']),
+    userRelationAssignationValidationRules(),
     paramValidationRules(),
     validate,
     deleteRelation,
 );
+
+router.patch('/owner/:idIndicador',
+    verifyJWT,
+    verifyUserIsActive,
+    verifyUserHasRoles(['ADMIN']),
+    changeOwnerValidationRules(),
+    paramValidationRules(),
+    validate,
+    changeOwner,
+)
 
 router.patch(
     '/:idRelacion',

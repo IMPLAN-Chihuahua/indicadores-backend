@@ -1,4 +1,5 @@
 /* eslint-disable no-restricted-syntax */
+const { where } = require('sequelize');
 const logger = require('../config/logger');
 const { UsuarioIndicador, Usuario, Indicador, sequelize, Sequelize } = require('../models');
 const { getInformation } = require('./generalServices');
@@ -70,8 +71,49 @@ const createRelation = async (usuarios, indicadores, relationOptions) => {
   }
 };
 
+const createRelationUsersToIndicador = async (usuarios, idIndicador, options) => {
+  try {
+    const relations = usuarios.map(u => ({
+      idUsuario: u,
+      idIndicador,
+      ...options
+    }));
+    await UsuarioIndicador.bulkCreate(
+      relations,
+      {
+        ignoreDuplicates: true,
+        validate: true,
+      });
+    return;
+  } catch (err) {
+    throw new Error(`Error al otorgar permisos ${err.message}`);
+  }
+};
+
+const changeOwner = async (idUsuario, idIndicador, updatedBy) => {
+
+  try {
+    await Indicador.update(
+      {
+        owner: idUsuario,
+        updatedBy,
+      },
+      {
+        where: {
+          id: idIndicador,
+        }
+      });
+
+    return;
+  }
+  catch (err) {
+    throw new Error(`Error al cambiar el dueño del indicador: ${err.message}`);
+  }
+}
+
 /** Gets a list of indicadores, its owner and how many users are responsible for them */
 const getUsuariosIndicadores = async (page, perPage, matchedData) => {
+
   try {
     const result = await UsuarioIndicador.findAndCountAll({
       include: [
@@ -117,6 +159,9 @@ const getRelationUsers = async (limit, offset, idIndicador) => {
           model: Usuario,
           required: true,
           attributes: ['nombres', 'apellidoPaterno', 'apellidoMaterno'],
+          where: {
+            activo: 'SI',
+          }
         },
         {
           model: Indicador,
@@ -125,7 +170,7 @@ const getRelationUsers = async (limit, offset, idIndicador) => {
         }
       ],
       attributes: [
-        'id', 'idUsuario', 'fechaDesde', 'fechaHasta', 'expires', 'createdBy',
+        'id', 'idUsuario', 'fechaDesde', 'fechaHasta', 'expires', 'createdBy', 'createdAt',
         [sequelize.literal('"indicador"."nombre"'), "indicador"],
       ],
     });
@@ -151,6 +196,7 @@ const getUsuariosThatDoesntHaveIndicador = async (idIndicador) => {
         {
           [Op.notIn]: ids
         },
+        activo: 'SI'
       },
       attributes: ['id', 'nombres', 'apellidoPaterno', 'apellidoMaterno', 'urlImagen'],
     });
@@ -188,11 +234,11 @@ const createRelationWithModules = async (idTema) => {
   }
 };
 
-const deleteRelation = async (id) => {
+const deleteRelation = async (ids) => {
   try {
     await UsuarioIndicador.destroy({
       where: {
-        id
+        id: ids
       }
     });
     return;
@@ -233,4 +279,6 @@ module.exports = {
   updateRelation,
   createRelationWithModules,
   getModelSelected,
+  createRelationUsersToIndicador,
+  changeOwner
 }
