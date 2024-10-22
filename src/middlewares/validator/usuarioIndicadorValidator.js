@@ -8,9 +8,15 @@ const indicadorAssignUsuarioValidationRules = () => [
 ];
 
 const relationAssignValidationRules = () => [
-    body('relationIds.*').isInt().toInt(),
-    body(['desde', 'hasta', 'expires'])
-        .optional()
+    body('ids.*').isInt().toInt(),
+]
+
+const userRelationAssignationValidationRules = () => [
+    query('ids.*').isInt().toInt(),
+]
+
+const changeOwnerValidationRules = () => [
+    body('idUsuario').isInt().toInt(),
 ]
 
 const filterRelationValidationRules = () => [
@@ -30,21 +36,25 @@ const sortValidationRules = () => [
         .withMessage('order must be asc or desc'),
 ]
 
-const relationTypeValidationRules = () => [
-    query('id')
-        .exists()
-        .isInt().toInt(),
-
-    query('relationType')
+const idValidation = () => {
+    return param(['idIndicador'])
         .optional()
-        .isIn(['usuarios', 'indicadores', 'temas'])
-        .withMessage('relationType must be usuarios or indicadores')
-]
+        .isInt().withMessage('Field must be an integer number').bail()
+        .toInt()
+        .custom((value) => {
+            if (value < 1) {
+                throw new Error('Value must be greater than 0');
+            }
+            return true;
+        })
+}
 
 module.exports = {
     relationAssignValidationRules,
     indicadorAssignUsuarioValidationRules,
     filterRelationValidationRules,
     sortValidationRules,
-    relationTypeValidationRules
+    userRelationAssignationValidationRules,
+    idValidation,
+    changeOwnerValidationRules,
 }
