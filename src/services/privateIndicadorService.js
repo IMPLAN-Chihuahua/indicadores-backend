@@ -29,7 +29,7 @@ async function getIndicadores({ page = 1, perPage = 25, offset = null, searchQue
     const {
         idObjetivo = null, objetivos = [], destacado, idTema = null,
         temas = [], usuarios = [], idUsuario = null, coberturas = [],
-        ods = [], activo = null
+        ods = [], activo = null, owner = null,
     } = filters || {};
 
     const rows = await Indicador.findAll({
@@ -43,6 +43,7 @@ async function getIndicadores({ page = 1, perPage = 25, offset = null, searchQue
         where: {
             ...(activo !== null && { activo }),
             ...(searchQuery && filterBySearchQuery(searchQuery)),
+            ...(owner !== null && { owner })
         },
         order: [
             ['updatedAt', 'desc'],
@@ -65,13 +66,14 @@ async function countIndicadores({ searchQuery = '', ...filters }) {
     const {
         idObjetivo = null, objetivos = [], destacado = null, idTema = null,
         temas = [], usuarios = [], idUsuario = null, coberturas = [], ods = [],
-        activo = null
+        activo = null, owner = null
     } = filters || {};
 
     const count = await Indicador.count({
         where: {
             ...(activo !== null && { activo }),
-            ...(searchQuery && filterBySearchQuery(searchQuery))
+            ...(searchQuery && filterBySearchQuery(searchQuery)),
+            ...(owner !== null && { owner })
         },
         include: [
             includeAndFilterByObjetivos({ idObjetivo, objetivos, destacado }),
@@ -90,6 +92,7 @@ const filterBySearchQuery = (str) => {
         [Op.or]: [
             { nombre: { [Op.iLike]: `%${str}%` } },
             { unidadMedida: { [Op.iLike]: `%${str}%` } },
+            { codigo: { [Op.iLike]: `%${str}%` } }
         ]
     }
 }
