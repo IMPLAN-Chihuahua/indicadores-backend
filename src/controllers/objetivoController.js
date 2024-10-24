@@ -59,7 +59,15 @@ const getObjetivos = async (req, res, next) => {
     try {
         const objetivos = await Objetivo.findAll({
             raw: true,
-            attributes: ['id', 'titulo', [sequelize.fn('COUNT', sequelize.col('"indicadores"."id"')), 'indicadoresCount']],
+            attributes: [
+                'id',
+                'titulo',
+                [sequelize.fn('COUNT', sequelize.col('"indicadores"."id"')), 'indicadoresCount'],
+                'summary',
+                'urlImagen',
+                'color',
+                'alias',
+            ],
             include: [{
                 model: Indicador,
                 attributes: [],
@@ -68,7 +76,7 @@ const getObjetivos = async (req, res, next) => {
                     attributes: []
                 }
             }],
-            
+
             group: 'Objetivo.id',
             order: [['id', 'ASC']]
         });
