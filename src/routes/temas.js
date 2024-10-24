@@ -1,7 +1,7 @@
 const express = require('express');
 const temaRouter = express.Router();
 const { getTemas, createTema, editTema, updateTemaStatus, getTema } = require('../controllers/temaController');
-const { getIndicadores, getRandomIndicador } = require('../controllers/indicadorController');
+const { getIndicadores, getRandomIndicador, getPublicIndicadores } = require('../controllers/indicadorController');
 const {
     filterIndicadoresValidationRules,
     sortValidationRules,
@@ -205,7 +205,7 @@ indicadorRouter.route('/')
         validate,
         exists('idTema', 'Tema'),
         determinePathway(SITE_PATH),
-        getIndicadores
+        getPublicIndicadores
     );
 
 

@@ -67,6 +67,7 @@ const generateFile = async (format, res, indicador) => {
 
 const getIndicadores = async (req, res, _next) => {
   const { page, perPage, searchQuery, ...filters } = req.matchedData;
+
   const indicadores = await PrivateIndicadorService.getIndicadores({
     ...filters,
     page,
@@ -75,6 +76,30 @@ const getIndicadores = async (req, res, _next) => {
   })
 
   const total = await PrivateIndicadorService.countIndicadores({
+    ...filters,
+    searchQuery,
+  })
+
+  return res.status(200).json({
+    page,
+    perPage,
+    total,
+    totalPages: Math.ceil(total / perPage),
+    data: indicadores
+  });
+}
+
+
+const getPublicIndicadores = async (req, res, _next) => {
+  const { page, perPage, searchQuery, ...filters } = req.matchedData;
+  const indicadores = await PublicIndicadorService.getIndicadores({
+    ...filters,
+    page,
+    perPage,
+    searchQuery,
+  })
+
+  const total = await PublicIndicadorService.countIndicadores({
     ...filters,
     searchQuery,
   })
@@ -205,4 +230,5 @@ module.exports = {
   getUsersFromIndicador,
   getIndicadoresOfObjetivo,
   getRandomIndicador,
+  getPublicIndicadores
 }

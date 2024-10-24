@@ -780,7 +780,7 @@ const includeAndFilterByTemas = (filterValues, attributes = []) => {
 
 
 const includeAndFilterByUsuarios = (filterValues, attributes = []) => {
-  const { idUsuario = null, usuarios = [] } = filterValues || {};
+  const { idUsuario = null, usuarios = []} = filterValues || {};
 
   const ids = [idUsuario, ...usuarios].filter(u => u);
 
