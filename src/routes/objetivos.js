@@ -1,6 +1,6 @@
 const express = require('express');
 const { generalFilterOptions, paramValidationRules, paginationValidationRules, generalSortValidationRules, validate } = require('../middlewares/validator/generalValidator');
-const { countIndicadoresByObjetivo, editObjetivo, getObjetivo, getTemasInObjetivo } = require('../controllers/objetivoController');
+const { countIndicadoresByObjetivo, editObjetivo, getObjetivo, getTemasInObjetivo, getObjetivos } = require('../controllers/objetivoController');
 const { verifyJWT, verifyUserIsActive, verifyUserHasRoles } = require('../middlewares/auth');
 const { uploadImage } = require('../middlewares/fileUpload');
 const { DESTINATIONS } = require('../services/fileService');
@@ -26,7 +26,7 @@ router.get('/',
     paginationValidationRules(),
     generalSortValidationRules(),
     validate,
-    getInformation
+    getObjetivos
 );
 
 router.get('/info/general',
