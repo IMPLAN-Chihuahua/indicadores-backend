@@ -6,7 +6,7 @@ const getInformation = async (page, perPage, attributes, where, sortBy, order, m
         const result = await Models[Model].findAndCountAll({
             limit: perPage,
             offset: (page - 1) * perPage,
-            attributes: attributes,
+            ...(attributes.length > 0 && { attributes }),
             where: where,
             order: getSorting({ sortBy, order })
         });
