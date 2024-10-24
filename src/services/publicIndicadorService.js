@@ -73,7 +73,7 @@ async function getIndicadorById(id) {
 * @returns {Promise<Array>} list of indicadores 
 */
 async function getIndicadores({ page = 1, perPage = 25, offset = null, searchQuery = '', ...filters }) {
-    const { idObjetivo, destacado, temas = [], coberturas = [], ods = [] } = filters || {};
+    const { idObjetivo, destacado, temas = [], idTema = null, coberturas = [], ods = [] } = filters || {};
 
     const rows = await Indicador.findAll({
         limit: perPage,
@@ -91,7 +91,7 @@ async function getIndicadores({ page = 1, perPage = 25, offset = null, searchQue
             ),
 
             includeAndFilterByTemas(
-                { temas },
+                { temas, idTema },
                 ['id', 'temaIndicador', 'codigo', 'urlImagen']
             ),
             includeAndFilterByCobertura(
@@ -122,7 +122,7 @@ async function getIndicadores({ page = 1, perPage = 25, offset = null, searchQue
  * @returns number of indicadores with given criteria
  */
 async function countIndicadores({ searchQuery = '', ...filters }) {
-    const { idObjetivo, destacado, temas, ods } = filters;
+    const { idObjetivo, destacado, temas, ods, idTema } = filters;
 
     const count = await Indicador.count({
         where: {
@@ -131,7 +131,7 @@ async function countIndicadores({ searchQuery = '', ...filters }) {
         },
         include: [
             includeAndFilterByObjetivos({ idObjetivo, destacado }),
-            includeAndFilterByTemas({ temas, }),
+            includeAndFilterByTemas({ temas, idTema }),
             includeAndFilterByODS({ ods })
         ]
     })
