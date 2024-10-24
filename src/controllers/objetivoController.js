@@ -1,6 +1,7 @@
 const { QueryTypes } = require('sequelize');
 const { Objetivo, Sequelize, Indicador, Tema, IndicadorObjetivo, sequelize } = require('../models');
 const IndicadorService = require('../services/indicadorService');
+const PublicIndicadorService = require('../services/publicIndicadorService');
 
 const countIndicadoresByObjetivo = async (req, res, next) => {
     try {
@@ -14,12 +15,9 @@ const countIndicadoresByObjetivo = async (req, res, next) => {
             order: [['idObjetivo']],
         })
 
-        const destacados = await IndicadorService.findAllIndicadores({
+        const destacados = await PublicIndicadorService.getIndicadores({
             destacado: true,
-            perPage: 6,
-            // searchQuery,
             offset: 0,
-            // ...filters
         });
 
         return res.status(200).json({
@@ -59,7 +57,21 @@ const getObjetivo = async (req, res, next) => {
 
 const getObjetivos = async (req, res, next) => {
     try {
-        const objetivos = await Objetivo.findAll();
+        const objetivos = await Objetivo.findAll({
+            raw: true,
+            attributes: ['id', 'titulo', [sequelize.fn('COUNT', sequelize.col('"indicadores"."id"')), 'indicadoresCount']],
+            include: [{
+                model: Indicador,
+                attributes: [],
+                through: {
+                    model: IndicadorObjetivo,
+                    attributes: []
+                }
+            }],
+            
+            group: 'Objetivo.id',
+            order: [['id', 'ASC']]
+        });
 
         return res.status(200).json({ data: objetivos });
     } catch (err) {
