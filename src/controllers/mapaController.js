@@ -13,10 +13,22 @@ const getMapaOfIndicador = async (req, res, next) => {
 
 const createMapa = async (req, res, _next) => {
   const { idIndicador, ...values } = req.matchedData;
+  console.log('idindicadorrr')
+  console.log('idindicadorrr')
+  console.log('idindicadorrr')
+  console.log(idIndicador)
+
+  console.log('values')
+  console.log('values')
+  console.log('values')
+  console.log('values')
+  console.log(values);
+
+
   const image = getImagePathLocation(req)
 
-  const created = await Mapa.create({ ...values, ...image });
-
+  const created = await Mapa.create({ idIndicador, ...values, ...image });
+  console.log('created???' + created)
   return res.status(201).json({ data: created });
 
 }
