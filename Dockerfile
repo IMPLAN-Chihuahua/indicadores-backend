@@ -1,20 +1,26 @@
-FROM node:lts-alpine AS base
-RUN apk add --no-cache --virtual \
+# Usar Debian Bullseye en lugar de Alpine
+FROM node:lts-bullseye-slim AS base
+
+# Instalar Chromium y dependencias en Debian
+RUN apt-get update && apt-get install -y \
     chromium \
-    nss \
-    freetype \
-    harfbuzz \
-    ca-certificates \
-    ttf-freefont
+    # nss 
+    chromium-driver \
+    libnss3\ 
+    libfreetype6 \
+    libharfbuzz0b \ 
+    ca-certificates \ 
+    fonts-freefont-ttf 
 
-# Puppeteer v13.5.0 works with Chromium 100.
+# Configurar Puppeteer para usar Chromium del sistema
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
-    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
+# Definir directorio de trabajo y exponer puerto
 WORKDIR /home/node
 EXPOSE 8080
 
-
+# Etapa de desarrollo
 FROM base AS dev
 RUN --mount=type=bind,source=package.json,target=package.json \
     --mount=type=bind,source=package-lock.json,target=package-lock.json \
@@ -25,7 +31,7 @@ COPY --chown=node:node . .
 USER node
 CMD ["npm", "run", "dev"]
 
-
+# Etapa de producción
 FROM base AS prod
 RUN --mount=type=bind,source=package.json,target=package.json \
     --mount=type=bind,source=package-lock.json,target=package-lock.json \
@@ -37,4 +43,3 @@ USER node
 HEALTHCHECK --interval=1m --timeout=3s --retries=5 \
     CMD ["wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080", "||", "exit", "1"]
 CMD ["npm", "run", "start"]
-
