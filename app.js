@@ -94,13 +94,11 @@ app.use('/api/v1/objetivos', require('./src/routes/objetivos'));
 app.use('/api/v1/ods', require('./src/routes/ods'));
 app.use('/api/v1/coberturas', require('./src/routes/coberturas'));
 
-if (process.env.NODE_ENV !== 'production') {
-  app.use('/uploads', (_, res, next) => {
-    res.set('Cross-Origin-Resource-Policy', 'cross-origin');
-    next();
-  })
-}
 
+app.use('/uploads', (_, res, next) => {
+  res.set('Cross-Origin-Resource-Policy', 'cross-origin');
+  next();
+})  
 app.use('/uploads/temas/images', express.static(path.join(__dirname, 'uploads', 'temas/images')));
 app.use('/uploads/usuarios/images', express.static(path.join(__dirname, 'uploads', 'usuarios/images')));
 app.use('/uploads/mapas', express.static(path.join(__dirname, 'uploads', 'mapas')));

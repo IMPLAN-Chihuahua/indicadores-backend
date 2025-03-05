@@ -5,6 +5,7 @@ const numberWithCommas = (num) => {
 	return num;
 };
 
+/**@deprecated */
 const returnUnit = (idUnidad) => {
 	let unit = '';
 
@@ -42,16 +43,16 @@ const returnFuente = (fuente) => {
 }
 
 const getImagePathLocation = (req) => {
-	const image = {}
-	if (process.env.NODE_ENV === 'production') {
-		image.urlImagen = req?.file?.location;
-	} else if (req.file) {
-		image.urlImagen = `http://${req.headers.host}/${req.file.path}`;
+	let urlImagen = null
+	if (!req.file) return;
+
+	if (req.file.location) {
+		urlImagen = req.file.location;
+	} else {
+		urlImagen = `${process.env.BASE_URL}/${req.file.path}`;
 	}
-	if (req.body.urlImagen === 'null') {
-		image.urlImagen = null;
-	}
-	return image;
+
+	return { urlImagen };
 };
 
 const splitNameKeepFirstOne = (name) => {

@@ -8,14 +8,14 @@ const {
   Sequelize,
   Objetivo,
   IndicadorObjetivo,
-  IndicadorTema,
   Cobertura,
   Ods,
+  IndicadorTema,
   UsuarioIndicador,
   Usuario
 } = models;
-const { createRelation } = require("./usuarioIndicadorService");
 const { updateIndicadorTemas } = require("./indicadorTemasService");
+const { createRelation } = require("./usuarioIndicadorService");
 const { updateIndicadorObjetivos } = require("./indicadorObjetivosService");
 const logger = require("../config/logger");
 const { Op } = Sequelize;
@@ -40,26 +40,23 @@ const createIndicador = async (indicador) => {
   try {
     const result = await sequelize.transaction(async _t => {
       const created = await Indicador.create(
-        values,
-        {
-          include: [
-            {
-              association: Indicador.associations.formula,
-              include: [Formula.associations.variables]
-            }, {
-              association: Indicador.associations.mapa
-            }]
-        }
-      );
-      await assignIndicadorToObjetivo(created.id, idObjetivo)
+        values, {
+        include: [{
+          association: Indicador.associations.formula,
+          include: [Formula.associations.variables]
+        }, {
+          association: Indicador.associations.mapa
+        }]
+      });
+
       await assignIndicadorToTemas(created.id, temas)
+      await assignIndicadorToObjetivo(created.id, idObjetivo)
       await assignOwnerToIndicador(indicador.createdBy, created.id)
       return created;
     })
 
     return result;
   } catch (err) {
-    console.log(err)
     logger.error(err.stack)
     throw new Error(`Error al crear indicador: ${err.message}`);
   }
@@ -72,14 +69,6 @@ const assignOwnerToIndicador = async (idUsuario, idIndicador) => {
     createdBy: idUsuario,
     expires: 'NO',
     isOwner: true,
-  })
-}
-
-const assignIndicadorToTemas = async (idIndicador, idTemas) => {
-  return IndicadorTema.bulkCreate(
-    idTemas.map(idTema => ({ idTema, idIndicador })), {
-    ignoreDuplicates: true,
-    validate: true
   })
 }
 
