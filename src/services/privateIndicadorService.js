@@ -87,7 +87,8 @@ async function countIndicadores({ searchQuery = '', ...filters }) {
                 includeAndFilterByODS({ ods }),
                 includeAndFilterByCobertura({ coberturas }),
                 filterByUsuarios({ usuarios, owner, idUsuario })
-            ]
+            ],
+            distinct: true,
         })
         return count;
     } catch (err) {
