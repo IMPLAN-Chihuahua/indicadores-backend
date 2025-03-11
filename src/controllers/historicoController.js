@@ -7,47 +7,24 @@ const PrivateIndicadorService = require('../services/privateIndicadorService');
 const getHistoricos = async (req, res, next) => {
   const { idIndicador, order, sortBy } = req.matchedData;
   const { page, perPage } = getPaginationHistoricos(req.matchedData);
-  const attributes = ['ultimoValorDisponible', 'updatedAt', 'periodicidad']
-  try {
-    const indicador = await PrivateIndicadorService.getIndicadorById(idIndicador, attributes);
-    if (!indicador) {
-      return res.status(409).json({ message: 'No se pudo consultar este indicador' })
-    }
-    
-    const { ultimoValorDisponible, updatedAt, periodicidad } = indicador;
-    const { historicos, total } = await HistoricoService.getHistoricos(idIndicador, page, perPage, order, sortBy);
-    const indicadorResponse = {
-      idIndicador,
-      indicadorLastValue: ultimoValorDisponible,
-      indicadorLastUpdateDate: updatedAt,
-      indicadorPeriodicidad: periodicidad,
-    }
-    if (historicos.length > 0) {
-      const totalPages = Math.ceil(total / perPage);
-      return res.status(200).json({
-        ...indicadorResponse,
-        page,
-        perPage,
-        total,
-        totalPages,
-        data: historicos
-      });
-    } else if (historicos.length === 0) {
-      return res.status(200).json({
-        ...indicadorResponse,
-        page,
-        perPage,
-        total,
-        totalPages: 0,
-        data: []
-      });
-    } else {
-      return res.sendStatus(400);
-    }
+  const attributes = ['id', 'nombre', 'ultimoValorDisponible', 'anioUltimoValorDisponible', 'updatedAt', 'periodicidad']
 
-  } catch (err) {
-    next(err)
+  const latestIndicador = await PrivateIndicadorService.getIndicadorById(idIndicador, attributes);
+  if (!latestIndicador) {
+    return res.status(409).json({ message: `No se pudo consultar la información más reciente de este indicador (${idIndicador})` })
   }
+
+  const { historicos, total } = await HistoricoService.getHistoricos(idIndicador, page, perPage, order, sortBy);
+  const totalPages = Math.ceil(total / perPage);
+
+  return res.status(200).json({
+    page,
+    perPage,
+    total,
+    totalPages,
+    latestIndicador,
+    data: historicos
+  });
 };
 
 
