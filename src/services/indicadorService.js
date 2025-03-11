@@ -14,7 +14,7 @@ const {
   UsuarioIndicador,
   Usuario
 } = models;
-const { updateIndicadorTemas } = require("./indicadorTemasService");
+const { updateIndicadorTemas, assignIndicadorToTemas } = require("./indicadorTemasService");
 const { createRelation } = require("./usuarioIndicadorService");
 const { updateIndicadorObjetivos } = require("./indicadorObjetivosService");
 const logger = require("../config/logger");
@@ -36,7 +36,6 @@ const getInactiveIndicadores = async () => {
 
 const createIndicador = async (indicador) => {
   const { temas = [], idObjetivo, ...values } = indicador;
-
   try {
     const result = await sequelize.transaction(async _t => {
       const created = await Indicador.create(
