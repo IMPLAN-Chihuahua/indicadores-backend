@@ -179,7 +179,9 @@ const createIndicador = async (req, res, next) => {
   const indicador = req.matchedData;
   indicador.createdBy = req.sub;
   indicador.updatedBy = req.sub;
-  indicador.mapa = { ...indicador?.mapa, ...image };
+  if (indicador.mapa) {
+    indicador.mapa = { ...indicador?.mapa, ...image };
+  }
   const savedIndicador = await IndicadorService.createIndicador(indicador);
   return res.status(201).json({ data: savedIndicador });
 
