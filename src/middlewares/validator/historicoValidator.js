@@ -9,10 +9,16 @@ const updateHistoricoValidationRules = () => [
         .toInt(),
 
     check('valor')
-        .optional(),
+        .optional()
+        .isNumeric(),
 
     check('fuente')
-        .optional(),
+        .optional()
+        .trim(),
+
+    check('anio')
+        .optional()
+        .isNumeric()
 ]
 
 const createHistoricoValidationRules = () => [
@@ -20,16 +26,11 @@ const createHistoricoValidationRules = () => [
         .exists()
         .withMessage('El id del indicador es obligatorio'),
 
-    // check('idUsuario')
-    //     .exists()
-    //     .withMessage('El id del usuario es obligatorio'),
-
     check('anio')
         .exists()
         .withMessage('El año es obligatorio')
         .isNumeric()
-        .withMessage('El año debe ser un numero')
-    ,
+        .withMessage('El año debe ser un numero'),
 
     check('valor')
         .exists()
@@ -38,7 +39,8 @@ const createHistoricoValidationRules = () => [
         .withMessage('El valor debe ser un numero'),
 
     check('fuente')
-        .exists(),
+        .exists()
+        .trim(),
 
 ]
 
