@@ -29,7 +29,7 @@ const verifyUserHasRoles = (roles) => async (req, res, next) => {
     const rol = await getRol(req.sub);
     const isAllowed = roles.includes(rol);
     if (!isAllowed) {
-        return res.status(403).send('No tiene permiso a realizar acciones en este recurso');
+        return res.status(403).send('No tienes permiso para realizar esta acción');
     }
 
     req.rol = rol;
