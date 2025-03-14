@@ -225,7 +225,6 @@ const includeAndFilterByUsuarios = (filterValues, attributes) => {
       attributes: [],
       where: {
         ...(ids.length > 0 && { idUsuario: ids }),
-        ...(isOwner !== null && { isOwner }),
       }
     }
   }
@@ -245,7 +244,6 @@ const filterByUsuarios = (filterValues = {}) => {
       attributes: [],
       where: {
         ...(ids.length > 0 && { idUsuario: ids }),
-        ...(owner !== null && { isOwner: true })
       },
     }
   }
