@@ -98,7 +98,7 @@ const getRelationUsers = async (req, res, next) => {
 
     const { nombre, responsable } = await PrivateIndicadorService.getIndicadorById(idIndicador, attributes)
     const owner = responsable.length > 0 ? responsable[0].id : null;
-    
+
     return res.status(200).json({ data, page, perPage, total, totalPages, nombre, owner });
 };
 
@@ -114,9 +114,9 @@ const getUsuarios = async (req, res, next) => {
 };
 
 const deleteRelation = async (req, res, next) => {
-    const { ids } = req.query;
+    const { idIndicador, ids: usuarios } = req.matchedData;
     try {
-        await UsuarioIndicadorService.deleteRelation(ids);
+        await UsuarioIndicadorService.deleteRelation(idIndicador, usuarios);
         return res.sendStatus(204);
     } catch (err) {
         next(err);

@@ -8,17 +8,15 @@ const { differenceInMonths } = require('date-fns');
 const sender = require('../middlewares/mailSender');
 const { Op } = Sequelize;
 
-const isUsuarioAssignedToIndicador = async (idUsuario, idIndicador) => {
+const isUsuarioAssignedToIndicador = async (idUsuario, idIndicador, relationOptions) => {
   try {
-    const res = await UsuarioIndicador.findOne({
+    const res = await UsuarioIndicador.count({
       where: {
         idUsuario,
         idIndicador,
         activo: 'SI',
+        ...relationOptions
       },
-      attributes: [
-        [Sequelize.fn('COUNT', 'id'), 'count']
-      ],
       include: [
         {
           model: Usuario,
@@ -27,17 +25,10 @@ const isUsuarioAssignedToIndicador = async (idUsuario, idIndicador) => {
           },
           attributes: []
         },
-        {
-          model: Indicador,
-          where: {
-            activo: true,
-          },
-          attributes: []
-        }
       ],
       raw: true
     });
-    return res.count > 0;
+    return res > 0;
   } catch (err) {
     throw new Error(err.message);
   }
@@ -251,14 +242,14 @@ const createRelationWithModules = async (idTema) => {
   }
 };
 
-const deleteRelation = async (ids) => {
+const deleteRelation = async (idIndicador, usuarios) => {
   try {
-    await UsuarioIndicador.destroy({
+    return UsuarioIndicador.destroy({
       where: {
-        id: ids
+        idIndicador,
+        idUsuario: usuarios
       }
     });
-    return;
   } catch (err) {
     throw new Error(`Error al eliminar la relacion: ${err.message}`);
   }
@@ -415,10 +406,6 @@ const sendEmailToUsuarios = async (nombres, correo, indicadoresNames, indicadore
 }
 
 
-
-
-
-
 module.exports = {
   isUsuarioAssignedToIndicador,
   createRelation,
@@ -432,5 +419,5 @@ module.exports = {
   createRelationUsersToIndicador,
   changeOwner,
   updateNotifiedValue,
-  checkForUpdates
+  checkForUpdates,
 }
