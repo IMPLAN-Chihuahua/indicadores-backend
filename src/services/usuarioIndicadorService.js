@@ -278,7 +278,6 @@ const getModelSelected = async (model, options) => {
 }
 
 const updateNotifiedValue = async (id, value) => {
-  console.log(id[0], value)
   try {
     const test = await UsuarioIndicador.update({
       notified: value,

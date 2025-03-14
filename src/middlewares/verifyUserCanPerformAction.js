@@ -3,14 +3,14 @@ const { isUsuarioAssignedToIndicador } = require("../services/usuarioIndicadorSe
 const { getRol } = require("../services/usuariosService");
 
 
-const verifyUserCanPerformActionOnIndicador = ({ indicadorPathId, relatedTo }) => async (req, res, next) => {
+const verifyUserIsAssignedToIndicador = ({ routeParam, relatedTo }) => async (req, res, next) => {
     const rol = req.rol || await getRol(req.sub)
 
     if (rol === 'ADMIN') {
         return next();
     }
 
-    let idIndicador = req.matchedData[indicadorPathId];
+    let idIndicador = req.matchedData[routeParam];
 
     if (!idIndicador) {
         const { model, pathId } = relatedTo;
@@ -25,7 +25,29 @@ const verifyUserCanPerformActionOnIndicador = ({ indicadorPathId, relatedTo }) =
     return next();
 }
 
+const verifyUserIsOwnerOfIndicador = ({ routeParam, relatedTo }) => async (req, res, next) => {
+    const rol = req.rol || await getRol(req.sub)
+
+    if (rol === 'ADMIN') {
+        return next();
+    }
+
+    let idIndicador = req.matchedData[routeParam];
+    if (!idIndicador) {
+        const { model, pathId } = relatedTo;
+        idIndicador = await getIdIndicadorRelatedTo(model, req.matchedData[pathId])
+    }
+
+    const userIsOwner = await isUsuarioAssignedToIndicador(req.sub, idIndicador, { isOwner: true })
+    if (!userIsOwner) {
+        return res.status(403).send('No puedes realizar esta acción porque no estás asignado o no eres el responsable principal del indicador')
+    }
+
+    return next();
+}
+
 
 module.exports = {
-    verifyUserCanPerformActionOnIndicador
+    verifyUserIsAssignedToIndicador,
+    verifyUserIsOwnerOfIndicador
 }

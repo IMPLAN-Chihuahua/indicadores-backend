@@ -1,5 +1,6 @@
 const {
-  indicadorAssignUsuarioValidationRules
+  indicadorAssignUsuarioValidationRules,
+  userRelationAssignationValidationRules
 } = require('../middlewares/validator/usuarioIndicadorValidator')
 const IndicadorValidator = require('../middlewares/validator/indicadorValidator')
 const {
@@ -36,7 +37,7 @@ const { DESTINATIONS } = require('../services/fileService');
 const { getFormulaOfIndicador, createFormula } = require('../controllers/formulaController');
 const { verifyResourceExists } = require('../middlewares/resourceExists');
 const { createFormulaValidationRules } = require('../middlewares/validator/formulaValidator');
-const { createRelationUI } = require('../controllers/usuarioIndicadorController');
+const { createRelationUI, deleteRelation } = require('../controllers/usuarioIndicadorController');
 const { getInformation } = require('../controllers/generalController');
 const { getMapaOfIndicador, createMapa } = require('../controllers/mapaController');
 const { mapaValidationRules } = require('../middlewares/validator/mapaValidator');
@@ -45,8 +46,8 @@ const { getHistoricos, createHistorico } = require('../controllers/historicoCont
 const { createHistoricoValidationRules } = require('../middlewares/validator/historicoValidator');
 const { updateIndicadorCatalogos } = require('../middlewares/validator/catalogoValidator');
 const promisedRouter = require('express-promise-router');
-const { verifyUserCanPerformActionOnIndicador } = require('../middlewares/verifyUserCanPerformAction');
-const { param, body } = require('express-validator');
+const { verifyUserIsAssignedToIndicador, verifyUserIsOwnerOfIndicador } = require('../middlewares/verifyUserCanPerformAction');
+const { param, body, query } = require('express-validator');
 const router = promisedRouter()
 
 /**
@@ -249,8 +250,7 @@ router.get('/:idIndicador/usuarios',
   validate,
   verifyResourceExists({
     routeParam: 'idIndicador',
-    model: 'Indicador',
-    isActivo: true
+    model: 'Indicador'
   }),
   getUsersFromIndicador
 )
@@ -285,7 +285,6 @@ router.get('/:idIndicador/mapa',
   verifyResourceExists({
     routeParam: 'idIndicador',
     model: 'Indicador',
-    isActivo: true
   }),
   getMapaOfIndicador
 );
@@ -381,7 +380,6 @@ router.get('/:idIndicador/formula',
   verifyResourceExists({
     routeParam: 'idIndicador',
     model: 'Indicador',
-    isActivo: true
   }),
   getFormulaOfIndicador
 )
@@ -423,10 +421,13 @@ router.use(verifyUserIsActive);
 router.patch('/:idIndicador/toggle-status',
   paramValidationRules(),
   validate,
-  verifyUserHasRoles(['ADMIN']),
+  verifyUserHasRoles(['ADMIN', 'USER']),
   verifyResourceExists({
     routeParam: 'idIndicador',
     model: 'Indicador'
+  }),
+  verifyUserIsAssignedToIndicador({
+    routeParam: 'idIndicador'
   }),
   updateIndicadorStatus
 );
@@ -482,7 +483,10 @@ router.post('/:idIndicador/usuarios',
   paramValidationRules(),
   indicadorAssignUsuarioValidationRules(),
   validate,
-  verifyUserHasRoles(['ADMIN']),
+  verifyUserHasRoles(['ADMIN', 'USER']),
+  verifyUserIsOwnerOfIndicador({
+    routeParam: 'idIndicador'
+  }),
   createRelationUI,
 );
 
@@ -584,7 +588,7 @@ router.patch('/:idIndicador',
     routeParam: 'idIndicador',
     model: 'Indicador'
   }),
-  verifyUserCanPerformActionOnIndicador({ indicadorPathId: 'idIndicador' }),
+  verifyUserIsAssignedToIndicador({ routeParam: 'idIndicador' }),
   updateIndicador
 );
 
@@ -631,7 +635,7 @@ router.post('/:idIndicador/formula',
     routeParam: 'idIndicador',
     model: 'Indicador'
   }),
-  verifyUserCanPerformActionOnIndicador({ indicadorPathId: 'idIndicador' }),
+  verifyUserIsAssignedToIndicador({ routeParam: 'idIndicador' }),
   createFormula
 )
 
@@ -678,7 +682,7 @@ router.post('/:idIndicador/mapa',
     routeParam: 'idIndicador',
     model: 'Indicador'
   }),
-  verifyUserCanPerformActionOnIndicador({ indicadorPathId: 'idIndicador' }),
+  verifyUserIsAssignedToIndicador({ routeParam: 'idIndicador' }),
   createMapa
 );
 
@@ -784,7 +788,7 @@ router.post('/:idIndicador/historicos',
   createHistoricoValidationRules(),
   validate,
   verifyUserHasRoles(['ADMIN', 'USER']),
-  verifyUserCanPerformActionOnIndicador({ indicadorPathId: 'idIndicador' }),
+  verifyUserIsAssignedToIndicador({ routeParam: 'idIndicador' }),
   createHistorico
 );
 
@@ -795,7 +799,8 @@ router.post('/:idIndicador/objetivos/status',
   body('objetivos.*.destacado').isBoolean().toBoolean(),
   validate,
   verifyJWT,
-  verifyUserCanPerformActionOnIndicador({ indicadorPathId: 'idIndicador' }),
+  verifyUserHasRoles(['ADMIN', 'USER']),
+  verifyUserIsAssignedToIndicador({ routeParam: 'idIndicador' }),
   updateDestacadoStatus
 )
 
@@ -805,6 +810,46 @@ router.get('/:idIndicador/objetivos/status',
   validate,
   verifyJWT,
   getObjetivosStatusForIndicador
+)
+
+
+/**
+ * @swagger
+ *   /{idIndicador}/usuarios:
+ *     delete:
+ *       summary: Deletes a relation between an indicador and users.
+ *       description: Deletes a relation between an indicador and users.
+ *       tags: [UsuarioIndicador]
+ *       security:
+ *         - bearer: []
+ *       parameters:
+ *         - name: idRelacion
+ *           in: path
+ *           required: true
+ *           schema:
+ *             type: integer
+ *             format: int64
+ *             minimum: 1
+ *       responses:
+ *         204:
+ *           description: Operation was successful
+ *         404:
+ *           $ref: '#/components/responses/NotFound'
+ *         422:
+ *           $ref: '#/components/responses/UnprocessableEntity'
+ *         429:
+ *           $ref: '#/components/responses/TooManyRequests'
+ *         500:
+ *           $ref: '#/components/responses/InternalServerError'
+ * 
+ */
+router.delete('/:idIndicador/usuarios',
+  userRelationAssignationValidationRules(),
+  idValidation(),
+  validate,
+  verifyUserHasRoles(['ADMIN', 'USER']),
+  verifyUserIsOwnerOfIndicador({ routeParam: 'idIndicador' }),
+  deleteRelation
 )
 
 module.exports = router;

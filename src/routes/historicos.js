@@ -16,7 +16,7 @@ const {
 
 const { verifyJWT, verifyUserIsActive, verifyUserHasRoles } = require('../middlewares/auth');
 const { verifyResourceExists } = require('../middlewares/resourceExists');
-const { verifyUserCanPerformActionOnIndicador } = require('../middlewares/verifyUserCanPerformAction');
+const { verifyUserIsAssignedToIndicador } = require('../middlewares/verifyUserCanPerformAction');
 
 
 const promisedRouter = require('express-promise-router')
@@ -67,9 +67,9 @@ router.delete('/:idHistorico',
 	validate,
 	verifyResourceExists({
 		routeParam: 'idHistorico',
-		model: 'Historico'
+		model: 'Historico',
 	}),
-	verifyUserCanPerformActionOnIndicador({ relatedTo: { model: 'Historico', pathId: 'idHistorico' } }),
+	verifyUserIsAssignedToIndicador({ relatedTo: { model: 'Historico', pathId: 'idHistorico' } }),
 	deleteHistorico
 );
 
@@ -120,7 +120,7 @@ router.patch('/:idHistorico',
 		routeParam: 'idHistorico',
 		model: 'Historico'
 	}),
-	verifyUserCanPerformActionOnIndicador({ relatedTo: { model: 'Historico', pathId: 'idHistorico' } }),
+	verifyUserIsAssignedToIndicador({ relatedTo: { model: 'Historico', pathId: 'idHistorico' } }),
 	updateHistorico
 );
 

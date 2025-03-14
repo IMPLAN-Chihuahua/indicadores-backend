@@ -28,6 +28,7 @@ const {
     changeOwner,
     createRelation
 } = require('../controllers/usuarioIndicadorController');
+const { verifyUserIsOwnerOfIndicador } = require('../middlewares/verifyUserCanPerformAction');
 
 /**
  * @swagger
@@ -87,21 +88,22 @@ const {
  */
 
 router.post('/create/:idIndicador',
-    verifyJWT,
-    verifyUserIsActive,
-    verifyUserHasRoles(['ADMIN']),
     idValidation(),
     relationAssignValidationRules(),
     validate,
+    verifyJWT,
+    verifyUserIsActive,
+    verifyUserHasRoles(['ADMIN', 'USER']),
+    verifyUserIsOwnerOfIndicador({ routeParam: 'idIndicador' }),
     createRelationUI,
 );
 
 router.post('/create',
+    assignationValidationRules(),
+    validate,
     verifyJWT,
     verifyUserIsActive,
     verifyUserHasRoles(['ADMIN']),
-    assignationValidationRules(),
-    validate,
     createRelation,
 )
 
@@ -186,72 +188,31 @@ router.get(
     '/indicador/:idIndicador/usuarios',
     verifyJWT,
     verifyUserIsActive,
-    verifyUserHasRoles(['ADMIN']),
+    verifyUserHasRoles(['ADMIN', 'USER']),
     paramValidationRules(),
     validate,
     getUsuarios,
 );
 
-/**
- * @swagger
- *   /relation/{idRelacion}:
- *     delete:
- *       summary: Deletes a relation between an user and an indicador.
- *       description: Deletes a relation between an user and an indicador.
- *       tags: [UsuarioIndicador]
- *       security:
- *         - bearer: []
- *       parameters:
- *         - name: idRelacion
- *           in: path
- *           required: true
- *           schema:
- *             type: integer
- *             format: int64
- *             minimum: 1
- *       responses:
- *         204:
- *           description: Operation was successful
- *         404:
- *           $ref: '#/components/responses/NotFound'
- *         422:
- *           $ref: '#/components/responses/UnprocessableEntity'
- *         429:
- *           $ref: '#/components/responses/TooManyRequests'
- *         500:
- *           $ref: '#/components/responses/InternalServerError'
- * 
- */
-
-router.delete(
-    '/',
-    verifyJWT,
-    verifyUserIsActive,
-    verifyUserHasRoles(['ADMIN']),
-    userRelationAssignationValidationRules(),
-    paramValidationRules(),
-    validate,
-    deleteRelation,
-);
 
 router.patch('/owner/:idIndicador',
-    verifyJWT,
-    verifyUserIsActive,
-    verifyUserHasRoles(['ADMIN']),
     changeOwnerValidationRules(),
     paramValidationRules(),
     validate,
+    verifyJWT,
+    verifyUserIsActive,
+    verifyUserHasRoles(['ADMIN']),
     changeOwner,
 )
 
 router.patch(
     '/:idRelacion',
-    verifyJWT,
-    verifyUserIsActive,
-    verifyUserHasRoles(['ADMIN']),
     relationAssignValidationRules(),
     paramValidationRules(),
     validate,
+    verifyJWT,
+    verifyUserIsActive,
+    verifyUserHasRoles(['ADMIN']),
     updateRelation,
 );
 

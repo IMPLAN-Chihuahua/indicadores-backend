@@ -5,7 +5,7 @@ const { DESTINATIONS } = require('../services/fileService');
 const { updateMapa } = require('../controllers/mapaController');
 const { verifyResourceExists } = require('../middlewares/resourceExists');
 const { verifyJWT, verifyUserIsActive, verifyUserHasRoles } = require('../middlewares/auth');
-const { verifyUserCanPerformActionOnIndicador } = require('../middlewares/verifyUserCanPerformAction');
+const { verifyUserIsAssignedToIndicador } = require('../middlewares/verifyUserCanPerformAction');
 
 
 const promisedRouter = require('express-promise-router')
@@ -83,7 +83,7 @@ router.route('/:idMapa')
       routeParam: 'idMapa',
       model: 'Mapa'
     }),
-    verifyUserCanPerformActionOnIndicador({ relatedTo: { model: 'Mapa', pathId: 'idMapa' } }),
+    verifyUserIsAssignedToIndicador({ relatedTo: { model: 'Mapa', pathId: 'idMapa' } }),
     updateMapa
   );
 

@@ -4,7 +4,7 @@ const { verifyResourceExists } = require('../middlewares/resourceExists');
 const { updateValidationRules } = require('../middlewares/validator/formulaValidator');
 const { paramValidationRules, validate, idValidation } = require('../middlewares/validator/generalValidator');
 const { createVariableValidationRules, variablesChain } = require('../middlewares/validator/variableValidator');
-const { verifyUserCanPerformActionOnIndicador } = require('../middlewares/verifyUserCanPerformAction');
+const { verifyUserIsAssignedToIndicador } = require('../middlewares/verifyUserCanPerformAction');
 
 
 const promisedRouter = require('express-promise-router');
@@ -91,7 +91,7 @@ router.route('/:idFormula')
       routeParam: 'idFormula',
       model: 'Formula'
     }),
-    verifyUserCanPerformActionOnIndicador({ relatedTo: { model: 'Formula', pathId: 'idFormula' } }),
+    verifyUserIsAssignedToIndicador({ relatedTo: { model: 'Formula', pathId: 'idFormula' } }),
     updateFormula
   );
 
@@ -146,7 +146,7 @@ router.route('/:idFormula/variables')
       routeParam: 'idFormula',
       model: 'Formula'
     }),
-    verifyUserCanPerformActionOnIndicador({ relatedTo: { model: 'Formula', pathId: 'idFormula' } }),
+    verifyUserIsAssignedToIndicador({ relatedTo: { model: 'Formula', pathId: 'idFormula' } }),
     addVariablesToFormula
   )
 
