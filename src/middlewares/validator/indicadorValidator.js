@@ -168,27 +168,24 @@ const updateIndicadorValidationRules = () => [
     body([
         'idOds',
         'idCobertura',
-        'idTema',
         'idObjetivo',
         'anioUltimoValorDisponible',
         'periodicidad'
     ])
         .optional()
-        .isInt().toInt(),
-    body('temas')
-        .optional()
-        .isArray()
-        .customSanitizer(temas => temas.map(t => {
-            return typeof t === 'string' ? JSON.parse(t) : t
-        })),
-    body('objetivos')
-        .optional()
-        .isArray()
-        .customSanitizer(objetivos => objetivos.map(t => {
-            return typeof t === 'string' ? JSON.parse(t) : t
-        })),
+        .isInt()
+        .toInt(),
+    body('temas.*.id')
+        .isInt()
+        .toInt()
+    ,
+    body('objetivos.*.id')
+        .isInt()
+        .toInt(),
     body('archive').optional().isBoolean(),
-    body('archive').default(false)
+    body('archive').default(false),
+    body('createHistoricos').optional().isBoolean().toBoolean(),
+    body('createHistoricos').default(false),
 ];
 
 module.exports = {

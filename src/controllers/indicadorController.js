@@ -188,9 +188,14 @@ const createIndicador = async (req, res, next) => {
 };
 
 const updateIndicador = async (req, res, next) => {
-  const { idIndicador, ...values } = req.matchedData;
+  const { idIndicador, createHistoricos, ...values } = req.matchedData;
   values.updatedBy = req.sub;
-  await IndicadorService.updateIndicador(idIndicador, values);
+  
+  if (createHistoricos) {
+    await PrivateIndicadorService.updateIndicadorAndCreateHistoricos(idIndicador, values)
+  } else {
+    await PrivateIndicadorService.updateIndicador(idIndicador, values);
+  }
   return res.sendStatus(204);
 };
 
