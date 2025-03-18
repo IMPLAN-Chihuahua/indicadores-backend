@@ -45,9 +45,13 @@ const updateHistorico = async (req, res, next) => {
 
 
 const createHistorico = async (req, res, next) => {
-  const { idIndicador, ...historico } = req.matchedData;
-  const idUser = req.sub;
-  const response = await HistoricoService.createHistorico(idIndicador, historico, idUser);
+  const { idIndicador, ...values } = req.matchedData;
+
+  const response = await HistoricoService.createHistorico(idIndicador, {
+    ...values,
+    pushedBy: req.sub
+  });
+
   return res.status(201).json(response);
 }
 
