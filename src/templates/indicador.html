@@ -269,13 +269,11 @@
   </div>
   <main id="container">
     <div class="watermark" id="watermark">
-      <img class="watermark__img" alt="Metrica"
-        src="https://chihuahua-metrica-bucket.s3.us-west-1.amazonaws.com/images/chihuahua-metrica-logo.png" />
+      <img class="watermark__img" alt="Metrica" src="https://implanchihuahua.org/img/metrica-logo.png" />
     </div>
     <header>
       <div id="pageHeader" class="title__logos">
-        <img class="header__img" alt="Metrica"
-          src="https://chihuahua-metrica-bucket.s3.us-west-1.amazonaws.com/images/chihuahua-metrica-logo.png" />
+        <img class="header__img" alt="Metrica" src="https://implanchihuahua.org/img/metrica-logo.png" />
       </div>
       <div class="chihuahua__en__datos">
         <h2>Chihuahua en Datos</h2>
@@ -308,7 +306,7 @@
             <tbody>
               <tr>
                 <td style="text-align: start !important;">
-                  {{objetivos.[0].titulo}} 
+                  {{objetivos.[0].titulo}}
                   {{#if objetivos.[0].destacado}}
                   <span style="font-weight: 600;">Este indicador abona principalmente para lograr este objetivo</span>
                   {{/if}}
@@ -436,31 +434,31 @@
     </section>
     {{/if}}
     {{#if (hasItems formula.variables)}}
-      <table class="mt-1" style="width: 100%; border-collapse: collapse; margin: auto">
-        <thead>
-          <tr style="border-bottom: 1px solid; font-weight: 600">
-            <th>Variable</th>
-            <th>Descripción</td>
-            <th>Valor</th>
-          </tr>
-        </thead>
-        <tbody>
-          {{#each formula.variables}}
-          <tr>
-            <td style="padding: 0; margin: 0; display: block">
-              $${{this.nombre}}$$
-            </td>
-            <td>{{this.descripcion}}</td>
-            {{#if (hasValue this.dato)}}
-            <td align="right">NA</td>
-            {{else}}
-            <td align="right">{{this.dato}}</td>
-            {{/if}}
-          </tr>
-          {{/each}}
-        </tbody>
-      </table>
-      {{/if}}
+    <table class="mt-1" style="width: 100%; border-collapse: collapse; margin: auto">
+      <thead>
+        <tr style="border-bottom: 1px solid; font-weight: 600">
+          <th>Variable</th>
+          <th>Descripción</td>
+          <th>Valor</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each formula.variables}}
+        <tr>
+          <td style="padding: 0; margin: 0; display: block">
+            $${{this.nombre}}$$
+          </td>
+          <td>{{this.descripcion}}</td>
+          {{#if (hasValue this.dato)}}
+          <td align="right">NA</td>
+          {{else}}
+          <td align="right">{{this.dato}}</td>
+          {{/if}}
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    {{/if}}
     {{/if}}
 
 

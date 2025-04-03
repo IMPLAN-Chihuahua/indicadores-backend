@@ -269,39 +269,28 @@ const generatePDF = async (indicador) => {
   const date = new Date();
   const [month, day, year] = [date.getMonth(), date.getDate(), date.getFullYear()];
 
-  const pdf = await page.pdf({
+  const pdfBuffer = await page.pdf({
     format: "letter",
     displayHeaderFooter: true,
     printBackground: true,
     headerTemplate: '',
     footerTemplate: `
-    <div clas="test" style="width: 100%; font-size: 7px; z-index: 10000;
-        padding: 5px 5px 0; position: relative;">
-        <div style="position: absolute; left: 10px; bottom: 0; font-size: 8px; z-index: 10000; color: gray;">
-          <div>
-          Generado el ${month}/${day}/${year}
-          </div>
-        </div>
-        <div style="text-align: center; margin-top: 220px !important;">
-
-          <div>
-            ${footer}
-          </div>
-        </div>
-        <div style="position: absolute; right: 10px; bottom: 0; font-size: 8px; z-index: 10000; color: gray;">
-          Página 
-          <span class="pageNumber">
-          </span> 
-          de 
-          <span class="totalPages">
-          </span>
-        </div>
-    </div>`,
+  <div style="width: 100%; font-size: 7px; padding: 5px; position: relative;">
+      <div style="position: absolute; left: 10px; bottom: 0; font-size: 8px; color: gray;">
+        Generado el ${month}/${day}/${year}
+      </div>
+      <div style="text-align: center; margin-top: 220px;">
+        ${footer}
+      </div>
+      <div style="position: absolute; right: 10px; bottom: 0; font-size: 8px; color: gray;">
+        Página <span class="pageNumber"></span> de <span class="totalPages"></span>
+      </div>
+  </div>`,
     margin: { bottom: '70px' },
   });
 
   await browser.close();
-  return pdf;
+  return pdfBuffer;
 };
 
 module.exports = {
