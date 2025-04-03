@@ -57,8 +57,10 @@ const generateFile = async (req, res, next) => {
       return readStream.pipe(res);
     case 'pdf':
       res.header('Content-Type', 'application/pdf');
+      const safeFilename = `${indicador.nombre.replace(/[^a-zA-Z0-9-_]/g, "_")}.pdf`;
+      res.header('Content-Disposition', `attachment; filename="${safeFilename}"`);
       const doc = await generatePDF(indicador);
-      return res.send(doc);
+      return res.end(doc);
     default:
       return res.status(409).json({ message: 'Formato de archivo invalido' });
   }
