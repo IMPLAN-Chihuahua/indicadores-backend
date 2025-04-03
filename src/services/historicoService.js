@@ -60,22 +60,8 @@ const updateHistorico = async (idHistorico, historico) => {
     };
 };
 
-const createHistorico = async (idIndicador, historico, idUser) => {
-    try {
-        const response = await Historico.create({
-            idIndicador: idIndicador,
-            valor: historico.valor,
-            anio: historico.anio,
-            fuente: historico.fuente,
-            ecuacion: 'NAN',
-            descripcionEcuacion: 'NAN',
-            pushedBy: idUser,
-        });
-
-        return response;
-    } catch (err) {
-        throw new Error(`Error al crear el historico: ${err.message}`);
-    }
+const createHistorico = async (idIndicador, values) => {
+    return Historico.create({ idIndicador, ...values });
 }
 
 module.exports = {

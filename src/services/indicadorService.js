@@ -12,11 +12,10 @@ const {
   Ods,
   IndicadorTema,
   UsuarioIndicador,
-  Usuario
+  Usuario,
 } = models;
-const { updateIndicadorTemas, assignIndicadorToTemas } = require("./indicadorTemasService");
+const { assignIndicadorToTemas } = require("./indicadorTemasService");
 const { createRelation } = require("./usuarioIndicadorService");
-const { updateIndicadorObjetivos } = require("./indicadorObjetivosService");
 const logger = require("../config/logger");
 const { Op } = Sequelize;
 
@@ -94,30 +93,6 @@ const getIndicadorStatus = async (id) => {
   const { activo } = await Indicador.findOne({ where: { id }, attributes: ["activo"], raw: true });
   return activo;
 }
-
-
-const updateIndicador = async (id, values) => {
-  const { temas = [], objetivos = [], ..._values } = values;
-
-  try {
-    sequelize.transaction(async _t => {
-      if (temas.length > 0) {
-        await updateIndicadorTemas(id, temas.map(tema => tema.id));
-      }
-
-      if (objetivos.length > 0) {
-        await updateIndicadorObjetivos(id, objetivos.map(objetivo => objetivo.id));
-      }
-
-      await Indicador.update(_values, { where: { id } });
-    })
-
-    return;
-  } catch (err) {
-    logger.error(err)
-    throw new Error(`Error al actualizar indicador: ${err.message}`);
-  }
-};
 
 
 const getIdIndicadorRelatedTo = async (model, id) => {
@@ -225,7 +200,6 @@ const includeAndFilterByUsuarios = (filterValues, attributes) => {
       attributes: [],
       where: {
         ...(ids.length > 0 && { idUsuario: ids }),
-        ...(isOwner !== null && { isOwner }),
       }
     }
   }
@@ -245,7 +219,6 @@ const filterByUsuarios = (filterValues = {}) => {
       attributes: [],
       where: {
         ...(ids.length > 0 && { idUsuario: ids }),
-        ...(owner !== null && { isOwner: true })
       },
     }
   }
@@ -431,7 +404,6 @@ const getObjetivosStatusForIndicador = (idIndicador) => {
 
 module.exports = {
   createIndicador,
-  updateIndicador,
   updateIndicadorStatus,
   getInactiveIndicadores,
   getIdIndicadorRelatedTo,
@@ -448,5 +420,5 @@ module.exports = {
   getDestacadosCountPerObjetivo,
   updateDestacadoStatusOfIndicadorInObjetivos,
   getIndicadoresDestacados,
-  getObjetivosStatusForIndicador
+  getObjetivosStatusForIndicador,
 };

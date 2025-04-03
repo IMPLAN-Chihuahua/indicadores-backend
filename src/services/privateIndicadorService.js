@@ -1,12 +1,15 @@
 const { Op } = require('sequelize');
 const { Indicador, Tema, IndicadorTema, Objetivo, IndicadorObjetivo, Cobertura, Ods, sequelize } = require('../models');
 const {
-    includeAndFilterByObjetivos, includeAndFilterByODS,
-    includeAndFilterByCobertura, includeAndFilterByUsuarios,
-    includeAndFilterByTemas,
-    includeResponsible,
-    filterByUsuarios
+  includeAndFilterByObjetivos, includeAndFilterByODS,
+  includeAndFilterByCobertura,
+  includeAndFilterByTemas,
+  includeResponsible,
+  filterByUsuarios
 } = require('./indicadorService');
+const { createHistorico } = require('./historicoService');
+const { updateIndicadorObjetivos } = require('./indicadorObjetivosService');
+const { updateIndicadorTemas } = require('./indicadorTemasService');
 
 
 /**
@@ -28,92 +31,92 @@ const {
 * @returns {Promise<Array>} list of indicadores 
 */
 async function getIndicadores({ page = 1, perPage = 25, offset = null, searchQuery, ...filters }) {
-    const {
-        idObjetivo = null, objetivos = [], destacado, idTema = null,
-        temas = [], usuarios = [], idUsuario = null, coberturas = [],
-        ods = [], activo = null, owner = null,
-    } = filters || {};
-    try {
-        const row = await Indicador.findAll({
-            limit: perPage,
-            offset: offset !== null ? offset : (page - 1) * perPage,
-            attributes: [
-                'id', 'nombre', 'activo', 'tendenciaActual', 'ultimoValorDisponible',
-                'adornment', 'unidadMedida', 'anioUltimoValorDisponible', 'updatedAt', 'createdAt',
-                'createdBy', 'updatedBy', 'observaciones', 'periodicidad', 'elif'
-            ],
-            where: {
-                ...(activo !== null && { activo }),
-                ...(searchQuery && filterBySearchQuery(searchQuery)),
-            },
-            order: [
-                ['id', 'asc'],
-                ['updatedAt', 'desc'],
-            ],
-            include: [
-                includeAndFilterByObjetivos({ idObjetivo, objetivos, destacado }, ['id', 'titulo', 'color', 'alias']),
-                includeAndFilterByTemas({ temas, idTema }, ['id', 'temaIndicador', 'color']),
-                includeAndFilterByODS({ ods }, ['id', 'posicion', 'titulo']),
-                includeAndFilterByCobertura({ coberturas }, ['id', 'tipo', 'urlImagen']),
-                includeResponsible(['id', 'nombres', 'correo', 'urlImagen']),
-                filterByUsuarios({ usuarios, owner, idUsuario }),
-            ],
-        });
-        return row;
-    } catch (err) {
-        console.log(err)
-        throw new Error('Hubo un error al consultar indicadores')
-    }
+  const {
+    idObjetivo = null, objetivos = [], destacado, idTema = null,
+    temas = [], usuarios = [], idUsuario = null, coberturas = [],
+    ods = [], activo = null, owner = null,
+  } = filters || {};
+  try {
+    const row = await Indicador.findAll({
+      limit: perPage,
+      offset: offset !== null ? offset : (page - 1) * perPage,
+      attributes: [
+        'id', 'nombre', 'activo', 'tendenciaActual', 'ultimoValorDisponible',
+        'adornment', 'unidadMedida', 'anioUltimoValorDisponible', 'updatedAt', 'createdAt',
+        'createdBy', 'updatedBy', 'observaciones', 'periodicidad', 'elif'
+      ],
+      where: {
+        ...(activo !== null && { activo }),
+        ...(searchQuery && filterBySearchQuery(searchQuery)),
+      },
+      order: [
+        ['id', 'asc'],
+        ['updatedAt', 'desc'],
+      ],
+      include: [
+        includeAndFilterByObjetivos({ idObjetivo, objetivos, destacado }, ['id', 'titulo', 'color', 'alias']),
+        includeAndFilterByTemas({ temas, idTema }, ['id', 'temaIndicador', 'color']),
+        includeAndFilterByODS({ ods }, ['id', 'posicion', 'titulo']),
+        includeAndFilterByCobertura({ coberturas }, ['id', 'tipo', 'urlImagen']),
+        includeResponsible(['id', 'nombres', 'correo', 'urlImagen']),
+        filterByUsuarios({ usuarios, owner, idUsuario }),
+      ],
+    });
+    return row;
+  } catch (err) {
+    console.log(err)
+    throw new Error('Hubo un error al consultar indicadores')
+  }
 
 }
 
 
 async function countIndicadores({ searchQuery = '', ...filters }) {
-    const {
-        idObjetivo = null, objetivos = [], destacado = null, idTema = null,
-        temas = [], usuarios = [], idUsuario = null, coberturas = [], ods = [],
-        activo = null, owner = null
-    } = filters || {};
-    try {
+  const {
+    idObjetivo = null, objetivos = [], destacado = null, idTema = null,
+    temas = [], usuarios = [], idUsuario = null, coberturas = [], ods = [],
+    activo = null, owner = null
+  } = filters || {};
+  try {
 
-        const count = await Indicador.count({
-            where: {
-                ...(activo !== null && { activo }),
-                ...(searchQuery && filterBySearchQuery(searchQuery)),
-            },
-            include: [
-                includeAndFilterByObjetivos({ idObjetivo, objetivos, destacado }),
-                includeAndFilterByTemas({ temas, idTema }),
-                includeAndFilterByODS({ ods }),
-                includeAndFilterByCobertura({ coberturas }),
-                filterByUsuarios({ usuarios, owner, idUsuario })
-            ],
-            distinct: true,
-        })
-        return count;
-    } catch (err) {
-        console.log(err)
-        throw new Error('Hubo un error al consultar número de indicadores')
-    }
+    const count = await Indicador.count({
+      where: {
+        ...(activo !== null && { activo }),
+        ...(searchQuery && filterBySearchQuery(searchQuery)),
+      },
+      include: [
+        includeAndFilterByObjetivos({ idObjetivo, objetivos, destacado }),
+        includeAndFilterByTemas({ temas, idTema }),
+        includeAndFilterByODS({ ods }),
+        includeAndFilterByCobertura({ coberturas }),
+        filterByUsuarios({ usuarios, owner, idUsuario })
+      ],
+      distinct: true,
+    })
+    return count;
+  } catch (err) {
+    console.log(err)
+    throw new Error('Hubo un error al consultar número de indicadores')
+  }
 }
 
 
 const filterBySearchQuery = (str) => {
-    const filters = [
-        { nombre: { [Op.iLike]: `%${str}%` } },
-        { unidadMedida: { [Op.iLike]: `%${str}%` } },
-    ]
+  const filters = [
+    { nombre: { [Op.iLike]: `%${str}%` } },
+    { unidadMedida: { [Op.iLike]: `%${str}%` } },
+  ]
 
-    if (!isNaN(parseInt(str))) {
-        const searchById = {
-            id: {
-                [Op.eq]: parseInt(str)
-            }
-        }
-        filters.push(searchById)
+  if (!isNaN(parseInt(str))) {
+    const searchById = {
+      id: {
+        [Op.eq]: parseInt(str)
+      }
     }
+    filters.push(searchById)
+  }
 
-    return { [Op.or]: filters }
+  return { [Op.or]: filters }
 }
 
 
@@ -124,24 +127,72 @@ const filterBySearchQuery = (str) => {
  * @returns 
  */
 const getIndicadorById = async (idIndicador, attributes) => {
-    const indicador = await Indicador.findByPk(idIndicador, {
-        ...(attributes !== undefined && { attributes }),
-        include: [
-            includeAndFilterByTemas(null, ['id', 'temaIndicador', 'color', 'codigo']),
-            includeAndFilterByObjetivos(null, ['id', 'titulo', [sequelize.literal('"objetivos->more"."destacado"'), 'destacado'], 'color']),
-            includeAndFilterByCobertura(null, ['id', 'tipo', 'descripcion', 'urlImagen']),
-            includeAndFilterByODS(null, ['id', 'posicion', 'titulo', 'descripcion', 'urlImagen']),
-            includeResponsible(['id', 'nombres', 'correo']),
-        ]
+  const indicador = await Indicador.findByPk(idIndicador, {
+    ...(attributes !== undefined && { attributes }),
+    include: [
+      includeAndFilterByTemas(null, ['id', 'temaIndicador', 'color', 'codigo']),
+      includeAndFilterByObjetivos(null, ['id', 'titulo', [sequelize.literal('"objetivos->more"."destacado"'), 'destacado'], 'color']),
+      includeAndFilterByCobertura(null, ['id', 'tipo', 'descripcion', 'urlImagen']),
+      includeAndFilterByODS(null, ['id', 'posicion', 'titulo', 'descripcion', 'urlImagen']),
+      includeResponsible(['id', 'nombres', 'correo']),
+    ]
+  })
+  return indicador?.get({ plain: true });
+}
+
+
+const updateIndicador = async (id, values) => {
+  const { temas = [], objetivos = [], ..._values } = values;
+
+  try {
+    sequelize.transaction(async _t => {
+      if (temas.length > 0) {
+        await updateIndicadorTemas(id, temas.map(tema => tema.id));
+      }
+
+      if (objetivos.length > 0) {
+        await updateIndicadorObjetivos(id, objetivos.map(objetivo => objetivo.id));
+      }
+
+      await Indicador.update(_values, { where: { id } });
     })
-    return indicador?.get({ plain: true });
+
+    return;
+  } catch (err) {
+    logger.error(err)
+    throw new Error(`Error al actualizar indicador: ${err.message}`);
+  }
+};
+
+
+const updateIndicadorAndCreateHistoricos = async (id, values) => {
+  try {
+    sequelize.transaction(async _t => {
+      const currentIndicador = await getIndicadorById(id, ['ultimoValorDisponible', 'anioUltimoValorDisponible', 'fuente'])
+
+      await createHistorico(id, {
+        idIndicador: id,
+        valor: currentIndicador.ultimoValorDisponible,
+        anio: currentIndicador.anioUltimoValorDisponible,
+        fuente: currentIndicador.fuente,
+        pushedBy: values.updatedBy,
+      })
+
+      await updateIndicador(id, values)
+    })
+
+  } catch (err) {
+    throw new Error(`Error al actualizar indicador y crear historico ${err.message}`)
+  }
 }
 
 
 module.exports = {
-    getIndicadores,
-    countIndicadores,
-    getIndicadorById
+  getIndicadores,
+  countIndicadores,
+  getIndicadorById,
+  updateIndicador,
+  updateIndicadorAndCreateHistoricos
 }
 
 
