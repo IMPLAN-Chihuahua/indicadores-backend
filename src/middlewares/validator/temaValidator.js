@@ -1,22 +1,52 @@
 const { query, param, body } = require('express-validator');
 
-const filterTemasValidationRules = () => [
-    query(['searchQuery'])
+const searchQueryValidationRules = () => [
+    query('searchQuery')
         .optional()
-        .trim().escape()
+        .trim().escape(),
+    query('searchQuery')
+        .default('')
 ];
+
+
+const filterPrivateTemasValidationRules = () => [
+    query('activo')
+        .optional()
+        .isBoolean()
+        .toBoolean()
+]
 
 const sortTemasValidationRules = () => [
     query('sortBy')
         .optional()
         .isIn(['id', 'codigo', 'temaIndicador', 'createdAt', 'updatedAt', 'urlImagen', 'color', 'observaciones', 'activo'])
         .withMessage('Valor de ordenamiento no válido con la solicitud'),
+    query('sortBy')
+        .default('id'),
     query('order')
         .optional()
         .toUpperCase()
         .isIn(['ASC', 'DESC'])
-        .withMessage('orden debe ser ascendente o descendente')
+        .withMessage('orden debe ser ascendente o descendente'),
+    query('order')
+        .default('ASC'),
 ];
+
+const sortPublictemasValidationRules = () => [
+    query('sortBy')
+        .optional()
+        .isIn(['temaIndicador', 'createdAt'])
+        .withMessage('Valor de ordenamiento no válido con la solicitud'),
+    query('sortBy')
+        .default('id'),
+    query('order')
+        .optional()
+        .toUpperCase()
+        .isIn(['ASC', 'DESC'])
+        .withMessage('orden debe ser ascendente o descendente'),
+    query('order')
+        .default('ASC'),
+]
 
 const createTemaValidationRules = () => [
     body('codigo')
@@ -88,9 +118,10 @@ const updateTemaValidationRules = () => [
 ]
 
 module.exports = {
-    filterTemasValidationRules,
+    searchQueryValidationRules,
     sortTemasValidationRules,
     createTemaValidationRules,
-    updateTemaValidationRules
-
+    updateTemaValidationRules,
+    filterPrivateTemasValidationRules,
+    sortPublictemasValidationRules
 }

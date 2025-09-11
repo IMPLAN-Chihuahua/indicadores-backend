@@ -1,34 +1,27 @@
 const { Tema, Sequelize, Indicador, IndicadorTema } = require('../models');
 const { Op } = Sequelize;
 
-const getTemas = async () => {
+const getPublicTemas = async (args) => {
+    const { page, perPage, sortBy, order, searchQuery, ...filters } = args;
+
     try {
-        const temas = await Tema.findAll({
+        const { rows, count } = await Tema.findAndCountAll({
             where: {
-                activo: true
+                activo: true,
+                ...getPublicSearchQueryFilter(searchQuery)
             },
+            order: [[sortBy, order]],
+            limit: perPage,
+            offset: (page - 1) * perPage,
             attributes: [
                 'id',
                 'temaIndicador',
                 'codigo',
-                'urlImagen',
                 'color',
                 'descripcion',
-                [Sequelize.fn('COUNT', Sequelize.col('indicadores.id')), 'indicadoresCount']
             ],
-            include: [{
-                model: Indicador,
-                through: {
-                    model: IndicadorTema,
-                    attributes: []
-                },
-                attributes: []
-            }],
-            group: ['Tema.id'],
-            order: [['id']],
-            raw: true
         });
-        return temas;
+        return { temas: rows, total: count }
     } catch (err) {
         throw new Error(`Error al obtener temas ${err.message}`);
     }
@@ -66,11 +59,17 @@ const isTemaIndicadorAlreadyInUse = async (temaIndicador) => {
     }
 };
 
-const getAllTemas = async (page, perPage, matchedData) => {
+
+const getPrivateTemas = async (args) => {
+    const { page, perPage, sortBy, order, searchQuery, filters } = args;
+
     try {
         const result = await Tema.findAndCountAll({
-            where: getAllTemasFilters(matchedData),
-            order: getTemasSorting(matchedData),
+            where: {
+                ...getPrivateSearchQueryFilter(searchQuery),
+                ...getPrivateTemasFilters(filters)
+            },
+            order: [[sortBy, order]],
             limit: perPage,
             offset: (page - 1) * perPage,
             attributes: [
@@ -92,6 +91,7 @@ const getAllTemas = async (page, perPage, matchedData) => {
     }
 };
 
+
 const countTemas = async () => {
     try {
         const inactiveCount = await Tema.count({ where: { activo: false } });
@@ -102,26 +102,45 @@ const countTemas = async () => {
 }
 
 
-const getTemasSorting = ({ sortBy, order }) => {
-    const arrangement = [];
-    arrangement.push([sortBy || 'id', order || 'ASC']);
-    return arrangement;
+const getPrivateSearchQueryFilter = (query) => {
+    if (!query) return null;
+
+    return {
+        [Op.or]: [
+            { temaIndicador: { [Op.iLike]: `%${query}%` } },
+            { codigo: { [Op.iLike]: `%${query}%` } },
+            { observaciones: { [Op.iLike]: `%${query}%` } },
+            { descripcion: { [Op.iLike]: `%${query}%` } },
+        ]
+    }
 };
 
-const getAllTemasFilters = (matchedData) => {
-    const { searchQuery } = matchedData;
-    if (searchQuery) {
-        const filter = {
-            [Op.or]: [
-                { temaIndicador: { [Op.iLike]: `%${searchQuery}%` } },
-                { codigo: { [Op.iLike]: `%${searchQuery}%` } },
-                { observaciones: { [Op.iLike]: `%${searchQuery}%` } },
-            ]
-        }
-        return filter;
+const getPublicSearchQueryFilter = (query) => {
+    if (!query) return null;
+
+    return {
+        [Op.or]: [
+            { temaIndicador: { [Op.iLike]: `%${searchQuery}%` } },
+            { descripcion: { [Op.iLike]: `%${searchQuery}%` } },
+        ]
     }
-    return {};
 };
+
+
+const getPrivateTemasFilters = (args) => {
+    const { activo = null } = args || {};
+    const filters = []
+
+    if (activo !== null) {
+        console.log('activo value', activo)
+        filters.push({ activo })
+    }
+
+    return {
+        [Op.and]: filters
+    }
+}
+
 
 const updateTemaStatus = async (id) => {
     try {
@@ -145,11 +164,11 @@ const updateTemaStatus = async (id) => {
 }
 
 module.exports = {
-    getTemas,
+    getPublicTemas,
     countTemas,
     addTema,
     isTemaIndicadorAlreadyInUse,
     updateTema,
-    getAllTemas,
+    getPrivateTemas,
     updateTemaStatus
 }

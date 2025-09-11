@@ -1,6 +1,6 @@
 const express = require('express');
 const temaRouter = express.Router();
-const { getTemas, createTema, editTema, updateTemaStatus, getTema } = require('../controllers/temaController');
+const { getPublicTemasController, createTema, editTema, updateTemaStatus, getTema } = require('../controllers/temaController');
 const { getIndicadores, getRandomIndicador, getPublicIndicadores } = require('../controllers/indicadorController');
 const {
     filterIndicadoresValidationRules,
@@ -17,6 +17,8 @@ const {
 const {
     createTemaValidationRules,
     updateTemaValidationRules,
+    sortTemasValidationRules,
+    sortPublictemasValidationRules,
 } = require('../middlewares/validator/temaValidator')
 const { verifyJWT, verifyUserIsActive, verifyUserHasRoles } = require('../middlewares/auth');
 const { uploadImage } = require('../middlewares/fileUpload');
@@ -77,8 +79,8 @@ temaRouter.use('/:idTema/indicadores', indicadorRouter);
  * @swagger
  *   /temas:
  *     get:
- *       summary: Retrieves a list of modules
- *       description: Retrieves a list of modules from the database
+ *       summary: Retrieves a list of temas with public info
+ *       description: Retrieves a list of temas from the database
  *       tags: [Temas]
  *       responses:
  *         200:
@@ -92,7 +94,7 @@ temaRouter.use('/:idTema/indicadores', indicadorRouter);
  *                     type: array
  *                     items:
  *                       $ref: '#/components/schemas/Tema'
- *                     description: List of modules
+ *                     description: List of temas
  *         429:
  *           $ref: '#/components/responses/TooManyRequests'
  *         500:
@@ -102,8 +104,9 @@ temaRouter.route('/')
     .get(
         GeneralValidator.paginationValidationRules(),
         GeneralValidator.searchQueryRule(),
+        sortPublictemasValidationRules(),
         validate,
-        getTemas
+        getPublicTemasController
     );
 
 

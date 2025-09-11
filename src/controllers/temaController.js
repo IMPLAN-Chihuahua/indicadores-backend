@@ -1,14 +1,28 @@
 const temaService = require('../services/temaService');
 const { Tema } = require('../models');
-const logger = require('../config/logger');
 const { getImagePathLocation } = require('../utils/stringFormat');
 
-const getTemas = async (req, res, next) => {
-  try {
-    const { perPage, page, ...otherParams } = req.matchedData;
-    const { temas, total } = await temaService.getAllTemas(page, perPage, otherParams);
 
-    return res.status(200).json({ data: temas, total, totalPages: Math.ceil(total / perPage) });
+
+const getPublicTemasController = async (req, res, next) => {
+  try {
+    const { perPage, page, sortBy, order, searchQuery, ...filters } = req.matchedData;
+    const { temas, total } = await temaService.getPublicTemas({
+      page,
+      perPage,
+      sortBy,
+      order,
+      searchQuery,
+      filters
+    });
+
+    return res.status(200).json({
+      data: temas,
+      page,
+      perPage,
+      total,
+      totalPages: Math.ceil(total / perPage),
+    });
   } catch (err) {
     next(err);
   }
@@ -33,11 +47,19 @@ const createTema = async (req, res, next) => {
 };
 
 
-const getAllTemas = async (req, res, next) => {
-  const page = req.matchedData.page || 1;
-  const perPage = req.matchedData.perPage || 15;
+const getPrivateTemasController = async (req, res, next) => {
+  const { page, perPage, searchQuery, sortBy, order, ...filters } = req.matchedData;
+  
   try {
-    const { temas, total, totalInactivos } = await temaService.getAllTemas(page, perPage, req.matchedData);
+    const { temas, total, totalInactivos } = await temaService.getPrivateTemas({
+      page,
+      perPage,
+      sortBy,
+      order,
+      searchQuery,
+      filters
+    });
+
     const totalPages = Math.ceil(total / perPage);
     return res.status(200).json({
       page,
@@ -101,4 +123,4 @@ const getTema = async (req, res, next) => {
 }
 
 
-module.exports = { getTemas, createTema, editTema, getAllTemas, updateTemaStatus: editUserStatus, getTema }
+module.exports = { getPublicTemasController, createTema, editTema, getPrivateTemasController, updateTemaStatus: editUserStatus, getTema }

@@ -11,7 +11,7 @@ const { verifyJWT, verifyUserIsActive } = require('../middlewares/auth');
 const {
   getIndicadoresFromUser,
   getIndicador } = require('../controllers/indicadorController');
-const { getAllTemas } = require('../controllers/temaController');
+const { getAllTemas, getPrivateTemasController } = require('../controllers/temaController');
 
 const {
   paginationValidationRules,
@@ -24,8 +24,9 @@ const {
 } = require('../middlewares/validator/usuarioValidator')
 
 const {
-  filterTemasValidationRules,
+  searchQueryValidationRules,
   sortTemasValidationRules,
+  filterPrivateTemasValidationRules,
 } = require('../middlewares/validator/temaValidator')
 
 const { determinePathway, FRONT_PATH } = require('../middlewares/determinePathway');
@@ -256,10 +257,11 @@ router.route('/temas').get(
   verifyJWT,
   verifyUserIsActive,
   paginationValidationRules(),
-  filterTemasValidationRules(),
+  searchQueryValidationRules(),
   sortTemasValidationRules(),
+  filterPrivateTemasValidationRules(),
   validate,
-  getAllTemas,
+  getPrivateTemasController,
 );
 
 
