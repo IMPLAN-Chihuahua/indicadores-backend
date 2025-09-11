@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { getRol, isUserActive } = require('../services/usuariosService');
+const { verifyResourceExists } = require('./resourceExists');
 require('dotenv').config();
 
 const { TOKEN_SECRET } = process.env;
@@ -24,6 +25,16 @@ const verifyJWT = (req, res, next) => {
         next();
     });
 };
+
+const hasJWT = (req, res, next) => {
+    const reqHeader = req.headers.authorization;
+
+    const bearerToken = reqHeader.split(' ')[1];
+    console.log('%c ' + 'Bearer token', 'background: #222; color: #26A783; font-weight: bold;');
+    console.log(bearerToken);
+    next();
+
+}
 
 const verifyUserHasRoles = (roles) => async (req, res, next) => {
     const rol = await getRol(req.sub);
@@ -56,5 +67,6 @@ module.exports = {
     verifyUserHasRoles,
     hashClave,
     generateToken,
-    verifyUserIsActive
+    verifyUserIsActive,
+    hasJWT
 };

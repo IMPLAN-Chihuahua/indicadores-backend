@@ -29,7 +29,7 @@ const {
   getObjetivosStatusForIndicador,
   updateDestacadoStatus,
 } = require('../controllers/indicadorController');
-const { verifyJWT, verifyUserHasRoles, verifyUserIsActive } = require('../middlewares/auth');
+const { verifyJWT, verifyUserHasRoles, verifyUserIsActive, hasJWT } = require('../middlewares/auth');
 const { determinePathway, SITE_PATH, FRONT_PATH, determineModel } = require('../middlewares/determinePathway');
 const { uploadImage } = require('../middlewares/fileUpload');
 const { getCatalogosFromIndicador, updateOrCreateCatalogFromIndicador } = require('../controllers/catalogoController');
@@ -331,6 +331,7 @@ router.get('/:idIndicador/historicos',
   sortValidationRules(),
   idValidation(),
   validate,
+  hasJWT,
   verifyResourceExists({
     routeParam: 'idIndicador',
     model: 'Indicador',

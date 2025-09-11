@@ -58,8 +58,8 @@ const updateTemaValidationRules = () => [
 
     body('codigo')
         .optional()
-        .isLength({ min: 3 })
-        .withMessage('El codigo debe tener 3 caracteres'),
+        .isLength({ min: 1 })
+        .withMessage('El código debe tener 2 caracteres'),
 
     body('activo')
         .optional()
