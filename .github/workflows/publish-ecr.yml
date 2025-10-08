@@ -37,4 +37,5 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
+          target: prod  
           tags: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/indicadore-backend:latest
