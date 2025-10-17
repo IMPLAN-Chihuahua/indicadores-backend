@@ -163,8 +163,7 @@ const updateIndicadorValidationRules = () => [
         .toBoolean(),
     body('tendenciaActual')
         .optional()
-        .toUpperCase()
-        .isIn(['ASCENDENTE', 'DESCENDENTE']),
+        .isIn(['Ascendente', 'Descendente', 'No aplica']),
     body([
         'idOds',
         'idCobertura',
