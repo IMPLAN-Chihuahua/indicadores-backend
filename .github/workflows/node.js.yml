@@ -17,11 +17,11 @@ jobs:
         node-version: [14.x, 16.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
     env:
-      POSTGRE_TEST_PASS: ${{secrets.POSTGRE_TEST_PASS}}
-      POSTGRE_TEST_USER: ${{secrets.POSTGRE_TEST_USER}}
-      POSTGRE_TEST_DB_NAME: ${{secrets.POSTGRE_TEST_DB_NAME}}
-      POSTGRE_TEST_HOST: ${{secrets.POSTGRE_TEST_HOST}}
-      POSTGRE_TEST_PORT: ${{secrets.POSTGRE_TEST_PORT}}
+      POSTGRE_PROD_PASS: ${{secrets.POSTGRE_PROD_PASS}}
+      POSTGRE_PROD_USER: ${{secrets.POSTGRE_PROD_USER}}
+      POSTGRE_PROD_DB_NAME: ${{secrets.POSTGRE_PROD_DB_NAME}}
+      POSTGRE_PROD_HOST: ${{secrets.POSTGRE_PROD_HOST}}
+      POSTGRE_PROD_PORT: ${{secrets.POSTGRE_PROD_PORT}}
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
