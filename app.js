@@ -13,6 +13,8 @@ const sender = require('./src/middlewares/mailSender');
 
 const PORT = process.env.PORT || 8080;
 const env = process.env.NODE_ENV || 'development';
+const baseURL = process.env.BASE_URL || `http://localhost:${PORT}/api/v1`;
+
 const servers = [
   {
     url: 'http://indicadores-backend.chihuahuametrica.online/',
@@ -24,6 +26,13 @@ if (env === 'development') {
   servers.push({
     url: `http://localhost:${PORT}/api/v1`,
     description: 'Local setup'
+  })
+}
+
+if (env === 'production') {
+  servers.push({
+    url: baseURL,
+    description: 'Production server'
   })
 }
 
@@ -98,7 +107,7 @@ app.use('/api/v1/coberturas', require('./src/routes/coberturas'));
 app.use('/uploads', (_, res, next) => {
   res.set('Cross-Origin-Resource-Policy', 'cross-origin');
   next();
-})  
+})
 app.use('/uploads/temas/images', express.static(path.join(__dirname, 'uploads', 'temas/images')));
 app.use('/uploads/usuarios/images', express.static(path.join(__dirname, 'uploads', 'usuarios/images')));
 app.use('/uploads/mapas', express.static(path.join(__dirname, 'uploads', 'mapas')));
