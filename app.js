@@ -15,6 +15,9 @@ const PORT = process.env.PORT || 8080;
 const env = process.env.NODE_ENV || 'development';
 const baseURL = process.env.BASE_URL || `http://localhost:${PORT}/api/v1`;
 
+
+console.log(process.env)
+
 const servers = [
   {
     url: 'http://indicadores-backend.chihuahuametrica.online/',
