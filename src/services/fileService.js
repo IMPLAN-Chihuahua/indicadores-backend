@@ -163,14 +163,71 @@ const generateXLSX = (indicador) => {
 
 
 const generatePDF = async (indicador) => {
+<<<<<<< HEAD
   const browser = await puppeteer.launch({
     args: chromium.args,
     defaultViewport: chromium.defaultViewport,
     executablePath: await chromium.executablePath(),
     headless: chromium.headless,
   });
+=======
+  let browser;
+  try {
+    browser = await puppeteer.launch({
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium',
+      headless: 'new',
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu'
+      ],
+    });
+
+    const page = await browser.newPage();
+    await page.setDefaultNavigationTimeout(120000);
+    await page.setDefaultTimeout(120000);
+    await page.setViewport({ width: 800, height: 800, deviceScaleFactor: 3 });
+    const templateHtml = fs.readFileSync("./src/templates/indicador.html", "utf8");
+    handlebars.registerHelper('isAscending', (str) => str === 'Ascendente');
+    handlebars.registerHelper('notApplies', (str) => str === 'No aplica');
+    handlebars.registerHelper('numberWithCommas', numberWithCommas);
+    handlebars.registerHelper('toString', (num) => num?.toString());
+    handlebars.registerHelper('containsNA', (str) => str?.includes("NA") ? "NA" : str);
+    handlebars.registerHelper('valueIsNull', (str) => str === null);
+    handlebars.registerHelper('hasItems', (arr) => arr.length > 0);
+    handlebars.registerHelper('hasFormula', (formula) => typeof formula !== undefined || formula !== null)
+    handlebars.registerHelper('calculateTopPx', (objetivo) => {
+      const top = (parseInt(objetivo.id) - 1) * 35;
+      return `
+      <style>
+        .tematica__id {
+          width: 60px;
+          height: 30px;
+          background: ${objetivo.color};
+          color: white;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-weight: bold;
+          font-size: 12px;
+          position: absolute;
+          top: ${top}px;
+        }
+      </style>
+      <div class="tematica__id">
+        objetivo ${objetivo.id}
+      </div>   
+      `;
+    })
+    handlebars.registerHelper('isFormula', (formula) => formula.isFormula == 'SI');
+    handlebars.registerHelper('hasValue', (value) => (value.trim().length === 0));
+    handlebars.registerHelper('returnDato', (unidadMedida) => returnUnit(unidadMedida));
+    handlebars.registerHelper('returnFuente', (fuente) => returnFuente(fuente));
+>>>>>>> parent of addff32 (Cambios en file service para verificar si existe chromium)
 
 
+<<<<<<< HEAD
   const page = await browser.newPage();
   await page.setViewport({ width: 800, height: 800, deviceScaleFactor: 3 });
   const templateHtml = fs.readFileSync("./src/templates/indicador.html", "utf8");
@@ -209,6 +266,13 @@ const generatePDF = async (indicador) => {
   handlebars.registerHelper('hasValue', (value) => (value.trim().length === 0));
   handlebars.registerHelper('returnDato', (unidadMedida) => returnUnit(unidadMedida));
   handlebars.registerHelper('returnFuente', (fuente) => returnFuente(fuente));
+=======
+    const html = template(indicador, { allowProtoPropertiesByDefault: true });
+    await page.setContent(html, {
+      waitUntil: ['domcontentloaded', 'networkidle0'],
+      timeout: 120000
+    });
+>>>>>>> parent of addff32 (Cambios en file service para verificar si existe chromium)
 
   const template = handlebars.compile(templateHtml);
 
