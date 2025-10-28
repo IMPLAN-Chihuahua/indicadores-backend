@@ -214,8 +214,11 @@ const generatePDF = async (indicador) => {
 
   const html = template(indicador, { allowProtoPropertiesByDefault: true });
   await page.setContent(html, {
-    waitUntil: "networkidle0",
+    waitUntil: ["load", "networkidle0"],
+    timeout: 0, // 0 = sin límite
   });
+  await page.waitForTimeout(3000);
+
 
   const years = []
   const values = []
