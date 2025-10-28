@@ -175,6 +175,8 @@ const generatePDF = async (indicador) => {
 
 
   const page = await browser.newPage();
+  await page.setDefaultNavigationTimeout(60000);
+  await page.setDefaultTimeout(60000);
   await page.setViewport({ width: 800, height: 800, deviceScaleFactor: 3 });
   const templateHtml = fs.readFileSync("./src/templates/indicador.html", "utf8");
   handlebars.registerHelper('isAscending', (str) => str === 'Ascendente');
@@ -218,6 +220,7 @@ const generatePDF = async (indicador) => {
   const html = template(indicador, { allowProtoPropertiesByDefault: true });
   await page.setContent(html, {
     waitUntil: "networkidle0",
+    timeout: 60000
   });
 
   const years = []
