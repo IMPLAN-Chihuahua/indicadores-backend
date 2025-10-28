@@ -5,8 +5,7 @@ const multerS3 = require('multer-s3');
 const { Parser } = require("json2csv");
 const Excel = require("exceljs");
 const fs = require("fs");
-const chromium = require('@sparticuz/chromium');
-const puppeteer = require('puppeteer-core');
+const puppeteer = require("puppeteer");
 const { numberWithCommas, returnUnit, returnFuente } = require("../utils/stringFormat");
 const handlebars = require("handlebars");
 const { footer } = require("../utils/footerImage");
@@ -163,15 +162,19 @@ const generateXLSX = (indicador) => {
 
 
 const generatePDF = async (indicador) => {
-<<<<<<< HEAD
-  const browser = await puppeteer.launch({
-    args: chromium.args,
-    defaultViewport: chromium.defaultViewport,
-    executablePath: await chromium.executablePath(),
-    headless: chromium.headless,
-  });
-=======
   let browser;
+  // Debug: Verificar si existe chromium
+  const possiblePaths = [
+    '/usr/bin/chromium',
+    '/usr/bin/chromium-browser',
+    '/usr/bin/google-chrome'
+  ];
+
+  console.log('Buscando Chromium...');
+  possiblePaths.forEach(path => {
+    const exists = fs.existsSync(path);
+    console.log(`${path}: ${exists ? 'EXISTE' : 'NO EXISTE'}`);
+  });
   try {
     browser = await puppeteer.launch({
       executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium',
@@ -224,143 +227,105 @@ const generatePDF = async (indicador) => {
     handlebars.registerHelper('hasValue', (value) => (value.trim().length === 0));
     handlebars.registerHelper('returnDato', (unidadMedida) => returnUnit(unidadMedida));
     handlebars.registerHelper('returnFuente', (fuente) => returnFuente(fuente));
->>>>>>> parent of addff32 (Cambios en file service para verificar si existe chromium)
 
+    const template = handlebars.compile(templateHtml);
 
-<<<<<<< HEAD
-  const page = await browser.newPage();
-  await page.setViewport({ width: 800, height: 800, deviceScaleFactor: 3 });
-  const templateHtml = fs.readFileSync("./src/templates/indicador.html", "utf8");
-  handlebars.registerHelper('isAscending', (str) => str === 'Ascendente');
-  handlebars.registerHelper('notApplies', (str) => str === 'No aplica');
-  handlebars.registerHelper('numberWithCommas', numberWithCommas);
-  handlebars.registerHelper('toString', (num) => num?.toString());
-  handlebars.registerHelper('containsNA', (str) => str?.includes("NA") ? "NA" : str);
-  handlebars.registerHelper('valueIsNull', (str) => str === null);
-  handlebars.registerHelper('hasItems', (arr) => arr.length > 0);
-  handlebars.registerHelper('hasFormula', (formula) => typeof formula !== undefined || formula !== null)
-  handlebars.registerHelper('calculateTopPx', (objetivo) => {
-    const top = (parseInt(objetivo.id) - 1) * 35;
-    return `
-    <style>
-      .tematica__id {
-        width: 60px;
-        height: 30px;
-        background: ${objetivo.color};
-        color: white;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-weight: bold;
-        font-size: 12px;
-        position: absolute;
-        top: ${top}px;
-      }
-    </style>
-    <div class="tematica__id">
-      objetivo ${objetivo.id}
-    </div>   
-    `;
-  })
-  handlebars.registerHelper('isFormula', (formula) => formula.isFormula == 'SI');
-  handlebars.registerHelper('hasValue', (value) => (value.trim().length === 0));
-  handlebars.registerHelper('returnDato', (unidadMedida) => returnUnit(unidadMedida));
-  handlebars.registerHelper('returnFuente', (fuente) => returnFuente(fuente));
-=======
     const html = template(indicador, { allowProtoPropertiesByDefault: true });
     await page.setContent(html, {
-      waitUntil: ['domcontentloaded', 'networkidle0'],
-      timeout: 120000
+      waitUntil: ['domcontentloaded'],
+      timeout: 30000
     });
->>>>>>> parent of addff32 (Cambios en file service para verificar si existe chromium)
 
-  const template = handlebars.compile(templateHtml);
+    const years = []
+    const values = []
+    if (indicador.historicos.length > 0) {
+      const historicosSorted = indicador.historicos.sort((a, b) => a.anio - b.anio);
+      years.push(...historicosSorted.map(indicador => indicador.anio));
+      values.push(...historicosSorted.map((elem) => elem.valor));
+      years.push(indicador.anioUltimoValorDisponible);
+      values.push(indicador.ultimoValorDisponible);
 
-  const html = template(indicador, { allowProtoPropertiesByDefault: true });
-  await page.setContent(html, {
-    waitUntil: ["load", "networkidle0"],
-    timeout: 0, // 0 = sin límite
-  });
-  await page.waitForTimeout(3000);
-
-
-  const years = []
-  const values = []
-  if (indicador.historicos.length > 0) {
-    const historicosSorted = indicador.historicos.sort((a, b) => a.anio - b.anio);
-    years.push(...historicosSorted.map(indicador => indicador.anio));
-    values.push(...historicosSorted.map((elem) => elem.valor));
-    years.push(indicador.anioUltimoValorDisponible);
-    values.push(indicador.ultimoValorDisponible);
-
-    await page.evaluate(
-      (years, values) => {
-        const ctx = document.getElementById("chart").getContext("2d");
-        new Chart(ctx, {
-          type: "bar",
-          data: {
-            labels: years,
-            datasets: [
-              {
-                label: 'Valores históricos',
-                data: values,
-                backgroundColor: ['#D12D6A', '#C62C6B', '#A6296C', '#9C286D', '#91276E', '#662270'].reverse(),
-                barPercentage: 0.8,
-              },
-            ],
-          },
-          options: {
-            animation: {
-              duration: 0,
+      await page.evaluate(
+        (years, values) => {
+          const ctx = document.getElementById("chart").getContext("2d");
+          new Chart(ctx, {
+            type: "bar",
+            data: {
+              labels: years,
+              datasets: [
+                {
+                  label: 'Valores históricos',
+                  data: values,
+                  backgroundColor: ['#D12D6A', '#C62C6B', '#A6296C', '#9C286D', '#91276E', '#662270'].reverse(),
+                  barPercentage: 0.8,
+                },
+              ],
             },
-            responsive: true,
-            scales: {
-              yAxes: [{
-                ticks: {
-                  beginAtZero: true
-                }
-              }]
-            }
-          },
-        });
-      },
-      years,
-      values,
-    ).catch((err) => {
-      logger.error(err)
-      throw new Error('No se puede generar el archivo de este indicador en este momento');
+            options: {
+              animation: {
+                duration: 0,
+              },
+              responsive: true,
+              scales: {
+                yAxes: [{
+                  ticks: {
+                    beginAtZero: true
+                  }
+                }]
+              }
+            },
+          });
+        },
+        years,
+        values,
+      ).catch((err) => {
+        logger.error(err)
+        throw new Error('No se puede generar el archivo de este indicador en este momento');
+      });
+    }
+
+    page.setUserAgent(
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36WAIT_UNTIL=load"
+    );
+
+    const date = new Date();
+    const [month, day, year] = [date.getMonth(), date.getDate(), date.getFullYear()];
+
+    const pdfBuffer = await page.pdf({
+      format: "letter",
+      displayHeaderFooter: true,
+      printBackground: true,
+      headerTemplate: '',
+      footerTemplate: `
+    <div style="width: 100%; font-size: 7px; padding: 5px; position: relative;">
+        <div style="position: absolute; left: 10px; bottom: 0; font-size: 8px; color: gray;">
+          Generado el ${month}/${day}/${year}
+        </div>
+        <div style="text-align: center; margin-top: 220px;">
+          ${footer}
+        </div>
+        <div style="position: absolute; right: 10px; bottom: 0; font-size: 8px; color: gray;">
+          Página <span class="pageNumber"></span> de <span class="totalPages"></span>
+        </div>
+    </div>`,
+      margin: { bottom: '70px' },
     });
+
+    await browser.close();
+    return pdfBuffer;
+
+  } catch (error) {
+    console.error('Error en generatePDF:', error);
+
+    // Cerrar el browser si existe
+    if (browser) {
+      await browser.close().catch(closeError => {
+        console.error('Error cerrando browser:', closeError);
+      });
+    }
+
+    throw new Error(`Error generando PDF: ${error.message}`);
   }
-
-  page.setUserAgent(
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36WAIT_UNTIL=load"
-  );
-
-  const date = new Date();
-  const [month, day, year] = [date.getMonth(), date.getDate(), date.getFullYear()];
-
-  const pdfBuffer = await page.pdf({
-    format: "letter",
-    displayHeaderFooter: true,
-    printBackground: true,
-    headerTemplate: '',
-    footerTemplate: `
-  <div style="width: 100%; font-size: 7px; padding: 5px; position: relative;">
-      <div style="position: absolute; left: 10px; bottom: 0; font-size: 8px; color: gray;">
-        Generado el ${month}/${day}/${year}
-      </div>
-      <div style="text-align: center; margin-top: 220px;">
-        ${footer}
-      </div>
-      <div style="position: absolute; right: 10px; bottom: 0; font-size: 8px; color: gray;">
-        Página <span class="pageNumber"></span> de <span class="totalPages"></span>
-      </div>
-  </div>`,
-    margin: { bottom: '70px' },
-  });
-
-  await browser.close();
-  return pdfBuffer;
 };
 
 module.exports = {
@@ -370,3 +335,4 @@ module.exports = {
   generateXLSX,
   generatePDF,
 }
+
