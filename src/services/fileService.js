@@ -163,18 +163,7 @@ const generateXLSX = (indicador) => {
 
 const generatePDF = async (indicador) => {
   let browser;
-  // Debug: Verificar si existe chromium
-  const possiblePaths = [
-    '/usr/bin/chromium',
-    '/usr/bin/chromium-browser',
-    '/usr/bin/google-chrome'
-  ];
 
-  console.log('Buscando Chromium...');
-  possiblePaths.forEach(path => {
-    const exists = fs.existsSync(path);
-    console.log(`${path}: ${exists ? 'EXISTE' : 'NO EXISTE'}`);
-  });
   try {
     browser = await puppeteer.launch({
       executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium',
