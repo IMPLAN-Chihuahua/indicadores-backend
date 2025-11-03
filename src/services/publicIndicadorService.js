@@ -33,7 +33,6 @@ async function getIndicadorById(id, attributes) {
             include: [
                 includeAndFilterByTemas(null, ['id', 'temaIndicador', 'color', 'codigo']),
                 includeAndFilterByObjetivos(null, ['id', 'titulo', [sequelize.literal('"objetivos->more"."destacado"'), 'destacado'], 'color']),
-                includeResponsible(['correo', 'nombres', 'apellidoPaterno', 'apellidoMaterno', 'descripcion', 'urlImagen']),
                 {
                     model: Cobertura,
                     attributes: ['tipo', 'descripcion', 'urlImagen']
