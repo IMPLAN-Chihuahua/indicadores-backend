@@ -89,21 +89,34 @@ const getObjetivos = async (req, res, next) => {
 }
 
 const getTemasInObjetivo = async (req, res, next) => {
-    const { idObjetivo, page, perPage } = req.matchedData;
-    const temas = await sequelize.query(
-        'SELECT m."id", m."temaIndicador" FROM "Temas" m ' +
-        'INNER JOIN "Indicadores" i on i."idTema" = m."id" ' +
-        'INNER JOIN "IndicadorObjetivos" io on io."idIndicador" = i."id" ' +
-        'WHERE io."idObjetivo" = :idObjetivo ' +
-        'GROUP BY m."id", m."temaIndicador"', {
-        replacements: {
-            idObjetivo
-        },
-        type: QueryTypes.SELECT
-    })
+    try {
+        const { idObjetivo } = req.matchedData;
 
-    return res.status(200).json({ data: temas });
-}
+        const temas = await sequelize.query(
+            `
+            SELECT m."id", m."temaIndicador"
+            FROM "Temas" m
+            INNER JOIN "Indicadores" i ON i."idTema" = m."id"
+            INNER JOIN "IndicadorObjetivos" io ON io."idIndicador" = i."id"
+            WHERE io."idObjetivo" = :idObjetivo
+            AND m."activo" = TRUE
+            GROUP BY m."id", m."temaIndicador"
+            `,
+            {
+                replacements: { idObjetivo },
+                type: QueryTypes.SELECT
+            }
+        );
+
+        return res.status(200).json({ data: temas });
+
+    } catch (error) {
+        console.error('Error en getTemasInObjetivo');
+        console.error(error.message);   // 👈 ESTE es el importante
+        console.error(error.sql);       // 👈 si existe, oro puro
+        return res.status(500).json({ error: 'Error al obtener temas' });
+    }
+};
 
 module.exports = {
     countIndicadoresByObjetivo,

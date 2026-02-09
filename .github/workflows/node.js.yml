@@ -22,6 +22,7 @@ jobs:
       POSTGRE_TEST_DB_NAME: ${{secrets.POSTGRE_TEST_DB_NAME}}
       POSTGRE_TEST_HOST: ${{secrets.POSTGRE_TEST_HOST}}
       POSTGRE_TEST_PORT: ${{secrets.POSTGRE_TEST_PORT}}
+      POSTGRE_TEST_PORT: ${{secrets.TOKEN_SECRET}}
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
