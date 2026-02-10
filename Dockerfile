@@ -10,7 +10,14 @@ RUN apt-get update && apt-get install -y \
     libfreetype6 \
     libharfbuzz0b \ 
     ca-certificates \ 
-    fonts-freefont-ttf 
+    fonts-freefont-ttf \
+    build-essential \
+    libcairo2-dev \
+    libpango1.0-dev \
+    libjpeg-dev \
+    libgif-dev \
+    librsvg2-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 # Configurar Puppeteer para usar Chromium del sistema
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
