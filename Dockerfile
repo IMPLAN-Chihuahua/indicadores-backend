@@ -40,12 +40,15 @@ CMD ["npm", "run", "dev"]
 
 # Etapa de producción
 FROM base AS prod
-RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=package-lock.json,target=package-lock.json \
-    --mount=type=cache,target=/root/.npm \
+
+COPY package.json package-lock.json ./
+
+RUN --mount=type=cache,target=/root/.npm \
     npm install --omit=dev
+
 ENV NODE_ENV=production
 COPY --chown=node:node . .
+
 USER node
 HEALTHCHECK --interval=1m --timeout=3s --retries=5 \
     CMD ["wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080", "||", "exit", "1"]
