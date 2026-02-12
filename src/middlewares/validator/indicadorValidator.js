@@ -93,6 +93,16 @@ const createIndicadorValidationRules = () => [
         .isInt({ min: 1 })
         .toInt(),
 
+    body('meses')
+        .optional()
+        .isArray()
+        .withMessage('El campo meses debe ser un arreglo'),
+
+    body('meses.*')
+        .isInt({ min: 1, max: 12 })
+        .withMessage('Cada mes debe ser un número entre 1 y 12')
+        .toInt(),
+
     body('temas.*')
         .isInt().toInt(),
 
@@ -164,7 +174,7 @@ const updateIndicadorValidationRules = () => [
     body('tendenciaActual')
         .optional()
         .toUpperCase()
-        .isIn(['ASCENDENTE', 'DESCENDENTE']),
+        .isIn(['ASCENDENTE', 'DESCENDENTE', 'NO APLICA']),
     body([
         'idOds',
         'idCobertura',
@@ -186,6 +196,15 @@ const updateIndicadorValidationRules = () => [
     body('archive').default(false),
     body('createHistoricos').optional().isBoolean().toBoolean(),
     body('createHistoricos').default(false),
+    body('meses')
+        .optional()
+        .isArray()
+        .withMessage('El campo meses debe ser un arreglo'),
+
+    body('meses.*')
+        .isInt({ min: 1, max: 12 })
+        .withMessage('Cada mes debe ser un número entre 1 y 12')
+        .toInt(),
 ];
 
 module.exports = {

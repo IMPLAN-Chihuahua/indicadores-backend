@@ -192,7 +192,7 @@ const createIndicador = async (req, res, next) => {
 const updateIndicador = async (req, res, next) => {
   const { idIndicador, createHistoricos, ...values } = req.matchedData;
   values.updatedBy = req.sub;
-  
+
   if (createHistoricos) {
     await PrivateIndicadorService.updateIndicadorAndCreateHistoricos(idIndicador, values)
   } else {

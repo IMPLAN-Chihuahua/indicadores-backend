@@ -138,6 +138,12 @@ module.exports = (sequelize, DataTypes) => {
                 defaultValue: null
             },
 
+            meses: {
+                type: DataTypes.ARRAY(DataTypes.INTEGER),
+                allowNull: false,
+                defaultValue: [1]
+            },
+
             archive: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,
