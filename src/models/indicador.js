@@ -151,7 +151,7 @@ module.exports = (sequelize, DataTypes) => {
             },
 
             elif: {
-                type: DataTypes.STRING,
+                type: DataTypes.TEXT,
                 allowNull: true,
                 defaultValue: null
             },
