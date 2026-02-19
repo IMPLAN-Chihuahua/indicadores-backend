@@ -145,7 +145,7 @@ const updateIndicador = async (id, values) => {
   const { temas = [], objetivos = [], ..._values } = values;
 
   try {
-    sequelize.transaction(async _t => {
+    await sequelize.transaction(async _t => {
       if (temas.length > 0) {
         await updateIndicadorTemas(id, temas.map(tema => tema.id));
       }
@@ -167,7 +167,7 @@ const updateIndicador = async (id, values) => {
 
 const updateIndicadorAndCreateHistoricos = async (id, values) => {
   try {
-    sequelize.transaction(async _t => {
+    await sequelize.transaction(async _t => {
       const currentIndicador = await getIndicadorById(id, ['ultimoValorDisponible', 'anioUltimoValorDisponible', 'fuente'])
 
       await createHistorico(id, {
