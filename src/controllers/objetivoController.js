@@ -94,7 +94,7 @@ const getTemasInObjetivo = async (req, res, next) => {
         'SELECT m."id", m."temaIndicador" FROM "Temas" m ' +
         'INNER JOIN "Indicadores" i on i."idTema" = m."id" ' +
         'INNER JOIN "IndicadorObjetivos" io on io."idIndicador" = i."id" ' +
-        'WHERE io."idObjetivo" = :idObjetivo ' +
+        'WHERE io."idObjetivo" = :idObjetivo AND m."activo" = true AND i."activo" = true ' +
         'GROUP BY m."id", m."temaIndicador"', {
         replacements: {
             idObjetivo
@@ -104,7 +104,6 @@ const getTemasInObjetivo = async (req, res, next) => {
 
     return res.status(200).json({ data: temas });
 }
-
 module.exports = {
     countIndicadoresByObjetivo,
     editObjetivo,
