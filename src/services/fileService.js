@@ -225,6 +225,17 @@ const generatePDF = async (indicador) => {
 
     const page = await browser.newPage();
 
+    // // await page.setRequestInterception(true);
+    // page.on('request', (req) => {
+    //   const isDataUrl = req.url().startsWith('data:');
+    //   if (req.isInterceptResolutionHandled()) return;
+    //   if (isDataUrl) {
+    //     req.continue(); // Permitimos imagenes Base64 (nuestra gráfica)
+    //   } else {
+    //     req.abort(); // Bloqueamos todo lo externo
+    //   }
+    // });
+
     await page.setDefaultNavigationTimeout(60000);
     await page.setDefaultTimeout(60000);
     await page.setViewport({ width: 800, height: 800, deviceScaleFactor: 3 });
@@ -269,13 +280,19 @@ const generatePDF = async (indicador) => {
     handlebars.registerHelper('returnFuente', (fuente) => returnFuente(fuente));
 
     const template = handlebars.compile(templateHtml);
-
+    let logoBase64 = "";
+    try {
+      const logoBuffer = fs.readFileSync("./src/templates/small-logo.png");
+      logoBase64 = `data:image/png;base64,${logoBuffer.toString('base64')}`;
+    } catch (err) {
+      console.error("No se encontró el logo local", err);
+    }
     // Inyectamos chartImageBase64 a la plantilla
-    const html = template({ ...indicador, chartImageBase64 }, { allowProtoPropertiesByDefault: true });
+    const html = template({ ...indicador, chartImageBase64, logoBase64 }, { allowProtoPropertiesByDefault: true });
 
     // 4. Inyectar HTML al navegador usando solo 'load' para evitar bloqueos de red
     await page.setContent(html, {
-      waitUntil: 'load',
+      waitUntil: 'networkidle2',
       timeout: 60000
     });
 
