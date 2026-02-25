@@ -6,7 +6,7 @@ const { Parser } = require("json2csv");
 const Excel = require("exceljs");
 const fs = require("fs");
 const chromium = require('@sparticuz/chromium');
-const puppeteer = require('puppeteer-core');
+const puppeteerCore = require('puppeteer-core');
 const puppeteerLocal = require("puppeteer");
 
 const { numberWithCommas, returnUnit, returnFuente } = require("../utils/stringFormat");
