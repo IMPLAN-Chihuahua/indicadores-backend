@@ -157,7 +157,7 @@ const generatePDF = async (indicador) => {
     handlebars.registerHelper('hasFormula', (formula) => typeof formula !== 'undefined' && formula !== null);
     handlebars.registerHelper('calculateTopPx', (objetivo) => {
       const top = (parseInt(objetivo.id) - 1) * 35;
-      return `<style>.tematica__id { width: 60px; height: 30px; background: ${objetivo.color}; color: white; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 12px; position: absolute; top: ${top}px;}</style><div class="tematica__id">objetivo ${objetivo.id}</div>`;
+      return `<div class="tematica__id" style="top: ${top}px; background-color: ${objetivo.color};">O${objetivo.id}</div>`;
     });
     handlebars.registerHelper('isFormula', (formula) => formula.isFormula == 'SI');
     handlebars.registerHelper('hasValue', (value) => (value.trim().length === 0));
