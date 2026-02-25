@@ -5,7 +5,10 @@ const multerS3 = require('multer-s3');
 const { Parser } = require("json2csv");
 const Excel = require("exceljs");
 const fs = require("fs");
-const puppeteer = require("puppeteer");
+const chromium = require('@sparticuz/chromium');
+const puppeteer = require('puppeteer-core');
+const puppeteerLocal = require("puppeteer");
+
 const { numberWithCommas, returnUnit, returnFuente } = require("../utils/stringFormat");
 const handlebars = require("handlebars");
 const { footer } = require("../utils/footerImage");
@@ -165,22 +168,69 @@ const generatePDF = async (indicador) => {
   let browser;
 
   try {
-    browser = await puppeteer.launch({
-      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium',
-      headless: 'new',
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-gpu'
-      ],
-    });
+    // 1. Preparar la imagen de la gráfica ANTES de abrir el navegador
+    let chartImageUrl = null;
+    if (indicador.historicos && indicador.historicos.length > 0) {
+      const historicosSorted = [...indicador.historicos].sort((a, b) => a.anio - b.anio);
+      const years = historicosSorted.map(h => h.anio);
+      const values = historicosSorted.map(h => h.valor);
+
+      years.push(indicador.anioUltimoValorDisponible);
+      values.push(indicador.ultimoValorDisponible);
+
+      // Creamos la misma configuración de Chart.js que ya tenías
+      const chartConfig = {
+        type: "bar",
+        data: {
+          labels: years,
+          datasets: [{
+            label: 'Valores históricos',
+            data: values,
+            backgroundColor: ['#D12D6A', '#C62C6B', '#A6296C', '#9C286D', '#91276E', '#662270'].reverse(),
+          }],
+        },
+        options: {
+          scales: {
+            yAxes: [{ ticks: { beginAtZero: true } }]
+          }
+        }
+      };
+
+      // Usamos la API de QuickChart para renderizar un PNG al vuelo (esto es gratis y súper rápido)
+      chartImageUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(chartConfig))}&w=800&h=400&devicePixelRatio=2`;
+    }
+
+    if (process.env.NODE_ENV === 'production') {
+      browser = await puppeteerCore.launch({
+        args: chromium.args,
+        defaultViewport: chromium.defaultViewport,
+        executablePath: await chromium.executablePath(),
+        headless: chromium.headless,
+        ignoreHTTPSErrors: true,
+      });
+    } else {
+      browser = await puppeteerLocal.launch({
+        headless: 'new', // o true dependiendo de tu versión
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-gpu'
+        ],
+      });
+    }
 
     const page = await browser.newPage();
-    await page.setDefaultNavigationTimeout(120000);
-    await page.setDefaultTimeout(120000);
+
+    // Tiempos más holgados
+    await page.setDefaultNavigationTimeout(60000);
+    await page.setDefaultTimeout(60000);
     await page.setViewport({ width: 800, height: 800, deviceScaleFactor: 3 });
+
+    // 3. Compilar HTML con Handlebars
     const templateHtml = fs.readFileSync("./src/templates/indicador.html", "utf8");
+
+    // Registramos tus helpers intactos
     handlebars.registerHelper('isAscending', (str) => str === 'Ascendente');
     handlebars.registerHelper('notApplies', (str) => str === 'No aplica');
     handlebars.registerHelper('numberWithCommas', numberWithCommas);
@@ -188,7 +238,8 @@ const generatePDF = async (indicador) => {
     handlebars.registerHelper('containsNA', (str) => str?.includes("NA") ? "NA" : str);
     handlebars.registerHelper('valueIsNull', (str) => str === null);
     handlebars.registerHelper('hasItems', (arr) => arr.length > 0);
-    handlebars.registerHelper('hasFormula', (formula) => typeof formula !== undefined || formula !== null)
+    // Corrección preventiva: typeof devuelve un string ('undefined')
+    handlebars.registerHelper('hasFormula', (formula) => typeof formula !== 'undefined' && formula !== null);
     handlebars.registerHelper('calculateTopPx', (objetivo) => {
       const top = (parseInt(objetivo.id) - 1) * 35;
       return `
@@ -211,7 +262,7 @@ const generatePDF = async (indicador) => {
         objetivo ${objetivo.id}
       </div>   
       `;
-    })
+    });
     handlebars.registerHelper('isFormula', (formula) => formula.isFormula == 'SI');
     handlebars.registerHelper('hasValue', (value) => (value.trim().length === 0));
     handlebars.registerHelper('returnDato', (unidadMedida) => returnUnit(unidadMedida));
@@ -219,67 +270,24 @@ const generatePDF = async (indicador) => {
 
     const template = handlebars.compile(templateHtml);
 
-    const html = template(indicador, { allowProtoPropertiesByDefault: true });
+    // IMPORTANTE: Pasamos `chartImageUrl` al contexto de la plantilla
+    const html = template({ ...indicador, chartImageUrl }, { allowProtoPropertiesByDefault: true });
+
+    // 4. Inyectar HTML al navegador (usamos networkidle0 para esperar a que la imagen cargue)
     await page.setContent(html, {
-      waitUntil: ['domcontentloaded'],
-      timeout: 30000
+      waitUntil: ['load', 'networkidle0'],
+      timeout: 60000
     });
 
-    const years = []
-    const values = []
-    if (indicador.historicos.length > 0) {
-      const historicosSorted = indicador.historicos.sort((a, b) => a.anio - b.anio);
-      years.push(...historicosSorted.map(indicador => indicador.anio));
-      values.push(...historicosSorted.map((elem) => elem.valor));
-      years.push(indicador.anioUltimoValorDisponible);
-      values.push(indicador.ultimoValorDisponible);
+    // ¡Se eliminó todo el bloque de page.evaluate()! 🚀
 
-      await page.evaluate(
-        (years, values) => {
-          const ctx = document.getElementById("chart").getContext("2d");
-          new Chart(ctx, {
-            type: "bar",
-            data: {
-              labels: years,
-              datasets: [
-                {
-                  label: 'Valores históricos',
-                  data: values,
-                  backgroundColor: ['#D12D6A', '#C62C6B', '#A6296C', '#9C286D', '#91276E', '#662270'].reverse(),
-                  barPercentage: 0.8,
-                },
-              ],
-            },
-            options: {
-              animation: {
-                duration: 0,
-              },
-              responsive: true,
-              scales: {
-                yAxes: [{
-                  ticks: {
-                    beginAtZero: true
-                  }
-                }]
-              }
-            },
-          });
-        },
-        years,
-        values,
-      ).catch((err) => {
-        logger.error(err)
-        throw new Error('No se puede generar el archivo de este indicador en este momento');
-      });
-    }
-
-    page.setUserAgent(
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36WAIT_UNTIL=load"
-    );
+    page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36WAIT_UNTIL=load");
 
     const date = new Date();
-    const [month, day, year] = [date.getMonth(), date.getDate(), date.getFullYear()];
+    // Corrección menor: getMonth() va de 0 a 11
+    const [month, day, year] = [date.getMonth() + 1, date.getDate(), date.getFullYear()];
 
+    // 5. Generar PDF
     const pdfBuffer = await page.pdf({
       format: "letter",
       displayHeaderFooter: true,
@@ -305,18 +313,14 @@ const generatePDF = async (indicador) => {
 
   } catch (error) {
     console.error('Error en generatePDF:', error);
-
-    // Cerrar el browser si existe
     if (browser) {
       await browser.close().catch(closeError => {
         console.error('Error cerrando browser:', closeError);
       });
     }
-
     throw new Error(`Error generando PDF: ${error.message}`);
   }
 };
-
 module.exports = {
   upload,
   DESTINATIONS,
