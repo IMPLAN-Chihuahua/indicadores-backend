@@ -5,6 +5,8 @@ const multerS3 = require('multer-s3');
 const { Parser } = require("json2csv");
 const Excel = require("exceljs");
 const fs = require("fs");
+
+// IMPORTACIONES CORREGIDAS PARA PUPPETEER
 const chromium = require('@sparticuz/chromium');
 const puppeteerCore = require('puppeteer-core');
 const puppeteerLocal = require("puppeteer");
@@ -57,11 +59,6 @@ const getDiskStorage = (destination) => {
   });
 }
 
-/**
- * @param {*} destination where to store the image file
- * @returns the storage to use, it saves files locally if env is testing or development
- * only uses S3 if application is in production env
- */
 const getStorage = (destination) => {
   if (process.env.NODE_ENV === 'production') {
     return multerS3({
@@ -81,10 +78,9 @@ const getStorage = (destination) => {
   }
 };
 
-
 const upload = (destination) => {
   return multer({
-    storage: getDiskStorage(destination), // TODO: Change to S3 if available
+    storage: getStorage(destination), // Corrección: Usar getStorage en vez de getDiskStorage directo
     limits: {
       fileSize: MAX_IMAGE_SIZE,
       files: 1
@@ -100,7 +96,6 @@ const generateCSV = (data) => {
   const csv = json2csv.parse(data);
   return csv;
 };
-
 
 const generateXLSX = (indicador) => {
   let baseFile = "./src/templates/indicador.xlsx";
@@ -155,7 +150,7 @@ const generateXLSX = (indicador) => {
         row.getCell(col).value = value || 'NA';
         col++;
       }
-      return await workBook.xlsx.writeBuffer();;
+      return await workBook.xlsx.writeBuffer();
     })
     .catch(err => {
       logger.error(err)
@@ -163,13 +158,12 @@ const generateXLSX = (indicador) => {
     });
 };
 
-
 const generatePDF = async (indicador) => {
   let browser;
 
   try {
-    // 1. Preparar la imagen de la gráfica ANTES de abrir el navegador
-    let chartImageUrl = null;
+    // 1. Preparar la imagen de la gráfica en Base64 ANTES de abrir el navegador
+    let chartImageBase64 = null;
     if (indicador.historicos && indicador.historicos.length > 0) {
       const historicosSorted = [...indicador.historicos].sort((a, b) => a.anio - b.anio);
       const years = historicosSorted.map(h => h.anio);
@@ -178,7 +172,6 @@ const generatePDF = async (indicador) => {
       years.push(indicador.anioUltimoValorDisponible);
       values.push(indicador.ultimoValorDisponible);
 
-      // Creamos la misma configuración de Chart.js que ya tenías
       const chartConfig = {
         type: "bar",
         data: {
@@ -196,10 +189,20 @@ const generatePDF = async (indicador) => {
         }
       };
 
-      // Usamos la API de QuickChart para renderizar un PNG al vuelo (esto es gratis y súper rápido)
-      chartImageUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(chartConfig))}&w=800&h=400&devicePixelRatio=2`;
+      const chartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(chartConfig))}&w=800&h=400&devicePixelRatio=2`;
+
+      try {
+        // Descargamos la imagen usando el fetch nativo de Node y la convertimos a Base64
+        const response = await fetch(chartUrl);
+        const arrayBuffer = await response.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+        chartImageBase64 = `data:image/png;base64,${buffer.toString('base64')}`;
+      } catch (err) {
+        console.error("Error al descargar la gráfica de QuickChart:", err);
+      }
     }
 
+    // 2. Configurar el navegador dependiendo del entorno
     if (process.env.NODE_ENV === 'production') {
       browser = await puppeteerCore.launch({
         args: chromium.args,
@@ -210,7 +213,7 @@ const generatePDF = async (indicador) => {
       });
     } else {
       browser = await puppeteerLocal.launch({
-        headless: 'new', // o true dependiendo de tu versión
+        headless: 'new',
         args: [
           '--no-sandbox',
           '--disable-setuid-sandbox',
@@ -222,7 +225,6 @@ const generatePDF = async (indicador) => {
 
     const page = await browser.newPage();
 
-    // Tiempos más holgados
     await page.setDefaultNavigationTimeout(60000);
     await page.setDefaultTimeout(60000);
     await page.setViewport({ width: 800, height: 800, deviceScaleFactor: 3 });
@@ -230,7 +232,6 @@ const generatePDF = async (indicador) => {
     // 3. Compilar HTML con Handlebars
     const templateHtml = fs.readFileSync("./src/templates/indicador.html", "utf8");
 
-    // Registramos tus helpers intactos
     handlebars.registerHelper('isAscending', (str) => str === 'Ascendente');
     handlebars.registerHelper('notApplies', (str) => str === 'No aplica');
     handlebars.registerHelper('numberWithCommas', numberWithCommas);
@@ -238,7 +239,6 @@ const generatePDF = async (indicador) => {
     handlebars.registerHelper('containsNA', (str) => str?.includes("NA") ? "NA" : str);
     handlebars.registerHelper('valueIsNull', (str) => str === null);
     handlebars.registerHelper('hasItems', (arr) => arr.length > 0);
-    // Corrección preventiva: typeof devuelve un string ('undefined')
     handlebars.registerHelper('hasFormula', (formula) => typeof formula !== 'undefined' && formula !== null);
     handlebars.registerHelper('calculateTopPx', (objetivo) => {
       const top = (parseInt(objetivo.id) - 1) * 35;
@@ -270,21 +270,18 @@ const generatePDF = async (indicador) => {
 
     const template = handlebars.compile(templateHtml);
 
-    // IMPORTANTE: Pasamos `chartImageUrl` al contexto de la plantilla
-    const html = template({ ...indicador, chartImageUrl }, { allowProtoPropertiesByDefault: true });
+    // Inyectamos chartImageBase64 a la plantilla
+    const html = template({ ...indicador, chartImageBase64 }, { allowProtoPropertiesByDefault: true });
 
-    // 4. Inyectar HTML al navegador (usamos networkidle0 para esperar a que la imagen cargue)
+    // 4. Inyectar HTML al navegador usando solo 'load' para evitar bloqueos de red
     await page.setContent(html, {
-      waitUntil: ['load', 'networkidle0'],
+      waitUntil: 'load',
       timeout: 60000
     });
-
-    // ¡Se eliminó todo el bloque de page.evaluate()! 🚀
 
     page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36WAIT_UNTIL=load");
 
     const date = new Date();
-    // Corrección menor: getMonth() va de 0 a 11
     const [month, day, year] = [date.getMonth() + 1, date.getDate(), date.getFullYear()];
 
     // 5. Generar PDF
@@ -321,6 +318,7 @@ const generatePDF = async (indicador) => {
     throw new Error(`Error generando PDF: ${error.message}`);
   }
 };
+
 module.exports = {
   upload,
   DESTINATIONS,
@@ -328,4 +326,3 @@ module.exports = {
   generateXLSX,
   generatePDF,
 }
-

@@ -6,7 +6,6 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Indicador {{nombre}}</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@latest/dist/Chart.min.js"></script>
   <script type="text/javascript" id="MathJax-script" async
     src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
@@ -496,13 +495,11 @@
 
     {{#if (hasItems historicos)}}
     <section class="mt-3">
-      <h2>Gráfica de datos</h2>
-      <canvas id="chart" style="width: 500px; margin: auto; height: 150px;">
-        Grafica
-      </canvas>
-      <p class="caption__historicos">
-        Gráfica de barras representativa del valor en los últimos años disponibles
-        </caption>
+      {{#if chartImageBase64}}
+      <div style="text-align: center; margin-top: 20px;">
+        <img src="{{chartImageBase64}}" alt="Gráfica histórica" style="width: 100%; max-width: 600px; height: auto;" />
+      </div>
+      {{/if}}
     </section>
     {{/if}}
 
