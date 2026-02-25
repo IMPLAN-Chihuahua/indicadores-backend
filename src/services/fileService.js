@@ -194,11 +194,44 @@ const generatePDF = async (indicador) => {
       try {
         // Descargamos la imagen usando el fetch nativo de Node y la convertimos a Base64
         const response = await fetch(chartUrl);
+        if (response.ok) { // <- Validamos que QuickChart respondió bien
+          const arrayBuffer = await response.arrayBuffer();
+          const buffer = Buffer.from(arrayBuffer);
+          chartImageBase64 = `data:image/png;base64,${buffer.toString('base64')}`;
+        } else {
+          console.error("QuickChart falló con status:", response.status);
+        }
         const arrayBuffer = await response.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
         chartImageBase64 = `data:image/png;base64,${buffer.toString('base64')}`;
       } catch (err) {
         console.error("Error al descargar la gráfica de QuickChart:", err);
+      }
+    }
+
+    const getLatexBase64 = async (latex) => {
+      try {
+        if (!latex) return null;
+        // Limpiamos los $$ por si el usuario los guarda en la base de datos
+        const cleanLatex = latex.replace(/\$\$/g, '').trim();
+        const url = `https://quickchart.io/latex?c=${encodeURIComponent(cleanLatex)}&b=white&color=black&f=20px`;
+        const res = await fetch(url);
+        if (!res.ok) return null;
+        const arrayBuffer = await res.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+        return `data:image/png;base64,${buffer.toString('base64')}`;
+      } catch (err) {
+        console.error("Error obteniendo imagen LaTeX:", err);
+        return null;
+      }
+    };
+
+    if (indicador.formula) {
+      indicador.formula.ecuacionBase64 = await getLatexBase64(indicador.formula.ecuacion);
+      if (indicador.formula.variables && indicador.formula.variables.length > 0) {
+        for (let v of indicador.formula.variables) {
+          v.nombreBase64 = await getLatexBase64(v.nombre);
+        }
       }
     }
 
