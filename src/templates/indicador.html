@@ -1,13 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Indicador {{nombre}}</title>
-  <script type="text/javascript" id="MathJax-script" async
-    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 </head>
 <style>
@@ -23,8 +21,9 @@
     box-sizing: border-box;
     margin: 0px;
     padding: 0px;
-    background-color: rgba(255, 0, 0, 0) !important;
+    background-color: white !important;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
   }
 
   #container {
@@ -41,18 +40,19 @@
   .tematica__id {
     width: 35px;
     height: 35px;
-    background: #D12D6A;
+    background: #4B6584;
     color: white;
     display: flex;
     justify-content: center;
     align-items: center;
     font-weight: 600;
     position: absolute;
+    border-radius: 0 0 5px 0;
   }
 
   .header__img {
     width: 270px;
-    height: 65px;
+    height: auto;
     position: relative;
   }
 
@@ -63,24 +63,13 @@
 
   .watermark__img {
     width: 350px;
-    height: 120px;
-    opacity: 30%;
+    height: auto;
+    opacity: 0.12;
     position: absolute;
     float: right;
-    right: -70px !important;
-    top: -20px !important;
+    right: -50px !important;
+    top: -10px !important;
   }
-
-  .watermark__img__bottom {
-    width: 400px;
-    height: 130px;
-    opacity: 30%;
-    margin-bottom: -50px;
-    position: absolute;
-    left: -135px;
-    transform: rotate(180deg);
-  }
-
 
   .title__logos {
     padding-top: 30px;
@@ -93,176 +82,172 @@
     flex-direction: column;
     text-align: center;
     justify-content: center;
-    line-height: 80%;
+    line-height: 1.2;
     font-size: 15px;
-    margin-bottom: -10px !important;
   }
 
-  .indicador__title {
-    text-transform: y;
-    margin-top: 40px !important;
-    text-align: center;
-    font-weight: bold;
-    letter-spacing: 5px;
-    font-size: 18px;
-    background: -webkit-linear-gradient(180deg, #712370, #D12D6A);
-    background: linear-gradient(180deg, #712370, #D12D6A);
-    background-clip: border-box;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    border-collapse: collapse;
+  .chihuahua__en__datos h2 {
+    color: #2C3E50;
+    margin-bottom: 2px;
   }
 
   .indicador__name {
     text-transform: uppercase;
     text-align: center;
     font-weight: bold;
-    letter-spacing: 5px;
-    font-size: 16px;
-    background-clip: border-box;
+    letter-spacing: 2px;
+    font-size: 18px;
+    color: #2C3E50;
+    margin-bottom: 10px;
   }
 
-  .indicador__information_body {
-    margin-top: -10px !important;
-  }
-
-  .indicador__information_body div {
-    margin-top: 17px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
-
+  /* ESTILOS DE TABLA */
   table {
-    border-collapse: collapse;
-    table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 0;
     width: 100%;
     max-width: 100%;
     font-size: 14px;
-  }
-
-  table td,
-  table th {
-    padding: 7px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
   }
 
   th {
-    background: #263044;
+    background: #2C3E50;
     color: white;
-    font-weight: 500;
+    font-weight: 600;
     text-align: center;
+    padding: 12px;
+    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: 1px;
   }
 
   td {
     text-align: center;
     font-weight: 400;
-    word-wrap: break-word;
+    padding: 12px;
+    border-bottom: 1px solid #f0f0f0;
   }
 
-  td,
-  th {
-    border: 1px solid #e1e1e1;
-    border-collapse: collapse;
-    table-layout: fixed;
-    width: 100%;
-    max-width: 100%;
+  tbody tr:nth-child(even) {
+    background-color: #f7f9fa;
   }
 
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  /* ESTILOS DE TARJETAS */
   .card {
     width: 240px;
     height: 240px;
     background-color: #ffffff;
-    color: white;
-    border: 1px solid #e1e1e1;
-    font-family: Arial, Helvetica, sans-serif;
-    margin-right: 20px;
-    border-radius: 5px;
-    margin-left: 20px;
-  }
-
-  .card__header {
-    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.06);
+    margin: 0 10px;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: flex-start;
     align-items: center;
+    padding-top: 20px;
   }
 
   .card__circle {
-    background-color: #0f252c;
+    background: linear-gradient(135deg, #1e2a36, #2C3E50);
     border-radius: 50%;
-    height: 100px;
-    width: 100px;
-    text-align: center;
+    height: 90px;
+    width: 90px;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 16px;
+    font-size: 18px;
     color: white !important;
-    margin-top: -10px !important;
+    box-shadow: 0 4px 10px rgba(44, 62, 80, 0.3);
   }
 
   .container__card {
     text-align: center;
-    color: black;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: start !important;
-    letter-spacing: 10% !important;
-
+    color: #333;
+    margin-top: 15px;
   }
 
-  .container__card span {
-    margin-top: -20px !important;
-  }
-
-  .indicador__values {
-    margin-top: -20px !important;
+  .container__card p:first-child {
+    color: #4B6584;
+    margin-bottom: 5px;
   }
 
   .card__container {
     display: flex;
     flex-direction: row !important;
-  }
-
-  .card__container__2 {
-    margin-top: -10px !important;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
   }
 
   .mt-3 {
-    margin-top: 20px !important;
+    margin-top: 30px !important;
+  }
+
+  h2 {
+    font-size: 18px;
+    color: #2C3E50;
+    border-bottom: 2px solid #4B6584;
+    padding-bottom: 5px;
+    display: inline-block;
   }
 
   .caption__historicos {
     text-align: center;
-    font-weight: bold;
-    font-size: 10px !important;
-    background: -webkit-linear-gradient(180deg, #0b0b0b, #3a3a3a);
-    background: linear-gradient(180deg, #0b0b0b, #3a3a3a);
-    background-clip: border-box;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    border-collapse: collapse;
+    font-style: italic;
+    font-size: 12px !important;
+    color: #666;
+    margin-top: 10px;
   }
 
-  table tr td:empty {
-    width: 50px;
+  /* ESTILOS PARA LA FÓRMULA (WORKAROUND) */
+  .formula-box {
+    background: #f4f6f8;
+    border: 1px solid #e1e5e8;
+    border-left: 5px solid #4B6584;
+    border-radius: 6px;
+    padding: 15px 20px;
+    margin: 15px 0;
+    text-align: center;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 16px;
+    color: #34495e;
+    word-break: break-all;
   }
 
-  table tr td {
-    padding: 10px;
+  .variable-name {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 600;
+    color: #4B6584;
+    background: #f4f6f8;
+    padding: 3px 6px;
+    border-radius: 4px;
+    border: 1px solid #e1e5e8;
   }
 
+  /* ARREGLO PARA QUE LA PÁGINA 1 NO QUEDE EN BLANCO */
   @media print {
-    section {
+
+    /* En vez de que toda la section no se rompa, solo evitamos que se rompan 
+       las tablas, las tarjetas y la caja de fórmula. Así el flujo es natural. */
+    table,
+    tr,
+    .card__container,
+    .formula-box,
+    .tematica__id {
       break-inside: avoid;
     }
   }
 </style>
 
 <body>
-
   <div>
     {{{calculateTopPx objetivos.[0]}}}
   </div>
@@ -279,243 +264,201 @@
         <caption><i>www.chihuahuametrica.online/chihuahua-en-datos</i></caption>
       </div>
     </header>
+
     <section class="mt-3">
-      <div class="indicador__information_body">
-        <div class="indicador__summary">
-          <table>
-            <thead>
-              <tr>
-                <th class="indicador__name">{{nombre}}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>{{definicion}}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="indicador__summary">
-          <table>
-            <thead>
-              <tr>
-                <th style="font-weight: 600;">Objetivo PDU2040</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td style="text-align: start !important;">
-                  {{objetivos.[0].titulo}}
-                  {{#if objetivos.[0].destacado}}
-                  <span style="font-weight: 600;">Este indicador abona principalmente para lograr este objetivo</span>
-                  {{/if}}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="indicador__catalogs">
-          <table>
-            <thead>
-              <tr>
-                <th>Tema de interés</th>
-                <th>ODS</th>
-                <th>Cobertura geográfica</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>
-                  <ul
-                    style="display: inline-flex; list-style-type: none; margin: 0; padding: 0; flex-wrap: wrap; gap: 3px;">
-                    {{#each temas}}
-                    <li style="background-color: #dddddd; padding: 5px; border-radius: 7px;">{{this.temaIndicador}}</li>
-                    {{/each}}
-                  </ul>
-                </td>
-                <td>{{ods.titulo}}</td>
-                <td>{{cobertura.tipo}}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      <h3 class="indicador__name">{{nombre}}</h3>
+      <table>
+        <tbody>
+          <tr>
+            <td style="text-align: justify; padding: 20px; color: #444;">{{definicion}}</td>
+          </tr>
+        </tbody>
+      </table>
 
-        <div class="indicador__values">
-          <div class="card__container">
-            <div class="card">
-              <div class="card__header">
-                <div class="card__circle">
-                  <b>{{numberWithCommas ultimoValorDisponible}} {{adornment}}</b>
-                </div>
-              </div>
-              <div class="container__card">
-                <span>
-                  <p><b>Último Valor Disponible</b></p>
-                  <p>{{unidadMedida}}</p>
-                </span>
-              </div>
-            </div>
-            <div class="card">
-              <div class="card__header">
-                <div class="card__circle">
-                  {{#if (isAscending tendenciaActual) }}
-
-                  <span class="material-icons" style="font-size: 50px">arrow_upward</span>
-
-                  {{else}}
-                  {{#if (notApplies tendenciaActual) }}
-                  <span class="material-icons" style="font-size: 50px">error_outline</span>
-                  {{else}}
-                  <span class="material-icons" style="font-size: 50px">arrow_downward</span>
-                  {{/if }}
-                  {{/if }}
-                </div>
-              </div>
-              <div class="container__card">
-                <span>
-                  <p><b>Tendencia Actual</b></p>
-                  <p>{{tendenciaActual}}</p>
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div class="card__container card__container__2">
-            <div class="card">
-              <div class="card__header">
-                <div class="card__circle">
-                  <b>{{anioUltimoValorDisponible}}</b>
-                </div>
-              </div>
-              <div class="container__card">
-                <span>
-                  <p><b>Año de Referencia</b></p>
-                  <p>Año del último valor disponible</p>
-                </span>
-              </div>
-            </div>
-            <div class="card">
-              <div class="card__header">
-                <div class="card__circle">
-                  <b>{{cobertura.tipo}}</b>
-                </div>
-                <div class="container__card">
-                  <span>
-                    <p><b>Cobertura geográfica</b></p>
-                    <p>Territorio de la captación de datos</p>
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-
-    {{#if formula}}
-    {{#if (isFormula formula)}}
-    <section class="mt-3">
-      <br />
-      <h2>Fórmula</h2>
-      <div class="inner-section mt-1">
-        <p>{{formula.descripcion}}</p>
-      </div>
-      <span style="font-size: 22px">$${{formula.ecuacion}}$$</span>
-    </section>
-
-    {{else}}
-    <section>
-      <h2>Origen de datos</h2>
-      <div class="inner-section mt-1">
-        <p>{{formula.descripcion}}</p>
-      </div>
-    </section>
-    {{/if}}
-    {{#if (hasItems formula.variables)}}
-    <table class="mt-1" style="width: 100%; border-collapse: collapse; margin: auto">
-      <thead>
-        <tr style="border-bottom: 1px solid; font-weight: 600">
-          <th>Variable</th>
-          <th>Descripción</td>
-          <th>Valor</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#each formula.variables}}
-        <tr>
-          <td style="padding: 0; margin: 0; display: block">
-            $${{this.nombre}}$$
-          </td>
-          <td>{{this.descripcion}}</td>
-          {{#if (hasValue this.dato)}}
-          <td align="right">NA</td>
-          {{else}}
-          <td align="right">{{this.dato}}</td>
-          {{/if}}
-        </tr>
-        {{/each}}
-      </tbody>
-    </table>
-    {{/if}}
-    {{/if}}
-
-
-    {{#if (hasItems historicos)}}
-    <section class="mt-3">
-      <h2>Valores históricos</h2>
-      <table style="width: 100%; border-collapse: collapse; margin: auto">
+      <table>
         <thead>
-          <tr style="border-bottom: 1px solid; font-weight: 600">
-            <th>Año</th>
-            <th>Valor</th>
-            <th>Fuente</td>
+          <tr>
+            <th>Objetivo PDU2040</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td align="right">{{anioUltimoValorDisponible}}</td>
-            <td align="right">{{ultimoValorDisponible}}</td>
-            <td>{{fuente}}</td>
+            <td style="text-align: left; padding: 15px;">
+              {{objetivos.[0].titulo}}
+              {{#if objetivos.[0].destacado}}
+              <br><br><span style="font-weight: 600; color: #4B6584;">Este indicador abona principalmente para lograr
+                este objetivo</span>
+              {{/if}}
+            </td>
           </tr>
-          {{#each historicos}}
+        </tbody>
+      </table>
+
+      <table>
+        <thead>
           <tr>
-            <td align="right">{{this.anio}}</td>
-            <td align="right">{{this.valor}}</td>
-            <td>{{this.fuente}}</td>
+            <th>Tema de interés</th>
+            <th>ODS</th>
+            <th>Cobertura geográfica</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <ul
+                style="display: inline-flex; list-style: none; margin: 0; padding: 0; flex-wrap: wrap; gap: 5px; justify-content: center;">
+                {{#each temas}}
+                <li
+                  style="background-color: #e8eef2; color: #2C3E50; padding: 5px 10px; border-radius: 12px; font-size: 12px; border: 1px solid #cdd7df;">
+                  <b>{{this.temaIndicador}}</b>
+                </li>
+                {{/each}}
+              </ul>
+            </td>
+            <td>{{ods.titulo}}</td>
+            <td>{{cobertura.tipo}}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="indicador__values mt-3">
+        <div class="card__container">
+          <div class="card">
+            <div class="card__circle">
+              <b>{{numberWithCommas ultimoValorDisponible}} {{adornment}}</b>
+            </div>
+            <div class="container__card">
+              <p><b>Último Valor Disponible</b></p>
+              <p>{{unidadMedida}}</p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card__circle">
+              {{#if (isAscending tendenciaActual) }}
+              <span class="material-icons" style="font-size: 45px">arrow_upward</span>
+              {{else}}
+              {{#if (notApplies tendenciaActual) }}
+              <span class="material-icons" style="font-size: 45px">error_outline</span>
+              {{else}}
+              <span class="material-icons" style="font-size: 45px">arrow_downward</span>
+              {{/if}}
+              {{/if}}
+            </div>
+            <div class="container__card">
+              <p><b>Tendencia Actual</b></p>
+              <p>{{tendenciaActual}}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card__container">
+          <div class="card">
+            <div class="card__circle">
+              <b>{{anioUltimoValorDisponible}}</b>
+            </div>
+            <div class="container__card">
+              <p><b>Año de Referencia</b></p>
+              <p>Año del último valor disponible</p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card__circle">
+              <b>{{cobertura.tipo}}</b>
+            </div>
+            <div class="container__card">
+              <p><b>Cobertura geográfica</b></p>
+              <p>Territorio de la captación</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {{#if formula}}
+    <section class="mt-3">
+      {{#if (isFormula formula)}}
+      <h2>Fórmula de cálculo</h2>
+      <p style="margin-top: 10px; color: #555;">{{formula.descripcion}}</p>
+
+      <div class="formula-box">
+        {{cleanFormula formula.ecuacion}}
+      </div>
+
+      {{else}}
+      <h2>Origen de datos</h2>
+      <p style="margin-top: 10px; color: #555;">{{formula.descripcion}}</p>
+      {{/if}}
+
+      {{#if (hasItems formula.variables)}}
+      <table>
+        <thead>
+          <tr>
+            <th>Variable</th>
+            <th>Descripción</th>
+            <th>Valor</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each formula.variables}}
+          <tr>
+            <td style="padding: 15px; text-align: left;">
+              <span class="variable-name">{{cleanFormula this.nombre}}</span>
+            </td>
+            <td style="text-align: left;">{{this.descripcion}}</td>
+            {{#if (hasValue this.dato)}}
+            <td><span style="color: #999;">NA</span></td>
+            {{else}}
+            <td><b>{{this.dato}}</b></td>
+            {{/if}}
           </tr>
           {{/each}}
         </tbody>
       </table>
-      <p class="caption__historicos">
-        Tabla con la evolución de los datos registrados en los últimos años.
-      </p>
+      {{/if}}
     </section>
     {{/if}}
 
     {{#if (hasItems historicos)}}
     <section class="mt-3">
-      {{#if chartImageBase64}}
-      <div style="text-align: center; margin-top: 20px;">
-        <img src="{{chartImageBase64}}" alt="Gráfica histórica" style="width: 100%; max-width: 600px; height: auto;" />
-      </div>
-      {{/if}}
+      <h2>Registro Histórico</h2>
+      <p class="caption__historicos" style="text-align: left; margin-bottom: 15px;">
+        Evolución de los datos registrados a lo largo del tiempo.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 20%;">Año</th>
+            <th style="width: 25%;">Valor</th>
+            <th style="width: 55%;">Fuente</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="background-color: #e8eef2;">
+            <td><b>{{anioUltimoValorDisponible}}</b></td>
+            <td><b style="color: #2C3E50; font-size: 15px;">{{ultimoValorDisponible}}</b></td>
+            <td style="text-align: left; font-size: 13px;"><b>{{fuente}}</b> <i>(Valor más reciente)</i></td>
+          </tr>
+          {{#each historicos}}
+          <tr>
+            <td>{{this.anio}}</td>
+            <td>{{this.valor}}</td>
+            <td style="text-align: left; font-size: 13px; color: #555;">{{this.fuente}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
     </section>
     {{/if}}
 
-    <section class="mt-3">
+    <section class="mt-3" style="text-align: center; margin-bottom: 50px;">
       <h2>Más información</h2>
-      <a class="inner-section"
-        href="http://www.chihuahuametrica.online/chihuahua-en-datos/indicadores/{{id}}">http://www.chihuahuametrica.online/chihuahua-en-datos/indicadores/{{id}}</a>
+      <br>
+      <a href="http://www.chihuahuametrica.online/chihuahua-en-datos/indicadores/{{id}}"
+        style="color: #4B6584; font-weight: bold; text-decoration: none;">
+        Consultar indicador interactivo en línea
+      </a>
     </section>
   </main>
-  <!-- <footer class="watermark">
-          <img  
-              class="watermark__img__bottom"
-              alt="Metrica"
-              src="https://indicadores-bucket-chihuahua.s3.us-east-2.amazonaws.com/images/METRICA_logo_cutted.png"
-          />      
-      </footer> -->
 </body>
 
 </html>
