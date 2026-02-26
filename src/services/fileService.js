@@ -16,20 +16,43 @@ const { footer } = require("../utils/footerImage");
 const logger = require('../config/logger');
 
 const MAX_IMAGE_SIZE = 1_048_576; // 1MB
-const VALID_IMAGE_MIME_TYPES = ['image/jpeg', 'image/png', 'image/jpg',
-  'image/gif', 'image/svg', 'image/webp', 'image/bmp'];
+const VALID_IMAGE_MIME_TYPES = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/svg', 'image/webp', 'image/bmp'];
 
 const s3 = new S3Client({
-  credentials: {
-    secretAccessKey: process.env.S3_ACCESS_SECRET,
-    accessKeyId: process.env.S3_ACCESS_KEY,
-  },
+  credentials: { secretAccessKey: process.env.S3_ACCESS_SECRET, accessKeyId: process.env.S3_ACCESS_KEY },
   region: process.env.S3_REGION
 });
 
-const DESTINATIONS = {
-  TEMASS: 'temas', INDICADORES: 'indicadores', USUARIOS: 'usuarios', MAPAS: 'mapas', OBJETIVOS: 'objetivos',
+const DESTINATIONS = { TEMASS: 'temas', INDICADORES: 'indicadores', USUARIOS: 'usuarios', MAPAS: 'mapas', OBJETIVOS: 'objetivos' }
+
+let cachedLogoBase64 = "";
+try {
+  const logoBuffer = fs.readFileSync("./src/templates/small-logo.png");
+  cachedLogoBase64 = `data:image/png;base64,${logoBuffer.toString('base64')}`;
+} catch (err) {
+  logger.error("No se encontró logo local", err);
 }
+
+handlebars.registerHelper('cleanFormula', (str) => str ? str.replace(/\$\$/g, '').trim() : '');
+handlebars.registerHelper('isAscending', (str) => str === 'Ascendente');
+handlebars.registerHelper('notApplies', (str) => str === 'No aplica');
+handlebars.registerHelper('numberWithCommas', numberWithCommas);
+handlebars.registerHelper('toString', (num) => num?.toString());
+handlebars.registerHelper('containsNA', (str) => str?.includes("NA") ? "NA" : str);
+handlebars.registerHelper('valueIsNull', (str) => str === null);
+handlebars.registerHelper('hasItems', (arr) => arr.length > 0);
+handlebars.registerHelper('hasFormula', (formula) => typeof formula !== 'undefined' && formula !== null);
+handlebars.registerHelper('calculateTopPx', (objetivo) => {
+  const top = (parseInt(objetivo.id) - 1) * 35;
+  return `<div class="tematica__id" style="top: ${top}px; background-color: ${objetivo.color};">O${objetivo.id}</div>`;
+});
+handlebars.registerHelper('isFormula', (formula) => formula.isFormula == 'SI');
+handlebars.registerHelper('hasValue', (value) => (value.trim().length === 0));
+handlebars.registerHelper('returnDato', (unidadMedida) => returnUnit(unidadMedida));
+handlebars.registerHelper('returnFuente', (fuente) => returnFuente(fuente));
+
+const templateHtml = fs.readFileSync("./src/templates/indicador.html", "utf8");
+const compiledTemplate = handlebars.compile(templateHtml);
 
 const getUniqueName = (file) => `${Date.now().toString()}.${file.originalname.split('.')[1]}`;
 const getPath = (type) => type ? `uploads/${type}/images/` : 'uploads/tmp';
@@ -77,51 +100,168 @@ const generateCSV = (data) => {
   return json2csv.parse(data);
 };
 
-const generateXLSX = (indicador) => {
-  // Mantengo tu logica de Excel igual...
-  let baseFile = "./src/templates/indicador.xlsx";
-  let workBook = new Excel.Workbook();
-  const fields = ['nombre', 'Tema', 'tendenciaActual', 'ultimoValorDisponible', 'medida', 'anioUltimoValorDisponible', 'cobertura', 'ecuacion', 'variables', 'historicos']
-  return workBook.xlsx.readFile(baseFile).then(async () => {
-    let workSheet = workBook.getWorksheet();
-    let col = 1; let row = workSheet.getRow(2);
-    for (const field of fields) {
-      let initialRow = 2; let value = indicador[field];
-      if (field === 'temas') { value = indicador[field][0]?.temaIndicador || 'NA'; }
-      else if (field === 'medida') { value = indicador.unidadMedida; }
-      else if (field === 'cobertura') { value = indicador.cobertura.tipo; }
-      else if (field === 'ecuacion') {
-        const formula = indicador?.formula?.dataValues;
-        row.getCell(col++).value = formula?.ecuacion || 'NA';
-        row.getCell(col++).value = formula?.descripcion || 'NA'; continue;
-      } else if (field === 'variables') {
-        const variables = indicador?.formula?.dataValues?.variables || [{}];
-        for (const v of variables) {
-          let innerRow = workSheet.getRow(initialRow++); let innerCol = col;
-          innerRow.getCell(innerCol++).value = v?.nombre || 'NA';
-          innerRow.getCell(innerCol++).value = v?.descripcion || 'NA';
-          innerRow.getCell(innerCol++).value = v?.dato || 'NA'; innerRow.commit()
-        } col += 3; continue;
-      } else if (field === 'historicos') {
-        const historicos = indicador?.historicos || [{}];
-        for (const h of historicos) {
-          let innerRow = workSheet.getRow(initialRow++); let innerCol = col;
-          innerRow.getCell(innerCol++).value = h?.valor || 'NA';
-          innerRow.getCell(innerCol++).value = h?.anio || 'NA';
-          innerRow.getCell(innerCol++).value = h?.fuente || 'NA'; innerRow.commit()
-        } col += 3; continue;
+const generateXLSX = async (indicador) => {
+  try {
+    const workBook = new Excel.Workbook();
+    workBook.creator = 'IMPLAN Chihuahua';
+    workBook.created = new Date();
+
+    const sheet = workBook.addWorksheet('Ficha Técnica', {
+      views: [{ showGridLines: false }]
+    });
+
+    sheet.getColumn('A').width = 25;
+    sheet.getColumn('B').width = 20;
+    sheet.getColumn('C').width = 20;
+    sheet.getColumn('D').width = 20;
+    sheet.getColumn('E').width = 30;
+
+    const titleStyle = {
+      font: { name: 'Arial', size: 16, bold: true, color: { argb: 'FFFFFFFF' } },
+      fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1A202C' } },
+      alignment: { vertical: 'middle', horizontal: 'center' }
+    };
+
+    const sectionStyle = {
+      font: { name: 'Arial', size: 12, bold: true, color: { argb: 'FFFFFFFF' } },
+      fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF2D3748' } },
+      alignment: { vertical: 'middle', horizontal: 'left', indent: 1 }
+    };
+
+    const labelStyle = {
+      font: { name: 'Arial', size: 11, bold: true, color: { argb: 'FF1A202C' } },
+      fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF7FAFC' } },
+      alignment: { vertical: 'top', horizontal: 'right', wrapText: true },
+      border: { bottom: { style: 'thin', color: { argb: 'FFCBD5E0' } } }
+    };
+
+    const valueStyle = {
+      font: { name: 'Arial', size: 11, color: { argb: 'FF2D3748' } },
+      alignment: { vertical: 'top', horizontal: 'left', wrapText: true },
+      border: { bottom: { style: 'thin', color: { argb: 'FFCBD5E0' } } }
+    };
+
+    const tableHeaderStyle = {
+      font: { name: 'Arial', size: 11, bold: true, color: { argb: 'FF1A202C' } },
+      fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE2E8F0' } },
+      alignment: { vertical: 'middle', horizontal: 'center' },
+      border: { bottom: { style: 'medium', color: { argb: 'FF2D3748' } } }
+    };
+
+    const addKeyValue = (rowNum, label, value, mergeCols) => {
+      const row = sheet.getRow(rowNum);
+      row.getCell('A').value = label; row.getCell('A').style = labelStyle;
+      row.getCell('B').value = value || 'NA'; row.getCell('B').style = valueStyle;
+      if (mergeCols) {
+        sheet.mergeCells(`B${rowNum}:E${rowNum}`);
+        for (let i = 3; i <= 5; i++) row.getCell(i).style = valueStyle;
       }
-      row.getCell(col).value = value || 'NA'; col++;
+    };
+
+    sheet.mergeCells('A1:E2');
+    const titleCell = sheet.getCell('A1');
+    titleCell.value = 'FICHA TÉCNICA DEL INDICADOR';
+    titleCell.style = titleStyle;
+
+    sheet.mergeCells('A4:E4');
+    const sec1 = sheet.getCell('A4');
+    sec1.value = 'INFORMACIÓN GENERAL';
+    sec1.style = sectionStyle;
+
+    const tema = indicador.temas?.[0]?.temaIndicador || 'NA';
+    const ods = indicador.ods?.titulo || 'NA';
+    const cobertura = indicador.cobertura?.tipo || 'NA';
+    const objetivo = indicador.objetivos?.[0]?.titulo || 'NA';
+
+    addKeyValue(5, 'Nombre del Indicador:', indicador.nombre, true);
+    addKeyValue(6, 'Tema de Interés:', tema, true);
+    addKeyValue(7, 'Objetivo PDU2040:', objetivo, true);
+    addKeyValue(8, 'ODS:', ods, true);
+    addKeyValue(9, 'Cobertura Geográfica:', cobertura, true);
+    addKeyValue(10, 'Unidad de Medida:', indicador.unidadMedida, true);
+    addKeyValue(11, 'Tendencia Actual:', indicador.tendenciaActual, true);
+
+    const r12 = sheet.getRow(12);
+    r12.getCell('A').value = 'Último Valor Disponible:'; r12.getCell('A').style = labelStyle;
+    r12.getCell('B').value = `${indicador.ultimoValorDisponible || 'NA'} ${indicador.adornment || ''}`; r12.getCell('B').style = { ...valueStyle, font: { bold: true, color: { argb: 'FF1A202C' } } };
+    r12.getCell('C').value = 'Año de Referencia:'; r12.getCell('C').style = labelStyle;
+    r12.getCell('D').value = indicador.anioUltimoValorDisponible || 'NA'; r12.getCell('D').style = valueStyle;
+    r12.getCell('E').style = valueStyle;
+    sheet.mergeCells('D12:E12');
+
+    let currentRow = 14;
+
+    const formulaData = indicador.formula?.dataValues || indicador.formula || null;
+    if (formulaData && Object.keys(formulaData).length > 0) {
+      sheet.mergeCells(`A${currentRow}:E${currentRow}`);
+      sheet.getCell(`A${currentRow}`).value = 'FÓRMULA DE CÁLCULO / ORIGEN';
+      sheet.getCell(`A${currentRow}`).style = sectionStyle;
+      currentRow++;
+
+      addKeyValue(currentRow++, 'Ecuación:', formulaData.ecuacion, true);
+      addKeyValue(currentRow++, 'Descripción:', formulaData.descripcion, true);
+
+      const variables = formulaData.variables || [];
+      if (variables.length > 0) {
+        currentRow++;
+        const vh = sheet.getRow(currentRow);
+        vh.getCell('A').value = 'Variable'; vh.getCell('A').style = tableHeaderStyle;
+        vh.getCell('B').value = 'Descripción'; vh.getCell('B').style = tableHeaderStyle;
+        sheet.mergeCells(`B${currentRow}:D${currentRow}`);
+        vh.getCell('C').style = tableHeaderStyle; vh.getCell('D').style = tableHeaderStyle;
+        vh.getCell('E').value = 'Valor'; vh.getCell('E').style = tableHeaderStyle;
+        currentRow++;
+
+        for (const v of variables) {
+          const vr = sheet.getRow(currentRow);
+          vr.getCell('A').value = v.nombre; vr.getCell('A').style = valueStyle;
+          vr.getCell('B').value = v.descripcion; vr.getCell('B').style = valueStyle;
+          sheet.mergeCells(`B${currentRow}:D${currentRow}`);
+          vr.getCell('C').style = valueStyle; vr.getCell('D').style = valueStyle;
+          vr.getCell('E').value = v.dato || 'NA'; vr.getCell('E').style = valueStyle;
+          currentRow++;
+        }
+      }
     }
+
+    const historicos = indicador.historicos || [];
+    if (historicos.length > 0) {
+      currentRow++;
+      sheet.mergeCells(`A${currentRow}:E${currentRow}`);
+      sheet.getCell(`A${currentRow}`).value = 'REGISTRO HISTÓRICO';
+      sheet.getCell(`A${currentRow}`).style = sectionStyle;
+      currentRow++;
+
+      const hh = sheet.getRow(currentRow);
+      hh.getCell('A').value = 'Año'; hh.getCell('A').style = tableHeaderStyle;
+      hh.getCell('B').value = 'Valor'; hh.getCell('B').style = tableHeaderStyle;
+      hh.getCell('C').value = 'Fuente'; hh.getCell('C').style = tableHeaderStyle;
+      sheet.mergeCells(`C${currentRow}:E${currentRow}`);
+      hh.getCell('D').style = tableHeaderStyle; hh.getCell('E').style = tableHeaderStyle;
+      currentRow++;
+
+      for (const h of historicos) {
+        const hr = sheet.getRow(currentRow);
+        hr.getCell('A').value = h.anio; hr.getCell('A').style = valueStyle;
+        hr.getCell('B').value = h.valor; hr.getCell('B').style = valueStyle;
+        hr.getCell('C').value = h.fuente; hr.getCell('C').style = valueStyle;
+        sheet.mergeCells(`C${currentRow}:E${currentRow}`);
+        hr.getCell('D').style = valueStyle; hr.getCell('E').style = valueStyle;
+        currentRow++;
+      }
+    }
+
     return await workBook.xlsx.writeBuffer();
-  }).catch(err => { logger.error(err); throw err; });
+
+  } catch (err) {
+    logger.error("Error generando Excel:", err);
+    throw err;
+  }
 };
 
 const generatePDF = async (indicador) => {
   let browser;
   try {
-    // 1. Ya NO procesamos nada externo. Todo el código de QuickChart se eliminó.
-
     if (process.env.NODE_ENV === 'production') {
       browser = await puppeteerCore.launch({
         args: chromium.args, defaultViewport: chromium.defaultViewport,
@@ -134,54 +274,17 @@ const generatePDF = async (indicador) => {
     }
 
     const page = await browser.newPage();
-    await page.setDefaultNavigationTimeout(30000); // Con 30s basta y sobra
+    await page.setDefaultNavigationTimeout(30000);
     await page.setDefaultTimeout(30000);
-    await page.setViewport({ width: 800, height: 800, deviceScaleFactor: 3 });
+    await page.setViewport({ width: 800, height: 800, deviceScaleFactor: 1 });
 
-    // 2. Compilar HTML
-    const templateHtml = fs.readFileSync("./src/templates/indicador.html", "utf8");
+    const html = compiledTemplate({ ...indicador, logoBase64: cachedLogoBase64 }, { allowProtoPropertiesByDefault: true });
 
-    // Registro de helpers (AÑADIMOS EL LIMPIADOR DE FÓRMULAS)
-    handlebars.registerHelper('cleanFormula', (str) => {
-      if (!str) return '';
-      return str.replace(/\$\$/g, '').trim();
-    });
-
-    handlebars.registerHelper('isAscending', (str) => str === 'Ascendente');
-    handlebars.registerHelper('notApplies', (str) => str === 'No aplica');
-    handlebars.registerHelper('numberWithCommas', numberWithCommas);
-    handlebars.registerHelper('toString', (num) => num?.toString());
-    handlebars.registerHelper('containsNA', (str) => str?.includes("NA") ? "NA" : str);
-    handlebars.registerHelper('valueIsNull', (str) => str === null);
-    handlebars.registerHelper('hasItems', (arr) => arr.length > 0);
-    handlebars.registerHelper('hasFormula', (formula) => typeof formula !== 'undefined' && formula !== null);
-    handlebars.registerHelper('calculateTopPx', (objetivo) => {
-      const top = (parseInt(objetivo.id) - 1) * 35;
-      return `<div class="tematica__id" style="top: ${top}px; background-color: ${objetivo.color};">O${objetivo.id}</div>`;
-    });
-    handlebars.registerHelper('isFormula', (formula) => formula.isFormula == 'SI');
-    handlebars.registerHelper('hasValue', (value) => (value.trim().length === 0));
-    handlebars.registerHelper('returnDato', (unidadMedida) => returnUnit(unidadMedida));
-    handlebars.registerHelper('returnFuente', (fuente) => returnFuente(fuente));
-
-    const template = handlebars.compile(templateHtml);
-
-    // Cargamos logo local
-    let logoBase64 = "";
-    try {
-      const logoBuffer = fs.readFileSync("./src/templates/small-logo.png");
-      logoBase64 = `data:image/png;base64,${logoBuffer.toString('base64')}`;
-    } catch (err) { console.error("No se encontró logo local", err); }
-
-    const html = template({ ...indicador, logoBase64 }, { allowProtoPropertiesByDefault: true });
-
-    // 3. Inyectamos usando DOMCONTENTLOADED (Rapidísimo, no espera a red)
     await page.setContent(html, { waitUntil: 'domcontentloaded', timeout: 30000 });
 
     const date = new Date();
     const [month, day, year] = [date.getMonth() + 1, date.getDate(), date.getFullYear()];
 
-    // 4. Generar PDF
     const pdfBuffer = await page.pdf({
       format: "letter", displayHeaderFooter: true, printBackground: true, headerTemplate: '',
       footerTemplate: `
@@ -190,15 +293,15 @@ const generatePDF = async (indicador) => {
           <div style="text-align: center; margin-top: 220px;">${footer}</div>
           <div style="position: absolute; right: 10px; bottom: 0; font-size: 8px; color: gray;">Página <span class="pageNumber"></span> de <span class="totalPages"></span></div>
       </div>`,
-      margin: { bottom: '70px' },
+      margin: { top: '80px', bottom: '70px' },
     });
 
     await browser.close();
     return pdfBuffer;
 
   } catch (error) {
-    console.error('Error en generatePDF:', error);
-    if (browser) await browser.close().catch(e => console.error(e));
+    logger.error('Error en generatePDF:', error);
+    if (browser) await browser.close().catch(e => logger.error(e));
     throw new Error(`Error generando PDF: ${error.message}`);
   }
 };
