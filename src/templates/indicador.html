@@ -9,6 +9,53 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 </head>
 <style>
+  /* --- REGLAS PRINCIPALES DE IMPRESIÓN (BLOQUES) --- */
+
+  /* 1. SECCIONES: Evita que un bloque entero se parta a la mitad.
+        Si no cabe en la hoja actual, lo manda completo a la siguiente. */
+  section {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    margin-bottom: 20px;
+    display: block;
+    /* Importante para que el break funcione bien */
+  }
+
+  /* 2. TÍTULOS: "Pegamento" con el contenido que sigue.
+        Evita que un título quede huérfano al final de una página. */
+  h2,
+  h3,
+  h4 {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  /* 3. TABLAS: La tabla puede romperse si es muy larga... */
+  table {
+    page-break-inside: auto;
+    break-inside: auto;
+    width: 100%;
+    max-width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 14px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+
+  /* ...pero las FILAS individuales NO deben romperse a la mitad. */
+  tr {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Repite el encabezado de la tabla si pasa a otra página (opcional, ayuda mucho) */
+  thead {
+    display: table-header-group;
+  }
+
+  /* -------------------------------------------------- */
+
   @page: first {
     margin-top: 0px;
   }
@@ -101,19 +148,6 @@
     margin-bottom: 10px;
   }
 
-  /* ESTILOS DE TABLA */
-  table {
-    border-collapse: separate;
-    border-spacing: 0;
-    width: 100%;
-    max-width: 100%;
-    font-size: 14px;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-    margin-bottom: 20px;
-  }
-
   th {
     background: #2C3E50;
     color: white;
@@ -143,9 +177,7 @@
   /* ESTILOS DE TARJETAS */
   .card {
     width: 165px;
-    /* Más angostas */
     height: 180px;
-    /* Más chaparritas */
     background-color: #ffffff;
     border-radius: 12px;
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.06);
@@ -160,16 +192,13 @@
     background: linear-gradient(135deg, #1e2a36, #2C3E50);
     border-radius: 50%;
     height: 75px;
-    /* Reducido de 90 a 75px */
     width: 75px;
     display: flex;
     justify-content: center;
     align-items: center;
     color: white !important;
     box-shadow: 0 4px 10px rgba(44, 62, 80, 0.3);
-
     font-size: 12px;
-    /* Texto más pequeño */
     text-align: center;
     padding: 8px;
     box-sizing: border-box;
@@ -183,19 +212,16 @@
     color: #333;
     margin-top: 12px;
     font-size: 13px;
-    /* Escala del texto */
     padding: 0 8px;
   }
 
   .container__card p {
     margin: 0 0 3px 0;
-    /* Junta más las líneas */
   }
 
   .container__card p:first-child {
     color: #4B6584;
     font-size: 11px;
-    /* Título de la tarjeta sutil */
     text-transform: uppercase;
   }
 
@@ -204,9 +230,11 @@
     flex-direction: row !important;
     justify-content: center;
     gap: 12px;
-    /* Separación entre las 4 tarjetas */
     margin-bottom: 20px;
     flex-wrap: nowrap;
+    /* Evita que las tarjetas se rompan internamente */
+    page-break-inside: avoid;
+    break-inside: avoid;
   }
 
   .mt-3 {
@@ -229,7 +257,6 @@
     margin-top: 10px;
   }
 
-  /* ESTILOS PARA LA FÓRMULA (WORKAROUND) */
   .formula-box {
     background: #f4f6f8;
     border: 1px solid #e1e5e8;
@@ -256,12 +283,19 @@
 
   @media print {
 
+    /* Reglas adicionales de seguridad para impresión */
     table,
     tr,
     .card__container,
     .formula-box,
-    .tematica__id {
+    .tematica__id,
+    section {
       break-inside: avoid;
+    }
+
+    h2,
+    h3 {
+      break-after: avoid;
     }
   }
 </style>
@@ -290,6 +324,16 @@
         <p style="text-align: justify; color: #444; font-size: 15px; line-height: 1.6; margin: 0;">
           {{definicion}}
         </p>
+
+        {{#if elif}}
+        <div
+          style="margin-top: 15px; padding: 10px; background-color: #f0f4f8; border-left: 4px solid #4B6584; border-radius: 4px;">
+          <p style="margin: 0; color: #2C3E50; font-weight: bold; font-size: 13px;">En palabras simples:</p>
+          <p style="margin-top: 5px; text-align: justify; color: #555; font-size: 14px; line-height: 1.5;">
+            {{elif}}
+          </p>
+        </div>
+        {{/if}}
       </div>
 
       <table>
@@ -353,15 +397,22 @@
 
           <div class="card">
             <div class="card__circle">
+
               {{#if (isAscending tendenciaActual) }}
               <span class="material-icons" style="font-size: 35px">↑</span>
+
               {{else}}
-              {{#if (notApplies tendenciaActual) }}
-              <span class="material-icons" style="font-size: 35px">NA</span>
-              {{else}}
+
+              {{#if (isDescending tendenciaActual) }}
               <span class="material-icons" style="font-size: 35px">↓</span>
+
+              {{else}}
+              <span style="font-size: 20px; font-weight: bold;">NA</span>
+
               {{/if}}
+
               {{/if}}
+
             </div>
             <div class="container__card">
               <p><b>Tendencia</b></p>
@@ -398,11 +449,9 @@
       {{#if (isFormula formula)}}
       <h2>Fórmula de cálculo</h2>
       <p style="margin-top: 10px; color: #555;">{{formula.descripcion}}</p>
-
       <div class="formula-box">
         {{cleanFormula formula.ecuacion}}
       </div>
-
       {{else}}
       <h2>Origen de datos</h2>
       <p style="margin-top: 10px; color: #555;">{{formula.descripcion}}</p>
@@ -454,13 +503,14 @@
         <tbody>
           <tr style="background-color: #e8eef2;">
             <td><b>{{anioUltimoValorDisponible}}</b></td>
-            <td><b style="color: #2C3E50; font-size: 15px;">{{ultimoValorDisponible}}</b></td>
+            <td><b style="color: #2C3E50; font-size: 15px;">{{numberWithCommas ultimoValorDisponible}}</b></td>
             <td style="text-align: left; font-size: 13px;"><b>{{fuente}}</b> <i>(Valor más reciente)</i></td>
           </tr>
+
           {{#each historicos}}
           <tr>
             <td>{{this.anio}}</td>
-            <td>{{this.valor}}</td>
+            <td>{{numberWithCommas this.valor}}</td>
             <td style="text-align: left; font-size: 13px; color: #555;">{{this.fuente}}</td>
           </tr>
           {{/each}}

@@ -50,6 +50,9 @@ handlebars.registerHelper('isFormula', (formula) => formula.isFormula == 'SI');
 handlebars.registerHelper('hasValue', (value) => (value.trim().length === 0));
 handlebars.registerHelper('returnDato', (unidadMedida) => returnUnit(unidadMedida));
 handlebars.registerHelper('returnFuente', (fuente) => returnFuente(fuente));
+handlebars.registerHelper('isAscending', (str) => str && str.toString().toUpperCase() === 'ASCENDENTE');
+handlebars.registerHelper('isDescending', (str) => str && str.toString().toUpperCase() === 'DESCENDENTE');
+handlebars.registerHelper('notApplies', (str) => !str || str.toString().toUpperCase() === 'NO APLICA' || str.toString().toUpperCase() === 'NA');
 
 const templateHtml = fs.readFileSync("./src/templates/indicador.html", "utf8");
 const compiledTemplate = handlebars.compile(templateHtml);
@@ -180,16 +183,17 @@ const generateXLSX = async (indicador) => {
     addKeyValue(9, 'Cobertura Geográfica:', cobertura, true);
     addKeyValue(10, 'Unidad de Medida:', indicador.unidadMedida, true);
     addKeyValue(11, 'Tendencia Actual:', indicador.tendenciaActual, true);
+    addKeyValue(12, 'Explicación rápida:', indicador.elif, true);
 
-    const r12 = sheet.getRow(12);
-    r12.getCell('A').value = 'Último Valor Disponible:'; r12.getCell('A').style = labelStyle;
-    r12.getCell('B').value = `${indicador.ultimoValorDisponible || 'NA'} ${indicador.adornment || ''}`; r12.getCell('B').style = { ...valueStyle, font: { bold: true, color: { argb: 'FF1A202C' } } };
-    r12.getCell('C').value = 'Año de Referencia:'; r12.getCell('C').style = labelStyle;
-    r12.getCell('D').value = indicador.anioUltimoValorDisponible || 'NA'; r12.getCell('D').style = valueStyle;
-    r12.getCell('E').style = valueStyle;
-    sheet.mergeCells('D12:E12');
+    const r13 = sheet.getRow(13);
+    r13.getCell('A').value = 'Último Valor Disponible:'; r13.getCell('A').style = labelStyle;
+    r13.getCell('B').value = `${indicador.ultimoValorDisponible || 'NA'} ${indicador.adornment || ''}`; r13.getCell('B').style = { ...valueStyle, font: { bold: true, color: { argb: 'FF1A202C' } } };
+    r13.getCell('C').value = 'Año de Referencia:'; r13.getCell('C').style = labelStyle;
+    r13.getCell('D').value = indicador.anioUltimoValorDisponible || 'NA'; r13.getCell('D').style = valueStyle;
+    r13.getCell('E').style = valueStyle;
+    sheet.mergeCells('D13:E13');
 
-    let currentRow = 14;
+    let currentRow = 15;
 
     const formulaData = indicador.formula?.dataValues || indicador.formula || null;
     if (formulaData && Object.keys(formulaData).length > 0) {
