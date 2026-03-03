@@ -202,7 +202,7 @@ const generateXLSX = async (indicador) => {
       sheet.getCell(`A${currentRow}`).style = sectionStyle;
       currentRow++;
 
-      addKeyValue(currentRow++, 'Ecuación:', formulaData.ecuacion, true);
+      addKeyValue(currentRow++, 'Método de cálculo:', formulaData.ecuacion, true);
       addKeyValue(currentRow++, 'Descripción:', formulaData.descripcion, true);
 
       const variables = formulaData.variables || [];
