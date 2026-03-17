@@ -48,7 +48,6 @@ async function getIndicadorById(id, attributes) {
                     model: Historico,
                     required: false,
                     attributes: ["anio", "valor", "fuente"],
-                    limit: 5,
                     order: [["anio", "DESC"]],
                 },
             ],
