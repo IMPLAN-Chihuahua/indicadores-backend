@@ -23,8 +23,6 @@ fflip.config({
 })
 
 const featureTrigger = (someFunction) => {
-    console.log('this is working?')
-    console.log(features);
     console.log(fflip.isFeatureEnabledForUser('isEmailSendingOn'));
     if (fflip.isFeatureEnabledForUser('isEmailSendingOn', flags) === true) {
         console.log('Aight this is working')

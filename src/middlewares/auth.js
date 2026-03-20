@@ -30,8 +30,6 @@ const hasJWT = (req, res, next) => {
     const reqHeader = req.headers.authorization;
 
     const bearerToken = reqHeader.split(' ')[1];
-    console.log('%c ' + 'Bearer token', 'background: #222; color: #26A783; font-weight: bold;');
-    console.log(bearerToken);
     next();
 
 }
