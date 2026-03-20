@@ -1,5 +1,4 @@
 const { Mapa } = require('../models');
-const { getImagePathLocation } = require('../utils/stringFormat');
 
 const getMapaOfIndicador = async (req, res, next) => {
   const { idIndicador } = req.matchedData;
@@ -13,7 +12,7 @@ const getMapaOfIndicador = async (req, res, next) => {
 
 const createMapa = async (req, res, _next) => {
   const { idIndicador, ...values } = req.matchedData;
-  const image = getImagePathLocation(req)
+  const image = ''
 
   const created = await Mapa.create({ idIndicador, ...values, ...image });
   return res.status(201).json({ data: created });
@@ -21,7 +20,7 @@ const createMapa = async (req, res, _next) => {
 
 const updateMapa = async (req, res, _next) => {
   const { idMapa, ...values } = req.matchedData;
-  const image = getImagePathLocation(req);
+  const image = '';
 
   await Mapa.update(
     { ...values, ...image }, {

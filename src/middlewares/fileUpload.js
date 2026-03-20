@@ -11,11 +11,18 @@ const uploadImage = (destination) => (req, res, next) => {
       if (err.code === 'LIMIT_FILE_SIZE') {
         return res.status(413).send(err.code);
       }
-      next(err)
+      return next(err);
     }
+
+    if (req.file) {
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      req.body.urlImagen = `${baseUrl}/uploads/${destination}/images/${req.file.filename}`;
+    }
+
     next();
   });
-}
+};
+
 
 
 module.exports = { uploadImage };

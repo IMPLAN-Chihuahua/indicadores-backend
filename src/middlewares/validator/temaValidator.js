@@ -75,7 +75,12 @@ const createTemaValidationRules = () => [
     body('color')
         .optional()
         .isHexColor()
-        .withMessage('Solo colores en hexadecimal')
+        .withMessage('Solo colores en hexadecimal'),
+
+    body('urlImagen')
+        .optional()
+        .isURL({ require_tld: false })
+        .withMessage('La URL de la imagen no es válida'),
 ];
 
 const updateTemaValidationRules = () => [
@@ -114,7 +119,12 @@ const updateTemaValidationRules = () => [
     body('color')
         .optional()
         .isHexColor()
-        .withMessage('Solo colores en hexadecimal')
+        .withMessage('Solo colores en hexadecimal'),
+
+    body('urlImagen')
+        .optional()
+        .isURL({ require_tld: false })
+        .withMessage('La URL de la imagen no es válida'),
 ]
 
 module.exports = {

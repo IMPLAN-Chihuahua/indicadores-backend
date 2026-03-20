@@ -9,7 +9,6 @@ const { addUsuario,
   countInactiveUsers,
   getUserStatsInfo,
 } = require('../services/usuariosService');
-const { getImagePathLocation } = require('../utils/stringFormat');
 require('dotenv').config();
 
 const getUsers = async (req, res, next) => {
@@ -36,8 +35,7 @@ const getUsers = async (req, res, next) => {
 
 const createUser = async (req, res, next) => {
   const { clave, ...values } = req.matchedData;
-  const image = getImagePathLocation(req);
-
+  const urlImagen = req.body.urlImagen || null;  // <-- de req.body, no matchedData
   if (await isCorreoAlreadyInUse(values.correo)) {
     return res.status(409).json({ status: 409, message: 'Email is already in use' })
   }
@@ -47,7 +45,7 @@ const createUser = async (req, res, next) => {
   const savedUser = await addUsuario({
     ...values,
     clave: hashedClave,
-    ...image,
+    urlImagen: urlImagen || null,
   });
 
   return res.status(201).json({ data: savedUser });
@@ -59,9 +57,8 @@ const editUser = async (req, res, next) => {
   const { idUser } = req.params;
   const values = req.matchedData;
   const id = idUser ? idUser : idFromToken;
-  const image = getImagePathLocation(req);
 
-  await updateUsuario(id, { ...values, ...image })
+  await updateUsuario(id, { ...values, urlImagen: urlImagen || null })
   return res.sendStatus(204);
 }
 

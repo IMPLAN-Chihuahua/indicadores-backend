@@ -1,7 +1,5 @@
 require('dotenv').config();
-const { S3Client } = require('@aws-sdk/client-s3')
 const multer = require('multer');
-const multerS3 = require('multer-s3');
 const { Parser } = require("json2csv");
 const Excel = require("exceljs");
 const fs = require("fs");
@@ -15,13 +13,8 @@ const handlebars = require("handlebars");
 const { footer } = require("../utils/footerImage");
 const logger = require('../config/logger');
 
-const MAX_IMAGE_SIZE = 1_048_576; // 1MB
+const MAX_IMAGE_SIZE = 10_485_760; // 10MB
 const VALID_IMAGE_MIME_TYPES = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/svg', 'image/webp', 'image/bmp'];
-
-const s3 = new S3Client({
-  credentials: { secretAccessKey: process.env.S3_ACCESS_SECRET, accessKeyId: process.env.S3_ACCESS_KEY },
-  region: process.env.S3_REGION
-});
 
 const DESTINATIONS = { TEMASS: 'temas', INDICADORES: 'indicadores', USUARIOS: 'usuarios', MAPAS: 'mapas', OBJETIVOS: 'objetivos' }
 
@@ -67,28 +60,19 @@ const validateFileType = (file, cb) => {
 };
 
 const getDiskStorage = (destination) => {
-  return multer.diskStorage({
-    destination: (req, file, cb) => { cb(null, getPath(destination)) },
-    filename: (req, file, cb) => { cb(null, getUniqueName(file)) }
-  });
-}
+  const uploadPath = `uploads/${destination}/images`;
 
-const getStorage = (destination) => {
-  if (process.env.NODE_ENV === 'production') {
-    return multerS3({
-      s3,
-      bucket: process.env.S3_INDICADORES_BUCKET,
-      metadata: function (_, file, cb) { cb(null, { fieldName: file.fieldname }); },
-      key: function (_, file, cb) {
-        const fullpath = getPath(destination) + getUniqueName(file);
-        logger.info(`Uploading file to S3 ${fullpath}`)
-        cb(null, fullpath)
-      }
-    })
-  } else {
-    return getDiskStorage(destination)
+  if (!fs.existsSync(uploadPath)) {
+    fs.mkdirSync(uploadPath, { recursive: true });
   }
+
+  return multer.diskStorage({
+    destination: (req, file, cb) => cb(null, uploadPath),
+    filename: (req, file, cb) => cb(null, getUniqueName(file))
+  });
 };
+
+const getStorage = (destination) => getDiskStorage(destination);
 
 const upload = (destination) => {
   return multer({
@@ -97,6 +81,8 @@ const upload = (destination) => {
     fileFilter: (req, file, cb) => { validateFileType(file, cb); },
   }).single('urlImagen');
 };
+
+
 
 const generateCSV = (data) => {
   const json2csv = new Parser();

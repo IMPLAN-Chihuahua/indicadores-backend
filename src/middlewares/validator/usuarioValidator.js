@@ -35,7 +35,13 @@ const registerValidationRules = () => [
     body('idRol')
         .exists('El rol es un campo requerido')
         .isInt('El rol debe ser entero')
-        .toInt()
+        .toInt(),
+
+    body('urlImagen')
+        .optional()
+        .isURL({ require_tld: false })
+        .withMessage('La URL de la imagen no es válida'),
+
 ];
 
 const updateValidationRules = () => [
@@ -74,6 +80,11 @@ const updateValidationRules = () => [
         .optional()
         .isLength({ min: 1 })
         .withMessage('descripcion debe tener al menos 1 caracter'),
+    body('urlImagen')
+        .optional()
+        .isURL({ require_tld: false })
+
+        .withMessage('La URL de la imagen no es válida'),
 ];
 
 const updateProfileValidationRules = () => [

@@ -42,22 +42,9 @@ const returnFuente = (fuente) => {
 
 }
 
-const getImagePathLocation = (req) => {
-	let urlImagen = null
-	if (!req.file) return;
-
-	if (req.file.location) {
-		urlImagen = req.file.location;
-	} else {
-		urlImagen = `${process.env.BASE_URL}/${req.file.path}`;
-	}
-
-	return { urlImagen };
-};
-
 const splitNameKeepFirstOne = (name) => {
 	return name.split(' ')[0];
 }
 
 
-module.exports = { numberWithCommas, returnUnit, returnFuente, getImagePathLocation, splitNameKeepFirstOne };
+module.exports = { numberWithCommas, returnUnit, returnFuente, splitNameKeepFirstOne };

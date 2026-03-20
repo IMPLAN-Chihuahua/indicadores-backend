@@ -1,8 +1,5 @@
 const temaService = require('../services/temaService');
 const { Tema } = require('../models');
-const { getImagePathLocation } = require('../utils/stringFormat');
-
-
 
 const getPublicTemasController = async (req, res, next) => {
   try {
@@ -30,8 +27,9 @@ const getPublicTemasController = async (req, res, next) => {
 
 
 const createTema = async (req, res, next) => {
-  const values = req.matchedData;
-  const image = getImagePathLocation(req);
+  const { urlImagen, ...values } = req.matchedData;
+
+
   try {
     if (await temaService.isTemaIndicadorAlreadyInUse(values.temaIndicador)) {
       return res.status(409).json({
@@ -39,7 +37,7 @@ const createTema = async (req, res, next) => {
         message: `${values.temaIndicador} is already in use`,
       });
     }
-    const savedTema = await temaService.addTema({ ...values, ...image });
+    const savedTema = await temaService.addTema({ ...values, urlImagen: urlImagen || null });
     return res.status(201).json({ data: savedTema });
   } catch (err) {
     next(err);
@@ -49,7 +47,7 @@ const createTema = async (req, res, next) => {
 
 const getPrivateTemasController = async (req, res, next) => {
   const { page, perPage, searchQuery, sortBy, order, ...filters } = req.matchedData;
-  
+
   try {
     const { temas, total, totalInactivos } = await temaService.getPrivateTemas({
       page,
@@ -76,10 +74,9 @@ const getPrivateTemasController = async (req, res, next) => {
 
 
 const editTema = async (req, res, next) => {
-  const { idTema, ...fields } = req.matchedData;
-  const image = getImagePathLocation(req);
+  const { idTema, urlImagen, ...fields } = req.matchedData;
   try {
-    const updatedTema = await temaService.updateTema(idTema, { ...fields, ...image });
+    const updatedTema = await temaService.updateTema(idTema, { ...fields, urlImagen: urlImagen || null });
     if (updatedTema) {
       return res.sendStatus(204);
     }

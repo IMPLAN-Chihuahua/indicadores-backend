@@ -31,7 +31,7 @@ const countIndicadoresByObjetivo = async (req, res, next) => {
 
 const editObjetivo = async (req, res, next) => {
     const { idTema, ...fields } = req.matchedData;
-    const image = getImagePathLocation(req);
+    const image = '';
 
     try {
         const updateObjetivo = 1;

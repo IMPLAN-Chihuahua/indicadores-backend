@@ -4,7 +4,6 @@ const PrivateIndicadorService = require('../services/privateIndicadorService');
 const IndicadorService = require("../services/indicadorService")
 const { generateCSV, generateXLSX, generatePDF } = require("../services/fileService");
 const UsuarioService = require('../services/usuariosService');
-const { getImagePathLocation } = require('../utils/stringFormat');
 const { MAX_INDICADORES_DESTACADOS_PER_OBJETIVO } = IndicadorService;
 
 
@@ -177,7 +176,7 @@ const getIndicadoresFromUser = async (req, res, next) => {
 }
 
 const createIndicador = async (req, res, next) => {
-  const image = getImagePathLocation(req);
+  const image = ''
   const indicador = req.matchedData;
   indicador.createdBy = req.sub;
   indicador.updatedBy = req.sub;
